@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,20 +12,20 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.common.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.Capability;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.tiles.IDebuggable;
@@ -57,10 +57,10 @@ public final class Pipe implements IPipe, IDebuggable {
     public final PipeFlow flow;
     private EnumDyeColor colour = null;
     private boolean updateMarked = true;
-    private final EnumMap<EnumFacing, Float> connected = new EnumMap<>(EnumFacing.class);
-    private final EnumMap<EnumFacing, ConnectedType> types = new EnumMap<>(EnumFacing.class);
+    private final EnumMap<Direction, Float> connected = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction, ConnectedType> types = new EnumMap<>(Direction.class);
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private PipeModelKey lastModel;
 
     public Pipe(IPipeHolder holder, PipeDefinition definition) {
@@ -72,7 +72,7 @@ public final class Pipe implements IPipe, IDebuggable {
 
     // read + write
 
-    public Pipe(IPipeHolder holder, NBTTagCompound nbt) throws InvalidInputDataException {
+    public Pipe(IPipeHolder holder, CompoundTag nbt) throws InvalidInputDataException {
         this.holder = holder;
         this.colour = NBTUtilBC.readEnum(nbt.getTag("col"), EnumDyeColor.class);
         this.definition = PipeRegistry.INSTANCE.loadDefinition(nbt.getString("def"));
@@ -83,7 +83,7 @@ public final class Pipe implements IPipe, IDebuggable {
         this.flow = definition.flowType.loader.loadFlow(this, nbt.getCompoundTag("flow"));
 
         int connectionData = nbt.getInteger("con");
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             int data = (connectionData >>> (face.ordinal() * 2)) & 0b11;
             // The only important aspect of this is the pipe type
             // as the texture index is just used at the client (which is updated in the first tick)
@@ -99,15 +99,15 @@ public final class Pipe implements IPipe, IDebuggable {
         }
     }
 
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setTag("col", NBTUtilBC.writeEnum(colour));
         nbt.setString("def", definition.identifier.toString());
         nbt.setTag("beh", behaviour.writeToNbt());
         nbt.setTag("flow", flow.writeToNbt());
 
         int connectionData = 0;
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             ConnectedType type = types.get(face);
             if (type != null) {
                 int data = type == ConnectedType.PIPE ? 0b01 : 0b10;
@@ -128,21 +128,21 @@ public final class Pipe implements IPipe, IDebuggable {
             throw new IOException(e);
         }
         this.behaviour = definition.logicConstructor.createBehaviour(this);
-        readPayload(buffer, Side.CLIENT, ctx);
+        readPayload(buffer, Dist.CLIENT, ctx);
         this.flow = definition.flowType.creator.createFlow(this);
-        this.flow.readPayload(PipeFlow.NET_ID_FULL_STATE, buffer, Side.CLIENT);
+        this.flow.readPayload(PipeFlow.NET_ID_FULL_STATE, buffer, Dist.CLIENT);
     }
 
     public void writeCreationPayload(PacketBufferBC buffer) {
         buffer.writeString(definition.identifier.toString());
-        writePayload(buffer, Side.SERVER);
-        flow.writePayload(PipeFlow.NET_ID_FULL_STATE, buffer, Side.SERVER);
+        writePayload(buffer, Dist.DEDICATED_SERVER);
+        flow.writePayload(PipeFlow.NET_ID_FULL_STATE, buffer, Dist.DEDICATED_SERVER);
     }
 
     public void writePayload(PacketBufferBC buffer, Side side) {
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             buffer.writeByte(colour == null ? 0 : colour.getMetadata() + 1);
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 Float con = connected.get(face);
                 if (con != null) {
                     buffer.writeBoolean(true);
@@ -156,16 +156,16 @@ public final class Pipe implements IPipe, IDebuggable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void readPayload(PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             connected.clear();
             types.clear();
 
             int nColour = buffer.readUnsignedByte();
             colour = nColour == 0 ? null : EnumDyeColor.byMetadata(nColour - 1);
 
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 if (buffer.readBoolean()) {
                     float dist = buffer.readFloat();
 
@@ -224,12 +224,12 @@ public final class Pipe implements IPipe, IDebuggable {
     // Caps
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
         T val = behaviour.getCapability(capability, facing);
         if (val != null) return val;
         return flow.getCapability(capability, facing);
@@ -259,22 +259,22 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     private void updateConnections() {
-        if (holder.getPipeWorld().isRemote) {
+        if (holder.getPipeWorld().isClientSide) {
             return;
         }
         updateMarked = false;
 
-        EnumMap<EnumFacing, Float> old = connected.clone();
+        EnumMap<Direction, Float> old = connected.clone();
 
         connected.clear();
         types.clear();
 
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (Direction facing : Direction.VALUES) {
             PipePluggable plug = getHolder().getPluggable(facing);
             if (plug != null && plug.isBlocking()) {
                 continue;
             }
-            TileEntity oTile = getHolder().getNeighbourTile(facing);
+            BlockEntity oTile = getHolder().getNeighbourTile(facing);
             if (oTile == null) {
                 continue;
             }
@@ -295,7 +295,7 @@ public final class Pipe implements IPipe, IDebuggable {
             }
 
             BlockPos nPos = holder.getPipePos().offset(facing);
-            IBlockState neighbour = holder.getPipeWorld().getBlockState(nPos);
+            BlockState neighbour = holder.getPipeWorld().getBlockState(nPos);
 
             ICustomPipeConnection cust = PipeConnectionAPI.getCustomConnection(neighbour.getBlock());
             if (cust == null) {
@@ -311,7 +311,7 @@ public final class Pipe implements IPipe, IDebuggable {
             }
         }
         if (!old.equals(connected)) {
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 boolean o = old.containsKey(face);
                 boolean n = connected.containsKey(face);
                 if (o != n) {
@@ -335,7 +335,7 @@ public final class Pipe implements IPipe, IDebuggable {
         behaviour.addDrops(toDrop, fortune);
     }
 
-    public static boolean canPipesConnect(EnumFacing to, IPipe one, IPipe two) {
+    public static boolean canPipesConnect(Direction to, IPipe one, IPipe two) {
         return canColoursConnect(one.getColour(), two.getColour())//
         && canBehavioursConnect(to, one.getBehaviour(), two.getBehaviour())//
         && canFlowsConnect(to, one.getFlow(), two.getFlow());
@@ -345,11 +345,11 @@ public final class Pipe implements IPipe, IDebuggable {
         return one == null || two == null || one == two;
     }
 
-    public static boolean canBehavioursConnect(EnumFacing to, PipeBehaviour one, PipeBehaviour two) {
+    public static boolean canBehavioursConnect(Direction to, PipeBehaviour one, PipeBehaviour two) {
         return one.canConnect(to, two) && two.canConnect(to.getOpposite(), one);
     }
 
-    public static boolean canFlowsConnect(EnumFacing to, PipeFlow one, PipeFlow two) {
+    public static boolean canFlowsConnect(Direction to, PipeFlow one, PipeFlow two) {
         return one.canConnect(to, two) && two.canConnect(to.getOpposite(), one);
     }
 
@@ -358,11 +358,11 @@ public final class Pipe implements IPipe, IDebuggable {
         updateMarked = true;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public PipeModelKey getModel() {
         PipeFaceTex[] sides = new PipeFaceTex[6];
         float[] mc = new float[6];
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             int i = face.ordinal();
             sides[i] = behaviour.getTextureData(face);
             mc[i] = getConnectedDist(face);
@@ -371,10 +371,10 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     @Override
-    public TileEntity getConnectedTile(EnumFacing side) {
+    public BlockEntity getConnectedTile(Direction side) {
         if (connected.containsKey(side)) {
-            TileEntity offset = getHolder().getNeighbourTile(side);
-            if (offset == null && !getHolder().getPipeWorld().isRemote) {
+            BlockEntity offset = getHolder().getNeighbourTile(side);
+            if (offset == null && !getHolder().getPipeWorld().isClientSide) {
                 markForUpdate();
             } else {
                 return offset;
@@ -384,10 +384,10 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     @Override
-    public IPipe getConnectedPipe(EnumFacing side) {
+    public IPipe getConnectedPipe(Direction side) {
         if (connected.containsKey(side) && getConnectedType(side) == ConnectedType.PIPE) {
             IPipe offset = getHolder().getNeighbourPipe(side);
-            if (offset == null && !getHolder().getPipeWorld().isRemote) {
+            if (offset == null && !getHolder().getPipeWorld().isClientSide) {
                 markForUpdate();
             } else {
                 return offset;
@@ -397,22 +397,22 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     @Override
-    public ConnectedType getConnectedType(EnumFacing side) {
+    public ConnectedType getConnectedType(Direction side) {
         return types.get(side);
     }
 
     @Override
-    public boolean isConnected(EnumFacing side) {
+    public boolean isConnected(Direction side) {
         return connected.containsKey(side);
     }
 
-    public float getConnectedDist(EnumFacing face) {
+    public float getConnectedDist(Direction face) {
         Float custom = connected.get(face);
         return custom == null ? 0 : custom;
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("Colour = " + colour);
         left.add("Definition = " + definition.identifier);
         if (behaviour instanceof IDebuggable) {
@@ -430,7 +430,7 @@ public final class Pipe implements IPipe, IDebuggable {
         } else {
             left.add("Flow = " + flow.getClass());
         }
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             right.add(face + " = " + types.get(face) + ", " + getConnectedDist(face));
         }
     }

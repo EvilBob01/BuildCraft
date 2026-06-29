@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,7 +8,7 @@ package buildcraft.lib.client.guide.parts.recipe;
 
 import java.util.Arrays;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
@@ -135,7 +135,7 @@ public class GuideAssemblyFactory implements GuidePartFactory {
     // return ((ItemStack) object).copy();
     // }
     // if (object instanceof String) {
-    // NonNullList<ItemStack> stacks = OreDictionary.getOres((String) object);
+    // NonNullList<ItemStack> stacks = /* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres((String) object);
     // // It will be sorted out below
     // object = stacks;
     // }

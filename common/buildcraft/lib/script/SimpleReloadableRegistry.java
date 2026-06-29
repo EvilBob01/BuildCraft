@@ -1,4 +1,4 @@
-package buildcraft.lib.script;
+﻿package buildcraft.lib.script;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Iterables;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.registry.IReloadableRegistry;
 import buildcraft.api.registry.IReloadableRegistryManager;

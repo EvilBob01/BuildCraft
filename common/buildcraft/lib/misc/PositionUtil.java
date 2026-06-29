@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team This Source Code Form is subject to the terms of the Mozilla
  * Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at
  * https://mozilla.org/MPL/2.0/
@@ -16,12 +16,12 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Vec3i;
 
 import buildcraft.lib.misc.data.FaceDistance;
 
@@ -29,21 +29,21 @@ public class PositionUtil {
     /** @return The exact direction from the first position to the second. Returns null if more than one axis value is
      *         different, or they are the same position. */
     @Nullable
-    public static EnumFacing getDirectFacingOffset(BlockPos from, BlockPos to) {
+    public static Direction getDirectFacingOffset(BlockPos from, BlockPos to) {
         BlockPos diff = to.subtract(from);
         boolean x = diff.getX() != 0;
         boolean y = diff.getY() != 0;
         boolean z = diff.getZ() != 0;
         if (x && y || x && z || y && z) return null;
-        if (x) return diff.getX() > 0 ? EnumFacing.EAST : EnumFacing.WEST;
-        if (y) return diff.getY() > 0 ? EnumFacing.UP : EnumFacing.DOWN;
-        if (z) return diff.getZ() > 0 ? EnumFacing.SOUTH : EnumFacing.NORTH;
+        if (x) return diff.getX() > 0 ? Direction.EAST : Direction.WEST;
+        if (y) return diff.getY() > 0 ? Direction.UP : Direction.DOWN;
+        if (z) return diff.getZ() > 0 ? Direction.SOUTH : Direction.NORTH;
         return null;
     }
 
     /** @return An integer representing the offset between the block positions, or null if
      *         {@link #getDirectFacingOffset(BlockPos, BlockPos)} returned null. The distance will be negative if
-     *         returned {@link EnumFacing} is negative. */
+     *         returned {@link Direction} is negative. */
     @Nullable
     public static Integer getDirectFacingDistance(BlockPos from, BlockPos to) {
         BlockPos diff = to.subtract(from);
@@ -160,9 +160,9 @@ public class PositionUtil {
         return x != z;
     }
 
-    /** Finds a rotation that {@link #rotateFacing(EnumFacing, Axis, Rotation)} will use on "from" to get "to", with a
+    /** Finds a rotation that {@link #rotateFacing(Direction, Axis, Rotation)} will use on "from" to get "to", with a
      * given axis around. */
-    public static Rotation getRotatedFacing(EnumFacing from, EnumFacing to, Axis axis) {
+    public static Rotation getRotatedFacing(Direction from, Direction to, Axis axis) {
         if (from.getAxis() == axis || to.getAxis() == axis) {
             throw new IllegalArgumentException("Cannot rotate around " + axis + " with " + from + " and " + to);
         }
@@ -179,9 +179,9 @@ public class PositionUtil {
         }
     }
 
-    /** Rotates a given {@link EnumFacing} by the given rotation, in a given axis. This relies on the behaviour defined
-     * in {@link EnumFacing#rotateAround(Axis)}. */
-    public static EnumFacing rotateFacing(EnumFacing from, Axis axis, Rotation rotation) {
+    /** Rotates a given {@link Direction} by the given rotation, in a given axis. This relies on the behaviour defined
+     * in {@link Direction#rotateAround(Axis)}. */
+    public static Direction rotateFacing(Direction from, Axis axis, Rotation rotation) {
         if (rotation == Rotation.NONE || rotation == null) {
             return from;
         }
@@ -200,17 +200,17 @@ public class PositionUtil {
     }
 
     /** Rotates a given vector by the given rotation, in a given axis. This relies on the behaviour of
-     * {@link #rotateFacing(EnumFacing, Axis, Rotation)}. */
-    public static Vec3d rotateVec(Vec3d from, Axis axis, Rotation rotation) {
-        Vec3d rotated = new Vec3d(0, 0, 0);
+     * {@link #rotateFacing(Direction, Axis, Rotation)}. */
+    public static Vec3 rotateVec(Vec3 from, Axis axis, Rotation rotation) {
+        Vec3 rotated = new Vec3(0, 0, 0);
 
         double numEast = from.x;
         double numUp = from.y;
         double numSouth = from.z;
 
-        EnumFacing newEast = PositionUtil.rotateFacing(EnumFacing.EAST, axis, rotation);
-        EnumFacing newUp = PositionUtil.rotateFacing(EnumFacing.UP, axis, rotation);
-        EnumFacing newSouth = PositionUtil.rotateFacing(EnumFacing.SOUTH, axis, rotation);
+        Direction newEast = PositionUtil.rotateFacing(Direction.EAST, axis, rotation);
+        Direction newUp = PositionUtil.rotateFacing(Direction.UP, axis, rotation);
+        Direction newSouth = PositionUtil.rotateFacing(Direction.SOUTH, axis, rotation);
 
         rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getOffset());
         rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getOffset());
@@ -220,7 +220,7 @@ public class PositionUtil {
     }
 
     /** Rotates a given position by the given rotation, in a given axis. This relies on the behaviour of
-     * {@link #rotateFacing(EnumFacing, Axis, Rotation)}. */
+     * {@link #rotateFacing(Direction, Axis, Rotation)}. */
     public static BlockPos rotatePos(Vec3i from, Axis axis, Rotation rotation) {
         BlockPos rotated = new BlockPos(0, 0, 0);
 
@@ -228,9 +228,9 @@ public class PositionUtil {
         int numUp = from.getY();
         int numSouth = from.getZ();
 
-        EnumFacing newEast = PositionUtil.rotateFacing(EnumFacing.EAST, axis, rotation);
-        EnumFacing newUp = PositionUtil.rotateFacing(EnumFacing.UP, axis, rotation);
-        EnumFacing newSouth = PositionUtil.rotateFacing(EnumFacing.SOUTH, axis, rotation);
+        Direction newEast = PositionUtil.rotateFacing(Direction.EAST, axis, rotation);
+        Direction newUp = PositionUtil.rotateFacing(Direction.UP, axis, rotation);
+        Direction newSouth = PositionUtil.rotateFacing(Direction.SOUTH, axis, rotation);
 
         rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getOffset());
         rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getOffset());
@@ -239,16 +239,16 @@ public class PositionUtil {
         return rotated;
     }
 
-    public static LineSkewResult findLineSkewPoint(Line line, Vec3d start, Vec3d direction) {
+    public static LineSkewResult findLineSkewPoint(Line line, Vec3 start, Vec3 direction) {
         double ia = 0, ib = 1;
         double da = 0, db = 0;
         double id = 0.5;
-        Vec3d va, vb;
+        Vec3 va, vb;
 
-        Vec3d best = null;
+        Vec3 best = null;
         for (int i = 0; i < 10; i++) {
-            Vec3d a = line.interpolate(ia);
-            Vec3d b = line.interpolate(ib);
+            Vec3 a = line.interpolate(ia);
+            Vec3 b = line.interpolate(ib);
             va = closestPointOnLineToPoint(a, start, direction);
             vb = closestPointOnLineToPoint(b, start, direction);
             da = a.squareDistanceTo(va);
@@ -268,40 +268,40 @@ public class PositionUtil {
     }
 
     public static class LineSkewResult {
-        public final Vec3d closestPos;
+        public final Vec3 closestPos;
         public final double distFromLine;
 
-        public LineSkewResult(Vec3d closestPos, double distFromLine) {
+        public LineSkewResult(Vec3 closestPos, double distFromLine) {
             this.closestPos = closestPos;
             this.distFromLine = distFromLine;
         }
     }
 
-    public static Vec3d closestPointOnLineToPoint(Vec3d point, Vec3d linePoint, Vec3d lineVector) {
-        Vec3d v = lineVector.normalize();
-        Vec3d p1 = linePoint;
-        Vec3d p2 = point;
+    public static Vec3 closestPointOnLineToPoint(Vec3 point, Vec3 linePoint, Vec3 lineVector) {
+        Vec3 v = lineVector.normalize();
+        Vec3 p1 = linePoint;
+        Vec3 p2 = point;
 
         // Its maths. Its allowed to deviate from normal naming rules.
-        Vec3d p2_minus_p1 = p2.subtract(p1);
+        Vec3 p2_minus_p1 = p2.subtract(p1);
         double _dot_v = VecUtil.dot(p2_minus_p1, v);
-        Vec3d _scale_v = VecUtil.scale(v, _dot_v);
+        Vec3 _scale_v = VecUtil.scale(v, _dot_v);
         return p1.add(_scale_v);
     }
 
     public static class Line {
-        public final Vec3d start, end;
+        public final Vec3 start, end;
 
-        public Line(Vec3d start, Vec3d end) {
+        public Line(Vec3 start, Vec3 end) {
             this.start = start;
             this.end = end;
         }
 
-        public static Line createLongLine(Vec3d start, Vec3d direction) {
+        public static Line createLongLine(Vec3 start, Vec3 direction) {
             return new Line(start, VecUtil.scale(direction, 1024));
         }
 
-        public Vec3d interpolate(double interp) {
+        public Vec3 interpolate(double interp) {
             return VecUtil.scale(start, 1 - interp).add(VecUtil.scale(end, interp));
         }
     }

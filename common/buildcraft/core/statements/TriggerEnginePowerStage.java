@@ -1,10 +1,10 @@
-package buildcraft.core.statements;
+﻿package buildcraft.core.statements;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.enums.EnumPowerStage;
@@ -28,7 +28,7 @@ public class TriggerEnginePowerStage extends BCStatement implements ITriggerExte
         this.stage = stage;
     }
 
-    public static boolean isTriggeringTile(TileEntity tile) {
+    public static boolean isTriggeringTile(BlockEntity tile) {
         return tile instanceof TileEngineBase_BC8;
     }
 
@@ -38,13 +38,13 @@ public class TriggerEnginePowerStage extends BCStatement implements ITriggerExte
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         return BCCoreSprites.TRIGGER_POWER_STAGE.get(stage);
     }
 
     @Override
-    public boolean isTriggerActive(TileEntity target, EnumFacing side, IStatementContainer source,
+    public boolean isTriggerActive(BlockEntity target, Direction side, IStatementContainer source,
         IStatementParameter[] parameters) {
         if (target instanceof TileEngineBase_BC8) {
             return ((TileEngineBase_BC8) target).getPowerStage() == stage;

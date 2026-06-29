@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -7,12 +7,12 @@
 package buildcraft.silicon.plug;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pipe.PipeEventHandler;
@@ -29,7 +29,7 @@ import buildcraft.silicon.BCSiliconItems;
 import buildcraft.silicon.client.model.key.KeyPlugLens;
 
 public class PluggableLens extends PipePluggable {
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     static {
         double ll = 0 / 16.0;
@@ -40,12 +40,12 @@ public class PluggableLens extends PipePluggable {
         double min = 3 / 16.0;
         double max = 13 / 16.0;
 
-        BOXES[EnumFacing.DOWN.getIndex()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.getIndex()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.getIndex()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.getIndex()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.getIndex()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.getIndex()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.getIndex()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.getIndex()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.getIndex()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.getIndex()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.getIndex()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
     }
 
     public final EnumDyeColor colour;
@@ -53,7 +53,7 @@ public class PluggableLens extends PipePluggable {
 
     // Manual constructor (called by the specific item pluggable code)
 
-    public PluggableLens(PluggableDefinition def, IPipeHolder holder, EnumFacing side, EnumDyeColor colour,
+    public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, EnumDyeColor colour,
         boolean isFilter) {
         super(def, holder, side);
         this.colour = colour;
@@ -62,7 +62,7 @@ public class PluggableLens extends PipePluggable {
 
     // Saving + Loading
 
-    public PluggableLens(PluggableDefinition def, IPipeHolder holder, EnumFacing side, NBTTagCompound nbt) {
+    public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
         if (nbt.hasKey("colour")) {
             colour = NBTUtilBC.readEnum(nbt.getTag("colour"), EnumDyeColor.class);
@@ -73,8 +73,8 @@ public class PluggableLens extends PipePluggable {
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setTag("colour", NBTUtilBC.writeEnum(colour));
         nbt.setBoolean("f", isFilter);
         return nbt;
@@ -82,7 +82,7 @@ public class PluggableLens extends PipePluggable {
 
     // Networking
 
-    public PluggableLens(PluggableDefinition def, IPipeHolder holder, EnumFacing side, PacketBuffer buffer) {
+    public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, FriendlyByteBuf buffer) {
         super(def, holder, side);
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
         colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
@@ -90,7 +90,7 @@ public class PluggableLens extends PipePluggable {
     }
 
     @Override
-    public void writeCreationPayload(PacketBuffer buffer) {
+    public void writeCreationPayload(FriendlyByteBuf buffer) {
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
         MessageUtil.writeEnumOrNull(buf, colour);
         buf.writeBoolean(isFilter);
@@ -99,7 +99,7 @@ public class PluggableLens extends PipePluggable {
     // Pluggable methods
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.getIndex()];
     }
 
@@ -148,7 +148,7 @@ public class PluggableLens extends PipePluggable {
     }
 
     /** Called from either *this* pipe, or the neighbouring pipe as given in compareSide. */
-    void sideCheckAnyPos(PipeEventItem.SideCheck event, EnumFacing compareSide) {
+    void sideCheckAnyPos(PipeEventItem.SideCheck event, Direction compareSide) {
         // Note that this should *never* use "this.side" as it may be wrong!
         if (isFilter) {
             if (event.colour == colour) {

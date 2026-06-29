@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -10,14 +10,14 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.RegistryEvent.MissingMappings;
-import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.RegisterEvent.MissingMappings;
+import net.neoforged.neoforge.registries.RegisterEvent.MissingMappings.Mapping;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import buildcraft.api.core.BCDebugging;
@@ -44,7 +44,7 @@ public enum MigrationManager {
             itemMigrations.put(oldLowerCase, to);
             if (DEBUG) {
                 BCLog.logger
-                    .info("[lib.migrate] Adding item migration from " + oldLowerCase + " to " + to.getRegistryName());
+                    .info("[lib.migrate] Adding item migration from " + oldLowerCase + " to " + to.builtInRegistryHolder().key().location());
             }
         }
     }
@@ -62,7 +62,7 @@ public enum MigrationManager {
             blockMigrations.put(oldLowerCase, to);
             if (DEBUG) {
                 BCLog.logger
-                    .info("[lib.migrate] Adding item migration from " + oldLowerCase + " to " + to.getRegistryName());
+                    .info("[lib.migrate] Adding item migration from " + oldLowerCase + " to " + to.builtInRegistryHolder().key().location());
             }
         }
     }
@@ -100,7 +100,7 @@ public enum MigrationManager {
             if (to != null) {
                 mapping.remap(to);
                 if (DEBUG) {
-                    BCLog.logger.info("[lib.migrate]    -> " + to.getRegistryName());
+                    BCLog.logger.info("[lib.migrate]    -> " + to.builtInRegistryHolder().key().location());
                 }
             }
         }

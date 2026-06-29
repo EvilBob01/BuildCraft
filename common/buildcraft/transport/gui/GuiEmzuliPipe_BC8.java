@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,9 +9,9 @@ package buildcraft.transport.gui;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -51,7 +51,7 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
         PAINT_BUTTON_BUILDER.active = enabled.offset(0, 20);
     }
 
-    public GuiEmzuliPipe_BC8(EntityPlayer player, PipeBehaviourEmzuli behaviour) {
+    public GuiEmzuliPipe_BC8(Player player, PipeBehaviourEmzuli behaviour) {
         super(new ContainerEmzuliPipe_BC8(player, behaviour));
         xSize = SIZE_X;
         ySize = SIZE_Y;

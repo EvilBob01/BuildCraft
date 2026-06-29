@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,10 +12,10 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 import buildcraft.api.core.BCLog;
@@ -73,7 +73,7 @@ public class MessageMarker implements IMessage {
     }
 
     public static final IMessageHandler<MessageMarker, IMessage> HANDLER = (message, ctx) -> {
-        World world = BCLibProxy.getProxy().getClientWorld();
+        Level world = BCLibProxy.getProxy().getClientWorld();
         if (world == null) {
             if (DEBUG) {
                 BCLog.logger.warn("[lib.messages][marker] The world was null for a message!");

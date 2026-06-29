@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,9 +11,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 
 import net.minecraftforge.client.model.animation.FastTESR;
 
@@ -43,13 +43,13 @@ public class RenderLaser extends FastTESR<TileLaser> {
                 long avg = tile.getAverageClient();
                 if (avg > 200_000) {
                     avg += 200_000;
-                    EnumFacing side = tile.getWorld().getBlockState(tile.getPos()).getValue(BuildCraftProperties.BLOCK_FACING_6);
-                    Vec3d offset = new Vec3d(0.5, 0.5, 0.5).add(new Vec3d(side.getDirectionVec()).scale(4 / 16D));
+                    Direction side = tile.getWorld().getBlockState(tile.getPos()).getValue(BuildCraftProperties.BLOCK_FACING_6);
+                    Vec3 offset = new Vec3(0.5, 0.5, 0.5).add(new Vec3(side.getDirectionVec()).scale(4 / 16D));
                     int index = (int) (avg * MAX_POWER / tile.getMaxPowerPerTick());
                     if (index > MAX_POWER) {
                         index = MAX_POWER;
                     }
-                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3d(tile.getPos()).add(offset), tile.laserPos, 1 / 16D);
+                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3(tile.getPos()).add(offset), tile.laserPos, 1 / 16D);
                     LaserRenderer_BC8.renderLaserDynamic(laser, buffer);
                 }
             }

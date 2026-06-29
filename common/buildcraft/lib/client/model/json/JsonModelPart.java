@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,7 +16,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.client.renderer.block.model.BlockPart;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.JsonUtils;
 
 import buildcraft.lib.client.model.ResourceLoaderContext;
@@ -78,7 +78,7 @@ public class JsonModelPart {
             if (faces.isJsonObject()) {
                 JsonObject jFaces = faces.getAsJsonObject();
                 List<JsonQuad> quads = new ArrayList<>();
-                for (EnumFacing face : EnumFacing.VALUES) {
+                for (Direction face : Direction.VALUES) {
                     if (jFaces.has(face.getName())) {
                         JsonElement jFace = jFaces.get(face.getName());
                         if (!jFace.isJsonObject()) {

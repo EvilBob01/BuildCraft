@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.lib.BCLibConfig;
 import buildcraft.lib.client.render.font.SpecialColourFontRenderer;
@@ -26,9 +26,9 @@ public class ColourUtil {
     public static final char MINECRAFT_FORMAT_CHAR;
     public static final String COLOUR_SPECIAL_START;
 
-    public static final Function<TextFormatting, TextFormatting> getTextFormatForBlack =
+    public static final Function<ChatFormatting, ChatFormatting> getTextFormatForBlack =
         ColourUtil::getTextFormatForBlack;
-    public static final Function<TextFormatting, TextFormatting> getTextFormatForWhite =
+    public static final Function<ChatFormatting, ChatFormatting> getTextFormatForWhite =
         ColourUtil::getTextFormatForWhite;
 
     public static final EnumDyeColor[] COLOURS = EnumDyeColor.values();
@@ -55,14 +55,14 @@ public class ColourUtil {
     private static final Map<String, EnumDyeColor> nameToColourMap;
     private static final int[] FACE_TO_COLOUR;
 
-    private static final TextFormatting[] FORMATTING_VALUES = TextFormatting.values();
+    private static final ChatFormatting[] FORMATTING_VALUES = ChatFormatting.values();
 
-    private static final TextFormatting[] COLOUR_TO_FORMAT = new TextFormatting[16];
-    private static final TextFormatting[] REPLACE_FOR_WHITE = new TextFormatting[16];
-    private static final TextFormatting[] REPLACE_FOR_BLACK = new TextFormatting[16];
-    private static final TextFormatting[] REPLACE_FOR_WHITE_HIGH_CONTRAST = new TextFormatting[16];
-    private static final TextFormatting[] REPLACE_FOR_BLACK_HIGH_CONTRAST = new TextFormatting[16];
-    private static final TextFormatting[] FACE_TO_FORMAT = new TextFormatting[6];
+    private static final ChatFormatting[] COLOUR_TO_FORMAT = new ChatFormatting[16];
+    private static final ChatFormatting[] REPLACE_FOR_WHITE = new ChatFormatting[16];
+    private static final ChatFormatting[] REPLACE_FOR_BLACK = new ChatFormatting[16];
+    private static final ChatFormatting[] REPLACE_FOR_WHITE_HIGH_CONTRAST = new ChatFormatting[16];
+    private static final ChatFormatting[] REPLACE_FOR_BLACK_HIGH_CONTRAST = new ChatFormatting[16];
+    private static final ChatFormatting[] FACE_TO_FORMAT = new ChatFormatting[6];
 
     private static final Pattern ALL_FORMAT_MATCHER = Pattern.compile("(?i)\u00a7[0-9A-Za-z]");
 
@@ -75,45 +75,45 @@ public class ColourUtil {
             REPLACE_FOR_BLACK[i] = REPLACE_FOR_BLACK_HIGH_CONTRAST[i] = FORMATTING_VALUES[i];
         }
 
-        replaceColourForWhite(TextFormatting.WHITE, TextFormatting.GRAY);
-        replaceColourForWhite(TextFormatting.YELLOW, TextFormatting.GOLD);
-        replaceColourForWhite(TextFormatting.AQUA, TextFormatting.BLUE);
-        replaceColourForWhite(TextFormatting.GREEN, TextFormatting.DARK_GREEN);
+        replaceColourForWhite(ChatFormatting.WHITE, ChatFormatting.GRAY);
+        replaceColourForWhite(ChatFormatting.YELLOW, ChatFormatting.GOLD);
+        replaceColourForWhite(ChatFormatting.AQUA, ChatFormatting.BLUE);
+        replaceColourForWhite(ChatFormatting.GREEN, ChatFormatting.DARK_GREEN);
 
-        replaceColourForBlack(TextFormatting.BLACK, TextFormatting.GRAY);
-        replaceColourForBlack(TextFormatting.DARK_GRAY, TextFormatting.GRAY);
-        replaceColourForBlack(TextFormatting.DARK_BLUE, TextFormatting.BLUE, TextFormatting.AQUA);
-        replaceColourForBlack(TextFormatting.BLUE, TextFormatting.BLUE, TextFormatting.AQUA);
-        replaceColourForBlack(TextFormatting.DARK_PURPLE, TextFormatting.LIGHT_PURPLE);
-        replaceColourForBlack(TextFormatting.DARK_RED, TextFormatting.RED);
-        replaceColourForBlack(TextFormatting.DARK_GREEN, TextFormatting.GREEN);
+        replaceColourForBlack(ChatFormatting.BLACK, ChatFormatting.GRAY);
+        replaceColourForBlack(ChatFormatting.DARK_GRAY, ChatFormatting.GRAY);
+        replaceColourForBlack(ChatFormatting.DARK_BLUE, ChatFormatting.BLUE, ChatFormatting.AQUA);
+        replaceColourForBlack(ChatFormatting.BLUE, ChatFormatting.BLUE, ChatFormatting.AQUA);
+        replaceColourForBlack(ChatFormatting.DARK_PURPLE, ChatFormatting.LIGHT_PURPLE);
+        replaceColourForBlack(ChatFormatting.DARK_RED, ChatFormatting.RED);
+        replaceColourForBlack(ChatFormatting.DARK_GREEN, ChatFormatting.GREEN);
 
-        COLOUR_TO_FORMAT[EnumDyeColor.BLACK.ordinal()] = TextFormatting.BLACK;
-        COLOUR_TO_FORMAT[EnumDyeColor.GRAY.ordinal()] = TextFormatting.DARK_GRAY;
-        COLOUR_TO_FORMAT[EnumDyeColor.SILVER.ordinal()] = TextFormatting.GRAY;
-        COLOUR_TO_FORMAT[EnumDyeColor.WHITE.ordinal()] = TextFormatting.WHITE;
+        COLOUR_TO_FORMAT[EnumDyeColor.BLACK.ordinal()] = ChatFormatting.BLACK;
+        COLOUR_TO_FORMAT[EnumDyeColor.GRAY.ordinal()] = ChatFormatting.DARK_GRAY;
+        COLOUR_TO_FORMAT[EnumDyeColor.SILVER.ordinal()] = ChatFormatting.GRAY;
+        COLOUR_TO_FORMAT[EnumDyeColor.WHITE.ordinal()] = ChatFormatting.WHITE;
 
-        COLOUR_TO_FORMAT[EnumDyeColor.RED.ordinal()] = TextFormatting.DARK_RED;
-        COLOUR_TO_FORMAT[EnumDyeColor.BLUE.ordinal()] = TextFormatting.BLUE;
-        COLOUR_TO_FORMAT[EnumDyeColor.CYAN.ordinal()] = TextFormatting.DARK_AQUA;
-        COLOUR_TO_FORMAT[EnumDyeColor.LIGHT_BLUE.ordinal()] = TextFormatting.AQUA;
+        COLOUR_TO_FORMAT[EnumDyeColor.RED.ordinal()] = ChatFormatting.DARK_RED;
+        COLOUR_TO_FORMAT[EnumDyeColor.BLUE.ordinal()] = ChatFormatting.BLUE;
+        COLOUR_TO_FORMAT[EnumDyeColor.CYAN.ordinal()] = ChatFormatting.DARK_AQUA;
+        COLOUR_TO_FORMAT[EnumDyeColor.LIGHT_BLUE.ordinal()] = ChatFormatting.AQUA;
 
-        COLOUR_TO_FORMAT[EnumDyeColor.GREEN.ordinal()] = TextFormatting.DARK_GREEN;
-        COLOUR_TO_FORMAT[EnumDyeColor.LIME.ordinal()] = TextFormatting.GREEN;
-        COLOUR_TO_FORMAT[EnumDyeColor.BROWN.ordinal()] = TextFormatting.GOLD;
-        COLOUR_TO_FORMAT[EnumDyeColor.YELLOW.ordinal()] = TextFormatting.YELLOW;
+        COLOUR_TO_FORMAT[EnumDyeColor.GREEN.ordinal()] = ChatFormatting.DARK_GREEN;
+        COLOUR_TO_FORMAT[EnumDyeColor.LIME.ordinal()] = ChatFormatting.GREEN;
+        COLOUR_TO_FORMAT[EnumDyeColor.BROWN.ordinal()] = ChatFormatting.GOLD;
+        COLOUR_TO_FORMAT[EnumDyeColor.YELLOW.ordinal()] = ChatFormatting.YELLOW;
 
-        COLOUR_TO_FORMAT[EnumDyeColor.ORANGE.ordinal()] = TextFormatting.GOLD;
-        COLOUR_TO_FORMAT[EnumDyeColor.PURPLE.ordinal()] = TextFormatting.DARK_PURPLE;
-        COLOUR_TO_FORMAT[EnumDyeColor.MAGENTA.ordinal()] = TextFormatting.LIGHT_PURPLE;
-        COLOUR_TO_FORMAT[EnumDyeColor.PINK.ordinal()] = TextFormatting.LIGHT_PURPLE;
+        COLOUR_TO_FORMAT[EnumDyeColor.ORANGE.ordinal()] = ChatFormatting.GOLD;
+        COLOUR_TO_FORMAT[EnumDyeColor.PURPLE.ordinal()] = ChatFormatting.DARK_PURPLE;
+        COLOUR_TO_FORMAT[EnumDyeColor.MAGENTA.ordinal()] = ChatFormatting.LIGHT_PURPLE;
+        COLOUR_TO_FORMAT[EnumDyeColor.PINK.ordinal()] = ChatFormatting.LIGHT_PURPLE;
 
-        FACE_TO_FORMAT[EnumFacing.UP.ordinal()] = TextFormatting.WHITE;
-        FACE_TO_FORMAT[EnumFacing.DOWN.ordinal()] = TextFormatting.BLACK;
-        FACE_TO_FORMAT[EnumFacing.NORTH.ordinal()] = TextFormatting.RED;
-        FACE_TO_FORMAT[EnumFacing.SOUTH.ordinal()] = TextFormatting.BLUE;
-        FACE_TO_FORMAT[EnumFacing.EAST.ordinal()] = TextFormatting.YELLOW;
-        FACE_TO_FORMAT[EnumFacing.WEST.ordinal()] = TextFormatting.GREEN;
+        FACE_TO_FORMAT[Direction.UP.ordinal()] = ChatFormatting.WHITE;
+        FACE_TO_FORMAT[Direction.DOWN.ordinal()] = ChatFormatting.BLACK;
+        FACE_TO_FORMAT[Direction.NORTH.ordinal()] = ChatFormatting.RED;
+        FACE_TO_FORMAT[Direction.SOUTH.ordinal()] = ChatFormatting.BLUE;
+        FACE_TO_FORMAT[Direction.EAST.ordinal()] = ChatFormatting.YELLOW;
+        FACE_TO_FORMAT[Direction.WEST.ordinal()] = ChatFormatting.GREEN;
 
         ImmutableMap.Builder<String, EnumDyeColor> builder = ImmutableMap.builder();
         for (EnumDyeColor c : COLOURS) {
@@ -122,26 +122,26 @@ public class ColourUtil {
         nameToColourMap = builder.build();
 
         FACE_TO_COLOUR = new int[6];
-        FACE_TO_COLOUR[EnumFacing.DOWN.ordinal()] = 0xFF_33_33_33;
-        FACE_TO_COLOUR[EnumFacing.UP.ordinal()] = 0xFF_CC_CC_CC;
+        FACE_TO_COLOUR[Direction.DOWN.ordinal()] = 0xFF_33_33_33;
+        FACE_TO_COLOUR[Direction.UP.ordinal()] = 0xFF_CC_CC_CC;
     }
 
-    private static void replaceColourForBlack(TextFormatting colour, TextFormatting with) {
+    private static void replaceColourForBlack(ChatFormatting colour, ChatFormatting with) {
         replaceColourForBlack(colour, with, with);
     }
 
-    private static void replaceColourForBlack(TextFormatting colour, TextFormatting normal,
-        TextFormatting highContrast) {
+    private static void replaceColourForBlack(ChatFormatting colour, ChatFormatting normal,
+        ChatFormatting highContrast) {
         REPLACE_FOR_BLACK[colour.ordinal()] = normal;
         REPLACE_FOR_BLACK_HIGH_CONTRAST[colour.ordinal()] = highContrast;
     }
 
-    private static void replaceColourForWhite(TextFormatting colour, TextFormatting with) {
+    private static void replaceColourForWhite(ChatFormatting colour, ChatFormatting with) {
         replaceColourForWhite(colour, with, with);
     }
 
-    private static void replaceColourForWhite(TextFormatting colour, TextFormatting normal,
-        TextFormatting highContrast) {
+    private static void replaceColourForWhite(ChatFormatting colour, ChatFormatting normal,
+        ChatFormatting highContrast) {
         REPLACE_FOR_WHITE[colour.ordinal()] = normal;
         REPLACE_FOR_WHITE_HIGH_CONTRAST[colour.ordinal()] = highContrast;
     }
@@ -167,7 +167,7 @@ public class ColourUtil {
         return LIGHT_HEX[colour.getDyeDamage()];
     }
 
-    public static int getColourForSide(EnumFacing face) {
+    public static int getColourForSide(Direction face) {
         return FACE_TO_COLOUR[face.ordinal()];
     }
 
@@ -177,12 +177,12 @@ public class ColourUtil {
 
     /** Returns a string formatted for use in a tooltip (or anything else with a black background). If
      * {@link BCLibConfig#useColouredLabels} is true then this will make prefix the string with an appropriate
-     * {@link TextFormatting} colour, and postfix with {@link TextFormatting#RESET} */
+     * {@link ChatFormatting} colour, and postfix with {@link ChatFormatting#RESET} */
     public static String getTextFullTooltip(EnumDyeColor colour) {
         if (BCLibConfig.useColouredLabels) {
-            TextFormatting formatColour = convertColourToTextFormat(colour);
+            ChatFormatting formatColour = convertColourToTextFormat(colour);
             return formatColour.toString() + getTextFormatForBlack(formatColour) + LocaleUtil.localizeColour(colour)
-                + TextFormatting.RESET;
+                + ChatFormatting.RESET;
         } else {
             return LocaleUtil.localizeColour(colour);
         }
@@ -195,29 +195,29 @@ public class ColourUtil {
             return getTextFullTooltip(colour);
         }
         if (BCLibConfig.useColouredLabels) {
-            TextFormatting formatColour = convertColourToTextFormat(colour);
+            ChatFormatting formatColour = convertColourToTextFormat(colour);
             return COLOUR_SPECIAL_START + Integer.toHexString(colour.getMetadata())//
-                + getTextFormatForBlack(formatColour) + LocaleUtil.localizeColour(colour) + TextFormatting.RESET;
+                + getTextFormatForBlack(formatColour) + LocaleUtil.localizeColour(colour) + ChatFormatting.RESET;
         }
         return LocaleUtil.localizeColour(colour);
     }
 
     /** Returns a string formatted for use in a tooltip (or anything else with a black background). If
      * {@link BCLibConfig#useColouredLabels} is true then this will make prefix the string with an appropriate
-     * {@link TextFormatting} colour, and postfixed with {@link TextFormatting#RESET} */
-    public static String getTextFullTooltip(EnumFacing face) {
+     * {@link ChatFormatting} colour, and postfixed with {@link ChatFormatting#RESET} */
+    public static String getTextFullTooltip(Direction face) {
         if (BCLibConfig.useColouredLabels) {
-            TextFormatting formatColour = convertFaceToTextFormat(face);
+            ChatFormatting formatColour = convertFaceToTextFormat(face);
             return formatColour.toString() + getTextFormatForBlack(formatColour) + LocaleUtil.localizeFacing(face)
-                + TextFormatting.RESET;
+                + ChatFormatting.RESET;
         } else {
             return LocaleUtil.localizeFacing(face);
         }
     }
 
-    /** Returns a {@link TextFormatting} colour that will display correctly on a black background, so it won't use any
+    /** Returns a {@link ChatFormatting} colour that will display correctly on a black background, so it won't use any
      * of the darker colours (as they will be difficult to see). */
-    public static TextFormatting getTextFormatForBlack(TextFormatting in) {
+    public static ChatFormatting getTextFormatForBlack(ChatFormatting in) {
         if (in.isColor()) {
             if (BCLibConfig.useHighContrastLabelColours) {
                 return REPLACE_FOR_BLACK_HIGH_CONTRAST[in.ordinal()];
@@ -229,9 +229,9 @@ public class ColourUtil {
         }
     }
 
-    /** Returns a {@link TextFormatting} colour that will display correctly on a white background, so it won't use any
+    /** Returns a {@link ChatFormatting} colour that will display correctly on a white background, so it won't use any
      * of the lighter colours (as they will be difficult to see). */
-    public static TextFormatting getTextFormatForWhite(TextFormatting in) {
+    public static ChatFormatting getTextFormatForWhite(ChatFormatting in) {
         if (in.isColor()) {
             if (BCLibConfig.useHighContrastLabelColours) {
                 return REPLACE_FOR_WHITE_HIGH_CONTRAST[in.ordinal()];
@@ -243,13 +243,13 @@ public class ColourUtil {
         }
     }
 
-    /** Converts an {@link EnumDyeColor} into an equivalent {@link TextFormatting} for display. */
-    public static TextFormatting convertColourToTextFormat(EnumDyeColor colour) {
+    /** Converts an {@link EnumDyeColor} into an equivalent {@link ChatFormatting} for display. */
+    public static ChatFormatting convertColourToTextFormat(EnumDyeColor colour) {
         return COLOUR_TO_FORMAT[colour.ordinal()];
     }
 
-    /** Converts an {@link EnumFacing} into an equivalent {@link TextFormatting} for display. */
-    public static TextFormatting convertFaceToTextFormat(EnumFacing face) {
+    /** Converts an {@link Direction} into an equivalent {@link ChatFormatting} for display. */
+    public static ChatFormatting convertFaceToTextFormat(Direction face) {
         return FACE_TO_FORMAT[face.ordinal()];
     }
 
@@ -291,7 +291,7 @@ public class ColourUtil {
         }
     }
 
-    /** Similar to {@link TextFormatting#getTextWithoutFormattingCodes(String)}, but also removes every special char
+    /** Similar to {@link ChatFormatting#getTextWithoutFormattingCodes(String)}, but also removes every special char
      * that {@link #getTextFullTooltipSpecial(EnumDyeColor)} can add. */
     public static String stripAllFormatCodes(String string) {
         return ALL_FORMAT_MATCHER.matcher(string).replaceAll("");

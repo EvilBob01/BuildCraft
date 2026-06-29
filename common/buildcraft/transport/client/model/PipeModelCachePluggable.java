@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pluggable.IPluggableStaticBaker;
@@ -55,7 +55,7 @@ public class PipeModelCachePluggable {
 
         public PluggableKey(BlockRenderLayer layer, IPipeHolder holder) {
             ImmutableSet.Builder<PluggableModelKey> builder = ImmutableSet.builder();
-            for (EnumFacing side : EnumFacing.VALUES) {
+            for (Direction side : Direction.VALUES) {
                 PipePluggable pluggable = holder.getPluggable(side);
                 if (pluggable == null) continue;
                 PluggableModelKey key = pluggable.getModelRenderKey(layer);

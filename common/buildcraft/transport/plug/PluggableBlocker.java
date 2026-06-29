@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,12 +6,12 @@
 
 package buildcraft.transport.plug;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pluggable.PipePluggable;
@@ -24,7 +24,7 @@ import buildcraft.transport.BCTransportItems;
 import buildcraft.transport.client.model.key.KeyPlugBlocker;
 
 public class PluggableBlocker extends PipePluggable {
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     private static final ResourceLocation ADVANCEMENT_PLACE_PLUG = new ResourceLocation(
         "buildcrafttransport:plugging_the_gap"
@@ -39,20 +39,20 @@ public class PluggableBlocker extends PipePluggable {
         double min = 4 / 16.0;
         double max = 12 / 16.0;
 
-        BOXES[EnumFacing.DOWN.getIndex()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.getIndex()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.getIndex()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.getIndex()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.getIndex()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.getIndex()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.getIndex()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.getIndex()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.getIndex()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.getIndex()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.getIndex()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
     }
 
-    public PluggableBlocker(PluggableDefinition definition, IPipeHolder holder, EnumFacing side) {
+    public PluggableBlocker(PluggableDefinition definition, IPipeHolder holder, Direction side) {
         super(definition, holder, side);
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.getIndex()];
     }
 
@@ -67,9 +67,9 @@ public class PluggableBlocker extends PipePluggable {
     }
 
     @Override
-    public void onPlacedBy(EntityPlayer player) {
+    public void onPlacedBy(Player player) {
         super.onPlacedBy(player);
-        if (!holder.getPipeWorld().isRemote && holder.getPipe().isConnected(side)) {
+        if (!holder.getPipeWorld().isClientSide && holder.getPipe().isConnected(side)) {
             AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_PLACE_PLUG);
         }
     }

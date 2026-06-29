@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -20,21 +20,21 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.ResourcePackRepository;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import buildcraft.api.BCModules;
@@ -71,39 +71,39 @@ public abstract class BCLibProxy implements IGuiHandler {
     void fmlPreInit() {
         MessageManager.registerMessageClass(BCModules.LIB, MessageUpdateTile.class, MessageUpdateTile.HANDLER);
         MessageManager.registerMessageClass(BCModules.LIB, MessageContainer.class, MessageContainer.HANDLER);
-        MessageManager.registerMessageClass(BCModules.LIB, MessageMarker.class, Side.CLIENT);
+        MessageManager.registerMessageClass(BCModules.LIB, MessageMarker.class, Dist.CLIENT);
         MessageManager.registerMessageClass(BCModules.LIB, MessageObjectCacheRequest.class,
-            MessageObjectCacheRequest.HANDLER, Side.SERVER);
-        MessageManager.registerMessageClass(BCModules.LIB, MessageObjectCacheResponse.class, Side.CLIENT);
+            MessageObjectCacheRequest.HANDLER, Dist.DEDICATED_SERVER);
+        MessageManager.registerMessageClass(BCModules.LIB, MessageObjectCacheResponse.class, Dist.CLIENT);
         MessageManager.registerMessageClass(BCModules.LIB, MessageDebugRequest.class, MessageDebugRequest.HANDLER,
-            Side.SERVER);
-        MessageManager.registerMessageClass(BCModules.LIB, MessageDebugResponse.class, Side.CLIENT);
+            Dist.DEDICATED_SERVER);
+        MessageManager.registerMessageClass(BCModules.LIB, MessageDebugResponse.class, Dist.CLIENT);
     }
 
     void fmlInit() {}
 
     void fmlPostInit() {}
 
-    public World getClientWorld() {
+    public Level getClientWorld() {
         return null;
     }
 
-    public EntityPlayer getClientPlayer() {
+    public Player getClientPlayer() {
         return null;
     }
 
-    public EntityPlayer getPlayerForContext(MessageContext ctx) {
+    public Player getPlayerForContext(MessageContext ctx) {
         return ctx.getServerHandler().player;
     }
 
-    public void addScheduledTask(World world, Runnable task) {
-        if (world instanceof WorldServer) {
-            WorldServer server = (WorldServer) world;
+    public void addScheduledTask(Level world, Runnable task) {
+        if (world instanceof ServerLevel) {
+            ServerLevel server = (ServerLevel) world;
             server.addScheduledTask(task);
         }
     }
 
-    public <T extends TileEntity> T getServerTile(T tile) {
+    public <T extends BlockEntity> T getServerTile(T tile) {
         return tile;
     }
 
@@ -118,17 +118,17 @@ public abstract class BCLibProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCLibProxy {
         @Override
         public File getGameDirectory() {
@@ -137,7 +137,7 @@ public abstract class BCLibProxy implements IGuiHandler {
     }
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCLibProxy {
         @Override
         void fmlPreInit() {
@@ -153,10 +153,10 @@ public abstract class BCLibProxy implements IGuiHandler {
             BCLibSprites.fmlPreInitClient();
             BCLibConfig.configChangeListeners.add(LibConfigChangeListener.INSTANCE);
 
-            MessageManager.setHandler(MessageMarker.class, MessageMarker.HANDLER, Side.CLIENT);
+            MessageManager.setHandler(MessageMarker.class, MessageMarker.HANDLER, Dist.CLIENT);
             MessageManager.setHandler(MessageObjectCacheResponse.class, MessageObjectCacheResponse.HANDLER,
-                Side.CLIENT);
-            MessageManager.setHandler(MessageDebugResponse.class, MessageDebugResponse.HANDLER, Side.CLIENT);
+                Dist.CLIENT);
+            MessageManager.setHandler(MessageDebugResponse.class, MessageDebugResponse.HANDLER, Dist.CLIENT);
         }
 
         @Override
@@ -176,25 +176,25 @@ public abstract class BCLibProxy implements IGuiHandler {
         }
 
         @Override
-        public World getClientWorld() {
+        public Level getClientWorld() {
             return Minecraft.getMinecraft().world;
         }
 
         @Override
-        public EntityPlayer getClientPlayer() {
+        public Player getClientPlayer() {
             return Minecraft.getMinecraft().player;
         }
 
         @Override
-        public EntityPlayer getPlayerForContext(MessageContext ctx) {
-            if (ctx.side == Side.SERVER) {
+        public Player getPlayerForContext(MessageContext ctx) {
+            if (ctx.side == Dist.DEDICATED_SERVER) {
                 return super.getPlayerForContext(ctx);
             }
             return getClientPlayer();
         }
 
         @Override
-        public void addScheduledTask(World world, Runnable task) {
+        public void addScheduledTask(Level world, Runnable task) {
             if (world instanceof WorldClient) {
                 Minecraft.getMinecraft().addScheduledTask(task);
             } else {
@@ -204,13 +204,13 @@ public abstract class BCLibProxy implements IGuiHandler {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends TileEntity> T getServerTile(T tile) {
+        public <T extends BlockEntity> T getServerTile(T tile) {
             if (tile != null && tile.hasWorld()) {
-                World world = tile.getWorld();
-                if (world.isRemote && Minecraft.getMinecraft().isSingleplayer()) {
-                    WorldServer server = DimensionManager.getWorld(world.provider.getDimension());
+                Level world = tile.getWorld();
+                if (world.isClientSide && Minecraft.getMinecraft().isSingleplayer()) {
+                    ServerLevel server = DimensionManager.getWorld(world.provider.getDimension());
                     if (server == null) return tile;
-                    TileEntity atServer = server.getTileEntity(tile.getPos());
+                    BlockEntity atServer = server.getBlockEntity(tile.getPos());
                     if (atServer == null) return tile;
                     if (atServer.getClass() == tile.getClass()) {
                         return (T) atServer;
@@ -244,9 +244,9 @@ public abstract class BCLibProxy implements IGuiHandler {
         }
 
         @Override
-        public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
             if (id == 0) {
-                EnumHand hand = x == 0 ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
+                InteractionHand hand = x == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
                 ItemStack stack = player.getHeldItem(hand);
                 String name = ItemGuide.getBookName(stack);
                 if (name == null) {

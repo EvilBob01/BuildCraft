@@ -1,12 +1,12 @@
-package buildcraft.energy.generation;
+﻿package buildcraft.energy.generation;
 
 import java.util.function.Predicate;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.enums.EnumSpring;
@@ -30,7 +30,7 @@ public abstract class OilGenStructure {
         this.replaceType = replaceType;
     }
 
-    public final void generate(World world, Box within) {
+    public final void generate(Level world, Box within) {
         Box intersect = box.getIntersect(within);
         if (intersect != null) {
             generateWithin(world, intersect);
@@ -38,40 +38,40 @@ public abstract class OilGenStructure {
     }
 
     /** Generates this structure in the world, but only between the given coordinates. */
-    protected abstract void generateWithin(World world, Box intersect);
+    protected abstract void generateWithin(Level world, Box intersect);
 
     /** @return The number of oil blocks that this structure will set. Note that this is called *after*
      *         {@link #generateWithin(World, Box)}, by the Spring type, so this can store the number set. */
     protected abstract int countOilBlocks();
 
-    public void setOilIfCanReplace(World world, BlockPos pos) {
+    public void setOilIfCanReplace(Level world, BlockPos pos) {
         if (canReplaceForOil(world, pos)) {
             setOil(world, pos);
         }
     }
 
-    public boolean canReplaceForOil(World world, BlockPos pos) {
+    public boolean canReplaceForOil(Level world, BlockPos pos) {
         return replaceType.canReplace(world, pos);
     }
 
-    public static void setOil(World world, BlockPos pos) {
-        world.setBlockState(pos, BCEnergyFluids.crudeOil[0].getBlock().getDefaultState(), 2);
+    public static void setOil(Level world, BlockPos pos) {
+        world.setBlock(pos, BCEnergyFluids.crudeOil[0].getBlock().getDefaultState(), 2);
     }
 
     public enum ReplaceType {
         ALWAYS {
             @Override
-            public boolean canReplace(World world, BlockPos pos) {
+            public boolean canReplace(Level world, BlockPos pos) {
                 return true;
             }
         },
         IS_FOR_LAKE {
             @Override
-            public boolean canReplace(World world, BlockPos pos) {
+            public boolean canReplace(Level world, BlockPos pos) {
                 return ALWAYS.canReplace(world, pos);
             }
         };
-        public abstract boolean canReplace(World world, BlockPos pos);
+        public abstract boolean canReplace(Level world, BlockPos pos);
     }
 
     public static class GenByPredicate extends OilGenStructure {
@@ -83,7 +83,7 @@ public abstract class OilGenStructure {
         }
 
         @Override
-        protected void generateWithin(World world, Box intersect) {
+        protected void generateWithin(Level world, Box intersect) {
             for (BlockPos pos : BlockPos.getAllInBox(intersect.min(), intersect.max())) {
                 if (predicate.test(pos)) {
                     setOilIfCanReplace(world, pos);
@@ -121,7 +121,7 @@ public abstract class OilGenStructure {
         }
 
         @Override
-        protected void generateWithin(World world, Box intersect) {
+        protected void generateWithin(Level world, Box intersect) {
             BlockPos start = box.min();
             for (BlockPos pos : BlockPos.getAllInBox(intersect.min(), intersect.max())) {
                 int x = pos.getX() - start.getX();
@@ -165,7 +165,7 @@ public abstract class OilGenStructure {
         }
 
         @Override
-        protected void generateWithin(World world, Box intersect) {
+        protected void generateWithin(Level world, Box intersect) {
             for (int x = intersect.min().getX(); x <= intersect.max().getX(); x++) {
                 int px = x - box.min().getX();
 
@@ -224,13 +224,13 @@ public abstract class OilGenStructure {
         }
 
         @Override
-        protected void generateWithin(World world, Box intersect) {
+        protected void generateWithin(Level world, Box intersect) {
             count = 0;
             int segment = world.getChunkFromBlockCoords(start).getTopFilledSegment();
             BlockPos worldTop = new BlockPos(start.getX(), segment + 16, start.getZ());
             for (int y = segment; y >= start.getY(); y--) {
                 worldTop = worldTop.down();
-                IBlockState state = world.getBlockState(worldTop);
+                BlockState state = world.getBlockState(worldTop);
                 if (state.getBlock().isAir(state, world, worldTop)) {
                     continue;
                 }
@@ -272,7 +272,7 @@ public abstract class OilGenStructure {
         }
 
         @Override
-        protected void generateWithin(World world, Box intersect) {
+        protected void generateWithin(Level world, Box intersect) {
             // NO-OP (this one is called separately)
         }
 
@@ -281,11 +281,11 @@ public abstract class OilGenStructure {
             return 0;
         }
 
-        public void generate(World world, int count) {
-            IBlockState state = BCCoreBlocks.spring.getDefaultState();
+        public void generate(Level world, int count) {
+            BlockState state = BCCoreBlocks.spring.getDefaultState();
             state = state.withProperty(BlockSpring.SPRING_TYPE, EnumSpring.OIL);
-            world.setBlockState(pos, state);
-            TileEntity tile = world.getTileEntity(pos);
+            world.setBlock(pos, state);
+            BlockEntity tile = world.getBlockEntity(pos);
             TileSpringOil spring;
             if (tile instanceof TileSpringOil) {
                 spring = (TileSpringOil) tile;
@@ -294,7 +294,7 @@ public abstract class OilGenStructure {
                 spring = new TileSpringOil();
                 spring.setWorld(world);
                 spring.setPos(pos);
-                world.setTileEntity(pos, spring);
+                world.setBlockEntity(pos, spring);
             }
             spring.totalSources = count;
             if (BCLib.DEV) {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,10 +8,10 @@ package buildcraft.builders.container;
 
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.ContainerBC_Neptune;
@@ -27,7 +27,7 @@ public class ContainerArchitectTable extends ContainerBCTile<TileArchitectTable>
     private static final IdAllocator IDS = ContainerBC_Neptune.IDS.makeChild("architect_table");
     private static final int ID_NAME = IDS.allocId("NAME");
 
-    public ContainerArchitectTable(EntityPlayer player, TileArchitectTable tile) {
+    public ContainerArchitectTable(Player player, TileArchitectTable tile) {
         super(player, tile);
         addFullPlayerInventory(88, 84);
 
@@ -47,7 +47,7 @@ public class ContainerArchitectTable extends ContainerBCTile<TileArchitectTable>
     @Override
     public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readMessage(id, buffer, side, ctx);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_NAME) {
                 tile.name = buffer.readString();
                 tile.sendNetworkUpdate(TileBC_Neptune.NET_RENDER_DATA);

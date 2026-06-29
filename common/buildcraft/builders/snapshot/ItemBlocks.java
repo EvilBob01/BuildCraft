@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,9 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.item.ItemBlockSpecial;
 
 public class ItemBlocks {
@@ -22,7 +22,7 @@ public class ItemBlocks {
 
     static {
         StreamSupport.stream(Item.REGISTRY.spliterator(), false)
-            .filter(item -> item instanceof ItemBlock || item instanceof ItemBlockSpecial)
+            .filter(item -> item instanceof BlockItem || item instanceof ItemBlockSpecial)
             .forEach(ItemBlocks::add);
         add(
             Items.BED,

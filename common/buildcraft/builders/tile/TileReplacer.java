@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,8 +8,8 @@ package buildcraft.builders.tile;
 
 import java.util.Date;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ITickable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.enums.EnumSnapshotType;
@@ -57,7 +57,7 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
 
     @Override
     public void update() {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
         if (!invSnapshot.getStackInSlot(0).isEmpty() &&
@@ -69,11 +69,11 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
                 if (snapshot instanceof Blueprint) {
                     Blueprint blueprint = (Blueprint) snapshot;
                     try {
-                        ISchematicBlock from = SchematicBlockManager.readFromNBT(
+                        ISchematicBlock from = SchematicBlockManager.loadAdditional(
                             NBTUtilBC.getItemData(invSchematicFrom.getStackInSlot(0))
                                 .getCompoundTag(ItemSchematicSingle.NBT_KEY)
                         );
-                        ISchematicBlock to = SchematicBlockManager.readFromNBT(
+                        ISchematicBlock to = SchematicBlockManager.loadAdditional(
                             NBTUtilBC.getItemData(invSchematicTo.getStackInSlot(0))
                                 .getCompoundTag(ItemSchematicSingle.NBT_KEY)
                         );

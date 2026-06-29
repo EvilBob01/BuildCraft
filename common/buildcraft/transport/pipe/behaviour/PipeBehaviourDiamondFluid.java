@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,19 +6,19 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.PipeEventFluid;
 import buildcraft.api.transport.pipe.PipeEventHandler;
 
 public class PipeBehaviourDiamondFluid extends PipeBehaviourDiamond {
-    public PipeBehaviourDiamondFluid(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourDiamondFluid(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 
@@ -29,7 +29,7 @@ public class PipeBehaviourDiamondFluid extends PipeBehaviourDiamond {
     @PipeEventHandler
     public void sideCheck(PipeEventFluid.SideCheck sideCheck) {
         FluidStack toCompare = sideCheck.fluid;
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (sideCheck.isAllowed(face) && pipe.isConnected(face)) {
                 int offset = FILTERS_PER_SIDE * face.ordinal();
                 boolean sideAllowed = false;

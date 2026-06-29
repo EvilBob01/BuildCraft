@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,9 +6,9 @@
 
 package buildcraft.factory.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.widget.WidgetFluidTank;
@@ -20,7 +20,7 @@ public class ContainerDistiller extends ContainerBCTile<TileDistiller_BC8> {
     public final WidgetFluidTank widgetOutputGasTank;
     public final WidgetFluidTank widgetOutputLiquidTank;
 
-    public ContainerDistiller(EntityPlayer player, TileDistiller_BC8 tank) {
+    public ContainerDistiller(Player player, TileDistiller_BC8 tank) {
         super(player, tank);
 
         addFullPlayerInventory(79);
@@ -31,10 +31,10 @@ public class ContainerDistiller extends ContainerBCTile<TileDistiller_BC8> {
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+    public ItemStack transferStackInSlot(Player player, int index) {
         // The only slots are player slots -- try to interact with the tank
 
-        if (!player.world.isRemote) {
+        if (!player.world.isClientSide) {
             Slot slot = inventorySlots.get(index);
             ItemStack stack = slot.getStack();
             ItemStack original = stack.copy();

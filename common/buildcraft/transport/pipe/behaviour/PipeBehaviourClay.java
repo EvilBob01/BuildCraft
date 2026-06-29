@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,8 +6,8 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.IPipe.ConnectedType;
@@ -21,13 +21,13 @@ public class PipeBehaviourClay extends PipeBehaviour {
         super(pipe);
     }
 
-    public PipeBehaviourClay(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourClay(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 
     @PipeEventHandler
     public void orderSides(PipeEventItem.SideCheck ordering) {
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             ConnectedType type = pipe.getConnectedType(face);
             if (type == ConnectedType.TILE) {
                 /* We only really need to increase the priority, but using a larger number (100) means that it doesn't
@@ -40,7 +40,7 @@ public class PipeBehaviourClay extends PipeBehaviour {
 
     @PipeEventHandler
     public void orderSides(PipeEventFluid.SideCheck ordering) {
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             ConnectedType type = pipe.getConnectedType(face);
             if (type == ConnectedType.TILE) {
                 /* We only really need to increase the priority, but using a larger number (100) means that it doesn't

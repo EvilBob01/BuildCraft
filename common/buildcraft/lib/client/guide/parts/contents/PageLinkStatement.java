@@ -1,4 +1,4 @@
-package buildcraft.lib.client.guide.parts.contents;
+﻿package buildcraft.lib.client.guide.parts.contents;
 
 import java.util.List;
 import java.util.Locale;
@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.api.statements.IStatement;
 
@@ -35,7 +35,7 @@ public class PageLinkStatement extends PageLink {
         } else {
             this.tooltip = tip;
             String joinedTooltip = tip.stream().collect(Collectors.joining(" ", "", ""));
-            this.searchText = TextFormatting.getTextWithoutFormattingCodes(joinedTooltip).toLowerCase(Locale.ROOT);
+            this.searchText = ChatFormatting.getTextWithoutFormattingCodes(joinedTooltip).toLowerCase(Locale.ROOT);
         }
     }
 

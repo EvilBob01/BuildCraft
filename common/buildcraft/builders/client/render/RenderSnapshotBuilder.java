@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,14 +11,14 @@ import java.util.Collections;
 import javax.vecmath.Point3f;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.ModelUtil;
 import buildcraft.lib.client.render.ItemRenderUtil;
@@ -32,11 +32,11 @@ import buildcraft.builders.snapshot.ITileForSnapshotBuilder;
 import buildcraft.builders.snapshot.SnapshotBuilder;
 import buildcraft.core.client.BuildCraftLaserManager;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RenderSnapshotBuilder {
     public static <T extends ITileForSnapshotBuilder> void render(
             SnapshotBuilder<T> snapshotBuilder,
-            World world,
+            Level world,
             BlockPos tilePos,
             double x,
             double y,
@@ -45,12 +45,12 @@ public class RenderSnapshotBuilder {
             BufferBuilder bb
     ) {
         for (SnapshotBuilder<T>.PlaceTask placeTask : snapshotBuilder.clientPlaceTasks) {
-            Vec3d prevPos = snapshotBuilder.prevClientPlaceTasks.stream()
+            Vec3 prevPos = snapshotBuilder.prevClientPlaceTasks.stream()
                 .filter(renderTaskLocal -> renderTaskLocal.pos.equals(placeTask.pos))
                 .map(snapshotBuilder::getPlaceTaskItemPos)
                 .findFirst()
                 .orElse(snapshotBuilder.getPlaceTaskItemPos(snapshotBuilder.new PlaceTask(tilePos, Collections.emptyList(), 0L)));
-            Vec3d pos = prevPos.add(snapshotBuilder.getPlaceTaskItemPos(placeTask).subtract(prevPos).scale(partialTicks));
+            Vec3 pos = prevPos.add(snapshotBuilder.getPlaceTaskItemPos(placeTask).subtract(prevPos).scale(partialTicks));
             for (ItemStack item : placeTask.items) {
                 ItemRenderUtil.renderItemStack(
                     x - tilePos.getX() + pos.x,
@@ -58,14 +58,14 @@ public class RenderSnapshotBuilder {
                     z - tilePos.getZ() + pos.z,
                     item,
                     world.getCombinedLight(new BlockPos(pos), 0),
-                    EnumFacing.SOUTH,
+                    Direction.SOUTH,
                     bb
                 );
             }
             ItemRenderUtil.endItemBatch();
         }
 
-        Vec3d robotPos = snapshotBuilder.robotPos;
+        Vec3 robotPos = snapshotBuilder.robotPos;
         if (robotPos != null) {
             if (snapshotBuilder.prevRobotPos != null) {
                 robotPos = snapshotBuilder.prevRobotPos.add(robotPos.subtract(snapshotBuilder.prevRobotPos).scale(partialTicks));
@@ -74,7 +74,7 @@ public class RenderSnapshotBuilder {
             bb.setTranslation(x - tilePos.getX(), y - tilePos.getY(), z - tilePos.getZ());
 
             int i = 0;
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 ModelUtil.createFace(
                     face,
                     new Point3f((float) robotPos.x, (float) robotPos.y, (float) robotPos.z),
@@ -101,8 +101,8 @@ public class RenderSnapshotBuilder {
                                 1D
                             ) * (BuildCraftLaserManager.POWERS.length - 1)
                         )],
-                        robotPos.subtract(new Vec3d(0, 0.27, 0)),
-                        new Vec3d(breakTask.pos).add(VecUtil.VEC_HALF),
+                        robotPos.subtract(new Vec3(0, 0.27, 0)),
+                        new Vec3(breakTask.pos).add(VecUtil.VEC_HALF),
                         1 / 16D
                     ),
                     bb

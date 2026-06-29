@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -24,41 +24,41 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.play.server.SPacketExplosion;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.BlockFluidClassic;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import buildcraft.api.core.BuildCraftAPI;
@@ -76,8 +76,8 @@ public final class BlockUtil {
 
     /** @return A list of itemstacks that are dropped from the block, or null if the block is air */
     @Nullable
-    public static NonNullList<ItemStack> getItemStackFromBlock(WorldServer world, BlockPos pos, GameProfile owner) {
-        IBlockState state = world.getBlockState(pos);
+    public static NonNullList<ItemStack> getItemStackFromBlock(ServerLevel world, BlockPos pos, GameProfile owner) {
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (block.isAir(state, world, pos)) {
             return null;
@@ -86,7 +86,7 @@ public final class BlockUtil {
         // Use the (old) method as not all mods have converted to the new one
         // (and the old method calls the new one internally)
         List<ItemStack> drops = block.getDrops(world, pos, state, 0);
-        EntityPlayer fakePlayer = BuildCraftAPI.fakePlayerProvider.getFakePlayer(world, owner, pos);
+        Player fakePlayer = BuildCraftAPI.fakePlayerProvider.getFakePlayer(world, owner, pos);
         float dropChance = ForgeEventFactory.fireBlockHarvesting(drops, world, pos, state, 0, 1.0F, false, fakePlayer);
 
         NonNullList<ItemStack> returnList = NonNullList.create();
@@ -99,11 +99,11 @@ public final class BlockUtil {
         return returnList;
     }
 
-    public static boolean breakBlock(WorldServer world, BlockPos pos, BlockPos ownerPos, GameProfile owner) {
+    public static boolean breakBlock(ServerLevel world, BlockPos pos, BlockPos ownerPos, GameProfile owner) {
         return breakBlock(world, pos, BCLibConfig.itemLifespan * 20, ownerPos, owner);
     }
 
-    public static boolean breakBlock(WorldServer world, BlockPos pos, int forcedLifespan, BlockPos ownerPos,
+    public static boolean breakBlock(ServerLevel world, BlockPos pos, int forcedLifespan, BlockPos ownerPos,
         GameProfile owner) {
         NonNullList<ItemStack> items = NonNullList.create();
 
@@ -116,33 +116,33 @@ public final class BlockUtil {
         return false;
     }
 
-    public static boolean harvestBlock(WorldServer world, BlockPos pos, @Nonnull ItemStack tool, GameProfile owner) {
+    public static boolean harvestBlock(ServerLevel world, BlockPos pos, @Nonnull ItemStack tool, GameProfile owner) {
         FakePlayer fakePlayer = getFakePlayerWithTool(world, tool, owner);
         BreakEvent breakEvent = new BreakEvent(world, pos, world.getBlockState(pos), fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
 
         if (breakEvent.isCanceled()) {
             return false;
         }
 
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
 
         if (!state.getBlock().canHarvestBlock(world, pos, fakePlayer)) {
             return false;
         }
 
         state.getBlock().onBlockHarvested(world, pos, state, fakePlayer);
-        state.getBlock().harvestBlock(world, fakePlayer, pos, state, world.getTileEntity(pos), tool);
+        state.getBlock().harvestBlock(world, fakePlayer, pos, state, world.getBlockEntity(pos), tool);
         // Don't drop items as we do that ourselves
         world.destroyBlock(pos, /* dropBlock = */ false);
 
         return true;
     }
 
-    public static boolean destroyBlock(WorldServer world, BlockPos pos, @Nonnull ItemStack tool, GameProfile owner) {
+    public static boolean destroyBlock(ServerLevel world, BlockPos pos, @Nonnull ItemStack tool, GameProfile owner) {
         FakePlayer fakePlayer = getFakePlayerWithTool(world, tool, owner);
         BreakEvent breakEvent = new BreakEvent(world, pos, world.getBlockState(pos), fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
 
         if (breakEvent.isCanceled()) {
             return false;
@@ -153,7 +153,7 @@ public final class BlockUtil {
         return true;
     }
 
-    public static FakePlayer getFakePlayerWithTool(WorldServer world, @Nonnull ItemStack tool, GameProfile owner) {
+    public static FakePlayer getFakePlayerWithTool(ServerLevel world, @Nonnull ItemStack tool, GameProfile owner) {
         FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer(world, owner);
         int i = 0;
 
@@ -169,17 +169,17 @@ public final class BlockUtil {
         return player;
     }
 
-    public static boolean breakBlock(WorldServer world, BlockPos pos, NonNullList<ItemStack> drops, BlockPos ownerPos,
+    public static boolean breakBlock(ServerLevel world, BlockPos pos, NonNullList<ItemStack> drops, BlockPos ownerPos,
         GameProfile owner) {
         FakePlayer fakePlayer = BuildCraftAPI.fakePlayerProvider.getFakePlayer(world, owner, ownerPos);
         BreakEvent breakEvent = new BreakEvent(world, pos, world.getBlockState(pos), fakePlayer);
-        MinecraftForge.EVENT_BUS.post(breakEvent);
+        NeoForge.EVENT_BUS.post(breakEvent);
 
         if (breakEvent.isCanceled()) {
             return false;
         }
 
-        if (!world.isAirBlock(pos) && !world.isRemote && world.getGameRules().getBoolean("doTileDrops")) {
+        if (!world.isAirBlock(pos) && !world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
             drops.addAll(getItemStackFromBlock(world, pos, owner));
         }
         world.setBlockToAir(pos);
@@ -187,12 +187,12 @@ public final class BlockUtil {
         return true;
     }
 
-    public static void dropItem(WorldServer world, BlockPos pos, int forcedLifespan, ItemStack stack) {
+    public static void dropItem(ServerLevel world, BlockPos pos, int forcedLifespan, ItemStack stack) {
         float var = 0.7F;
         double dx = world.rand.nextFloat() * var + (1.0F - var) * 0.5D;
         double dy = world.rand.nextFloat() * var + (1.0F - var) * 0.5D;
         double dz = world.rand.nextFloat() * var + (1.0F - var) * 0.5D;
-        EntityItem entityitem = new EntityItem(world, pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz, stack);
+        ItemEntity entityitem = new ItemEntity(world, pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz, stack);
 
         entityitem.lifespan = forcedLifespan;
         entityitem.setDefaultPickupDelay();
@@ -200,22 +200,22 @@ public final class BlockUtil {
         world.spawnEntity(entityitem);
     }
 
-    public static Optional<List<ItemStack>> breakBlockAndGetDrops(WorldServer world, BlockPos pos,
+    public static Optional<List<ItemStack>> breakBlockAndGetDrops(ServerLevel world, BlockPos pos,
         @Nonnull ItemStack tool, GameProfile owner) {
         return breakBlockAndGetDrops(world, pos, tool, owner, false);
     }
 
     /** @param grabAll If true then this will pickup every item in range of the position, false to only get the items
      *            that the dropped while breaking the block. */
-    public static Optional<List<ItemStack>> breakBlockAndGetDrops(WorldServer world, BlockPos pos,
+    public static Optional<List<ItemStack>> breakBlockAndGetDrops(ServerLevel world, BlockPos pos,
         @Nonnull ItemStack tool, GameProfile owner, boolean grabAll) {
-        AxisAlignedBB aabb = new AxisAlignedBB(pos).grow(1);
+        AABB aabb = new AABB(pos).grow(1);
         Set<Entity> entities;
         if (grabAll) {
             entities = Collections.emptySet();
         } else {
             entities = Sets.newIdentityHashSet();
-            entities.addAll(world.getEntitiesWithinAABB(EntityItem.class, aabb));
+            entities.addAll(world.getEntitiesWithinAABB(ItemEntity.class, aabb));
         }
         if (!harvestBlock(world, pos, tool, owner)) {
             if (!destroyBlock(world, pos, tool, owner)) {
@@ -223,7 +223,7 @@ public final class BlockUtil {
             }
         }
         List<ItemStack> stacks = new ArrayList<>();
-        for (EntityItem entity : world.getEntitiesWithinAABB(EntityItem.class, aabb)) {
+        for (ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, aabb)) {
             if (entities.contains(entity)) {
                 continue;
             }
@@ -236,11 +236,11 @@ public final class BlockUtil {
         return Optional.of(stacks);
     }
 
-    public static boolean canChangeBlock(World world, BlockPos pos, GameProfile owner) {
+    public static boolean canChangeBlock(Level world, BlockPos pos, GameProfile owner) {
         return canChangeBlock(world.getBlockState(pos), world, pos, owner);
     }
 
-    public static boolean canChangeBlock(IBlockState state, World world, BlockPos pos, GameProfile owner) {
+    public static boolean canChangeBlock(BlockState state, Level world, BlockPos pos, GameProfile owner) {
         if (state == null) return true;
 
         Block block = state.getBlock();
@@ -264,9 +264,9 @@ public final class BlockUtil {
         return true;
     }
 
-    public static float getBlockHardnessMining(World world, BlockPos pos, IBlockState state, GameProfile owner) {
-        if (world instanceof WorldServer) {
-            EntityPlayer fakePlayer = BuildCraftAPI.fakePlayerProvider.getFakePlayer((WorldServer) world, owner);
+    public static float getBlockHardnessMining(Level world, BlockPos pos, BlockState state, GameProfile owner) {
+        if (world instanceof ServerLevel) {
+            Player fakePlayer = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) world, owner);
             float relativeHardness = state.getPlayerRelativeBlockHardness(fakePlayer, world, pos);
             if (relativeHardness <= 0.0F) {
                 // Forge's getPlayerRelativeBlockHardness hook returns 0.0F if the hardness is < 0.0F.
@@ -276,24 +276,24 @@ public final class BlockUtil {
         return state.getBlockHardness(world, pos);
     }
 
-    public static boolean isUnbreakableBlock(World world, BlockPos pos, IBlockState state, GameProfile owner) {
+    public static boolean isUnbreakableBlock(Level world, BlockPos pos, BlockState state, GameProfile owner) {
         return getBlockHardnessMining(world, pos, state, owner) < 0;
     }
 
-    public static boolean isUnbreakableBlock(World world, BlockPos pos, GameProfile owner) {
+    public static boolean isUnbreakableBlock(Level world, BlockPos pos, GameProfile owner) {
         return isUnbreakableBlock(world, pos, world.getBlockState(pos), owner);
     }
 
     /** Returns true if a block cannot be harvested without a tool. */
-    public static boolean isToughBlock(World world, BlockPos pos) {
+    public static boolean isToughBlock(Level world, BlockPos pos) {
         return !world.getBlockState(pos).getMaterial().isToolNotRequired();
     }
 
-    public static boolean isFullFluidBlock(World world, BlockPos pos) {
+    public static boolean isFullFluidBlock(Level world, BlockPos pos) {
         return isFullFluidBlock(world.getBlockState(pos), world, pos);
     }
 
-    public static boolean isFullFluidBlock(IBlockState state, World world, BlockPos pos) {
+    public static boolean isFullFluidBlock(BlockState state, Level world, BlockPos pos) {
         Block block = state.getBlock();
         if (block instanceof IFluidBlock) {
             FluidStack fluid = ((IFluidBlock) block).drain(world, pos, false);
@@ -305,13 +305,13 @@ public final class BlockUtil {
         return false;
     }
 
-    public static Fluid getFluid(World world, BlockPos pos) {
+    public static Fluid getFluid(Level world, BlockPos pos) {
         FluidStack fluid = drainBlock(world, pos, false);
         return fluid != null ? fluid.getFluid() : null;
     }
 
-    public static Fluid getFluidWithFlowing(World world, BlockPos pos) {
-        IBlockState blockState = world.getBlockState(pos);
+    public static Fluid getFluidWithFlowing(Level world, BlockPos pos) {
+        BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
         if (block == Blocks.FLOWING_WATER) {
             return FluidRegistry.WATER;
@@ -329,7 +329,7 @@ public final class BlockUtil {
         return FluidRegistry.lookupFluidForBlock(block);
     }
 
-    public static Fluid getFluidWithoutFlowing(IBlockState state) {
+    public static Fluid getFluidWithoutFlowing(BlockState state) {
         Block block = state.getBlock();
         if (block instanceof BlockFluidClassic) {
             if (((BlockFluidClassic) block).isSourceBlock(new SingleBlockAccess(state), SingleBlockAccess.POS)) {
@@ -363,7 +363,7 @@ public final class BlockUtil {
         return fluid;
     }
 
-    public static FluidStack drainBlock(World world, BlockPos pos, boolean doDrain) {
+    public static FluidStack drainBlock(Level world, BlockPos pos, boolean doDrain) {
         IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, null);
         if (handler != null) {
             return handler.drain(Fluid.BUCKET_VOLUME, doDrain);
@@ -373,7 +373,7 @@ public final class BlockUtil {
     }
 
     /** Create an explosion which only affects a single block. */
-    public static void explodeBlock(World world, BlockPos pos) {
+    public static void explodeBlock(Level world, BlockPos pos) {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
             return;
         }
@@ -386,58 +386,58 @@ public final class BlockUtil {
         explosion.getAffectedBlockPositions().add(pos);
         explosion.doExplosionB(true);
 
-        for (EntityPlayer player : world.playerEntities) {
-            if (!(player instanceof EntityPlayerMP)) {
+        for (Player player : world.playerEntities) {
+            if (!(player instanceof ServerPlayer)) {
                 continue;
             }
 
             if (player.getDistanceSq(pos) < 4096) {
-                ((EntityPlayerMP) player).connection
+                ((ServerPlayer) player).connection
                     .sendPacket(new SPacketExplosion(x, y, z, 3f, explosion.getAffectedBlockPositions(), null));
             }
         }
     }
 
-    public static long computeBlockBreakPower(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+    public static long computeBlockBreakPower(Level world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
         float hardness = state.getBlockHardness(world, pos);
         return (long) Math.floor(16 * MjAPI.MJ * ((hardness + 1) * 2) * BCCoreConfig.miningMultiplier);
     }
 
     /** The following functions let you avoid unnecessary chunk loads, which is nice. */
-    public static TileEntity getTileEntity(World world, BlockPos pos) {
+    public static BlockEntity getTileEntity(Level world, BlockPos pos) {
         return getTileEntity(world, pos, false);
     }
 
-    public static TileEntity getTileEntity(World world, BlockPos pos, boolean force) {
+    public static BlockEntity getTileEntity(Level world, BlockPos pos, boolean force) {
         return CompatManager.getTile(world, pos, force);
     }
 
-    public static IBlockState getBlockState(World world, BlockPos pos) {
+    public static BlockState getBlockState(Level world, BlockPos pos) {
         return getBlockState(world, pos, false);
     }
 
-    public static IBlockState getBlockState(World world, BlockPos pos, boolean force) {
+    public static BlockState getBlockState(Level world, BlockPos pos, boolean force) {
         return CompatManager.getState(world, pos, force);
     }
 
-    public static boolean useItemOnBlock(World world, EntityPlayer player, ItemStack stack, BlockPos pos,
-        EnumFacing direction) {
+    public static boolean useItemOnBlock(Level world, Player player, ItemStack stack, BlockPos pos,
+        Direction direction) {
         boolean done = stack.getItem().onItemUseFirst(player, world, pos, direction, 0.5F, 0.5F, 0.5F,
-            EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
+            InteractionHand.MAIN_HAND) == InteractionResult.SUCCESS;
 
         if (!done) {
-            done = stack.getItem().onItemUse(player, world, pos, EnumHand.MAIN_HAND, direction, 0.5F, 0.5F,
-                0.5F) == EnumActionResult.SUCCESS;
+            done = stack.getItem().onItemUse(player, world, pos, InteractionHand.MAIN_HAND, direction, 0.5F, 0.5F,
+                0.5F) == InteractionResult.SUCCESS;
         }
         return done;
     }
 
-    public static void onComparatorUpdate(World world, BlockPos pos, Block block) {
+    public static void onComparatorUpdate(Level world, BlockPos pos, Block block) {
         world.updateComparatorOutputLevel(pos, block);
     }
 
-    public static TileEntityChest getOtherDoubleChest(TileEntity inv) {
+    public static TileEntityChest getOtherDoubleChest(BlockEntity inv) {
         if (inv instanceof TileEntityChest) {
             TileEntityChest chest = (TileEntityChest) inv;
 
@@ -466,41 +466,41 @@ public final class BlockUtil {
         return null;
     }
 
-    public static <T extends Comparable<T>> IBlockState copyProperty(IProperty<T> property, IBlockState dst,
-        IBlockState src) {
+    public static <T extends Comparable<T>> BlockState copyProperty(Property<T> property, BlockState dst,
+        BlockState src) {
         return dst.getPropertyKeys().contains(property) ? dst.withProperty(property, src.getValue(property)) : dst;
     }
 
-    public static <T extends Comparable<T>> int compareProperty(IProperty<T> property, IBlockState a, IBlockState b) {
+    public static <T extends Comparable<T>> int compareProperty(Property<T> property, BlockState a, BlockState b) {
         return a.getValue(property).compareTo(b.getValue(property));
     }
 
-    public static <T extends Comparable<T>> String getPropertyStringValue(IBlockState blockState,
-        IProperty<T> property) {
+    public static <T extends Comparable<T>> String getPropertyStringValue(BlockState blockState,
+        Property<T> property) {
         return property.getName(blockState.getValue(property));
     }
 
-    public static Map<String, String> getPropertiesStringMap(IBlockState blockState,
-        Collection<IProperty<?>> properties) {
+    public static Map<String, String> getPropertiesStringMap(BlockState blockState,
+        Collection<Property<?>> properties) {
         ImmutableMap.Builder<String, String> mapBuilder = new ImmutableMap.Builder<>();
-        for (IProperty<?> property : properties) {
+        for (Property<?> property : properties) {
             mapBuilder.put(property.getName(), getPropertyStringValue(blockState, property));
         }
         return mapBuilder.build();
     }
 
-    public static Map<String, String> getPropertiesStringMap(IBlockState blockState) {
+    public static Map<String, String> getPropertiesStringMap(BlockState blockState) {
         return getPropertiesStringMap(blockState, blockState.getPropertyKeys());
     }
 
-    public static Comparator<IBlockState> blockStateComparator() {
+    public static Comparator<BlockState> blockStateComparator() {
         return (blockStateA, blockStateB) -> {
             Block blockA = blockStateA.getBlock();
             Block blockB = blockStateB.getBlock();
             if (blockA != blockB) {
-                return blockA.getRegistryName().toString().compareTo(blockB.getRegistryName().toString());
+                return blockA.builtInRegistryHolder().key().location().toString().compareTo(blockB.builtInRegistryHolder().key().location().toString());
             }
-            for (IProperty<?> property : Sets.intersection(new HashSet<>(blockStateA.getPropertyKeys()),
+            for (Property<?> property : Sets.intersection(new HashSet<>(blockStateA.getPropertyKeys()),
                 new HashSet<>(blockStateB.getPropertyKeys()))) {
                 int compareResult = BlockUtil.compareProperty(property, blockStateA, blockStateB);
                 if (compareResult != 0) {
@@ -511,26 +511,26 @@ public final class BlockUtil {
         };
     }
 
-    public static boolean blockStatesWithoutBlockEqual(IBlockState a, IBlockState b,
-        Collection<IProperty<?>> ignoredProperties) {
+    public static boolean blockStatesWithoutBlockEqual(BlockState a, BlockState b,
+        Collection<Property<?>> ignoredProperties) {
         return Sets.intersection(new HashSet<>(a.getPropertyKeys()), new HashSet<>(b.getPropertyKeys())).stream()
             .filter(property -> !ignoredProperties.contains(property))
             .allMatch(property -> Objects.equals(a.getValue(property), b.getValue(property)));
     }
 
-    public static boolean blockStatesWithoutBlockEqual(IBlockState a, IBlockState b) {
+    public static boolean blockStatesWithoutBlockEqual(BlockState a, BlockState b) {
         return Sets.intersection(new HashSet<>(a.getPropertyKeys()), new HashSet<>(b.getPropertyKeys())).stream()
             .allMatch(property -> Objects.equals(a.getValue(property), b.getValue(property)));
     }
 
-    public static boolean blockStatesEqual(IBlockState a, IBlockState b, Collection<IProperty<?>> ignoredProperties) {
+    public static boolean blockStatesEqual(BlockState a, BlockState b, Collection<Property<?>> ignoredProperties) {
         return a.getBlock() == b.getBlock()
             && Sets.intersection(new HashSet<>(a.getPropertyKeys()), new HashSet<>(b.getPropertyKeys())).stream()
                 .filter(property -> !ignoredProperties.contains(property))
                 .allMatch(property -> Objects.equals(a.getValue(property), b.getValue(property)));
     }
 
-    public static boolean blockStatesEqual(IBlockState a, IBlockState b) {
+    public static boolean blockStatesEqual(BlockState a, BlockState b) {
         return a.getBlock() == b.getBlock()
             && Sets.intersection(new HashSet<>(a.getPropertyKeys()), new HashSet<>(b.getPropertyKeys())).stream()
                 .allMatch(property -> Objects.equals(a.getValue(property), b.getValue(property)));

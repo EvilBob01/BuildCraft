@@ -1,8 +1,8 @@
-package buildcraft.core.tile;
+﻿package buildcraft.core.tile;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.energy.tile.TileSpringOil;
 

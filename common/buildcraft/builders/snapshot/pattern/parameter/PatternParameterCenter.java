@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,11 +8,11 @@ package buildcraft.builders.snapshot.pattern.parameter;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.statements.IStatement;
@@ -48,7 +48,7 @@ public enum PatternParameterCenter implements IStatementParameter {
         offsetZ = z;
     }
 
-    public static PatternParameterCenter readFromNbt(NBTTagCompound nbt) {
+    public static PatternParameterCenter readFromNbt(CompoundTag nbt) {
         int ord = nbt.getByte("dir");
         if (ord < 0 || ord >= values().length) {
             return CENTER;
@@ -57,7 +57,7 @@ public enum PatternParameterCenter implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         nbt.setByte("dir", (byte) ordinal());
     }
 
@@ -67,7 +67,7 @@ public enum PatternParameterCenter implements IStatementParameter {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         return BCBuildersSprites.PARAM_CENTER.get(this);
     }

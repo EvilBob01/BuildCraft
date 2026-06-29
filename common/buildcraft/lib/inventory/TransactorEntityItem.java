@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,8 +8,8 @@ package buildcraft.lib.inventory;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.IStackFilter;
 import buildcraft.api.inventory.IItemTransactor.IItemExtractable;
@@ -18,9 +18,9 @@ import buildcraft.lib.misc.StackUtil;
 
 public class TransactorEntityItem implements IItemExtractable {
 
-    private final EntityItem entity;
+    private final ItemEntity entity;
 
-    public TransactorEntityItem(EntityItem entity) {
+    public TransactorEntityItem(ItemEntity entity) {
         this.entity = entity;
     }
 

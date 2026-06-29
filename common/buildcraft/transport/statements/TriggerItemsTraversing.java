@@ -1,6 +1,6 @@
-package buildcraft.transport.statements;
+﻿package buildcraft.transport.statements;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.gates.IGate;

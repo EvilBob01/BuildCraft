@@ -1,16 +1,16 @@
-package buildcraft.transport.pipe.behaviour;
+﻿package buildcraft.transport.pipe.behaviour;
 
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.Component;
 
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.MjAPI;
@@ -42,26 +42,26 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
         super(pipe);
     }
 
-    public PipeBehaviourLimiter(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourLimiter(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
         limitShift = MathUtil.clamp(nbt.getInteger("limitShift"), 0, MAX_SHIFT);
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setInteger("limitShift", limitShift);
         return nbt;
     }
 
     @Override
-    public void readPayload(PacketBuffer buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         limitShift = buffer.readUnsignedByte();
     }
 
     @Override
-    public void writePayload(PacketBuffer buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Side side) {
         super.writePayload(buffer, side);
         buffer.writeByte(limitShift);
     }
@@ -95,13 +95,13 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
 
     @Override
     public boolean onPipeActivate(
-        EntityPlayer player, RayTraceResult trace, float hitX, float hitY, float hitZ, EnumPipePart part
+        Player player, BlockHitResult trace, float hitX, float hitY, float hitZ, EnumPipePart part
     ) {
         if (EntityUtil.getWrenchHand(player) == null) {
             return false;
         }
 
-        if (!player.world.isRemote) {
+        if (!player.world.isClientSide) {
             EntityUtil.activateWrench(player, trace);
             limitShift++;
             if (limitShift > MAX_SHIFT) {
@@ -136,7 +136,7 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
     }
 
     @Override
-    public int getTextureIndex(EnumFacing face) {
+    public int getTextureIndex(Direction face) {
         return MAX_SHIFT - limitShift;
     }
 }

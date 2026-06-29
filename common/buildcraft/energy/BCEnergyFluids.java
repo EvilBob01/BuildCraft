@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.material.MapColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.BCModules;
 
@@ -113,7 +113,7 @@ public class BCEnergyFluids {
         def.setMapColour(getMapColor(texDark));
         def.setFlammable(flammable);
         def.setHeat(heat);
-        def.setUnlocalizedName(name);
+        def/* setUnlocalizedName removed in 1.21 */;
         def.setTemperature(300 + 20 * heat);
         def.setViscosity(tempAdjustedViscosity);
         def.setDensity(boilAdjustedDensity);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,12 +6,12 @@
 
 package buildcraft.core.item;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.item.ItemBC_Neptune;
 
@@ -24,9 +24,9 @@ public class ItemVolumeBox extends ItemBC_Neptune {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (world.isRemote) {
-            return EnumActionResult.PASS;
+    public InteractionResult onItemUse(Player player, Level world, BlockPos pos, InteractionHand hand, Direction facing, float hitX, float hitY, float hitZ) {
+        if (world.isClientSide) {
+            return InteractionResult.PASS;
         }
 
         BlockPos offset = pos.offset(facing);
@@ -36,10 +36,10 @@ public class ItemVolumeBox extends ItemBC_Neptune {
 
         if (current == null) {
             volumeBoxes.addVolumeBox(offset);
-            volumeBoxes.markDirty();
-            return EnumActionResult.SUCCESS;
+            volumeBoxes.setChanged();
+            return InteractionResult.SUCCESS;
         }
 
-        return EnumActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 }

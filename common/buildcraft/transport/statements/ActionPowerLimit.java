@@ -1,7 +1,7 @@
-package buildcraft.transport.statements;
+﻿package buildcraft.transport.statements;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.mj.MjAPI;
@@ -72,7 +72,7 @@ public abstract class ActionPowerLimit extends BCStatement implements IActionInt
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         SpriteHolder[] sprites;
         if (BCTransportConfig.powerPipeUseOldMjTexture || !isRf()) {

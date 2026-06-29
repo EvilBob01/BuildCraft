@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -15,7 +15,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.text.translation.I18n;
 
 import net.minecraftforge.fluids.IFluidTank;
@@ -115,9 +115,9 @@ public class LocaleUtil {
         return localize("item.fireworksCharge." + colour.getUnlocalizedName());
     }
 
-    /** @param face The {@link EnumFacing} to localize.
+    /** @param face The {@link Direction} to localize.
      * @return a localised name for the given face. */
-    public static String localizeFacing(@Nullable EnumFacing face) {
+    public static String localizeFacing(@Nullable Direction face) {
         return localize("direction." + (face == null ? "center" : face.getName()));
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,13 +10,13 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.lists.ListMatchHandler;
 
@@ -96,7 +96,7 @@ public class ListMatchHandlerOreDictionary extends ListMatchHandler {
         return s;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public NonNullList<ItemStack> getClientExamples(Type type, @Nonnull ItemStack stack) {
         int[] oreIds = OreDictionary.getOreIDs(stack);
@@ -106,7 +106,7 @@ public class ListMatchHandlerOreDictionary extends ListMatchHandler {
             // No ore IDs? Time for the best effort plan of METADATA!
             if (type == Type.TYPE) {
                 NonNullList<ItemStack> tempStack = NonNullList.create();
-                stack.getItem().getSubItems(CreativeTabs.SEARCH, tempStack);
+                stack.getItem().getSubItems(CreativeModeTab.SEARCH, tempStack);
                 for (ItemStack is : tempStack) {
                     if (is.getItem() == stack.getItem()) {
                         stacks.add(is);
@@ -123,7 +123,7 @@ public class ListMatchHandlerOreDictionary extends ListMatchHandler {
 
         if (type == Type.CLASS) {
             for (String s : oreNames) {
-                stacks.addAll(OreDictionary.getOres(s));
+                stacks.addAll(/* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(s));
             }
         } else {
             String s = getBestOreString(oreNames);
@@ -132,7 +132,7 @@ public class ListMatchHandlerOreDictionary extends ListMatchHandler {
                     type == Type.MATERIAL ? ListOreDictionaryCache.getMaterial(s) : ListOreDictionaryCache.getType(s));
                 if (stackIds != null) {
                     for (int j : stackIds) {
-                        stacks.addAll(OreDictionary.getOres(OreDictionary.getOreName(j)));
+                        stacks.addAll(/* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(OreDictionary.getOreName(j)));
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class ListMatchHandlerOreDictionary extends ListMatchHandler {
         }
         for (ItemStack is : wildcard) {
             NonNullList<ItemStack> wll = NonNullList.create();
-            is.getItem().getSubItems(CreativeTabs.MISC, wll);
+            is.getItem().getSubItems(CreativeModeTab.MISC, wll);
             if (wll.size() > 0) {
                 stacks.remove(is);
                 stacks.addAll(wll);

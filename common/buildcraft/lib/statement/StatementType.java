@@ -1,10 +1,10 @@
-package buildcraft.lib.statement;
+﻿package buildcraft.lib.statement;
 
 import java.io.IOException;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.statements.IGuiSlot;
 
@@ -20,11 +20,11 @@ public abstract class StatementType<S extends IGuiSlot> {
         this.defaultStatement = defaultStatement;
     }
 
-    /** Reads a {@link StatementWrapper} from the given {@link NBTTagCompound}. The tag compound will be equal to the
+    /** Reads a {@link StatementWrapper} from the given {@link CompoundTag}. The tag compound will be equal to the
      * one returned by {@link #writeToNbt(IGuiSlot)} */
-    public abstract S readFromNbt(NBTTagCompound nbt);
+    public abstract S readFromNbt(CompoundTag nbt);
 
-    public abstract NBTTagCompound writeToNbt(S slot);
+    public abstract CompoundTag writeToNbt(S slot);
 
     /** Reads a {@link StatementWrapper} from the given {@link PacketBufferBC}. The buffer will return the data written
      * to a different buffer by {@link #writeToBuffer(PacketBufferBC, IGuiSlot)}. */

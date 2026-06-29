@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,11 +8,11 @@ package buildcraft.core.statements;
 
 import java.util.Locale;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IActionExternal;
 import buildcraft.api.statements.IStatement;
@@ -45,7 +45,7 @@ public class ActionMachineControl extends BCStatement implements IActionExternal
     }
 
     @Override
-    public void actionActivate(TileEntity target, EnumFacing side, IStatementContainer source, IStatementParameter[] parameters) {
+    public void actionActivate(BlockEntity target, Direction side, IStatementContainer source, IStatementParameter[] parameters) {
         IControllable controllable = target.getCapability(TilesAPI.CAP_CONTROLLABLE, side.getOpposite());
         if (controllable != null && controllable.acceptsControlMode(mode)) {
             controllable.setControlMode(mode);
@@ -53,7 +53,7 @@ public class ActionMachineControl extends BCStatement implements IActionExternal
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCCoreSprites.ACTION_MACHINE_CONTROL.get(mode);
     }

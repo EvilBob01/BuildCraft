@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,7 +8,7 @@ package buildcraft.lib.client.render.laser;
 
 import java.util.Objects;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -18,17 +18,17 @@ import buildcraft.lib.client.sprite.SpriteHolderRegistry.SpriteHolder;
  * misc rendering info. */
 public class LaserData_BC8 {
     public final LaserType laserType;
-    public final Vec3d start, end;
+    public final Vec3 start, end;
     public final double scale;
     public final boolean enableDiffuse, doubleFace;
     public final int minBlockLight;
     private final int hash;
 
-    public LaserData_BC8(LaserType laserType, Vec3d start, Vec3d end, double scale) {
+    public LaserData_BC8(LaserType laserType, Vec3 start, Vec3 end, double scale) {
         this(laserType, start, end, scale, true, false, 0);
     }
 
-    public LaserData_BC8(LaserType laserType, Vec3d start, Vec3d end, double scale, boolean enableDiffuse, boolean doubleFace, int minBlockLight) {
+    public LaserData_BC8(LaserType laserType, Vec3 start, Vec3 end, double scale, boolean enableDiffuse, boolean doubleFace, int minBlockLight) {
         this.laserType = laserType;
         this.start = start;
         this.end = end;

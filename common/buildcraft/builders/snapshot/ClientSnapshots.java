@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -22,14 +22,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.net.MessageManager;
 
@@ -55,7 +55,7 @@ public enum ClientSnapshots {
         snapshots.add(snapshot);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderSnapshot(Snapshot.Header header, int offsetX, int offsetY, int sizeX, int sizeY) {
         if (header == null) {
             return;
@@ -67,7 +67,7 @@ public enum ClientSnapshots {
         renderSnapshot(snapshot, offsetX, offsetY, sizeX, sizeY);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderSnapshot(Snapshot snapshot, int offsetX, int offsetY, int sizeX, int sizeY) {
         FakeWorld world = worlds.computeIfAbsent(snapshot.key, key -> {
             FakeWorld localWorld = new FakeWorld();
@@ -153,7 +153,7 @@ public enum ClientSnapshots {
                         GlStateManager.pushAttrib();
                         // noinspection ConstantConditions
                         TileEntityRendererDispatcher.instance.render(
-                            world.getTileEntity(pos),
+                            world.getBlockEntity(pos),
                             pos.getX() - FakeWorld.BLUEPRINT_OFFSET.getX(),
                             pos.getY() - FakeWorld.BLUEPRINT_OFFSET.getY(),
                             pos.getZ() - FakeWorld.BLUEPRINT_OFFSET.getZ(),
@@ -167,7 +167,7 @@ public enum ClientSnapshots {
         }
         // noinspection Guava
         for (Entity entity : world.getEntities(Entity.class, Predicates.alwaysTrue())) {
-            Vec3d pos = entity.getPositionVector();
+            Vec3 pos = entity.getPositionVector();
             GlStateManager.pushAttrib();
             Minecraft.getMinecraft().getRenderManager().renderEntity(
                 entity,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,9 +13,9 @@ import java.util.function.Function;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -103,12 +103,12 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
 
     public void drawTexturedModalRect(double posX, double posY, double textureX, double textureY, double width,
         double height) {
-        int x = MathHelper.floor(posX);
-        int y = MathHelper.floor(posY);
-        int u = MathHelper.floor(textureX);
-        int v = MathHelper.floor(textureY);
-        int w = MathHelper.floor(width);
-        int h = MathHelper.floor(height);
+        int x = Mth.floor(posX);
+        int y = Mth.floor(posY);
+        int u = Mth.floor(textureX);
+        int v = Mth.floor(textureY);
+        int w = Mth.floor(width);
+        int h = Mth.floor(height);
         drawTexturedModalRect(x, y, u, v, w, h);
     }
 

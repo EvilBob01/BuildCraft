@@ -1,8 +1,8 @@
-package buildcraft.lib.client.guide.parts.contents;
+﻿package buildcraft.lib.client.guide.parts.contents;
 
 import java.util.List;
 
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.lib.client.guide.PageLine;
 import buildcraft.lib.client.guide.parts.GuidePageFactory;
@@ -20,7 +20,7 @@ public class PageLinkNormal extends PageLink {
     }
 
     private static String strip(String text) {
-        return TextFormatting.getTextWithoutFormattingCodes(text.trim());
+        return ChatFormatting.getTextWithoutFormattingCodes(text.trim());
     }
 
     @Override

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,8 +10,8 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.gui.BuildCraftGui;
 import buildcraft.lib.gui.IGuiElement;
@@ -48,12 +48,12 @@ public class ElementHelpInfo {
         return new ElementHelpInfo(title, colour, true, lines);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public final HelpPosition target(IGuiArea target) {
         return new HelpPosition(this, target);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addGuiElements(GuiElementContainerHelp container) {
         BuildCraftGui gui = container.gui;
         int y = 20;
@@ -75,7 +75,7 @@ public class ElementHelpInfo {
     }
 
     /** Stores an {@link ElementHelpInfo} information, as well as the target area which the help element relates to. */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static final class HelpPosition {
         public final ElementHelpInfo info;
         public final IGuiArea target;

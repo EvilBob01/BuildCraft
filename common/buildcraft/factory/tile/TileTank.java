@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -14,23 +14,23 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.IFluidFilter;
@@ -73,7 +73,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     }
 
     protected TileTank(Tank tank) {
-        tank.setTileEntity(this);
+        tank.setBlockEntity(this);
         this.tank = tank;
         tankManager.add(tank);
         caps.addCapabilityInstance(CapUtil.CAP_FLUIDS, this, EnumPipePart.VALUES);
@@ -97,7 +97,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     public void update() {
         smoothedTank.tick(world);
 
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             int compLevel = getComparatorLevel();
             if (compLevel != lastComparatorLevel) {
                 lastComparatorLevel = compLevel;
@@ -106,12 +106,12 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
         }
     }
 
-    // TileEntity
+    // BlockEntity
 
     @Override
-    public void onPlacedBy(EntityLivingBase placer, ItemStack stack) {
+    public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
-        if (!placer.world.isRemote) {
+        if (!placer.world.isClientSide) {
             isPlayerInteracting = true;
             balanceTankFluids();
             isPlayerInteracting = false;
@@ -150,17 +150,17 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY,
+    public boolean onActivated(Player player, InteractionHand hand, Direction facing, float hitX, float hitY,
         float hitZ) {
         int amountBefore = tank.getFluidAmount();
         isPlayerInteracting = true;
         boolean didChange = FluidUtilBC.onTankActivated(player, pos, hand, this);
         isPlayerInteracting = false;
-        if (didChange && !player.world.isRemote && amountBefore < tank.getFluidAmount()) {
+        if (didChange && !player.world.isClientSide && amountBefore < tank.getFluidAmount()) {
             AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_STORE_FLUIDS);
         }
         if (!didChange) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 BCFactoryGuis.TANK.openGUI(player, pos);
             }
         }
@@ -172,7 +172,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_FLUID_DELTA, buffer, side);
             } else if (id == NET_FLUID_DELTA) {
@@ -186,7 +186,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_FLUID_DELTA, buffer, side, ctx);
                 smoothedTank.resetSmoothing(getWorld());
@@ -201,14 +201,14 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     // IDebuggable
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("fluid = " + tank.getDebugString());
         smoothedTank.getDebugInfo(left, right, side);
     }
 
     // Rendering
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public FluidStackInterp getFluidForRender(float partialTicks) {
         return smoothedTank.getFluidForRender(partialTicks);
     }
@@ -216,27 +216,27 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     // Tank helper methods
 
     /** Tests to see if this tank can connect to the other one, in the given direction. BuildCraft itself only calls
-     * with {@link EnumFacing#UP} or {@link EnumFacing#DOWN}, however addons are free to call with any of the other 4
+     * with {@link Direction#UP} or {@link Direction#DOWN}, however addons are free to call with any of the other 4
      * non-null faces. (Although an addon calling from other faces must provide some way of transferring fluids around).
      * 
      * @param other The other tank.
      * @param direction The direction that the other tank is, from this tank.
      * @return True if this can connect, false otherwise. */
-    public boolean canConnectTo(TileTank other, EnumFacing direction) {
+    public boolean canConnectTo(TileTank other, Direction direction) {
         return true;
     }
 
-    /** Helper for {@link #canConnectTo(TileTank, EnumFacing)} that only returns true if both tanks can connect to each
+    /** Helper for {@link #canConnectTo(TileTank, Direction)} that only returns true if both tanks can connect to each
      * other.
      * 
      * @param from
      * @param to
      * @param direction The direction from the "from" tank, to the "to" tank, such that
      *            {@link Objects#equals(Object, Object) Objects.equals(}{@link TileTank#getPos()
-     *            from.getPos()}.{@link BlockPos#offset(EnumFacing) offset(direction)}, {@link TileTank#getPos()
+     *            from.getPos()}.{@link BlockPos#offset(Direction) offset(direction)}, {@link TileTank#getPos()
      *            to.getPos()}) returns true.
      * @return True if both could connect, false otherwise. */
-    public static boolean canTanksConnect(TileTank from, TileTank to, EnumFacing direction) {
+    public static boolean canTanksConnect(TileTank from, TileTank to, Direction direction) {
         return from.canConnectTo(to, direction) && to.canConnectTo(from, direction.getOpposite());
     }
 
@@ -248,12 +248,12 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
         tanks.add(this);
         TileTank prevTank = this;
         while (true) {
-            TileEntity tileAbove = prevTank.getNeighbourTile(EnumFacing.UP);
+            BlockEntity tileAbove = prevTank.getNeighbourTile(Direction.UP);
             if (!(tileAbove instanceof TileTank)) {
                 break;
             }
             TileTank tankUp = (TileTank) tileAbove;
-            if (tankUp != null && canTanksConnect(prevTank, tankUp, EnumFacing.UP)) {
+            if (tankUp != null && canTanksConnect(prevTank, tankUp, Direction.UP)) {
                 tanks.addLast(tankUp);
             } else {
                 break;
@@ -262,12 +262,12 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
         }
         prevTank = this;
         while (true) {
-            TileEntity tileBelow = prevTank.getNeighbourTile(EnumFacing.DOWN);
+            BlockEntity tileBelow = prevTank.getNeighbourTile(Direction.DOWN);
             if (!(tileBelow instanceof TileTank)) {
                 break;
             }
             TileTank tankBelow = (TileTank) tileBelow;
-            if (tankBelow != null && canTanksConnect(prevTank, tankBelow, EnumFacing.DOWN)) {
+            if (tankBelow != null && canTanksConnect(prevTank, tankBelow, Direction.DOWN)) {
                 tanks.addFirst(tankBelow);
             } else {
                 break;

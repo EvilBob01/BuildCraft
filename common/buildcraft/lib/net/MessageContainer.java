@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,11 +10,11 @@ import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.gui.ContainerBC_Neptune;
@@ -61,7 +61,7 @@ public class MessageContainer implements IMessage {
     public static final IMessageHandler<MessageContainer, IMessage> HANDLER = (message, ctx) -> {
         try {
             int id = message.windowId;
-            EntityPlayer player = BCLibProxy.getProxy().getPlayerForContext(ctx);
+            Player player = BCLibProxy.getProxy().getPlayerForContext(ctx);
             if (player != null && player.openContainer instanceof ContainerBC_Neptune
                 && player.openContainer.windowId == id) {
                 ContainerBC_Neptune container = (ContainerBC_Neptune) player.openContainer;
@@ -69,7 +69,7 @@ public class MessageContainer implements IMessage {
 
                 // error checking
                 String extra = container.getClass() + ", id = " + container.getIdAllocator().getNameFor(message.msgId);
-                MessageUtil.ensureEmpty(message.payload, ctx.side == Side.CLIENT, extra);
+                MessageUtil.ensureEmpty(message.payload, ctx.side == Dist.CLIENT, extra);
             }
             return null;
         } catch (IOException e) {

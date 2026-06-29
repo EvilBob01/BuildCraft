@@ -1,14 +1,14 @@
-package buildcraft.lib.compat;
+﻿package buildcraft.lib.compat;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.Chunk.EnumCreateEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunk.EnumCreateEntityType;
 
 import buildcraft.lib.misc.ChunkUtil;
 
@@ -24,30 +24,30 @@ public enum DefaultBlockAccessor implements ISoftBlockAccessor {
 
     @Override
     @Nullable
-    public TileEntity getTile(World world, BlockPos pos, boolean force) {
+    public BlockEntity getTile(Level world, BlockPos pos, boolean force) {
         if (direct | force) {
             if (force || world.isBlockLoaded(pos)) {
-                return world.getTileEntity(pos);
+                return world.getBlockEntity(pos);
             }
             return null;
         } else {
-            Chunk chunk = ChunkUtil.getChunk(world, pos, force);
+            LevelChunk chunk = ChunkUtil.getChunk(world, pos, force);
             if (chunk == null) {
                 return null;
             }
-            return chunk.getTileEntity(pos, force ? EnumCreateEntityType.IMMEDIATE : EnumCreateEntityType.CHECK);
+            return chunk.getBlockEntity(pos, force ? EnumCreateEntityType.IMMEDIATE : EnumCreateEntityType.CHECK);
         }
     }
 
     @Override
-    public IBlockState getState(World world, BlockPos pos, boolean force) {
+    public BlockState getState(Level world, BlockPos pos, boolean force) {
         if (direct | force) {
             if (force || world.isBlockLoaded(pos)) {
                 return world.getBlockState(pos);
             }
             return Blocks.AIR.getDefaultState();
         } else {
-            Chunk chunk = ChunkUtil.getChunk(world, pos, force);
+            LevelChunk chunk = ChunkUtil.getChunk(world, pos, force);
             if (chunk == null) {
                 return Blocks.AIR.getDefaultState();
             }

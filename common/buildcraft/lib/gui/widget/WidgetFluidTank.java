@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,10 +9,10 @@ package buildcraft.lib.gui.widget;
 import java.io.IOException;
 import java.util.List;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.fluid.Tank;
 import buildcraft.lib.gui.BuildCraftGui;
@@ -47,7 +47,7 @@ public class WidgetFluidTank extends Widget_Neptune<ContainerBC_Neptune> {
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IGuiElement createGuiElement(BuildCraftGui gui, IGuiArea area, GuiIcon overlay) {
         return new GuiElementFluidTank(gui, area, overlay);
     }

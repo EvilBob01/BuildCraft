@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,16 +16,16 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.schematics.ISchematicBlock;
@@ -34,7 +34,7 @@ import buildcraft.api.schematics.SchematicBlockContext;
 import buildcraft.lib.misc.BlockUtil;
 
 public class SchematicBlockFluid implements ISchematicBlock {
-    private IBlockState blockState;
+    private BlockState blockState;
     private boolean isFlowing;
 
     @SuppressWarnings("unused")
@@ -53,8 +53,8 @@ public class SchematicBlockFluid implements ISchematicBlock {
     @Nonnull
     @Override
     public Set<BlockPos> getRequiredBlockOffsets() {
-        return Stream.concat(Arrays.stream(EnumFacing.HORIZONTALS), Stream.of(EnumFacing.DOWN))
-            .map(EnumFacing::getDirectionVec)
+        return Stream.concat(Arrays.stream(Direction.HORIZONTALS), Stream.of(Direction.DOWN))
+            .map(Direction::getDirectionVec)
             .map(BlockPos::new)
             .collect(Collectors.toSet());
     }
@@ -77,21 +77,21 @@ public class SchematicBlockFluid implements ISchematicBlock {
     }
 
     @Override
-    public boolean canBuild(World world, BlockPos blockPos) {
+    public boolean canBuild(Level world, BlockPos blockPos) {
         return world.isAirBlock(blockPos) ||
             BlockUtil.getFluidWithFlowing(world, blockPos) == BlockUtil.getFluidWithFlowing(blockState.getBlock()) &&
                 BlockUtil.getFluid(world, blockPos) == null;
     }
 
     @Override
-    public boolean build(World world, BlockPos blockPos) {
+    public boolean build(Level world, BlockPos blockPos) {
         if (isFlowing) {
             return true;
         }
-        if (world.setBlockState(blockPos, blockState, 11)) {
+        if (world.setBlock(blockPos, blockState, 11)) {
             Stream.concat(
-                Stream.of(EnumFacing.VALUES)
-                    .map(EnumFacing::getDirectionVec)
+                Stream.of(Direction.VALUES)
+                    .map(Direction::getDirectionVec)
                     .map(BlockPos::new),
                 Stream.of(BlockPos.ORIGIN)
             )
@@ -103,25 +103,25 @@ public class SchematicBlockFluid implements ISchematicBlock {
     }
 
     @Override
-    public boolean buildWithoutChecks(World world, BlockPos blockPos) {
-        return world.setBlockState(blockPos, blockState, 0);
+    public boolean buildWithoutChecks(Level world, BlockPos blockPos) {
+        return world.setBlock(blockPos, blockState, 0);
     }
 
     @Override
-    public boolean isBuilt(World world, BlockPos blockPos) {
+    public boolean isBuilt(Level world, BlockPos blockPos) {
         return isFlowing || BlockUtil.blockStatesEqual(blockState, world.getBlockState(blockPos));
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setTag("blockState", NBTUtil.writeBlockState(new NBTTagCompound(), blockState));
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
+        nbt.setTag("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
         nbt.setBoolean("isFlowing", isFlowing);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) throws InvalidInputDataException {
+    public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         blockState = NBTUtil.readBlockState(nbt.getCompoundTag("blockState"));
         isFlowing = nbt.getBoolean("isFlowing");
     }

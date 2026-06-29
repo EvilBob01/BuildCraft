@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -25,9 +25,9 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import net.minecraftforge.common.util.Constants;
 
@@ -38,14 +38,14 @@ public class NbtSquisher {
     public static final Profiler profiler = new Profiler();
     /** Used by testing classes to replace ByteBuf instances with PrintingByteBuf -- but we don't have that
      * class in main because it makes checkstyle complain. */
-    public static Function<ByteBuf, PacketBuffer> debugBuffer = null;
+    public static Function<ByteBuf, FriendlyByteBuf> debugBuffer = null;
 
     private static final int TYPE_MC_GZIP = NbtSquishConstants.VANILLA_COMPRESSED;
     private static final int TYPE_MC = NbtSquishConstants.VANILLA;
     private static final int TYPE_BC_1_GZIP = NbtSquishConstants.BUILDCRAFT_V1_COMPRESSED;
     private static final int TYPE_BC_1 = NbtSquishConstants.BUILDCRAFT_V1;
 
-    public static byte[] squish(NBTTagCompound nbt, int type) {
+    public static byte[] squish(CompoundTag nbt, int type) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             squish(nbt, type, baos);
@@ -55,7 +55,7 @@ public class NbtSquisher {
         return baos.toByteArray();
     }
 
-    public static void squish(NBTTagCompound nbt, int type, ByteBuf buf) {
+    public static void squish(CompoundTag nbt, int type, ByteBuf buf) {
         try (ByteBufOutputStream bbos = new ByteBufOutputStream(buf)) {
             squish(nbt, type, bbos);
         } catch (IOException e) {
@@ -63,7 +63,7 @@ public class NbtSquisher {
         }
     }
 
-    public static void squish(NBTTagCompound nbt, int type, OutputStream stream) throws IOException {
+    public static void squish(CompoundTag nbt, int type, OutputStream stream) throws IOException {
         switch (type) {
             case TYPE_MC:
                 squishVanillaUncompressed(nbt, new DataOutputStream(stream));
@@ -82,20 +82,20 @@ public class NbtSquisher {
         }
     }
 
-    public static void squishVanilla(NBTTagCompound nbt, OutputStream to) throws IOException {
+    public static void squishVanilla(CompoundTag nbt, OutputStream to) throws IOException {
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_1);
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_2);
         to.write(TYPE_MC_GZIP);
         CompressedStreamTools.writeCompressed(nbt, to);
     }
 
-    public static void squishVanillaUncompressed(NBTTagCompound nbt, DataOutput to) throws IOException {
+    public static void squishVanillaUncompressed(CompoundTag nbt, DataOutput to) throws IOException {
         to.writeShort(NbtSquishConstants.BUILDCRAFT_MAGIC);
         to.write(TYPE_MC);
         CompressedStreamTools.write(nbt, to);
     }
 
-    public static void squishBuildCraftV1(NBTTagCompound nbt, OutputStream to) throws IOException {
+    public static void squishBuildCraftV1(CompoundTag nbt, OutputStream to) throws IOException {
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_1);
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_2);
         to.write(TYPE_BC_1_GZIP);
@@ -104,22 +104,22 @@ public class NbtSquisher {
         }
     }
 
-    public static void squishBuildCraftV1Uncompressed(NBTTagCompound nbt, DataOutput to) throws IOException {
+    public static void squishBuildCraftV1Uncompressed(CompoundTag nbt, DataOutput to) throws IOException {
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_1);
         to.write(NbtSquishConstants.BUILDCRAFT_MAGIC_2);
         to.write(TYPE_BC_1);
         squishBuildCraftV1Direct(nbt, to);
     }
 
-    public static NBTTagCompound expand(byte[] bytes) throws IOException {
+    public static CompoundTag expand(byte[] bytes) throws IOException {
         return expand(new ByteArrayInputStream(bytes));
     }
 
-    public static NBTTagCompound expand(ByteBuf buf) throws IOException {
+    public static CompoundTag expand(ByteBuf buf) throws IOException {
         return expand(new ByteBufInputStream(buf));
     }
 
-    public static NBTTagCompound expand(InputStream stream) throws IOException {
+    public static CompoundTag expand(InputStream stream) throws IOException {
         if (!stream.markSupported()) {
             stream = new BufferedInputStream(stream);
         }
@@ -170,14 +170,14 @@ public class NbtSquisher {
         }
     }
 
-    private static NBTTagCompound readBuildCraftV1Direct(DataInput in) throws IOException {
+    private static CompoundTag readBuildCraftV1Direct(DataInput in) throws IOException {
         NbtSquishMap map = NbtSquishMapReader.read(in);
         WrittenType type = map.getWrittenType();
         int index = type.readIndex(in);
         return map.getFullyReadComp(index);
     }
 
-    private static void squishBuildCraftV1Direct(NBTTagCompound nbt, DataOutput to) throws IOException {
+    private static void squishBuildCraftV1Direct(CompoundTag nbt, DataOutput to) throws IOException {
         NbtSquishMap map = new NbtSquishMap();
         map.addTag(nbt);
         NbtSquishMapWriter.debug = debugBuffer != null;

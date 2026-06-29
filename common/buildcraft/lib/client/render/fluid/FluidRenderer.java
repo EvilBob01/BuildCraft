@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,19 +19,19 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.MutableVertex;
 import buildcraft.lib.misc.GuiUtil;
@@ -45,7 +45,7 @@ import buildcraft.lib.misc.VecUtil;
  * call this from the main client thread. */
 // TODO: thread safety (per thread context?)
 // Perhaps move this into IModelRenderer? And that way we get the buffer, force shaders to cope with fluids (?!), etc
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class FluidRenderer {
 
     private static final EnumMap<FluidSpriteType, Map<String, TextureAtlasSprite>> fluidSprites
@@ -163,10 +163,10 @@ public class FluidRenderer {
      * @param max The maximum coordinate that the tank will be rendered to.
      * @param bbIn The {@link BufferBuilder} that the fluid will be rendered into.
      * @param sideRender A size 6 boolean array that determines if the face will be rendered. If it is null then all
-     *            faces will be rendered. The indexes are determined by what {@link EnumFacing#ordinal()} returns.
-     * @see #renderFluid(FluidSpriteType, FluidStack, double, double, Vec3d, Vec3d, BufferBuilder, boolean[]) */
+     *            faces will be rendered. The indexes are determined by what {@link Direction#ordinal()} returns.
+     * @see #renderFluid(FluidSpriteType, FluidStack, double, double, Vec3, Vec3, BufferBuilder, boolean[]) */
     public static void renderFluid(
-        FluidSpriteType type, IFluidTank tank, Vec3d min, Vec3d max, BufferBuilder bbIn, boolean[] sideRender
+        FluidSpriteType type, IFluidTank tank, Vec3 min, Vec3 max, BufferBuilder bbIn, boolean[] sideRender
     ) {
         renderFluid(type, tank.getFluid(), tank.getCapacity(), min, max, bbIn, sideRender);
     }
@@ -181,9 +181,9 @@ public class FluidRenderer {
      * @param max The maximum coordinate that the tank will be rendered to.
      * @param bbIn The {@link BufferBuilder} that the fluid will be rendered into.
      * @param sideRender A size 6 boolean array that determines if the face will be rendered. If it is null then all
-     *            faces will be rendered. The indexes are determined by what {@link EnumFacing#ordinal()} returns. */
+     *            faces will be rendered. The indexes are determined by what {@link Direction#ordinal()} returns. */
     public static void renderFluid(
-        FluidSpriteType type, FluidStack fluid, int cap, Vec3d min, Vec3d max, BufferBuilder bbIn, boolean[] sideRender
+        FluidSpriteType type, FluidStack fluid, int cap, Vec3 min, Vec3 max, BufferBuilder bbIn, boolean[] sideRender
     ) {
         renderFluid(type, fluid, fluid == null ? 0 : fluid.amount, cap, min, max, bbIn, sideRender);
     }
@@ -200,9 +200,9 @@ public class FluidRenderer {
      * @param max The maximum coordinate that the tank will be rendered to.
      * @param bbIn The {@link BufferBuilder} that the fluid will be rendered into.
      * @param sideRender A size 6 boolean array that determines if the face will be rendered. If it is null then all
-     *            faces will be rendered. The indexes are determined by what {@link EnumFacing#ordinal()} returns. */
+     *            faces will be rendered. The indexes are determined by what {@link Direction#ordinal()} returns. */
     public static void renderFluid(
-        FluidSpriteType type, FluidStack fluid, double amount, double cap, Vec3d min, Vec3d max, BufferBuilder bbIn,
+        FluidSpriteType type, FluidStack fluid, double amount, double cap, Vec3 min, Vec3 max, BufferBuilder bbIn,
         boolean[] sideRender
     ) {
         if (fluid == null || fluid.getFluid() == null || amount <= 0) {
@@ -214,8 +214,8 @@ public class FluidRenderer {
             sideRender = DEFAULT_FACES;
         }
 
-        double height = MathHelper.clamp(amount / cap, 0, 1);
-        final Vec3d realMin, realMax;
+        double height = Mth.clamp(amount / cap, 0, 1);
+        final Vec3 realMin, realMax;
         if (fluid.getFluid().isGaseous(fluid)) {
             realMin = VecUtil.replaceValue(min, Axis.Y, MathUtil.interp(1 - height, min.y, max.y));
             realMax = max;
@@ -273,14 +273,14 @@ public class FluidRenderer {
         // TODO: Enable/disable inversion for the correct faces
         invertU = false;
         invertV = false;
-        if (sideRender[EnumFacing.UP.ordinal()]) {
+        if (sideRender[Direction.UP.ordinal()]) {
             vertex(xs, yb, zb);
             vertex(xb, yb, zb);
             vertex(xb, yb, zs);
             vertex(xs, yb, zs);
         }
 
-        if (sideRender[EnumFacing.DOWN.ordinal()]) {
+        if (sideRender[Direction.DOWN.ordinal()]) {
             vertex(xs, ys, zs);
             vertex(xb, ys, zs);
             vertex(xb, ys, zb);
@@ -288,14 +288,14 @@ public class FluidRenderer {
         }
 
         texmap = TexMap.ZY;
-        if (sideRender[EnumFacing.WEST.ordinal()]) {
+        if (sideRender[Direction.WEST.ordinal()]) {
             vertex(xs, ys, zs);
             vertex(xs, ys, zb);
             vertex(xs, yb, zb);
             vertex(xs, yb, zs);
         }
 
-        if (sideRender[EnumFacing.EAST.ordinal()]) {
+        if (sideRender[Direction.EAST.ordinal()]) {
             vertex(xb, yb, zs);
             vertex(xb, yb, zb);
             vertex(xb, ys, zb);
@@ -303,14 +303,14 @@ public class FluidRenderer {
         }
 
         texmap = TexMap.XY;
-        if (sideRender[EnumFacing.NORTH.ordinal()]) {
+        if (sideRender[Direction.NORTH.ordinal()]) {
             vertex(xs, yb, zs);
             vertex(xb, yb, zs);
             vertex(xb, ys, zs);
             vertex(xs, ys, zs);
         }
 
-        if (sideRender[EnumFacing.SOUTH.ordinal()]) {
+        if (sideRender[Direction.SOUTH.ordinal()]) {
             vertex(xs, ys, zb);
             vertex(xb, ys, zb);
             vertex(xb, yb, zb);
@@ -474,14 +474,14 @@ public class FluidRenderer {
     }
 
     public static class TankSize {
-        public final Vec3d min;
-        public final Vec3d max;
+        public final Vec3 min;
+        public final Vec3 max;
 
         public TankSize(int sx, int sy, int sz, int ex, int ey, int ez) {
-            this(new Vec3d(sx, sy, sz).scale(1 / 16.0), new Vec3d(ex, ey, ez).scale(1 / 16.0));
+            this(new Vec3(sx, sy, sz).scale(1 / 16.0), new Vec3(ex, ey, ez).scale(1 / 16.0));
         }
 
-        public TankSize(Vec3d min, Vec3d max) {
+        public TankSize(Vec3 min, Vec3 max) {
             this.min = min;
             this.max = max;
         }
@@ -494,18 +494,18 @@ public class FluidRenderer {
             return new TankSize(min.addVector(x, y, z), max.subtract(x, y, z));
         }
 
-        public TankSize shink(Vec3d by) {
+        public TankSize shink(Vec3 by) {
             return shrink(by.x, by.y, by.z);
         }
 
         public TankSize rotateY() {
-            Vec3d _min = rotateY(min);
-            Vec3d _max = rotateY(max);
+            Vec3 _min = rotateY(min);
+            Vec3 _max = rotateY(max);
             return new TankSize(VecUtil.min(_min, _max), VecUtil.max(_min, _max));
         }
 
-        private static Vec3d rotateY(Vec3d vec) {
-            return new Vec3d(
+        private static Vec3 rotateY(Vec3 vec) {
+            return new Vec3(
                 //
                 1 - vec.z, //
                 vec.y, //

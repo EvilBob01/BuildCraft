@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,15 +11,15 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
-import net.minecraftforge.common.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.Capability;
 
 import buildcraft.api.inventory.IItemTransactor;
 import buildcraft.api.mj.IMjConnector;
@@ -48,28 +48,28 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
 
     private final MjCapabilityHelper mjCaps = new MjCapabilityHelper(this);
     /** Map of recently dropped item to the tick when it can be picked up */
-    private final WeakHashMap<EntityItem, Long> entityDropTime = new WeakHashMap<>();
+    private final WeakHashMap<ItemEntity, Long> entityDropTime = new WeakHashMap<>();
     private int toWaitTicks = 0;
 
     public PipeBehaviourObsidian(IPipe pipe) {
         super(pipe);
     }
 
-    public PipeBehaviourObsidian(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourObsidian(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
         // Saves us from writing out the entity item's ID
         toWaitTicks = DROP_GAP;
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         return nbt;
     }
 
     @Override
     public void onTick() {
-        if (pipe.getHolder().getPipeWorld().isRemote) {
+        if (pipe.getHolder().getPipeWorld().isClientSide) {
             return;
         }
         toWaitTicks--;
@@ -81,24 +81,24 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
     }
 
     @Override
-    public boolean canConnect(EnumFacing face, PipeBehaviour other) {
+    public boolean canConnect(Direction face, PipeBehaviour other) {
         return !(other instanceof PipeBehaviourObsidian);
     }
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (pipe.getHolder().getPipeWorld().isRemote) {
+        if (pipe.getHolder().getPipeWorld().isClientSide) {
             return;
         }
-        EnumFacing openFace = getOpenFace();
+        Direction openFace = getOpenFace();
         if (openFace != null) {
             trySuckEntity(entity, openFace, Long.MAX_VALUE, false);
         }
     }
 
-    private EnumFacing getOpenFace() {
-        EnumFacing openFace = null;
-        for (EnumFacing face : EnumFacing.VALUES) {
+    private Direction getOpenFace() {
+        Direction openFace = null;
+        for (Direction face : Direction.VALUES) {
             if (pipe.isConnected(face)) {
                 if (openFace == null) {
                     openFace = face.getOpposite();
@@ -110,8 +110,8 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
         return openFace;
     }
 
-    protected AxisAlignedBB getSuckingBox(EnumFacing openFace, int distance) {
-        AxisAlignedBB bb = BoundingBoxUtil.makeAround(VecUtil.convertCenter(pipe.getHolder().getPipePos()), 0.4);
+    protected AABB getSuckingBox(Direction openFace, int distance) {
+        AABB bb = BoundingBoxUtil.makeAround(VecUtil.convertCenter(pipe.getHolder().getPipePos()), 0.4);
         switch (openFace) {
             default:
             case WEST:
@@ -130,8 +130,8 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
     }
 
     /** @return The left over power */
-    protected long trySuckEntity(Entity entity, EnumFacing faceFrom, long power, boolean simulate) {
-        if (entity.isDead || entity instanceof EntityLivingBase) {
+    protected long trySuckEntity(Entity entity, Direction faceFrom, long power, boolean simulate) {
+        if (entity.isDead || entity instanceof LivingEntity) {
             return power;
         }
 
@@ -201,13 +201,13 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
         if (toWaitTicks > 0) {
             return microJoules;
         }
-        EnumFacing openFace = getOpenFace();
+        Direction openFace = getOpenFace();
         if (openFace == null) {
             return microJoules;
         }
 
         for (int d = 1; d < 5; d++) {
-            AxisAlignedBB aabb = getSuckingBox(openFace, d);
+            AABB aabb = getSuckingBox(openFace, d);
             List<Entity> discoveredEntities = pipe.getHolder().getPipeWorld().getEntitiesWithinAABB(Entity.class, aabb);
 
             for (Entity entity : discoveredEntities) {
@@ -221,7 +221,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, Direction facing) {
         T cap = mjCaps.getCapability(capability, facing);
         if (cap != null) {
             return cap;

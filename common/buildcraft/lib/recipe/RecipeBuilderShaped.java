@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TCharObjectHashMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import buildcraft.lib.misc.StackUtil;
@@ -119,7 +119,7 @@ public class RecipeBuilderShaped {
             objs[offset++] = c;
             objs[offset++] = objects.get(c);
         }
-        return new ShapedOreRecipe(result.getItem().getRegistryName(), result, objs);
+        return new ShapedOreRecipe(result.getItem().builtInRegistryHolder().key().location(), result, objs);
     }
 
     private void ensureValid() {
@@ -130,20 +130,20 @@ public class RecipeBuilderShaped {
 
     public void register() {
         ensureValid();
-        ResourceLocation name = result.getItem().getRegistryName();
+        ResourceLocation name = result.getItem().builtInRegistryHolder().key().location();
         ShapedOreRecipe recipe = new ShapedOreRecipe(name, result, createRecipeObjectArray());
-        ForgeRegistries.RECIPES.register(recipe.setRegistryName(name));
+        ForgeRegistries.RECIPES.register(recipe/* setRegistryName removed - use registry directly */);
     }
 
     public void registerNbtAware(String regName) {
         ensureValid();
         ShapedOreRecipe recipe =
-            new ShapedOreRecipe(result.getItem().getRegistryName(), result, createRecipeObjectArrayNBT());
-        ForgeRegistries.RECIPES.register(recipe.setRegistryName(regName));
+            new ShapedOreRecipe(result.getItem().builtInRegistryHolder().key().location(), result, createRecipeObjectArrayNBT());
+        ForgeRegistries.RECIPES.register(recipe/* setRegistryName removed - use registry directly */);
     }
 
     public void registerRotated() {
         ensureValid();
-        ForgeRegistries.RECIPES.register(buildRotated().setRegistryName(result.getItem().getRegistryName()));
+        ForgeRegistries.RECIPES.register(buildRotated()/* setRegistryName removed - use registry directly */.builtInRegistryHolder().key().location()));
     }
 }

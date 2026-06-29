@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,20 +11,20 @@ import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.Capability.IStorage;
+import net.neoforged.neoforge.capabilities.CapabilityInject;
+import net.neoforged.neoforge.capabilities.CapabilityManager;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import buildcraft.api.inventory.IItemTransactor;
 
@@ -68,12 +68,12 @@ public class CapUtil {
         // By default storing and creating are illegal operations, as we don't necessarily have good default impl's
         IStorage<T> ourStorage = new IStorage<T>() {
             @Override
-            public NBTBase writeNBT(Capability<T> capability, T instance, EnumFacing side) {
+            public Tag writeNBT(Capability<T> capability, T instance, Direction side) {
                 throw new IllegalStateException("You must provide your own implementations of " + clazz);
             }
 
             @Override
-            public void readNBT(Capability<T> capability, T instance, EnumFacing side, NBTBase nbt) {
+            public void readNBT(Capability<T> capability, T instance, Direction side, Tag nbt) {
                 throw new IllegalStateException("You must provide your own implementations of " + clazz);
             }
         };
@@ -86,7 +86,7 @@ public class CapUtil {
     /** Attempts to fetch the given capability from the given provider, or returns null if either of those two are
      * null. */
     @Nullable
-    public static <T> T getCapability(ICapabilityProvider provider, Capability<T> capability, EnumFacing facing) {
+    public static <T> T getCapability(ICapabilityProvider provider, Capability<T> capability, Direction facing) {
         if (provider == null || capability == null) {
             return null;
         }

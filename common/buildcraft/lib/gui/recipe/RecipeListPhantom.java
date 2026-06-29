@@ -1,10 +1,10 @@
-package buildcraft.lib.gui.recipe;
+﻿package buildcraft.lib.gui.recipe;
 
 import java.lang.reflect.Field;
 import java.util.BitSet;
 
 import net.minecraft.client.gui.recipebook.RecipeList;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 
 public class RecipeListPhantom extends RecipeList {
 

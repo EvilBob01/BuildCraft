@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.render.ISprite;
@@ -76,7 +76,7 @@ public abstract class StatementWrapper implements IStatement, Comparable<Stateme
         return this.delegate.getSprite();
     }
 
-    public TileEntity getNeighbourTile(IStatementContainer source) {
+    public BlockEntity getNeighbourTile(IStatementContainer source) {
         return source.getNeighbourTile(sourcePart.face);
     }
 

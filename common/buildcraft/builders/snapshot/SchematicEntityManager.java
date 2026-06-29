@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.schematics.ISchematicEntity;
@@ -41,8 +41,8 @@ public class SchematicEntityManager {
     }
 
     @Nonnull
-    public static <S extends ISchematicEntity> NBTTagCompound writeToNBT(S schematicEntity) {
-        NBTTagCompound schematicEntityTag = new NBTTagCompound();
+    public static <S extends ISchematicEntity> CompoundTag writeToNBT(S schematicEntity) {
+        CompoundTag schematicEntityTag = new CompoundTag();
         schematicEntityTag.setString(
             "name",
             SchematicEntityFactoryRegistry
@@ -55,14 +55,14 @@ public class SchematicEntityManager {
     }
 
     @Nonnull
-    public static ISchematicEntity readFromNBT(NBTTagCompound schematicEntityTag) throws InvalidInputDataException {
+    public static ISchematicEntity readFromNBT(CompoundTag schematicEntityTag) throws InvalidInputDataException {
         ResourceLocation name = new ResourceLocation(schematicEntityTag.getString("name"));
         SchematicEntityFactory<?> factory = SchematicEntityFactoryRegistry.getFactoryByName(name);
         if (factory == null) {
             throw new InvalidInputDataException("Unknown schematic type " + name);
         }
         ISchematicEntity schematicEntity = factory.supplier.get();
-        NBTTagCompound data = schematicEntityTag.getCompoundTag("data");
+        CompoundTag data = schematicEntityTag.getCompoundTag("data");
         try {
             schematicEntity.deserializeNBT(data);
             return schematicEntity;

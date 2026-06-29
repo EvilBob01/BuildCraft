@@ -1,4 +1,4 @@
-package buildcraft.energy;
+﻿package buildcraft.energy;
 
 import java.time.LocalDateTime;
 import java.time.MonthDay;
@@ -15,10 +15,10 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.apache.logging.log4j.Level;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import buildcraft.api.core.BCLog;
 

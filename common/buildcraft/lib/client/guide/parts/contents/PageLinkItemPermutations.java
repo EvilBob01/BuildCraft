@@ -1,10 +1,10 @@
-package buildcraft.lib.client.guide.parts.contents;
+﻿package buildcraft.lib.client.guide.parts.contents;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.NonNullList;
 
 import buildcraft.lib.client.guide.PageLine;

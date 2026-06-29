@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,11 +8,11 @@ package buildcraft.transport.statements;
 
 import java.util.Locale;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatement;
@@ -28,9 +28,9 @@ import buildcraft.transport.BCTransportSprites;
 import buildcraft.transport.BCTransportStatements;
 
 public class ActionPipeDirection extends BCStatement implements IActionInternal {
-    public final EnumFacing direction;
+    public final Direction direction;
 
-    public ActionPipeDirection(EnumFacing direction) {
+    public ActionPipeDirection(Direction direction) {
         super("buildcraft:pipe.dir." + direction.name().toLowerCase(Locale.ROOT), "buildcraft.pipe.dir." + direction.name().toLowerCase(Locale.ROOT));
         this.direction = direction;
     }
@@ -42,7 +42,7 @@ public class ActionPipeDirection extends BCStatement implements IActionInternal 
 
     @Override
     public IStatement rotateLeft() {
-        EnumFacing face = direction.getAxis() == Axis.Y ? direction : direction.rotateY();
+        Direction face = direction.getAxis() == Axis.Y ? direction : direction.rotateY();
         return BCTransportStatements.ACTION_PIPE_DIRECTION[face.ordinal()];
     }
 
@@ -55,7 +55,7 @@ public class ActionPipeDirection extends BCStatement implements IActionInternal 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCTransportSprites.getPipeDirection(direction);
     }

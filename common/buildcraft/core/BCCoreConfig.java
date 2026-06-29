@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.mj.MjAPI;
@@ -258,7 +258,7 @@ public class BCCoreConfig {
         reloadConfig(game);
         addReloadListener(BCCoreConfig::reloadConfig);
 
-        MinecraftForge.EVENT_BUS.register(BCCoreConfig.class);
+        NeoForge.EVENT_BUS.register(BCCoreConfig.class);
     }
 
     public static void addReloadListener(Consumer<EnumRestartRequirement> listener) {

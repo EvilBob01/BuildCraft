@@ -1,9 +1,9 @@
-package buildcraft.lib.misc;
+﻿package buildcraft.lib.misc;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.ModContainer;
 
 public class ModUtil {
 

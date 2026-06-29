@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 public class MessageWireSystems implements IMessage {
@@ -32,7 +32,7 @@ public class MessageWireSystems implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        PacketBuffer pb = new PacketBuffer(buf);
+        FriendlyByteBuf pb = new FriendlyByteBuf(buf);
         pb.writeInt(wireSystems.size());
         wireSystems.forEach((wiresHashCode, wireSystem) -> {
             pb.writeInt(wiresHashCode);
@@ -46,7 +46,7 @@ public class MessageWireSystems implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        PacketBuffer pb = new PacketBuffer(buf);
+        FriendlyByteBuf pb = new FriendlyByteBuf(buf);
         wireSystems.clear();
         int count = pb.readInt();
         for (int i = 0; i < count; i++) {

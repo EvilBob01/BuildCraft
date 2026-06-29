@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -14,7 +14,7 @@ import io.netty.buffer.ByteBufOutputStream;
 
 import net.minecraft.nbt.CompressedStreamTools;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 public class MessageSnapshotResponse implements IMessage {
@@ -31,16 +31,16 @@ public class MessageSnapshotResponse implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
 
-//        byte[] bytes = NbtSquisher.squishBuildCraftV1(Snapshot.writeToNBT(snapshot));
+//        byte[] bytes = NbtSquisher.squishBuildCraftV1(Snapshot.saveAdditional(snapshot));
 //        buf.writeInt(bytes.length);
 //        buf.writeBytes(bytes);
 //        try {
-//            CompressedStreamTools.write(Snapshot.writeToNBT(snapshot), new ByteBufOutputStream(buf));
+//            CompressedStreamTools.write(Snapshot.saveAdditional(snapshot), new ByteBufOutputStream(buf));
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
         try {
-            CompressedStreamTools.writeCompressed(Snapshot.writeToNBT(snapshot), new ByteBufOutputStream(buf));
+            CompressedStreamTools.writeCompressed(Snapshot.saveAdditional(snapshot), new ByteBufOutputStream(buf));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,9 +49,9 @@ public class MessageSnapshotResponse implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         try {
-//            snapshot = Snapshot.readFromNBT(NbtSquisher.expand(buf.readBytes(buf.readInt()).array()));
-//            snapshot = Snapshot.readFromNBT(CompressedStreamTools.read(new ByteBufInputStream(buf), NBTSizeTracker.INFINITE));
-            snapshot = Snapshot.readFromNBT(CompressedStreamTools.readCompressed(new ByteBufInputStream(buf)));
+//            snapshot = Snapshot.loadAdditional(NbtSquisher.expand(buf.readBytes(buf.readInt()).array()));
+//            snapshot = Snapshot.loadAdditional(CompressedStreamTools.read(new ByteBufInputStream(buf), NBTSizeTracker.INFINITE));
+            snapshot = Snapshot.loadAdditional(CompressedStreamTools.readCompressed(new ByteBufInputStream(buf)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

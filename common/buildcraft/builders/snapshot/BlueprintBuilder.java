@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -23,14 +23,14 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
 
 import buildcraft.api.schematics.ISchematicBlock;
 import buildcraft.api.schematics.ISchematicEntity;
@@ -141,12 +141,12 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
                                 .map(fluidStack -> {
                                     ItemStack stack = FluidUtil.getFilledBucket(fluidStack);
                                     if (!stack.hasTagCompound()) {
-                                        stack.setTagCompound(new NBTTagCompound());
+                                        stack.setTagCompound(new CompoundTag());
                                     }
                                     // noinspection ConstantConditions
                                     stack.getTagCompound().setTag(
                                         FLUID_STACK_KEY,
-                                        fluidStack.writeToNBT(new NBTTagCompound())
+                                        fluidStack.saveAdditional(new CompoundTag())
                                     );
                                     return stack;
                                 })
@@ -235,7 +235,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
 
     @Override
     public boolean tick() {
-        if (tile.getWorldBC().isRemote) {
+        if (tile.getWorldBC().isClientSide) {
             return super.tick();
         }
         tile.getWorldBC().profiler.startSection("entitiesWithinBox");
@@ -250,7 +250,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
             .filter(schematicEntity ->
                 entitiesWithinBox.stream()
                     .map(Entity::getPositionVector)
-                    .map(schematicEntity.getPos().add(new Vec3d(getBuildingInfo().offsetPos))::distanceTo)
+                    .map(schematicEntity.getPos().add(new Vec3(getBuildingInfo().offsetPos))::distanceTo)
                     .noneMatch(distance -> distance < MAX_ENTITY_DISTANCE)
             )
             .collect(Collectors.toList());
@@ -278,7 +278,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
                 entity != null &&
                     getBuildingInfo().entities.stream()
                         .map(ISchematicEntity::getPos)
-                        .map(new Vec3d(getBuildingInfo().offsetPos)::add)
+                        .map(new Vec3(getBuildingInfo().offsetPos)::add)
                         .map(entity.getPositionVector()::distanceTo)
                         .noneMatch(distance -> distance < MAX_ENTITY_DISTANCE) &&
                     SchematicEntityManager.getSchematicEntity(new SchematicEntityContext(

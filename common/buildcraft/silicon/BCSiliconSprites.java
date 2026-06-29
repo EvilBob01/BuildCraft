@@ -1,8 +1,8 @@
-package buildcraft.silicon;
+﻿package buildcraft.silicon;
 
 import net.minecraft.item.EnumDyeColor;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import buildcraft.lib.client.sprite.SpriteHolderRegistry;
 import buildcraft.lib.client.sprite.SpriteHolderRegistry.SpriteHolder;
@@ -46,7 +46,7 @@ public class BCSiliconSprites {
     }
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCSiliconSprites.class);
+        NeoForge.EVENT_BUS.register(BCSiliconSprites.class);
     }
 
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,14 +13,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.lib.client.model.json.JsonVariableModel.ITextureGetter;
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.misc.JsonUtil;
 
 public class VariablePartCuboid extends VariablePartCuboidBase {
-    public final Map<EnumFacing, JsonVariableFaceUV> faces = new HashMap<>();
+    public final Map<Direction, JsonVariableFaceUV> faces = new HashMap<>();
 
     public VariablePartCuboid(JsonObject obj, FunctionContext fnCtx) {
         super(obj, fnCtx);
@@ -40,7 +40,7 @@ public class VariablePartCuboid extends VariablePartCuboidBase {
             throw new JsonSyntaxException("Expected between 1 and 6 faces, got '" + elem + "'");
         }
         JsonObject jFaces = elem.getAsJsonObject();
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (jFaces.has(face.getName())) {
                 JsonElement jFace = jFaces.get(face.getName());
                 if (!jFace.isJsonObject()) {
@@ -62,7 +62,7 @@ public class VariablePartCuboid extends VariablePartCuboidBase {
     }
 
     @Override
-    protected VariableFaceData getFaceData(EnumFacing side, ITextureGetter spriteLookup) {
+    protected VariableFaceData getFaceData(Direction side, ITextureGetter spriteLookup) {
         JsonVariableFaceUV var = faces.get(side);
         if (var == null || !var.visible.evaluate()) {
             return null;

@@ -1,4 +1,4 @@
-package buildcraft.energy.generation;
+﻿package buildcraft.energy.generation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +8,16 @@ import java.util.function.Predicate;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.biome.BiomeEnd;
 
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -54,7 +54,7 @@ public class OilGenerator {
 
     @SubscribeEvent
     public static void onPopulatePre(PopulateChunkEvent.Pre event) {
-        World world = event.getWorld();
+        Level world = event.getWorld();
         int chunkX = event.getChunkX();
         int chunkZ = event.getChunkZ();
 
@@ -111,11 +111,11 @@ public class OilGenerator {
         world.profiler.endSection();
     }
 
-    public static List<OilGenStructure> getStructures(World world, int cx, int cz) {
+    public static List<OilGenStructure> getStructures(Level world, int cx, int cz) {
         return getStructures(world, cx, cz, false);
     }
 
-    private static List<OilGenStructure> getStructures(World world, int cx, int cz, boolean log) {
+    private static List<OilGenStructure> getStructures(Level world, int cx, int cz, boolean log) {
         Random rand = RandUtil.createRandomForChunk(world, cx, cz, MAGIC_GEN_NUMBER);
 
         // shift to world coordinates
@@ -125,12 +125,12 @@ public class OilGenerator {
         Biome biome = world.getBiome(new BlockPos(x, 0, z));
 
         // Do not generate oil in excluded biomes
-        boolean isExcludedBiome = BCEnergyConfig.excludedBiomes.contains(biome.getRegistryName());
+        boolean isExcludedBiome = BCEnergyConfig.excludedBiomes.contains(biome.builtInRegistryHolder().key().location());
         if (isExcludedBiome == BCEnergyConfig.excludedBiomesIsBlackList) {
             if (DEBUG_OILGEN_BASIC & log) {
                 BCLog.logger.info(
                     "[energy.oilgen] Not generating oil in " + toStr(world) + " chunk " + cx + ", " + cz
-                        + " because the biome we found (" + biome.getRegistryName() + ") is disabled!"
+                        + " because the biome we found (" + biome.builtInRegistryHolder().key().location() + ") is disabled!"
                 );
             }
             return ImmutableList.of();
@@ -146,11 +146,11 @@ public class OilGenerator {
             return ImmutableList.of();
         }
 
-        boolean oilBiome = BCEnergyConfig.surfaceDepositBiomes.contains(biome.getRegistryName());
+        boolean oilBiome = BCEnergyConfig.surfaceDepositBiomes.contains(biome.builtInRegistryHolder().key().location());
 
         double bonus = oilBiome ? 3.0 : 1.0;
         bonus *= BCEnergyConfig.oilWellGenerationRate;
-        if (BCEnergyConfig.excessiveBiomes.contains(biome.getRegistryName())) {
+        if (BCEnergyConfig.excessiveBiomes.contains(biome.builtInRegistryHolder().key().location())) {
             bonus *= 30.0;
         }
         final GenType type;
@@ -246,9 +246,9 @@ public class OilGenerator {
         return structures;
     }
 
-    private static String toStr(World world) {
-        if (world instanceof WorldServer) {
-            WorldServer ws = (WorldServer) world;
+    private static String toStr(Level world) {
+        if (world instanceof ServerLevel) {
+            ServerLevel ws = (ServerLevel) world;
             return ws.getChunkSaveLocation().getName();
         }
         return world.toString();

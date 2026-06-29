@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -14,11 +14,11 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.tile.TileMarker;
 
@@ -36,7 +36,7 @@ public abstract class MarkerConnection<C extends MarkerConnection<C>> {
 
     public abstract Collection<BlockPos> getMarkerPositions();
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract void renderInWorld();
 
     public void getDebugInfo(BlockPos caller, List<String> left) {
@@ -49,17 +49,17 @@ public abstract class MarkerConnection<C extends MarkerConnection<C>> {
             TileMarker<C> marker = subCache.getMarker(pos);
             String s = "  " + pos + " [";
             if (marker == null) {
-                s += TextFormatting.RED + "U";
+                s += ChatFormatting.RED + "U";
             } else {
-                s += TextFormatting.GREEN + "L";
+                s += ChatFormatting.GREEN + "L";
             }
             if (pos.equals(caller)) {
-                s += TextFormatting.BLACK + "S";
+                s += ChatFormatting.BLACK + "S";
             } else {
-                s += TextFormatting.AQUA + "C";
+                s += ChatFormatting.AQUA + "C";
             }
             s += getTypeInfo(pos, marker);
-            s += TextFormatting.RESET + "]";
+            s += ChatFormatting.RESET + "]";
             left.add(s);
         }
     }

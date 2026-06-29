@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,12 +8,12 @@ package buildcraft.lib.recipe;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.lib.misc.ItemStackKey;
 import buildcraft.lib.misc.StackUtil;
@@ -38,7 +38,7 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
     }
 
     public ChangingItemStack(String oreId) {
-        this(OreDictionary.getOres(oreId));
+        this(/* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(oreId));
     }
 
     private static ItemStackKey[] makeListArray(NonNullList<ItemStack> stacks) {
@@ -51,7 +51,7 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         }
         if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
             NonNullList<ItemStack> subs = NonNullList.create();
-            stack.getItem().getSubItems(CreativeTabs.SEARCH, subs);
+            stack.getItem().getSubItems(CreativeModeTab.SEARCH, subs);
             return makeListArray(subs);
         } else {
             return new ItemStackKey[] { new ItemStackKey(stack) };

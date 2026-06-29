@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,7 +9,7 @@ package buildcraft.transport.client.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.model.animation.FastTESR;
 
@@ -49,7 +49,7 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
 
     private static void renderPluggables(TilePipeHolder pipe, double x, double y, double z, float partialTicks,
         BufferBuilder bb) {
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             PipePluggable plug = pipe.getPluggable(face);
             if (plug == null) {
                 continue;

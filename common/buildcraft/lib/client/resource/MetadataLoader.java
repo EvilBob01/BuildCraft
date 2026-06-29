@@ -1,4 +1,4 @@
-package buildcraft.lib.client.resource;
+﻿package buildcraft.lib.client.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.data.MetadataSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /** Alternate metadata loader for {@link IResource#getMetadata(String)} */
 public class MetadataLoader {

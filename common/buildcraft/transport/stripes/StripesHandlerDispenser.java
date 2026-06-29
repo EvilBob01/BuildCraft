@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.transport.IStripesActivator;
 import buildcraft.api.transport.IStripesHandlerItem;
@@ -32,11 +32,11 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
     public static final List<Class<? extends Item>> ITEM_CLASSES = new ArrayList<>();
 
     public static class Source implements IBlockSource {
-        private final World world;
+        private final Level world;
         private final BlockPos pos;
-        private final EnumFacing side;
+        private final Direction side;
 
-        public Source(World world, BlockPos pos, EnumFacing side) {
+        public Source(Level world, BlockPos pos, Direction side) {
             this.world = world;
             this.pos = pos;
             this.side = side;
@@ -63,18 +63,18 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
         }
 
         @Override
-        public IBlockState getBlockState() {
+        public BlockState getBlockState() {
             return Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, side);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends TileEntity> T getBlockTileEntity() {
-            return (T) world.getTileEntity(pos);
+        public <T extends BlockEntity> T getBlockTileEntity() {
+            return (T) world.getBlockEntity(pos);
         }
 
         @Override
-        public World getWorld() {
+        public Level getWorld() {
             return world;
         }
     }
@@ -95,11 +95,11 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
     }
 
     @Override
-    public boolean handle(World world,
+    public boolean handle(Level world,
                           BlockPos pos,
-                          EnumFacing direction,
+                          Direction direction,
                           ItemStack stack,
-                          EntityPlayer player,
+                          Player player,
                           IStripesActivator activator) {
         if (!BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.containsKey(stack.getItem())) {
             return false;

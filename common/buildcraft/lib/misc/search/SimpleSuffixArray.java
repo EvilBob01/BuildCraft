@@ -1,11 +1,11 @@
-package buildcraft.lib.misc.search;
+﻿package buildcraft.lib.misc.search;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import net.minecraft.profiler.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import buildcraft.api.core.BCLog;
 

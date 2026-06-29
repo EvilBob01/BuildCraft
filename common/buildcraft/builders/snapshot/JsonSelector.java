@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -20,8 +20,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 
 @SuppressWarnings("WeakerAccess")
 public class JsonSelector {
@@ -34,7 +34,7 @@ public class JsonSelector {
         this.expressions = expressions;
     }
 
-    public boolean matches(Predicate<String> basePredicate, NBTTagCompound nbt) {
+    public boolean matches(Predicate<String> basePredicate, CompoundTag nbt) {
         return basePredicate.test(base) &&
             expressions.stream()
                 .allMatch(expression -> expression.operation.compare(expression.key.get(nbt), expression.value));
@@ -67,9 +67,9 @@ public class JsonSelector {
     private static class Expression {
         public final NbtPath key;
         public final EnumNbtCompareOperation operation;
-        public final NBTBase value;
+        public final Tag value;
 
-        public Expression(NbtPath key, EnumNbtCompareOperation operation, NBTBase value) {
+        public Expression(NbtPath key, EnumNbtCompareOperation operation, Tag value) {
             this.key = key;
             this.operation = operation;
             this.value = value;

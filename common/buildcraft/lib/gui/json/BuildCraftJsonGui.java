@@ -1,4 +1,4 @@
-package buildcraft.lib.gui.json;
+﻿package buildcraft.lib.gui.json;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +9,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.render.ISprite;

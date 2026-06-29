@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -20,12 +20,12 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -45,13 +45,13 @@ public abstract class MarkerSubCache<C extends MarkerConnection<C>> {
     private final Map<C, Set<BlockPos>> connectionToPos = new ConcurrentHashMap<>();
     private final Map<BlockPos, Optional<TileMarker<C>>> tileCache = new ConcurrentHashMap<>();
 
-    public MarkerSubCache(World world, int cacheId) {
-        this.isServer = !world.isRemote;
+    public MarkerSubCache(Level world, int cacheId) {
+        this.isServer = !world.isClientSide;
         this.dimensionId = world.provider.getDimension();
         this.cacheId = cacheId;
     }
 
-    public void onPlayerJoinWorld(EntityPlayerMP player) {
+    public void onPlayerJoinWorld(ServerPlayer player) {
         if (isServer) {// Sanity Check
             // Send ALL loaded markers
             if (!tileCache.isEmpty()) {
@@ -290,10 +290,10 @@ public abstract class MarkerSubCache<C extends MarkerConnection<C>> {
 
     public abstract ImmutableList<BlockPos> getValidConnections(BlockPos from);
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract LaserType getPossibleLaserType();
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public final void handleMessageMain(MessageMarker message) {
         if (handleMessage(message)) {
             return;
@@ -314,6 +314,6 @@ public abstract class MarkerSubCache<C extends MarkerConnection<C>> {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected abstract boolean handleMessage(MessageMarker message);
 }

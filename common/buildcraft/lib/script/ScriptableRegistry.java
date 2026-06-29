@@ -1,4 +1,4 @@
-package buildcraft.lib.script;
+﻿package buildcraft.lib.script;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,10 +29,10 @@ import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.IOUtils;
 
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.ModContainer;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.registry.IReloadableRegistryManager;

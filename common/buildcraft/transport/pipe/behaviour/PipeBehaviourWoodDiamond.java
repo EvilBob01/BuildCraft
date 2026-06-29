@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,20 +8,20 @@ package buildcraft.transport.pipe.behaviour;
 
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.BlockHitResult;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.IStackFilter;
@@ -71,7 +71,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
         super(pipe);
     }
 
-    public PipeBehaviourWoodDiamond(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourWoodDiamond(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
         filters.deserializeNBT(nbt.getCompoundTag("filters"));
         filterMode = FilterMode.get(nbt.getByte("mode"));
@@ -80,8 +80,8 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setTag("filters", filters.serializeNBT());
         nbt.setByte("mode", (byte) filterMode.ordinal());
         nbt.setByte("currentFilter", (byte) currentFilter);
@@ -89,9 +89,9 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public void readPayload(PacketBuffer buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             filterMode = FilterMode.get(buffer.readUnsignedByte());
             currentFilter = buffer.readUnsignedByte() % filters.getSlots();
             filterValid = buffer.readBoolean();
@@ -99,9 +99,9 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public void writePayload(PacketBuffer buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Side side) {
         super.writePayload(buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             buffer.writeByte(filterMode.ordinal());
             buffer.writeByte(currentFilter);
             buffer.writeBoolean(filterValid);
@@ -109,7 +109,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public boolean onPipeActivate(EntityPlayer player, RayTraceResult trace, float hitX, float hitY, float hitZ,
+    public boolean onPipeActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ,
         EnumPipePart part) {
         if (EntityUtil.getWrenchHand(player) != null) {
             return super.onPipeActivate(player, trace, hitX, hitY, hitZ, part);
@@ -120,7 +120,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                 return false;
             }
         }
-        if (!player.world.isRemote) {
+        if (!player.world.isClientSide) {
             BCTransportGuis.PIPE_DIAMOND_WOOD.openGui(player, pipe.getHolder().getPipePos());
         }
         return true;
@@ -157,7 +157,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    protected int extractItems(IFlowItems flow, EnumFacing dir, int count, boolean simulate) {
+    protected int extractItems(IFlowItems flow, Direction dir, int count, boolean simulate) {
         if (filters.getStackInSlot(currentFilter).isEmpty()) {
             advanceFilter();
         }
@@ -169,7 +169,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    protected FluidStack extractFluid(IFlowFluid flow, EnumFacing dir, int millibuckets, boolean simulate) {
+    protected FluidStack extractFluid(IFlowFluid flow, Direction dir, int millibuckets, boolean simulate) {
         if (filters.getStackInSlot(currentFilter).isEmpty()) {
             advanceFilter();
         }
@@ -183,7 +183,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                 // Firstly try the advanced version - if that fails we will need to try the basic version
                 ActionResult<FluidStack> result = flow.tryExtractFluidAdv(millibuckets, dir, new ArrayFluidFilter(filters.stacks), simulate);
                 FluidStack extracted = result.getResult();
-                if (result.getType() != EnumActionResult.PASS) {
+                if (result.getType() != InteractionResult.PASS) {
                     return extracted;
                 }
 

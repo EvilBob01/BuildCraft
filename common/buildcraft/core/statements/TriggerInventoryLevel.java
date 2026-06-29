@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,13 +8,13 @@ package buildcraft.core.statements;
 
 import java.util.Locale;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import buildcraft.api.inventory.IItemHandlerFiltered;
 import buildcraft.api.items.IList;
@@ -50,7 +50,7 @@ public class TriggerInventoryLevel extends BCStatement implements ITriggerExtern
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCCoreSprites.TRIGGER_INVENTORY_LEVEL.get(type);
     }
@@ -61,7 +61,7 @@ public class TriggerInventoryLevel extends BCStatement implements ITriggerExtern
     }
 
     @Override
-    public boolean isTriggerActive(TileEntity tile, EnumFacing side, IStatementContainer container,
+    public boolean isTriggerActive(BlockEntity tile, Direction side, IStatementContainer container,
         IStatementParameter[] parameters) {
         IItemHandler itemHandler = tile.getCapability(CapUtil.CAP_ITEMS, side.getOpposite());
         if (itemHandler == null) {

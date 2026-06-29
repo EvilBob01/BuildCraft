@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -6,14 +6,14 @@ package buildcraft.core;
 
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.BCModules;
 
@@ -40,7 +40,7 @@ public abstract class BCCoreProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         if (ID == BCCoreGuis.LIST.ordinal()) {
             return new ContainerList(player);
         }
@@ -48,31 +48,31 @@ public abstract class BCCoreProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
     public void fmlPreInit() {
-        MessageManager.registerMessageClass(BCModules.CORE, MessageVolumeBoxes.class, Side.CLIENT);
+        MessageManager.registerMessageClass(BCModules.CORE, MessageVolumeBoxes.class, Dist.CLIENT);
     }
 
     public void fmlInit() {}
 
     public void fmlPostInit() {}
 
-    public List<VolumeBox> getVolumeBoxes(World world) {
+    public List<VolumeBox> getVolumeBoxes(Level world) {
         return WorldSavedDataVolumeBoxes.get(world).volumeBoxes;
     }
 
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCCoreProxy {
 
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCCoreProxy {
         @Override
-        public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
             if (ID == BCCoreGuis.LIST.ordinal()) {
                 return new GuiList(player);
             }
@@ -85,20 +85,20 @@ public abstract class BCCoreProxy implements IGuiHandler {
             BCCoreSprites.fmlPreInit();
             BCCoreModels.fmlPreInit();
             DetachedRenderer.INSTANCE.addRenderer(RenderMatrixType.FROM_WORLD_ORIGIN, RenderVolumeBoxes.INSTANCE);
-            MinecraftForge.EVENT_BUS.register(ListTooltipHandler.INSTANCE);
-            MessageManager.setHandler(MessageVolumeBoxes.class, MessageVolumeBoxes.HANDLER, Side.CLIENT);
+            NeoForge.EVENT_BUS.register(ListTooltipHandler.INSTANCE);
+            MessageManager.setHandler(MessageVolumeBoxes.class, MessageVolumeBoxes.HANDLER, Dist.CLIENT);
         }
 
         @Override
         public void fmlInit() {
             super.fmlInit();
             BCCoreModels.fmlInit();
-            MinecraftForge.EVENT_BUS.register(RenderTickListener.class);
+            NeoForge.EVENT_BUS.register(RenderTickListener.class);
         }
 
         @Override
-        public List<VolumeBox> getVolumeBoxes(World world) {
-            return world.isRemote ? ClientVolumeBoxes.INSTANCE.volumeBoxes : super.getVolumeBoxes(world);
+        public List<VolumeBox> getVolumeBoxes(Level world) {
+            return world.isClientSide ? ClientVolumeBoxes.INSTANCE.volumeBoxes : super.getVolumeBoxes(world);
         }
     }
 }

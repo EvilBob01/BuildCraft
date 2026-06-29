@@ -1,4 +1,4 @@
-package buildcraft.lib.gui.recipe;
+﻿package buildcraft.lib.gui.recipe;
 
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiButtonToggle;
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.RecipeBookPage;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.stats.RecipeBook;
 
 import buildcraft.lib.gui.slot.SlotPhantom;

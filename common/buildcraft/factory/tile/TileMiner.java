@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,16 +11,16 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.IMjReceiver;
@@ -71,7 +71,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
 
     @Override
     public void update() {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             lastLength = currentLength;
             if (Math.abs(wantedLength - currentLength) <= 0.01) {
                 currentLength = wantedLength;
@@ -123,7 +123,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
             }
             for (int y = pos.getY() - 1; y > newY; y--) {
                 BlockPos blockPos = new BlockPos(pos.getX(), y, pos.getZ());
-                world.setBlockState(blockPos, BCFactoryBlocks.tube.getDefaultState());
+                world.setBlock(blockPos, BCFactoryBlocks.tube.getDefaultState());
             }
             currentLength = wantedLength = newLength;
             sendNetworkUpdate(NET_WANTED_Y);
@@ -145,14 +145,14 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     public boolean isComplete() {
-        return world.isRemote ? isComplete : currentPos == null;
+        return world.isClientSide ? isComplete : currentPos == null;
     }
 
     @Override
-    protected void migrateOldNBT(int version, NBTTagCompound nbt) {
+    protected void migrateOldNBT(int version, CompoundTag nbt) {
         super.migrateOldNBT(version, nbt);
         if (version == BCVersion.BEFORE_RECORDS.dataVersion || version == BCVersion.v7_2_0_pre_12.dataVersion) {
-            NBTTagCompound oldBattery = nbt.getCompoundTag("battery");
+            CompoundTag oldBattery = nbt.getCompoundTag("battery");
             int energy = oldBattery.getInteger("energy");
             battery.extractPower(0, Integer.MAX_VALUE);
             battery.addPower(energy * 100, false);
@@ -160,8 +160,8 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (currentPos != null) {
             nbt.setTag("currentPos", NBTUtil.createPosTag(currentPos));
         }
@@ -172,8 +172,8 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         if (nbt.hasKey("currentPos")) {
             currentPos = NBTUtil.getPosFromTag(nbt.getCompoundTag("currentPos"));
         }
@@ -191,7 +191,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_LED_STATUS, buffer, side);
                 buffer.writeInt(wantedLength);
@@ -207,7 +207,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_LED_STATUS, buffer, side, ctx);
                 currentLength = lastLength = wantedLength = buffer.readInt();
@@ -221,7 +221,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("battery = " + battery.getDebugString());
         left.add("current = " + currentPos);
         left.add("wantedLength = " + wantedLength);
@@ -233,13 +233,13 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
 
     @Nonnull
     @Override
-    @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox() {
+    @OnlyIn(Dist.CLIENT)
+    public AABB getRenderBoundingBox() {
         return INFINITE_EXTENT_AABB;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public double getMaxRenderDistanceSquared() {
         return Double.MAX_VALUE;
     }
@@ -247,12 +247,12 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     // Rendering
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean hasFastRenderer() {
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public float getPercentFilledForRender() {
         float val = battery.getStored() / (float) battery.getCapacity();
         return val < 0 ? 0 : val > 1 ? 1 : val;

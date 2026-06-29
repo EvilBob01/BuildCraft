@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,16 +6,16 @@
 
 package buildcraft.silicon;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pluggable.PipePluggable;
@@ -44,8 +44,8 @@ public abstract class BCSiliconProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+    public Object getServerGuiElement(int id, Player player, Level world, int x, int y, int z) {
+        BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
         int data = id >>> 8;
         id = id & 0xFF;
         if (id == BCSiliconGuis.ASSEMBLY_TABLE.ordinal()) {
@@ -67,7 +67,7 @@ public abstract class BCSiliconProxy implements IGuiHandler {
             }
         }
         if (id == BCSiliconGuis.GATE.ordinal()) {
-            EnumFacing gateSide = EnumFacing.getFront(data);
+            Direction gateSide = Direction.from3DDataValue(data);
             if (tile instanceof IPipeHolder) {
                 IPipeHolder holder = (IPipeHolder) tile;
                 PipePluggable plug = holder.getPluggable(gateSide);
@@ -84,7 +84,7 @@ public abstract class BCSiliconProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
@@ -95,11 +95,11 @@ public abstract class BCSiliconProxy implements IGuiHandler {
     public void fmlPostInit() {}
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCSiliconProxy {}
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCSiliconProxy {
 
         @Override
@@ -122,8 +122,8 @@ public abstract class BCSiliconProxy implements IGuiHandler {
         }
 
         @Override
-        public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-            TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+        public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
+            BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
             int data = id >>> 8;
             id = id & 0xFF;
             if (id == BCSiliconGuis.ASSEMBLY_TABLE.ordinal()) {
@@ -146,7 +146,7 @@ public abstract class BCSiliconProxy implements IGuiHandler {
                 }
             }
             if (id == BCSiliconGuis.GATE.ordinal()) {
-                EnumFacing gateSide = EnumFacing.getFront(data);
+                Direction gateSide = Direction.from3DDataValue(data);
                 if (tile instanceof IPipeHolder) {
                     IPipeHolder holder = (IPipeHolder) tile;
                     PipePluggable plug = holder.getPluggable(gateSide);

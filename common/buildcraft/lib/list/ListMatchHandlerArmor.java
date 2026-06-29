@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,9 +10,9 @@ import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import net.minecraftforge.common.DimensionManager;
 
@@ -23,7 +23,7 @@ import buildcraft.lib.BCLibProxy;
 
 public class ListMatchHandlerArmor extends ListMatchHandler {
     private static EnumSet<EntityEquipmentSlot> getArmorTypes(ItemStack stack) {
-        EntityPlayer player = BCLibProxy.getProxy().getClientPlayer();
+        Player player = BCLibProxy.getProxy().getClientPlayer();
         if (player == null) {
             player = BuildCraftAPI.fakePlayerProvider.getBuildCraftPlayer(DimensionManager.getWorld(0));
         }

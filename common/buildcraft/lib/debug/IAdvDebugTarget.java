@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,8 +6,8 @@
 
 package buildcraft.lib.debug;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.render.DetachedRenderer.IDetachedRenderer;
 
@@ -28,6 +28,6 @@ public interface IAdvDebugTarget {
     /** Called on the client to actually render off the target. Note that this might not be called every frame this this
      * is rendered, so the returned render should always correctly render the current debug target, provided that
      * {@link #doesExistInWorld()} returns true. */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     IDetachedRenderer getDebugRenderer();
 }

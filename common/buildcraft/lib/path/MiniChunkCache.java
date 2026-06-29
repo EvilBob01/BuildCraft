@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -17,8 +17,8 @@ import java.util.function.Consumer;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Futures;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.misc.WorkerThreadUtil;
 import buildcraft.lib.path.task.TaskMiniChunkManager;
@@ -34,7 +34,7 @@ public class MiniChunkCache {
         this.dimId = dimId;
     }
 
-    public static Future<MiniChunkGraph> requestGraph(World world, BlockPos pos) {
+    public static Future<MiniChunkGraph> requestGraph(Level world, BlockPos pos) {
         int dimId = world.provider.getDimension();
         if (!worldCaches.containsKey(dimId)) {
             worldCaches.put(dimId, new MiniChunkCache(dimId));
@@ -42,7 +42,7 @@ public class MiniChunkCache {
         return worldCaches.get(dimId).requestGraphImpl(world, pos);
     }
 
-    public static MiniChunkGraph getGraphIfExists(World world, BlockPos pos) {
+    public static MiniChunkGraph getGraphIfExists(Level world, BlockPos pos) {
         int dimId = world.provider.getDimension();
         if (!worldCaches.containsKey(dimId)) {
             worldCaches.put(dimId, new MiniChunkCache(dimId));
@@ -50,7 +50,7 @@ public class MiniChunkCache {
         return worldCaches.get(dimId).getGraphIfExistsImpl(pos);
     }
 
-    public static MiniChunkGraph requestAndWait(World world, BlockPos pos) {
+    public static MiniChunkGraph requestAndWait(Level world, BlockPos pos) {
         try {
             return requestGraph(world, pos).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -62,7 +62,7 @@ public class MiniChunkCache {
         cache.put(min, graph);
     }
 
-    private Future<MiniChunkGraph> requestGraphImpl(World world, BlockPos pos) {
+    private Future<MiniChunkGraph> requestGraphImpl(Level world, BlockPos pos) {
         final BlockPos minPos = convertToMin(pos);
         pos = minPos;
         MiniChunkGraph existing = cache.get(pos);

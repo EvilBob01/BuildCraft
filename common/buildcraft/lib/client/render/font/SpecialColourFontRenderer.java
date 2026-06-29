@@ -1,4 +1,4 @@
-package buildcraft.lib.client.render.font;
+﻿package buildcraft.lib.client.render.font;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.api.core.BCLog;
 
@@ -35,7 +35,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
 
         while (next != -1) {
 
-            int end = text.indexOf(TextFormatting.RESET.toString());
+            int end = text.indexOf(ChatFormatting.RESET.toString());
             String sub;
             if (end > 0) {
                 sub = text.substring(next, end);

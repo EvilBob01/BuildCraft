@@ -1,4 +1,4 @@
-package buildcraft.lib.gui.json;
+﻿package buildcraft.lib.gui.json;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.model.ResourceLoaderContext;
 import buildcraft.lib.expression.FunctionContext;

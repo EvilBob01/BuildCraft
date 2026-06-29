@@ -1,4 +1,4 @@
-package buildcraft.builders;
+﻿package buildcraft.builders;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,10 +12,10 @@ import net.minecraft.block.BlockBanner;
 import net.minecraft.block.BlockVine;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.schematics.ISchematicBlock;
 import buildcraft.api.schematics.SchematicBlockContext;
@@ -59,10 +59,10 @@ public class BCBuildersSchematics {
     private static SchematicBlockDefault getVine() {
         return new SchematicBlockDefault() {
             @Override
-            public boolean isReadyToBuild(World world, BlockPos blockPos) {
+            public boolean isReadyToBuild(Level world, BlockPos blockPos) {
                 return super.isReadyToBuild(world, blockPos)
                     && (world.getBlockState(blockPos.up()).getBlock() instanceof BlockVine
-                        || StreamSupport.stream(EnumFacing.Plane.HORIZONTAL.spliterator(), false).map(blockPos::offset)
+                        || StreamSupport.stream(Direction.Plane.HORIZONTAL.spliterator(), false).map(blockPos::offset)
                             .map(world::getBlockState)
                             .anyMatch(state -> state.isFullCube() && state.getMaterial().blocksMovement()));
             }

@@ -1,4 +1,4 @@
-package buildcraft.lib.script;
+﻿package buildcraft.lib.script;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,9 +24,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.Loader;
+import net.neoforged.fml.ModList;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;

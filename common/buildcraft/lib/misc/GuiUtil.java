@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -25,12 +25,12 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Mth;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import buildcraft.api.core.BCLog;
@@ -293,12 +293,12 @@ public class GuiUtil {
 
     public static void drawTexturedModalRect(double posX, double posY, double textureX, double textureY, double width,
         double height) {
-        int x = MathHelper.floor(posX);
-        int y = MathHelper.floor(posY);
-        int u = MathHelper.floor(textureX);
-        int v = MathHelper.floor(textureY);
-        int w = MathHelper.floor(width);
-        int h = MathHelper.floor(height);
+        int x = Mth.floor(posX);
+        int y = Mth.floor(posY);
+        int u = Mth.floor(textureX);
+        int v = Mth.floor(textureY);
+        int w = Mth.floor(width);
+        int h = Mth.floor(height);
         Gui gui = Minecraft.getMinecraft().currentScreen;
         gui.drawTexturedModalRect(x, y, u, v, w, h);
     }
@@ -438,7 +438,7 @@ public class GuiUtil {
         }
 
         for (int i = 1; i < list.size(); ++i) {
-            list.set(i, TextFormatting.GRAY + list.get(i));
+            list.set(i, ChatFormatting.GRAY + list.get(i));
         }
 
         return list;
@@ -459,7 +459,7 @@ public class GuiUtil {
             // Temp workaround for headcrumbs
             // TODO: Remove this after https://github.com/BuildCraft/BuildCraft/issues/4268 is fixed from their side! */
             Item item = stack.getItem();
-            String info = item.getRegistryName() + " " + item.getClass() + " (" + stack.serializeNBT() + ")";
+            String info = item.builtInRegistryHolder().key().location() + " " + item.getClass() + " (" + stack.serializeNBT() + ")";
             BCLog.logger.warn("[lib.guide] Found null display name! " + info);
             name = "!!NULL stack.getDisplayName(): " + info;
         }

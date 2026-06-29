@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -6,16 +6,16 @@
  */
 package buildcraft.core;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import buildcraft.api.BCBlocks;
@@ -31,11 +31,11 @@ import buildcraft.core.item.ItemPaintbrush_BC8;
 public class BCCoreRecipes {
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCCoreRecipes.class);
+        NeoForge.EVENT_BUS.register(BCCoreRecipes.class);
     }
 
     @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipes(RegisterEvent<IRecipe> event) {
         // TODO (1.13): define these in json
 
         if (BCItems.Core.PAINTBRUSH != null) {
@@ -61,7 +61,7 @@ public class BCCoreRecipes {
                 };
                 ResourceLocation group = BCModules.CORE.createLocation("paintbrush_colouring");
                 ShapelessOreRecipe recipe = new ShapelessOreRecipe(group, out, inputs);
-                recipe.setRegistryName(BCModules.CORE.createLocation("paintbrush_" + colour.getName()));
+                recipe/* setRegistryName removed - use registry directly */));
                 event.getRegistry().register(recipe);
             }
         }

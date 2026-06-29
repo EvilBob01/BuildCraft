@@ -1,10 +1,10 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -18,7 +18,7 @@ public class ContainerAutoCraftItems extends ContainerBCTile<TileAutoWorkbenchIt
 
     public final SlotBase[] materialSlots;
 
-    public ContainerAutoCraftItems(EntityPlayer player, TileAutoWorkbenchItems tile) {
+    public ContainerAutoCraftItems(Player player, TileAutoWorkbenchItems tile) {
         super(player, tile);
 
         addSlotToContainer(new SlotOutput(tile.invResult, 0, 124, 35));

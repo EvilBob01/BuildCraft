@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,15 +8,15 @@ package buildcraft.factory.tile;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IWorldEventListener;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.fluids.Fluid;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.SafeTimeTracker;
@@ -37,10 +37,10 @@ public class TileMiningWell extends TileMiner {
     private final SafeTimeTracker tracker = new SafeTimeTracker(256);
     private final IWorldEventListener worldEventListener = new WorldEventListenerAdapter() {
         @Override
-        public void notifyBlockUpdate(@Nonnull World world,
+        public void notifyBlockUpdate(@Nonnull Level world,
                                       @Nonnull BlockPos pos,
-                                      @Nonnull IBlockState oldState,
-                                      @Nonnull IBlockState newState,
+                                      @Nonnull BlockState oldState,
+                                      @Nonnull BlockState newState,
                                       int flags) {
             if (pos.getX() == TileMiningWell.this.pos.getX() &&
                 pos.getY() <= TileMiningWell.this.pos.getY() &&
@@ -65,7 +65,7 @@ public class TileMiningWell extends TileMiner {
                 progress = 0;
                 world.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
                 BlockUtil.breakBlockAndGetDrops(
-                    (WorldServer) world,
+                    (ServerLevel) world,
                     currentPos,
                     new ItemStack(Items.DIAMOND_PICKAXE),
                     getOwner()
@@ -119,7 +119,7 @@ public class TileMiningWell extends TileMiner {
     @Override
     public void validate() {
         super.validate();
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             world.addEventListener(worldEventListener);
         }
     }
@@ -127,7 +127,7 @@ public class TileMiningWell extends TileMiner {
     @Override
     public void invalidate() {
         super.invalidate();
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             world.removeEventListener(worldEventListener);
             if (currentPos != null) {
                 world.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,14 +12,14 @@ import java.util.Arrays;
 import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ITickable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.IMjConnector;
@@ -93,7 +93,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
 
     @Override
     public void update() {
-        if (getWorld().isRemote) {
+        if (getWorld().isClientSide) {
             return;
         }
         boolean didChange = crafting.tick();
@@ -122,7 +122,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_TICK) {
                 buffer.writeLong(powerStored);
             } else if (id == NET_GUI_DATA) {
@@ -134,7 +134,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_GUI_TICK) {
                 powerStoredLast = powerStored;
                 powerStored = buffer.readLong();

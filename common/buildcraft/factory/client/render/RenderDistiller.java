@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,14 +19,14 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 import buildcraft.lib.client.model.MutableQuad;
@@ -43,12 +43,12 @@ import buildcraft.factory.BCFactoryBlocks;
 import buildcraft.factory.BCFactoryModels;
 import buildcraft.factory.tile.TileDistiller_BC8;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8> {
-    private static final Map<EnumFacing, TankRenderSizes> TANK_SIZES = new EnumMap<>(EnumFacing.class);
+    private static final Map<Direction, TankRenderSizes> TANK_SIZES = new EnumMap<>(Direction.class);
 
     static {
-        EnumFacing face = EnumFacing.WEST;
+        Direction face = Direction.WEST;
         TankSize tankIn = new TankSize(0, 0, 4, 8, 16, 12).shrink(1 / 64.0);
         TankSize tankGasOut = new TankSize(8, 8, 0, 16, 16, 16).shrink(1 / 64.0);
         TankSize tankLiquidOut = new TankSize(8, 0, 0, 16, 8, 16).shrink(1 / 64.0);
@@ -65,7 +65,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         float alpha) {
         super.render(tile, x, y, z, partialTicks, destroyStage, alpha);
 
-        IBlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getWorld().getBlockState(tile.getPos());
         if (state.getBlock() != BCFactoryBlocks.distiller) {
             return;
         }
@@ -75,7 +75,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         profiler.startSection("distiller");
 
         int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), 0);
-        EnumFacing face = state.getValue(BlockBCBase_Neptune.PROP_FACING);
+        Direction face = state.getValue(BlockBCBase_Neptune.PROP_FACING);
         TankRenderSizes sizes = TANK_SIZES.get(face);
 
         // gl state setup
@@ -160,13 +160,13 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
     }
 
     static class Size {
-        final Vec3d min, max;
+        final Vec3 min, max;
 
         public Size(int sx, int sy, int sz, int ex, int ey, int ez) {
-            this(new Vec3d(sx, sy, sz).scale(1 / 16.0), new Vec3d(ex, ey, ez).scale(1 / 16.0));
+            this(new Vec3(sx, sy, sz).scale(1 / 16.0), new Vec3(ex, ey, ez).scale(1 / 16.0));
         }
 
-        public Size(Vec3d min, Vec3d max) {
+        public Size(Vec3 min, Vec3 max) {
             this.min = min;
             this.max = max;
         }
@@ -176,13 +176,13 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         }
 
         public Size rotateY() {
-            Vec3d _min = rotateY(min);
-            Vec3d _max = rotateY(max);
+            Vec3 _min = rotateY(min);
+            Vec3 _max = rotateY(max);
             return new Size(VecUtil.min(_min, _max), VecUtil.max(_min, _max));
         }
 
-        private static Vec3d rotateY(Vec3d vec) {
-            return new Vec3d(//
+        private static Vec3 rotateY(Vec3 vec) {
+            return new Vec3(//
                 1 - vec.z, //
                 vec.y, //
                 vec.x//

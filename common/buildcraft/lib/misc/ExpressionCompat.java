@@ -1,8 +1,8 @@
-package buildcraft.lib.misc;
+﻿package buildcraft.lib.misc;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 
 import buildcraft.api.enums.EnumPowerStage;
 import buildcraft.api.tiles.IControllable;
@@ -26,7 +26,7 @@ public class ExpressionCompat {
 
     // Minecraft Types
     public static final NodeType<Axis> ENUM_AXIS;
-    public static final NodeType<EnumFacing> ENUM_FACING;
+    public static final NodeType<Direction> ENUM_FACING;
     public static final NodeType<EnumDyeColor> ENUM_DYE_COLOUR;
 
     // BuildCraft API types
@@ -44,12 +44,12 @@ public class ExpressionCompat {
             ENUM_AXIS.putConstant("" + a, a);
         }
 
-        ENUM_FACING = new NodeType<>("Facing", EnumFacing.UP);
+        ENUM_FACING = new NodeType<>("Facing", Direction.UP);
         NodeTypes.addType("Facing", ENUM_FACING);
-        ENUM_FACING.put_t_t("getOpposite", EnumFacing::getOpposite);
-        ENUM_FACING.put_t_o("getAxis", Axis.class, EnumFacing::getAxis);
-        ENUM_FACING.put_t_o("(string)", String.class, EnumFacing::getName);
-        for (EnumFacing f : EnumFacing.values()) {
+        ENUM_FACING.put_t_t("getOpposite", Direction::getOpposite);
+        ENUM_FACING.put_t_o("getAxis", Axis.class, Direction::getAxis);
+        ENUM_FACING.put_t_o("(string)", String.class, Direction::getName);
+        for (Direction f : Direction.values()) {
             ENUM_FACING.putConstant("" + f, f);
         }
 

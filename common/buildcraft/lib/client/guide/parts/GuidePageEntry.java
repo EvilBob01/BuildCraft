@@ -1,10 +1,10 @@
-package buildcraft.lib.client.guide.parts;
+﻿package buildcraft.lib.client.guide.parts;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.GuideManager;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,8 +12,8 @@ import java.util.Collections;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.gates.IGate;
 import buildcraft.api.statements.IActionExternal;
@@ -74,7 +74,7 @@ public enum ActionProviderPipes implements IActionProvider {
 
     @Override
     public void addInternalSidedActions(
-        Collection<IActionInternalSided> actions, IStatementContainer container, @Nonnull EnumFacing side
+        Collection<IActionInternalSided> actions, IStatementContainer container, @Nonnull Direction side
     ) {
         if (container instanceof IGate) {
             IGate gate = (IGate) container;
@@ -84,7 +84,7 @@ public enum ActionProviderPipes implements IActionProvider {
     }
 
     @Override
-    public void addExternalActions(Collection<IActionExternal> actions, @Nonnull EnumFacing side, TileEntity tile) {
+    public void addExternalActions(Collection<IActionExternal> actions, @Nonnull Direction side, BlockEntity tile) {
 
     }
 }

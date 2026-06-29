@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,10 +8,10 @@ package buildcraft.lib.gui;
 
 import java.io.IOException;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.net.IPayloadReceiver;
 import buildcraft.lib.net.IPayloadWriter;
@@ -26,7 +26,7 @@ public abstract class Widget_Neptune<C extends ContainerBC_Neptune> implements I
     }
 
     public boolean isRemote() {
-        return container.player.world.isRemote;
+        return container.player.world.isClientSide;
     }
 
     // Net updating
@@ -39,14 +39,14 @@ public abstract class Widget_Neptune<C extends ContainerBC_Neptune> implements I
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IMessage handleWidgetDataClient(MessageContext ctx, PacketBufferBC buffer) throws IOException {
         return null;
     }
 
     @Override
     public IMessage receivePayload(MessageContext ctx, PacketBufferBC buffer) throws IOException {
-        if (ctx.side == Side.CLIENT) {
+        if (ctx.side == Dist.CLIENT) {
             return handleWidgetDataClient(ctx, buffer);
         } else {
             return handleWidgetDataServer(ctx, buffer);

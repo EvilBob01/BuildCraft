@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,12 +8,12 @@ package buildcraft.transport;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.transport.pipe.PipeApiClient;
 import buildcraft.api.transport.pluggable.IPluggableStaticBaker;
@@ -51,7 +51,7 @@ public class BCTransportModels {
     public static final ModelHolderStatic POWER_ADAPTER;
 
     private static final ModelHolderVariable STRIPES;
-    private static final NodeVariableObject<EnumFacing> STRIPES_DIRECTION;
+    private static final NodeVariableObject<Direction> STRIPES_DIRECTION;
 
     public static final IPluggableStaticBaker<KeyPlugBlocker> BAKER_PLUG_BLOCKER;
     public static final IPluggableStaticBaker<KeyPlugPowerAdaptor> BAKER_PLUG_POWER_ADAPTOR;
@@ -65,7 +65,7 @@ public class BCTransportModels {
 
         {
             FunctionContext fnCtx = DefaultContexts.createWithAll();
-            STRIPES_DIRECTION = fnCtx.putVariableObject("side", EnumFacing.class);
+            STRIPES_DIRECTION = fnCtx.putVariableObject("side", Direction.class);
             STRIPES = getModel("pipes/stripes", fnCtx);
         }
     }
@@ -79,7 +79,7 @@ public class BCTransportModels {
     }
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCTransportModels.class);
+        NeoForge.EVENT_BUS.register(BCTransportModels.class);
     }
 
     public static void fmlInit() {
@@ -112,7 +112,7 @@ public class BCTransportModels {
         event.getModelRegistry().putObject(new ModelResourceLocation("buildcrafttransport:" + str), model);
     }
 
-    public static MutableQuad[] getStripesDynQuads(EnumFacing side) {
+    public static MutableQuad[] getStripesDynQuads(Direction side) {
         STRIPES_DIRECTION.value = side;
         return STRIPES.getCutoutQuads();
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,12 +19,12 @@ import com.google.common.base.Predicates;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
@@ -40,12 +40,12 @@ import buildcraft.lib.net.MessageManager;
 
 public class WorldSavedDataWireSystems extends WorldSavedData {
     public static final String DATA_NAME = "buildcraft_wire_systems";
-    public World world;
+    public Level world;
     public final Map<WireSystem, Boolean> wireSystems = new HashMap<>();
     public boolean gatesChanged = true;
     public boolean structureChanged = true;
     public final List<WireSystem> changedSystems = new ArrayList<>();
-    public final List<EntityPlayerMP> changedPlayers = new ArrayList<>();
+    public final List<ServerPlayer> changedPlayers = new ArrayList<>();
     public final Map<WireSystem.WireElement, IWireEmitter> emittersCache = new HashMap<>();
 
     private final Map<WireSystem.WireElement, List<WireSystem>> elementsToWireSystemsIndex = new HashMap<>();
@@ -118,7 +118,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
                 if (!world.isBlockLoaded(element.blockPos)) {
                     BCLog.logger.warn("[transport.wire] Ghost loading " + element.blockPos + " to look for an emitter!");
                 }
-                TileEntity tile = world.getTileEntity(element.blockPos);
+                BlockEntity tile = world.getBlockEntity(element.blockPos);
                 if (tile instanceof IPipeHolder) {
                     IPipeHolder holder = (IPipeHolder) tile;
                     PipePluggable plug = holder.getPluggable(element.emitterSide);
@@ -139,7 +139,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
         if (!world.isBlockLoaded(element.blockPos)) {
             BCLog.logger.warn("[transport.wire] Ghost loading " + element.blockPos + " to look for an emitter!");
         }
-        TileEntity tile = world.getTileEntity(element.blockPos);
+        BlockEntity tile = world.getBlockEntity(element.blockPos);
         if(tile instanceof IPipeHolder) {
             IPipeHolder holder = (IPipeHolder) tile;
             if (holder.getPluggable(element.emitterSide) instanceof IWireEmitter) {
@@ -159,7 +159,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
                 return newPowered;
             });
         }
-        world.getPlayers(EntityPlayerMP.class, Predicates.alwaysTrue()).forEach(player -> {
+        world.getPlayers(ServerPlayer.class, Predicates.alwaysTrue()).forEach(player -> {
             Map<Integer, WireSystem> changedWires = this.wireSystems.keySet().stream()
                     .filter(wireSystem -> wireSystem.isPlayerWatching(player) && (structureChanged || changedPlayers.contains(player)))
                     .collect(Collectors.toMap(ws -> ws.networkId, Function.identity()));
@@ -186,11 +186,11 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        NBTTagList entriesList = new NBTTagList();
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        ListTag entriesList = new ListTag();
         wireSystems.forEach((wireSystem, powered) -> {
-            NBTTagCompound entry = new NBTTagCompound();
-            entry.setTag("wireSystem", wireSystem.writeToNBT());
+            CompoundTag entry = new CompoundTag();
+            entry.setTag("wireSystem", wireSystem.saveAdditional());
             entry.setBoolean("powered", powered);
             entriesList.appendTag(entry);
         });
@@ -199,19 +199,19 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         wireSystems.clear();
         this.elementsToWireSystemsIndex.clear();
 
-        NBTTagList entriesList = nbt.getTagList("entries", Constants.NBT.TAG_COMPOUND);
+        ListTag entriesList = nbt.getTagList("entries", Constants.NBT.TAG_COMPOUND);
         for(int i = 0; i < entriesList.tagCount(); i++) {
-            NBTTagCompound entry = entriesList.getCompoundTagAt(i);
+            CompoundTag entry = entriesList.getCompoundTagAt(i);
             this.addWireSystem(new WireSystem(entry.getCompoundTag("wireSystem")), entry.getBoolean("powered"));
         }
     }
 
-    public static WorldSavedDataWireSystems get(World world) {
-        if(world.isRemote) {
+    public static WorldSavedDataWireSystems get(Level world) {
+        if(world.isClientSide) {
             throw new UnsupportedOperationException("Attempted to get WorldSavedDataWireSystems on the client!");
         }
         MapStorage storage = world.getPerWorldStorage();

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -23,13 +23,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.transport.EnumWirePart;
@@ -45,7 +45,7 @@ import buildcraft.lib.misc.VecUtil;
 import buildcraft.transport.tile.TilePipeHolder;
 import buildcraft.transport.wire.EnumWireBetween;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class PipeWireRenderer {
 
     private static final Map<EnumWirePart, MutableQuad[]> partQuads = new EnumMap<>(EnumWirePart.class);
@@ -96,13 +96,13 @@ public class PipeWireRenderer {
         uvs.maxU = (off + 1) / 16f;
         uvs.minV = 0;
         uvs.maxV = 1 / 16f;
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             quads[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
         }
         return quads;
     }
 
-    private static int func(EnumFacing.AxisDirection dir) {
+    private static int func(Direction.AxisDirection dir) {
         return dir == AxisDirection.POSITIVE ? 1 : 0;
     }
 
@@ -112,8 +112,8 @@ public class PipeWireRenderer {
 
         int i = 0;
 
-        Vec3d center;
-        Vec3d radius;
+        Vec3 center;
+        Vec3 radius;
 
         boolean ax = between.mainAxis == Axis.X;
         boolean ay = between.mainAxis == Axis.Y;
@@ -122,14 +122,14 @@ public class PipeWireRenderer {
         if (between.to == null) {
             double cL = 0.5f - 4.51f / 16f;
             double cU = 0.5f + 4.51f / 16f;
-            center = new Vec3d(//
+            center = new Vec3(//
                 ax ? 0.5f : (between.xy ? cU : cL), //
                 ay ? 0.5f : ((ax ? between.xy : between.yz) ? cU : cL), //
                 az ? 0.5f : (between.yz ? cU : cL) //
             );
             double rC = 4.01f / 16f;
             double rN = 1f / 16f / 2;
-            radius = new Vec3d(//
+            radius = new Vec3(//
                 ax ? rC : rN, //
                 ay ? rC : rN, //
                 az ? rC : rN //
@@ -137,12 +137,12 @@ public class PipeWireRenderer {
         } else {// we are a connection
             double cL = (8 - 4.51) / 16;
             double cU = (8 + 4.51) / 16;
-            radius = new Vec3d(//
+            radius = new Vec3(//
                 ax ? 2.99 / 32 : 1 / 32.0, //
                 ay ? 2.99 / 32 : 1 / 32.0, //
                 az ? 2.99 / 32 : 1 / 32.0 //
             );
-            center = new Vec3d(//
+            center = new Vec3(//
                 ax ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetX()) : (between.xy ? cU : cL), //
                 ay ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetY()) : ((ax ? between.xy : between.yz) ? cU : cL), //
                 az ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetZ()) : (between.yz ? cU : cL) //
@@ -158,7 +158,7 @@ public class PipeWireRenderer {
         Tuple3f centerFloat = VecUtil.convertFloat(center);
         Tuple3f radiusFloat = VecUtil.convertFloat(radius);
 
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (face.getAxis() == between.mainAxis) {
                 continue;
             }
@@ -182,8 +182,8 @@ public class PipeWireRenderer {
                 if (fAxis == Axis.Y) {
                     rotations = 1;
                 }
-                swapU = face == EnumFacing.DOWN;
-                swapV = face != EnumFacing.EAST;
+                swapU = face == Direction.DOWN;
+                swapV = face != Direction.EAST;
             }
 
             if (swapU) {
@@ -212,7 +212,7 @@ public class PipeWireRenderer {
 
         float vOffset = (level & 0xF) / 16f;
         for (MutableQuad q : quads) {
-            if (q.getFace() != EnumFacing.UP && level != 15) {
+            if (q.getFace() != Direction.UP && level != 15) {
                 q = new MutableQuad(q);
                 float shade = 1 - q.getCalculatedDiffuse();
                 shade = shade * (15 - level) / 15;

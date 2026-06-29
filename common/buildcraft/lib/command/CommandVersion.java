@@ -1,12 +1,12 @@
-package buildcraft.lib.command;
+﻿package buildcraft.lib.command;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.Status;
@@ -42,9 +42,9 @@ public class CommandVersion extends CommandBase {
 
         Style style = new Style();
         if (result.status == Status.OUTDATED) {
-            style.setColor(TextFormatting.RED);
+            style.setColor(ChatFormatting.RED);
         } else {
-            style.setColor(TextFormatting.GREEN);
+            style.setColor(ChatFormatting.GREEN);
         }
 
         BCLog.logger.info("[lib.command.version] Result status = " + result.status);
@@ -55,7 +55,7 @@ public class CommandVersion extends CommandBase {
         String currentVersion = BCLib.VERSION;
         if (currentVersion.startsWith("$")) {
             currentVersion = "?.??.??";
-            style.setColor(TextFormatting.GRAY);
+            style.setColor(ChatFormatting.GRAY);
         }
 
         Object[] textArgs = { currentVersion, ForgeVersion.mcVersion, result.target.toString() };

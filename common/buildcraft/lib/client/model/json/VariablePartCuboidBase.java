@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,7 +13,7 @@ import javax.vecmath.Vector3f;
 import com.google.gson.JsonObject;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.lib.client.model.ModelUtil;
 import buildcraft.lib.client.model.ModelUtil.UvFaceData;
@@ -52,7 +52,7 @@ public abstract class VariablePartCuboidBase extends JsonVariableModelPart {
             boolean s = shade.evaluate();
             int l = (int) (light.evaluate() & 15);
             int rgba = RenderUtil.swapARGBforABGR((int) colour.evaluate());
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 VariableFaceData data = getFaceData(face, spriteLookup);
                 if (data != null) {
                     Vector3f radius = new Vector3f(t[0] - f[0], t[1] - f[1], t[2] - f[2]);
@@ -77,7 +77,7 @@ public abstract class VariablePartCuboidBase extends JsonVariableModelPart {
         }
     }
 
-    protected abstract VariableFaceData getFaceData(EnumFacing side, ITextureGetter spriteLookup);
+    protected abstract VariableFaceData getFaceData(Direction side, ITextureGetter spriteLookup);
 
     public static class VariableFaceData {
         public UvFaceData uvs = new UvFaceData();

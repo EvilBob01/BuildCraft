@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,13 +6,13 @@
 
 package buildcraft.lib.item;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.debug.BCAdvDebugging;
 import buildcraft.lib.debug.IAdvDebugTarget;
@@ -23,24 +23,24 @@ public class ItemDebugger extends ItemBC_Neptune {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        if (world.isRemote) {
-            return EnumActionResult.PASS;
+    public InteractionResult onItemUseFirst(Player player, Level world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, InteractionHand hand) {
+        if (world.isClientSide) {
+            return InteractionResult.PASS;
         }
-        TileEntity tile = world.getTileEntity(pos);
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile == null) {
-            return EnumActionResult.FAIL;
+            return InteractionResult.FAIL;
         }
         if (tile instanceof IAdvDebugTarget) {
             BCAdvDebugging.setCurrentDebugTarget((IAdvDebugTarget) tile);
-            return EnumActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return EnumActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
-    public static boolean isShowDebugInfo(EntityPlayer player) {
+    public static boolean isShowDebugInfo(Player player) {
         return player.capabilities.isCreativeMode ||
-            player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDebugger ||
-            player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemDebugger;
+            player.getHeldItem(InteractionHand.MAIN_HAND).getItem() instanceof ItemDebugger ||
+            player.getHeldItem(InteractionHand.OFF_HAND).getItem() instanceof ItemDebugger;
     }
 }

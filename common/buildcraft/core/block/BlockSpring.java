@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,16 +10,16 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.enums.EnumSpring;
 import buildcraft.api.properties.BuildCraftProperties;
@@ -28,12 +28,12 @@ import buildcraft.lib.block.BlockBCBase_Neptune;
 import buildcraft.lib.misc.data.XorShift128Random;
 
 public class BlockSpring extends BlockBCBase_Neptune {
-    public static final IProperty<EnumSpring> SPRING_TYPE = BuildCraftProperties.SPRING_TYPE;
+    public static final Property<EnumSpring> SPRING_TYPE = BuildCraftProperties.SPRING_TYPE;
 
     public static final XorShift128Random rand = new XorShift128Random();
 
     public BlockSpring(String id) {
-        super(Material.ROCK, id);
+        super(Block.Properties.of(), id);
         setBlockUnbreakable();
         setResistance(6000000.0F);
         setSoundType(SoundType.STONE);
@@ -51,12 +51,12 @@ public class BlockSpring extends BlockBCBase_Neptune {
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         return state.getValue(SPRING_TYPE).ordinal();
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
+    public BlockState getStateFromMeta(int meta) {
         if (meta == EnumSpring.OIL.ordinal()) {
             return getDefaultState().withProperty(SPRING_TYPE, EnumSpring.OIL);
         } else {
@@ -67,30 +67,30 @@ public class BlockSpring extends BlockBCBase_Neptune {
     // Other
 
     @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
+    public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
         for (EnumSpring type : EnumSpring.VALUES) {
             list.add(new ItemStack(this, 1, type.ordinal()));
         }
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
+    public int damageDropped(BlockState state) {
         return state.getValue(SPRING_TYPE).ordinal();
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random random) {
+    public void updateTick(Level world, BlockPos pos, BlockState state, Random random) {
         generateSpringBlock(world, pos, state);
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return state.getValue(SPRING_TYPE).tileConstructor != null;
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
-        Supplier<TileEntity> constructor = state.getValue(SPRING_TYPE).tileConstructor;
+    public BlockEntity createTileEntity(Level world, BlockState state) {
+        Supplier<BlockEntity> constructor = state.getValue(SPRING_TYPE).tileConstructor;
         if (constructor != null) {
             return constructor.get();
         }
@@ -98,17 +98,17 @@ public class BlockSpring extends BlockBCBase_Neptune {
     }
     
     // @Override
-    // public void onNeighborBlockChange(World world, int x, int y, int z, int blockid) {
+    // public void onNeighborBlockChange(Level world, int x, int y, int z, int blockid) {
     // assertSpring(world, x, y, z);
     // }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+    public void onBlockAdded(Level world, BlockPos pos, BlockState state) {
         super.onBlockAdded(world, pos, state);
         world.scheduleUpdate(pos, this, state.getValue(SPRING_TYPE).tickRate);
     }
 
-    private void generateSpringBlock(World world, BlockPos pos, IBlockState state) {
+    private void generateSpringBlock(Level world, BlockPos pos, BlockState state) {
         EnumSpring spring = state.getValue(SPRING_TYPE);
         world.scheduleUpdate(pos, this, spring.tickRate);
         if (!spring.canGen || spring.liquidBlock == null) {
@@ -120,7 +120,7 @@ public class BlockSpring extends BlockBCBase_Neptune {
         if (spring.chance != -1 && rand.nextInt(spring.chance) != 0) {
             return;
         }
-        world.setBlockState(pos.up(), spring.liquidBlock);
+        world.setBlock(pos.up(), spring.liquidBlock);
     }
 
     // Prevents updates on chunk generation

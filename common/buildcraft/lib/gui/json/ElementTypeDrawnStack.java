@@ -1,7 +1,7 @@
-package buildcraft.lib.gui.json;
+﻿package buildcraft.lib.gui.json;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 
 import buildcraft.lib.expression.FunctionContext;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,14 +8,14 @@ package buildcraft.core.marker.volume;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class AddonDefaultRenderer<T extends Addon> implements IFastAddonRenderer<T> {
     private final TextureAtlasSprite s;
 
@@ -28,8 +28,8 @@ public class AddonDefaultRenderer<T extends Addon> implements IFastAddonRenderer
     }
 
     @Override
-    public void renderAddonFast(T addon, EntityPlayer player, float partialTicks, BufferBuilder builder) {
-        AxisAlignedBB bb = addon.getBoundingBox();
+    public void renderAddonFast(T addon, Player player, float partialTicks, BufferBuilder builder) {
+        AABB bb = addon.getBoundingBox();
 
         builder.pos(bb.minX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
         builder.pos(bb.maxX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();

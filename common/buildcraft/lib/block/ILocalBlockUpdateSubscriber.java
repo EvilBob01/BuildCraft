@@ -1,8 +1,8 @@
-package buildcraft.lib.block;
+﻿package buildcraft.lib.block;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface ILocalBlockUpdateSubscriber {
 
@@ -34,5 +34,5 @@ public interface ILocalBlockUpdateSubscriber {
      * @param newState from the block update event
      * @param flags    from the block update event
      */
-    void setWorldUpdated(World world, BlockPos eventPos, IBlockState oldState, IBlockState newState, int flags);
+    void setWorldUpdated(Level world, BlockPos eventPos, BlockState oldState, BlockState newState, int flags);
 }

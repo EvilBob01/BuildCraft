@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,13 +6,13 @@
 
 package buildcraft.transport;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.mj.MjAPI;
@@ -94,7 +94,7 @@ public class BCTransportConfig {
         ConfigUtil.setEnumProperty(propLossMode, PowerLossMode.VALUES);
         EnumRestartRequirement.WORLD.setTo(propLossMode);
 
-        MinecraftForge.EVENT_BUS.register(BCTransportConfig.class);
+        NeoForge.EVENT_BUS.register(BCTransportConfig.class);
     }
 
     public static void reloadConfig(EnumRestartRequirement restarted) {

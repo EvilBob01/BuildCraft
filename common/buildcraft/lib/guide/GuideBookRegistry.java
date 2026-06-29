@@ -1,8 +1,8 @@
-package buildcraft.lib.guide;
+﻿package buildcraft.lib.guide;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.script.ScriptableRegistry;
 

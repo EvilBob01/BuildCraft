@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,10 +8,10 @@ package buildcraft.builders.container;
 
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.ContainerBC_Neptune;
@@ -28,7 +28,7 @@ public class ContainerElectronicLibrary extends ContainerBCTile<TileElectronicLi
     private static final IdAllocator IDS = ContainerBC_Neptune.IDS.makeChild("electronic_library");
     private static final int ID_SELECTED = IDS.allocId("SELECTED");
 
-    public ContainerElectronicLibrary(EntityPlayer player, TileElectronicLibrary tile) {
+    public ContainerElectronicLibrary(Player player, TileElectronicLibrary tile) {
         super(player, tile);
         addFullPlayerInventory(138);
 
@@ -56,7 +56,7 @@ public class ContainerElectronicLibrary extends ContainerBCTile<TileElectronicLi
     @Override
     public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readMessage(id, buffer, side, ctx);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_SELECTED) {
                 if (buffer.readBoolean()) {
                     tile.selected = new Snapshot.Key(buffer);

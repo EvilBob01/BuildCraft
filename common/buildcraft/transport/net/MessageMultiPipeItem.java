@@ -1,4 +1,4 @@
-package buildcraft.transport.net;
+﻿package buildcraft.transport.net;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +11,12 @@ import javax.annotation.Nullable;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
@@ -75,7 +75,7 @@ public class MessageMultiPipeItem implements IMessage {
         }
     }
 
-    public void append(BlockPos pos, int stackId, byte stackCount, boolean toCenter, EnumFacing side,
+    public void append(BlockPos pos, int stackId, byte stackCount, boolean toCenter, Direction side,
         EnumDyeColor colour, byte timeToDest) {
         List<TravellingItemData> list = items.get(pos);
         if (list == null) {
@@ -95,11 +95,11 @@ public class MessageMultiPipeItem implements IMessage {
         public final int stackId;
         public final byte stackCount;
         public final boolean toCenter;
-        public final EnumFacing side;
+        public final Direction side;
         public final @Nullable EnumDyeColor colour;
         public final byte timeToDest;
 
-        public TravellingItemData(int stackId, byte stackCount, boolean toCenter, EnumFacing side, EnumDyeColor colour,
+        public TravellingItemData(int stackId, byte stackCount, boolean toCenter, Direction side, EnumDyeColor colour,
             byte timeToDest) {
             this.stackId = stackId;
             this.stackCount = stackCount;
@@ -113,7 +113,7 @@ public class MessageMultiPipeItem implements IMessage {
             stackId = buf.readVarInt();
             stackCount = buf.readByte();
             toCenter = buf.readBoolean();
-            side = buf.readEnumValue(EnumFacing.class);
+            side = buf.readEnumValue(Direction.class);
             colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
             timeToDest = buf.readByte();
         }
@@ -133,13 +133,13 @@ public class MessageMultiPipeItem implements IMessage {
 
             @Override
             public IMessage onMessage(MessageMultiPipeItem message, MessageContext ctx) {
-                World world = BCLibProxy.getProxy().getClientWorld();
+                Level world = BCLibProxy.getProxy().getClientWorld();
                 if (world == null) {
                     return null;
                 }
                 for (Entry<BlockPos, List<TravellingItemData>> entry : message.items.entrySet()) {
                     BlockPos pos = entry.getKey();
-                    TileEntity tile = world.getTileEntity(pos);
+                    BlockEntity tile = world.getBlockEntity(pos);
                     if (tile instanceof IPipeHolder) {
                         IPipe pipe = ((IPipeHolder) tile).getPipe();
                         if (pipe == null) {

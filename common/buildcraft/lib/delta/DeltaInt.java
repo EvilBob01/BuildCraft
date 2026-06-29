@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import net.minecraftforge.common.util.Constants;
 
@@ -80,7 +80,7 @@ public class DeltaInt {
         return start ? staticStartValue : staticEndValue;
     }
 
-    void receiveData(EnumDeltaMessage type, PacketBuffer buffer) {
+    void receiveData(EnumDeltaMessage type, FriendlyByteBuf buffer) {
         if (type == EnumDeltaMessage.ADD_SINGLE) {
             long start = buffer.readLong();
             long end = buffer.readLong();
@@ -110,7 +110,7 @@ public class DeltaInt {
         }
     }
 
-    void writeState(PacketBuffer buffer) {
+    void writeState(FriendlyByteBuf buffer) {
         buffer.writeInt(staticStartValue);
         buffer.writeInt(staticEndValue);
         buffer.writeShort(changingEntries.size());
@@ -149,15 +149,15 @@ public class DeltaInt {
         manager.sendDeltaMessage(EnumDeltaMessage.SET_VALUE, this, (buffer) -> buffer.writeInt(value));
     }
 
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         tick = nbt.getLong("tick");
         staticStartValue = nbt.getInteger("static-start");
         staticEndValue = nbt.getInteger("static-end");
         // dynamic is calculated every tick so there is no need to read + write it
         changingEntries.clear();
-        NBTTagList list = nbt.getTagList("changing", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("changing", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound entryNbt = list.getCompoundTagAt(i);
+            CompoundTag entryNbt = list.getCompoundTagAt(i);
             long start = entryNbt.getLong("start");
             long end = entryNbt.getLong("end");
             int delta = entryNbt.getInteger("delta");
@@ -167,15 +167,15 @@ public class DeltaInt {
         }
     }
 
-    public NBTTagCompound writeToNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setLong("tick", tick);
         nbt.setInteger("static-start", staticStartValue);
         nbt.setInteger("static-end", staticEndValue);
         // dynamic is calculated every tick so there is no need to read + write it
-        NBTTagList list = new NBTTagList();
+        ListTag list = new ListTag();
         for (DeltaIntEntry entry : changingEntries) {
-            NBTTagCompound entryNbt = new NBTTagCompound();
+            CompoundTag entryNbt = new CompoundTag();
             entryNbt.setLong("start", entry.startTick);
             entryNbt.setLong("end", entry.endTick);
             entryNbt.setInteger("delta", entry.delta);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,9 +13,9 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.IFakePlayerProvider;
@@ -26,7 +26,7 @@ public enum FakePlayerProvider implements IFakePlayerProvider {
     INSTANCE;
 
     /** The default {@link GameProfile} to use if a tile entity cannot determine its real owner. Most of the time this
-     * shouldn't be necessary, as we should be able to get a {@link GameProfile} from all {@link EntityPlayer}'s that
+     * shouldn't be necessary, as we should be able to get a {@link GameProfile} from all {@link Player}'s that
      * place or create tiles/robots */
     @Deprecated
     public static final GameProfile NULL_PROFILE;
@@ -40,17 +40,17 @@ public enum FakePlayerProvider implements IFakePlayerProvider {
 
     @Override
     @Deprecated
-    public FakePlayerBC getBuildCraftPlayer(WorldServer world) {
+    public FakePlayerBC getBuildCraftPlayer(ServerLevel world) {
         return getFakePlayer(world, NULL_PROFILE, BlockPos.ORIGIN);
     }
 
     @Override
-    public FakePlayerBC getFakePlayer(WorldServer world, GameProfile profile) {
+    public FakePlayerBC getFakePlayer(ServerLevel world, GameProfile profile) {
         return getFakePlayer(world, profile, BlockPos.ORIGIN);
     }
 
     @Override
-    public FakePlayerBC getFakePlayer(WorldServer world, GameProfile profile, BlockPos pos) {
+    public FakePlayerBC getFakePlayer(ServerLevel world, GameProfile profile, BlockPos pos) {
         if (profile == null) {
             BCLog.logger.warn("[lib.fake] Null GameProfile! This is a bug!", new IllegalArgumentException());
             profile = NULL_PROFILE;
@@ -63,7 +63,7 @@ public enum FakePlayerProvider implements IFakePlayerProvider {
         return player;
     }
 
-    public void unloadWorld(WorldServer world) {
+    public void unloadWorld(ServerLevel world) {
         players.values().removeIf(entry -> entry.world == world);
     }
 }

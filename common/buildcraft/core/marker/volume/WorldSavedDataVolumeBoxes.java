@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,11 +12,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
@@ -31,8 +31,8 @@ public class WorldSavedDataVolumeBoxes extends WorldSavedData {
      * and then it calls NBT deserialization method,
      * giving us no chance to set the {@link WorldSavedDataVolumeBoxes#world} field).
      */
-    private static World currentWorld;
-    public final World world = currentWorld;
+    private static Level currentWorld;
+    public final Level world = currentWorld;
     public final List<VolumeBox> volumeBoxes = new ArrayList<>();
 
     public WorldSavedDataVolumeBoxes() {
@@ -56,19 +56,19 @@ public class WorldSavedDataVolumeBoxes extends WorldSavedData {
         return volumeBoxes.stream().filter(volumeBox -> volumeBox.id.equals(id)).findFirst().orElse(null);
     }
 
-    public VolumeBox getCurrentEditing(EntityPlayer player) {
+    public VolumeBox getCurrentEditing(Player player) {
         return volumeBoxes.stream().filter(volumeBox -> volumeBox.isEditingBy(player)).findFirst().orElse(null);
     }
 
     public void tick() {
         AtomicBoolean dirty = new AtomicBoolean(false);
         volumeBoxes.stream().filter(VolumeBox::isEditing).forEach(volumeBox -> {
-            EntityPlayer player = volumeBox.getPlayer(world);
+            Player player = volumeBox.getPlayer(world);
             if (player == null) {
                 volumeBox.pauseEditing();
                 dirty.set(true);
             } else {
-                AxisAlignedBB oldAabb = volumeBox.box.getBoundingBox();
+                AABB oldAabb = volumeBox.box.getBoundingBox();
                 volumeBox.box.reset();
                 volumeBox.box.extendToEncompass(volumeBox.getHeld());
                 BlockPos lookingAt = new BlockPos(
@@ -98,28 +98,28 @@ public class WorldSavedDataVolumeBoxes extends WorldSavedData {
 
     @Override
     public void markDirty() {
-        super.markDirty();
+        super.setChanged();
         MessageManager.sendToDimension(new MessageVolumeBoxes(volumeBoxes), world.provider.getDimension());
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.setTag("volumeBoxes", NBTUtilBC.writeCompoundList(volumeBoxes.stream().map(VolumeBox::writeToNBT)));
         return nbt;
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         volumeBoxes.clear();
         NBTUtilBC.readCompoundList(nbt.getTag("volumeBoxes"))
             .map(volumeBoxTag -> new VolumeBox(world, volumeBoxTag))
             .forEach(volumeBoxes::add);
     }
 
-    public static WorldSavedDataVolumeBoxes get(World world) {
-        if (world.isRemote) {
+    public static WorldSavedDataVolumeBoxes get(Level world) {
+        if (world.isClientSide) {
             throw new IllegalArgumentException("Tried to create a world saved data instance on the client!");
         }
         MapStorage storage = world.getPerWorldStorage();

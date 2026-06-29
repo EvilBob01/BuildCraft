@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,10 +6,10 @@
 
 package buildcraft.transport;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import buildcraft.api.core.EnumHandlerPriority;
 import buildcraft.api.transport.pipe.EnumPipeColourType;
@@ -41,7 +41,7 @@ public class BCTransportRegistries {
         PipeApi.pipeRegistry = PipeRegistry.INSTANCE;
         PipeApi.stripeRegistry = StripesRegistry.INSTANCE;
         PipeApi.extensionManager = PipeExtensionManager.INSTANCE;
-        MinecraftForge.EVENT_BUS.register(PipeExtensionManager.INSTANCE);
+        NeoForge.EVENT_BUS.register(PipeExtensionManager.INSTANCE);
 
         PipeApi.flowItems = new PipeFlowType(PipeFlowItems::new, PipeFlowItems::new);
         PipeApi.flowFluids = new PipeFlowType(PipeFlowFluids::new, PipeFlowFluids::new);
@@ -53,7 +53,7 @@ public class BCTransportRegistries {
 
     public static void init() {
         PipeConnectionAPI.registerConnection(Blocks.BREWING_STAND,
-            (world, pos, face, state) -> face.getAxis().getPlane() == EnumFacing.Plane.HORIZONTAL ? 4 / 16F : 0);
+            (world, pos, face, state) -> face.getAxis().getPlane() == Direction.Plane.HORIZONTAL ? 4 / 16F : 0);
 
         // Item use stripes handlers
         PipeApi.stripeRegistry.addHandler(StripesHandlerPlant.INSTANCE);

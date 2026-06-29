@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,14 +13,14 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.transport.pipe.IPipeFlowRenderer;
@@ -35,7 +35,7 @@ import buildcraft.transport.BCTransportSprites;
 import buildcraft.transport.pipe.flow.PipeFlowItems;
 import buildcraft.transport.pipe.flow.TravellingItem;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum PipeFlowRendererItems implements IPipeFlowRenderer<PipeFlowItems> {
     INSTANCE;
 
@@ -52,7 +52,7 @@ public enum PipeFlowRendererItems implements IPipeFlowRenderer<PipeFlowItems> {
         uvs.minV = (float) sprite.getInterpV(0);
         uvs.maxV = (float) sprite.getInterpV(1);
 
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             MutableQuad q = ModelUtil.createFace(face, center, radius, uvs);
             q.setCalculatedDiffuse();
             COLOURED_QUADS[face.ordinal()] = q;
@@ -61,14 +61,14 @@ public enum PipeFlowRendererItems implements IPipeFlowRenderer<PipeFlowItems> {
 
     @Override
     public void render(PipeFlowItems flow, double x, double y, double z, float partialTicks, BufferBuilder bb) {
-        World world = flow.pipe.getHolder().getPipeWorld();
+        Level world = flow.pipe.getHolder().getPipeWorld();
         long now = world.getTotalWorldTime();
         int lightc = world.getCombinedLight(flow.pipe.getHolder().getPipePos(), 0);
 
         List<TravellingItem> toRender = flow.getAllItemsForRender();
 
         for (TravellingItem item : toRender) {
-            Vec3d pos = item.getRenderPosition(BlockPos.ORIGIN, now, partialTicks, flow);
+            Vec3 pos = item.getRenderPosition(BlockPos.ORIGIN, now, partialTicks, flow);
 
             ItemStack stack = item.clientItemLink.get();
             if (stack != null && !stack.isEmpty()) {

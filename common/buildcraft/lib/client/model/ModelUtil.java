@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,10 +11,10 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.world.phys.AABB;
 
 /** Provides various utilities for creating {@link MutableQuad} out of various position information, such as a single
  * face of a cuboid. */
@@ -81,7 +81,7 @@ public class ModelUtil {
         public UvFaceData faceData = new UvFaceData();
     }
 
-    public static MutableQuad createFace(EnumFacing face, Tuple3f a, Tuple3f b, Tuple3f c, Tuple3f d, UvFaceData uvs) {
+    public static MutableQuad createFace(Direction face, Tuple3f a, Tuple3f b, Tuple3f c, Tuple3f d, UvFaceData uvs) {
         MutableQuad quad = new MutableQuad(-1, face);
         if (uvs == null) {
             uvs = UvFaceData.DEFAULT;
@@ -100,27 +100,27 @@ public class ModelUtil {
         return quad;
     }
 
-    public static <T extends Tuple3f> MutableQuad createFace(EnumFacing face, T[] points, UvFaceData uvs) {
+    public static <T extends Tuple3f> MutableQuad createFace(Direction face, T[] points, UvFaceData uvs) {
         return createFace(face, points[0], points[1], points[2], points[3], uvs);
     }
 
-    public static MutableQuad createFace(EnumFacing face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
+    public static MutableQuad createFace(Direction face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
         Point3f[] points = getPointsForFace(face, center, radius);
         return createFace(face, points, uvs).normalf(
             face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ()
         );
     }
 
-    public static MutableQuad createInverseFace(EnumFacing face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
+    public static MutableQuad createInverseFace(Direction face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
         return createFace(face, center, radius, uvs).copyAndInvertNormal();
     }
 
-    public static MutableQuad[] createDoubleFace(EnumFacing face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
+    public static MutableQuad[] createDoubleFace(Direction face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
         MutableQuad norm = createFace(face, center, radius, uvs);
         return new MutableQuad[] { norm, norm.copyAndInvertNormal() };
     }
 
-    public static void mapBoxToUvs(AxisAlignedBB box, EnumFacing side, UvFaceData uvs) {
+    public static void mapBoxToUvs(AABB box, Direction side, UvFaceData uvs) {
         // TODO: Fix these!
         switch (side) {
             case WEST: /* -X */ {
@@ -171,7 +171,7 @@ public class ModelUtil {
         }
     }
 
-    public static Point3f[] getPointsForFace(EnumFacing face, Tuple3f center, Tuple3f radius) {
+    public static Point3f[] getPointsForFace(Direction face, Tuple3f center, Tuple3f radius) {
         Point3f centerOfFace = new Point3f(center);
         Point3f faceAdd = new Point3f(
             face.getFrontOffsetX() * radius.x, face.getFrontOffsetY() * radius.y, face.getFrontOffsetZ() * radius.z
@@ -206,13 +206,13 @@ public class ModelUtil {
         return neg;
     }
 
-    public static boolean shouldInvertForRender(EnumFacing face) {
+    public static boolean shouldInvertForRender(Direction face) {
         boolean flip = face.getAxisDirection() == AxisDirection.NEGATIVE;
         if (face.getAxis() == Axis.Z) flip = !flip;
         return flip;
     }
 
-    public static EnumFacing faceForRender(EnumFacing face) {
+    public static Direction faceForRender(Direction face) {
         if (shouldInvertForRender(face)) return face.getOpposite();
         return face;
     }

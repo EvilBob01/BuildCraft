@@ -1,20 +1,20 @@
-package buildcraft.lib.cache;
+﻿package buildcraft.lib.cache;
 
 import java.lang.ref.WeakReference;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import buildcraft.lib.misc.ChunkUtil;
 
 public class CachedChunk implements IChunkCache {
 
-    private final TileEntity tile;
+    private final BlockEntity tile;
     private WeakReference<Chunk> cachedChunk;
 
-    public CachedChunk(TileEntity tile) {
+    public CachedChunk(BlockEntity tile) {
         this.tile = tile;
     }
 
@@ -24,7 +24,7 @@ public class CachedChunk implements IChunkCache {
     }
 
     @Override
-    public Chunk getChunk(BlockPos pos) {
+    public LevelChunk getChunk(BlockPos pos) {
         if (tile.isInvalid()) {
             cachedChunk = null;
             return null;
@@ -35,18 +35,18 @@ public class CachedChunk implements IChunkCache {
             return null;
         }
         if (cachedChunk != null) {
-            Chunk c = cachedChunk.get();
+            LevelChunk c = cachedChunk.get();
             if (c != null && c.isLoaded()) {
                 return c;
             }
             cachedChunk = null;
         }
-        World world = tile.getWorld();
+        Level world = tile.getWorld();
         if (world == null) {
             cachedChunk = null;
             return null;
         }
-        Chunk chunk = ChunkUtil.getChunk(world, pos, true);
+        LevelChunk chunk = ChunkUtil.getChunk(world, pos, true);
         if (chunk != null && chunk.getWorld() == world) {
             cachedChunk = new WeakReference<>(chunk);
             return chunk;

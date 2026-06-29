@@ -1,4 +1,4 @@
-package buildcraft.lib.gui.config;
+﻿package buildcraft.lib.gui.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -20,7 +20,7 @@ public class GuiPropertyBoolean extends GuiProperty implements IVariableNodeBool
     @Override
     public void set(boolean value) {
         this.value = value;
-        GuiConfigManager.markDirty();
+        GuiConfigManager.setChanged();
     }
 
     @Override

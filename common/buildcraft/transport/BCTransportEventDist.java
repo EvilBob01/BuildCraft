@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -7,12 +7,12 @@
 package buildcraft.transport;
 
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.transport.client.render.PipeWireRenderer;
 import buildcraft.transport.net.PipeItemMessageQueue;
@@ -23,7 +23,7 @@ public enum BCTransportEventDist {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (!event.world.isRemote && event.world.getMinecraftServer() != null) {
+        if (!event.world.isClientSide && event.world.getMinecraftServer() != null) {
             WorldSavedDataWireSystems.get(event.world).tick();
         }
     }
@@ -39,7 +39,7 @@ public enum BCTransportEventDist {
     }
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void onTextureStitch(TextureStitchEvent.Post event) {
         PipeWireRenderer.clearWireCache();
     }

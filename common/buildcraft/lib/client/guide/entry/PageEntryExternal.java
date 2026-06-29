@@ -1,4 +1,4 @@
-package buildcraft.lib.client.guide.entry;
+﻿package buildcraft.lib.client.guide.entry;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.registry.IScriptableRegistry.OptionallyDisabled;
 

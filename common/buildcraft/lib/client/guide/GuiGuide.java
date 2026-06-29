@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -22,9 +22,9 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 import buildcraft.lib.BCLibItems;
 import buildcraft.lib.client.ToastInformation;
@@ -316,7 +316,7 @@ public class GuiGuide extends GuiScreen {
         minY = (height - BOOK_COVER.height) / 2;
 
         float openingAngle = openingAngleLast * (1 - partialTicks) + openingAngleNext * partialTicks;
-        float sin = MathHelper.sin((float) (openingAngle * Math.PI / 180));
+        float sin = Mth.sin((float) (openingAngle * Math.PI / 180));
         if (sin < 0) {
             sin *= -1;
         }

@@ -1,4 +1,4 @@
-package buildcraft.lib.client.guide.node;
+﻿package buildcraft.lib.client.guide.node;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.lib.client.guide.font.IFontRenderer;
 
@@ -42,8 +42,8 @@ public class FormatString {
     public static FormatString split(String formattedText) {
         List<FormatSegment> segments = new ArrayList<>();
 
-        TextFormatting lastColour = null;
-        Set<TextFormatting> lastMisc = EnumSet.noneOf(TextFormatting.class);
+        ChatFormatting lastColour = null;
+        Set<ChatFormatting> lastMisc = EnumSet.noneOf(ChatFormatting.class);
         int lastEnd = 0;
 
         Matcher matcher = FORMATTING_CODE_PATTERN.matcher(formattedText);
@@ -52,20 +52,20 @@ public class FormatString {
 
             if (start != lastEnd) {
                 String subText = formattedText.substring(lastEnd, start);
-                ImmutableSet<TextFormatting> miscCopy = ImmutableSet.copyOf(lastMisc);
+                ImmutableSet<ChatFormatting> miscCopy = ImmutableSet.copyOf(lastMisc);
                 segments.add(new FormatSegment(subText, lastColour, miscCopy));
             }
 
             String matched = matcher.group();
-            TextFormatting format = null;
-            for (TextFormatting f : TextFormatting.values()) {
+            ChatFormatting format = null;
+            for (ChatFormatting f : ChatFormatting.values()) {
                 if (f.toString().equals(matched)) {
                     format = f;
                     break;
                 }
             }
             if (format != null) {
-                if (format == TextFormatting.RESET) {
+                if (format == ChatFormatting.RESET) {
                     lastColour = null;
                     lastMisc.clear();
                 } else if (format.isColor()) {
@@ -78,7 +78,7 @@ public class FormatString {
         }
         if (lastEnd != formattedText.length()) {
             String subText = formattedText.substring(lastEnd);
-            ImmutableSet<TextFormatting> miscCopy = ImmutableSet.copyOf(lastMisc);
+            ImmutableSet<ChatFormatting> miscCopy = ImmutableSet.copyOf(lastMisc);
             segments.add(new FormatSegment(subText, lastColour, miscCopy));
         }
         return new FormatString(segments.toArray(new FormatSegment[0]));

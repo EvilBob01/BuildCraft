@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,12 +10,12 @@ import java.util.EnumMap;
 import java.util.Locale;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.lib.client.sprite.SpriteHolderRegistry;
 import buildcraft.lib.client.sprite.SpriteHolderRegistry.SpriteHolder;
@@ -41,7 +41,7 @@ public class BCTransportSprites {
     public static final EnumMap<SlotIndex, SpriteHolder> ACTION_EXTRACTION_PRESET;
     private static final EnumMap<EnumDyeColor, SpriteHolder> PIPE_SIGNAL_ON;
     private static final EnumMap<EnumDyeColor, SpriteHolder> PIPE_SIGNAL_OFF;
-    private static final EnumMap<EnumFacing, SpriteHolder> ACTION_PIPE_DIRECTION;
+    private static final EnumMap<Direction, SpriteHolder> ACTION_PIPE_DIRECTION;
 
     public static final SpriteHolder POWER_FLOW;
     public static final SpriteHolder POWER_FLOW_OVERLOAD;
@@ -77,8 +77,8 @@ public class BCTransportSprites {
             ACTION_EXTRACTION_PRESET.put(index, getHolder("triggers/extraction_preset_" + index.colour.getName()));
         }
 
-        ACTION_PIPE_DIRECTION = new EnumMap<>(EnumFacing.class);
-        for (EnumFacing face : EnumFacing.VALUES) {
+        ACTION_PIPE_DIRECTION = new EnumMap<>(Direction.class);
+        for (Direction face : Direction.VALUES) {
             ACTION_PIPE_DIRECTION.put(face,
                 getHolder("core", "triggers/trigger_dir_" + face.getName().toLowerCase(Locale.ROOT)));
         }
@@ -121,7 +121,7 @@ public class BCTransportSprites {
     }
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCTransportSprites.class);
+        NeoForge.EVENT_BUS.register(BCTransportSprites.class);
     }
 
     @SubscribeEvent
@@ -139,7 +139,7 @@ public class BCTransportSprites {
         return (active ? PIPE_SIGNAL_ON : PIPE_SIGNAL_OFF).get(colour);
     }
 
-    public static SpriteHolder getPipeDirection(EnumFacing face) {
+    public static SpriteHolder getPipeDirection(Direction face) {
         return ACTION_PIPE_DIRECTION.get(face);
     }
 }

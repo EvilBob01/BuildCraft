@@ -1,10 +1,10 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.lib.registry.RegistrationHelper;
 
@@ -45,15 +45,15 @@ public class BCFactoryBlocks {
     public static BlockWaterGel waterGel;
 
     public static void fmlPreInit() {
-        autoWorkbenchItems = HELPER.addBlockAndItem(new BlockAutoWorkbenchItems(Material.ROCK, "block.autoworkbench.item"));
-        miningWell = HELPER.addBlockAndItem(new BlockMiningWell(Material.IRON, "block.mining_well"));
-        pump = HELPER.addBlockAndItem(new BlockPump(Material.IRON, "block.pump"));
-        tube = HELPER.addBlock(new BlockTube(Material.IRON, "block.tube"));
-        floodGate = HELPER.addBlockAndItem(new BlockFloodGate(Material.IRON, "block.flood_gate"));
-        tank = HELPER.addBlockAndItem(new BlockTank(Material.IRON, "block.tank"));
-        chute = HELPER.addBlockAndItem(new BlockChute(Material.IRON, "block.chute"));
-        distiller = HELPER.addBlockAndItem(new BlockDistiller(Material.IRON, "block.distiller"));
-        heatExchange = HELPER.addBlockAndItem(new BlockHeatExchange(Material.IRON, "block.heat_exchange"));
+        autoWorkbenchItems = HELPER.addBlockAndItem(new BlockAutoWorkbenchItems(Block.Properties.of(), "block.autoworkbench.item"));
+        miningWell = HELPER.addBlockAndItem(new BlockMiningWell(Block.Properties.of(), "block.mining_well"));
+        pump = HELPER.addBlockAndItem(new BlockPump(Block.Properties.of(), "block.pump"));
+        tube = HELPER.addBlock(new BlockTube(Block.Properties.of(), "block.tube"));
+        floodGate = HELPER.addBlockAndItem(new BlockFloodGate(Block.Properties.of(), "block.flood_gate"));
+        tank = HELPER.addBlockAndItem(new BlockTank(Block.Properties.of(), "block.tank"));
+        chute = HELPER.addBlockAndItem(new BlockChute(Block.Properties.of(), "block.chute"));
+        distiller = HELPER.addBlockAndItem(new BlockDistiller(Block.Properties.of(), "block.distiller"));
+        heatExchange = HELPER.addBlockAndItem(new BlockHeatExchange(Block.Properties.of(), "block.heat_exchange"));
         waterGel = HELPER.addBlock(new BlockWaterGel(Material.CLAY, "block.water_gel"));
 
         HELPER.registerTile(TileAutoWorkbenchItems.class, "tile.autoworkbench.item");

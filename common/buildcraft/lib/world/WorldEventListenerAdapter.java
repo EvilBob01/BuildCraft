@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,21 +9,21 @@ package buildcraft.lib.world;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IWorldEventListener;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public class WorldEventListenerAdapter implements IWorldEventListener {
     @Override
-    public void notifyBlockUpdate(@Nonnull World world,
+    public void notifyBlockUpdate(@Nonnull Level world,
                                   @Nonnull BlockPos pos,
-                                  @Nonnull IBlockState oldState,
-                                  @Nonnull IBlockState newState,
+                                  @Nonnull BlockState oldState,
+                                  @Nonnull BlockState newState,
                                   int flags) {
     }
 
@@ -36,7 +36,7 @@ public class WorldEventListenerAdapter implements IWorldEventListener {
     }
 
     @Override
-    public void playSoundToAllNearExcept(@Nullable EntityPlayer player,
+    public void playSoundToAllNearExcept(@Nullable Player player,
                                          @Nonnull SoundEvent sound,
                                          @Nonnull SoundCategory category,
                                          double x,
@@ -88,7 +88,7 @@ public class WorldEventListenerAdapter implements IWorldEventListener {
     }
 
     @Override
-    public void playEvent(@Nullable EntityPlayer player, int type, @Nonnull BlockPos blockPos, int data) {
+    public void playEvent(@Nullable Player player, int type, @Nonnull BlockPos blockPos, int data) {
     }
 
     @Override

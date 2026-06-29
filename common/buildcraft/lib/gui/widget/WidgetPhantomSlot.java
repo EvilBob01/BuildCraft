@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.BCLog;
 
@@ -111,7 +111,7 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
         if (stack.getCount() > max) {
             this.stack.setCount(max);
         }
-        if (tellClient && !container.player.world.isRemote) {
+        if (tellClient && !container.player.world.isClientSide) {
             sendWidgetData(buffer -> {
                 buffer.writeByte(NET_SERVER_TO_CLIENT_ITEM);
                 buffer.writeItemStack(stack);
@@ -122,7 +122,7 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
 
     protected void onSetStack() {}
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public class GuiElementPhantomSlot extends GuiElementSimple implements IInteractionElement {
         private final ToolTip tooltip = GuiUtil.createToolTip(this::getStack);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -10,13 +10,13 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.render.laser.LaserData_BC8.LaserType;
 import buildcraft.lib.marker.MarkerCache;
@@ -27,7 +27,7 @@ import buildcraft.core.BCCoreConfig;
 import buildcraft.core.client.BuildCraftLaserManager;
 
 public class VolumeSubCache extends MarkerSubCache<VolumeConnection> {
-    public VolumeSubCache(World world) {
+    public VolumeSubCache(Level world) {
         super(world, MarkerCache.CACHES.indexOf(VolumeCache.INSTANCE));
         VolumeSavedData data = (VolumeSavedData) world.getPerWorldStorage().getOrLoadData(VolumeSavedData.class, VolumeSavedData.NAME);
         if (data == null) {
@@ -78,13 +78,13 @@ public class VolumeSubCache extends MarkerSubCache<VolumeConnection> {
     @Override
     public ImmutableList<BlockPos> getValidConnections(BlockPos from) {
         VolumeConnection existing = getConnection(from);
-        Set<Axis> taken = EnumSet.noneOf(EnumFacing.Axis.class);
+        Set<Axis> taken = EnumSet.noneOf(Direction.Axis.class);
         if (existing != null) {
             taken.addAll(existing.getConnectedAxis());
         }
 
         ImmutableList.Builder<BlockPos> valids = ImmutableList.builder();
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (taken.contains(face.getAxis())) continue;
             for (int i = 1; i <= BCCoreConfig.markerMaxDistance; i++) {
                 BlockPos toTry = from.offset(face, i);
@@ -99,13 +99,13 @@ public class VolumeSubCache extends MarkerSubCache<VolumeConnection> {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public LaserType getPossibleLaserType() {
         return BuildCraftLaserManager.MARKER_VOLUME_POSSIBLE;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected boolean handleMessage(MessageMarker message) {
         List<BlockPos> positions = message.positions;
         if (message.connection) {

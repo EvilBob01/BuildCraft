@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -17,16 +17,16 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.recipes.AssemblyRecipe;
@@ -179,7 +179,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     public void update() {
         super.update();
 
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
 
@@ -201,12 +201,12 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-        NBTTagList recipesStatesTag = new NBTTagList();
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ListTag recipesStatesTag = new ListTag();
         recipesStates.forEach((instruction, state) -> {
-            NBTTagCompound entryTag = new NBTTagCompound();
-            entryTag.setString("recipe", instruction.recipe.getRegistryName().toString());
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.setString("recipe", instruction.recipe.builtInRegistryHolder().key().location().toString());
             entryTag.setTag("output", instruction.output.serializeNBT());
             entryTag.setInteger("state", state.ordinal());
             recipesStatesTag.appendTag(entryTag);
@@ -216,12 +216,12 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         recipesStates.clear();
-        NBTTagList recipesStatesTag = nbt.getTagList("recipes_states", Constants.NBT.TAG_COMPOUND);
+        ListTag recipesStatesTag = nbt.getTagList("recipes_states", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < recipesStatesTag.tagCount(); i++) {
-            NBTTagCompound entryTag = recipesStatesTag.getCompoundTagAt(i);
+            CompoundTag entryTag = recipesStatesTag.getCompoundTagAt(i);
             String name = entryTag.getString("recipe");
             if (entryTag.hasKey("output")) {
                 AssemblyInstruction instruction = lookupRecipe(name, new ItemStack(entryTag.getCompoundTag("output")));
@@ -238,7 +238,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
         if (id == NET_GUI_DATA) {
             buffer.writeInt(recipesStates.size());
             recipesStates.forEach((instruction, state) -> {
-                buffer.writeString(instruction.recipe.getRegistryName().toString());
+                buffer.writeString(instruction.recipe.builtInRegistryHolder().key().location().toString());
                 buffer.writeItemStack(instruction.output);
                 buffer.writeInt(state.ordinal());
             });
@@ -270,7 +270,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
 
     public void sendRecipeStateToServer(AssemblyInstruction instruction, EnumAssemblyRecipeState state) {
         IMessage message = createMessage(NET_RECIPE_STATE, (buffer) -> {
-            buffer.writeString(instruction.recipe.getRegistryName().toString());
+            buffer.writeString(instruction.recipe.builtInRegistryHolder().key().location().toString());
             buffer.writeItemStack(instruction.output);
             buffer.writeInt(state.ordinal());
         });
@@ -278,7 +278,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         super.getDebugInfo(left, right, side);
         left.add("recipes - " + recipesStates.size());
         left.add("target - " + LocaleUtil.localizeMj(getTarget()));
@@ -308,7 +308,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
         public boolean equals(Object obj) {
             if (!(obj instanceof AssemblyInstruction)) return false;
             AssemblyInstruction instruction = (AssemblyInstruction) obj;
-            return recipe.getRegistryName().equals(instruction.recipe.getRegistryName()) && ItemStack.areItemStacksEqual(output, instruction.output);
+            return recipe.builtInRegistryHolder().key().location().equals(instruction.recipe.builtInRegistryHolder().key().location()) && ItemStack.areItemStacksEqual(output, instruction.output);
         }
     }
 }

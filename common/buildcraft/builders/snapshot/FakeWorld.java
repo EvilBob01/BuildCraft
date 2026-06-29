@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,31 +12,31 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.init.Biomes;
-import net.minecraft.init.Blocks;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.GameType;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.schematics.ISchematicBlock;
 
 @SuppressWarnings("NullableProblems")
-@SideOnly(Side.CLIENT)
-public class FakeWorld extends World {
+@OnlyIn(Dist.CLIENT)
+public class FakeWorld extends Level {
     private static final Biome BIOME = Biomes.PLAINS;
     @SuppressWarnings("WeakerAccess")
     public static final BlockPos BLUEPRINT_OFFSET = new BlockPos(0, 127, 0);

@@ -1,9 +1,9 @@
-package buildcraft.lib.client.sprite;
+﻿package buildcraft.lib.client.sprite;
 
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 

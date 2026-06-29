@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,14 +8,14 @@ package buildcraft.lib.path.task;
 
 import java.util.concurrent.Callable;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class TaskMiniChunkFiller implements Callable<FilledChunk> {
-    private final World world;
+    private final Level world;
     private final BlockPos offset;
 
-    public TaskMiniChunkFiller(World world, BlockPos min) {
+    public TaskMiniChunkFiller(Level world, BlockPos min) {
         this.world = world;
         this.offset = min;
     }

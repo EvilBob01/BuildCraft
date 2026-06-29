@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -6,9 +6,9 @@ package buildcraft.core.item;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.IEngineType;
 
@@ -25,7 +25,7 @@ public class ItemEngine_BC8<E extends Enum<E> & IEngineType> extends ItemBlockBC
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        IBlockState state = engineBlock.getStateFromMeta(stack == null ? 0 : stack.getItemDamage());
+        BlockState state = engineBlock.getStateFromMeta(stack == null ? 0 : stack.getItemDamage());
         E engine = state.getValue(engineBlock.getEngineProperty());
         return "tile." + engineBlock.getUnlocalizedName(engine);
     }

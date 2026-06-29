@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,8 +16,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 import net.minecraftforge.common.util.Constants;
 
@@ -58,7 +58,7 @@ public class ActionParameterSignal implements IStatementParameter {
         return colour == null ? EMPTY : SIGNALS.get(colour);
     }
 
-    public static ActionParameterSignal readFromNbt(NBTTagCompound nbt) {
+    public static ActionParameterSignal readFromNbt(CompoundTag nbt) {
         if (nbt.hasKey("color", Constants.NBT.TAG_ANY_NUMERIC)) {
             return get(EnumDyeColor.byMetadata(nbt.getByte("color")));
         }
@@ -66,7 +66,7 @@ public class ActionParameterSignal implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         EnumDyeColor c = colour;
         if (c != null) {
             nbt.setByte("color", (byte) c.getMetadata());

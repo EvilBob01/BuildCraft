@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -15,11 +15,11 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.BCItems;
 import buildcraft.api.mj.MjAPI;
@@ -43,7 +43,7 @@ public class FacadeAssemblyRecipes extends AssemblyRecipe implements IRecipeView
     public static final FacadeAssemblyRecipes INSTANCE = new FacadeAssemblyRecipes();
 
     static {
-        INSTANCE.setRegistryName(new ResourceLocation("buildcrafttransport:facadeRecipes"));
+        INSTANCE/* setRegistryName removed - use registry directly */);
     }
 
     private static final int TIME_GAP = 500;

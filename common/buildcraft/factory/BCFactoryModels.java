@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,18 +11,18 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.ModelHolderVariable;
 import buildcraft.lib.client.model.ModelItemSimple;
@@ -51,11 +51,11 @@ public class BCFactoryModels {
     );
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCFactoryModels.class);
+        NeoForge.EVENT_BUS.register(BCFactoryModels.class);
     }
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void onModelRegistry(ModelRegistryEvent event) {
         if (BCFactoryBlocks.heatExchange != null) {
             ModelLoader.setCustomStateMapper(
@@ -63,7 +63,7 @@ public class BCFactoryModels {
                 new StateMapperBase() {
                     @Nonnull
                     @Override
-                    protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
+                    protected ModelResourceLocation getModelResourceLocation(@Nonnull BlockState state) {
                         return new ModelResourceLocation("buildcraftfactory:heat_exchange#normal");
                     }
                 }

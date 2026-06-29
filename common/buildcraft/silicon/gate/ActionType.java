@@ -1,8 +1,8 @@
-package buildcraft.silicon.gate;
+﻿package buildcraft.silicon.gate;
 
 import java.io.IOException;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.EnumPipePart;
@@ -34,7 +34,7 @@ public class ActionType extends StatementType<ActionWrapper> {
     }
 
     @Override
-    public ActionWrapper readFromNbt(NBTTagCompound nbt) {
+    public ActionWrapper readFromNbt(CompoundTag nbt) {
         if (nbt == null) {
             return null;
         }
@@ -52,8 +52,8 @@ public class ActionType extends StatementType<ActionWrapper> {
     }
 
     @Override
-    public NBTTagCompound writeToNbt(ActionWrapper slot) {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt(ActionWrapper slot) {
+        CompoundTag nbt = new CompoundTag();
         if (slot == null) {
             return nbt;
         }

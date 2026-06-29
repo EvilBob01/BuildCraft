@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team This Source Code Form is subject to the terms of the Mozilla
  * Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at
  * https://mozilla.org/MPL/2.0/
@@ -18,19 +18,19 @@ import java.util.stream.Stream;
 
 import io.netty.buffer.Unpooled;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.misc.NBTUtilBC;
 import buildcraft.lib.misc.data.Box;
 import buildcraft.lib.net.PacketBufferBC;
 
 public class VolumeBox {
-    public final World world;
+    public final Level world;
     public UUID id;
     public Box box;
     private UUID player = null;
@@ -41,14 +41,14 @@ public class VolumeBox {
     public final Map<EnumAddonSlot, Addon> addons = new EnumMap<>(EnumAddonSlot.class);
     public final List<Lock> locks = new ArrayList<>();
 
-    public VolumeBox(World world, BlockPos at) {
+    public VolumeBox(Level world, BlockPos at) {
         if (world == null) throw new NullPointerException("world");
         this.world = world;
         id = UUID.randomUUID();
         box = new Box(at, at);
     }
 
-    public VolumeBox(World world, NBTTagCompound nbt) {
+    public VolumeBox(Level world, CompoundTag nbt) {
         if (world == null) throw new NullPointerException("world");
         this.world = world;
         id = nbt.getUniqueId("id");
@@ -72,7 +72,7 @@ public class VolumeBox {
             try {
                 Addon addon = addonClass.newInstance();
                 addon.volumeBox = this;
-                addon.readFromNBT(addonsEntryTag.getCompoundTag("addonData"));
+                addon.loadAdditional(addonsEntryTag.getCompoundTag("addonData"));
                 EnumAddonSlot slot = NBTUtilBC.readEnum(addonsEntryTag.getTag("slot"), EnumAddonSlot.class);
                 addons.put(slot, addon);
                 addon.postReadFromNbt();
@@ -82,12 +82,12 @@ public class VolumeBox {
         });
         NBTUtilBC.readCompoundList(nbt.getTag("locks")).map(lockTag -> {
             Lock lock = new Lock();
-            lock.readFromNBT(lockTag);
+            lock.loadAdditional(lockTag);
             return lock;
         }).forEach(locks::add);
     }
 
-    public VolumeBox(World world, PacketBufferBC buf) throws IOException {
+    public VolumeBox(Level world, PacketBufferBC buf) throws IOException {
         if (world == null) throw new NullPointerException("world");
         this.world = world;
         fromBytes(buf);
@@ -129,20 +129,20 @@ public class VolumeBox {
         oldPlayer = null;
     }
 
-    public void setPlayer(EntityPlayer player) {
+    public void setPlayer(Player player) {
         this.player = player.getGameProfile().getId();
     }
 
-    public boolean isEditingBy(EntityPlayer player) {
+    public boolean isEditingBy(Player player) {
         return player != null && Objects.equals(this.player, player.getGameProfile().getId());
     }
 
-    public boolean isPausedEditingBy(EntityPlayer player) {
+    public boolean isPausedEditingBy(Player player) {
         return oldPlayer != null && Objects.equals(oldPlayer, player.getGameProfile().getId());
     }
 
     @SuppressWarnings("WeakerAccess")
-    public EntityPlayer getPlayer(World world) {
+    public Player getPlayer(Level world) {
         return world.getPlayerEntityByUUID(player);
     }
 
@@ -167,10 +167,10 @@ public class VolumeBox {
         return locks.stream().flatMap(lock -> lock.targets.stream());
     }
 
-    public NBTTagCompound writeToNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setUniqueId("id", id);
-        nbt.setTag("box", this.box.writeToNBT());
+        nbt.setTag("box", this.box.saveAdditional());
         if (player != null) {
             nbt.setTag("player", NBTUtil.createUUIDTag(player));
         }
@@ -191,13 +191,13 @@ public class VolumeBox {
             "addons",
             NBTUtilBC.writeCompoundList(
                 addons.entrySet().stream().map(entry -> {
-                    NBTTagCompound addonsEntryTag = new NBTTagCompound();
+                    CompoundTag addonsEntryTag = new CompoundTag();
                     addonsEntryTag.setTag("slot", NBTUtilBC.writeEnum(entry.getKey()));
                     addonsEntryTag.setString(
                         "addonClass",
                         AddonsRegistry.INSTANCE.getNameByClass(entry.getValue().getClass()).toString()
                     );
-                    addonsEntryTag.setTag("addonData", entry.getValue().writeToNBT(new NBTTagCompound()));
+                    addonsEntryTag.setTag("addonData", entry.getValue().saveAdditional(new CompoundTag()));
                     return addonsEntryTag;
                 })
             ));

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,19 +12,19 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
@@ -45,24 +45,24 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
     }
 
     @Override
-    protected void addProperties(List<IProperty<?>> properties) {
+    protected void addProperties(List<Property<?>> properties) {
         super.addProperties(properties);
         properties.addAll(BuildCraftProperties.CONNECTED_MAP.values());
     }
 
-    private boolean isConnected(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
-        EnumFacing facing = side;
-        if (Arrays.asList(EnumFacing.HORIZONTALS).contains(facing)) {
-            facing = EnumFacing.getHorizontal(
+    private boolean isConnected(BlockGetter world, BlockPos pos, BlockState state, Direction side) {
+        Direction facing = side;
+        if (Arrays.asList(Direction.HORIZONTALS).contains(facing)) {
+            facing = Direction.from2DDataValue(
                 side.getHorizontalIndex() + 2 + state.getValue(getFacingProperty()).getHorizontalIndex());
         }
-        TileEntity tile = world.getTileEntity(pos.offset(facing));
+        BlockEntity tile = world.getBlockEntity(pos.offset(facing));
         return tile != null && tile.hasCapability(CapUtil.CAP_ITEMS, facing.getOpposite());
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
-        for (EnumFacing face : EnumFacing.VALUES) {
+    public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
+        for (Direction face : Direction.VALUES) {
             state =
                 state.withProperty(BuildCraftProperties.CONNECTED_MAP.get(face), isConnected(world, pos, state, face));
         }
@@ -70,18 +70,18 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
     }
 
     @Override
-    public TileBC_Neptune createTileEntity(World world, IBlockState state) {
+    public TileBC_Neptune createTileEntity(Level world, BlockState state) {
         return new TileQuarry();
     }
 
     @Override
-    public boolean canBeRotated(World world, BlockPos pos, IBlockState state) {
+    public boolean canBeRotated(Level world, BlockPos pos, BlockState state) {
         return false;
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        TileEntity tile = world.getTileEntity(pos);
+    public void breakBlock(Level world, BlockPos pos, BlockState state) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileQuarry) {
             for (BlockPos blockPos : ((TileQuarry) tile).framePoses) {
                 if (world.getBlockState(blockPos).getBlock() == BCBuildersBlocks.frame) {
@@ -93,16 +93,16 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
     }
 
     @Override
-    public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
+    public SoundType getSoundType(BlockState state, Level world, BlockPos pos, @Nullable Entity entity) {
         return SoundType.ANVIL;
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer,
+    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer,
         ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
-        if (placer instanceof EntityPlayer) {
-            AdvancementUtil.unlockAdvancement((EntityPlayer) placer, ADVANCEMENT);
+        if (placer instanceof Player) {
+            AdvancementUtil.unlockAdvancement((Player) placer, ADVANCEMENT);
         }
     }
 }

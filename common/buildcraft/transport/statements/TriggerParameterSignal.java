@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -15,13 +15,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.gates.IGate;
@@ -61,7 +61,7 @@ public class TriggerParameterSignal implements IStatementParameter {
         return new TriggerParameterSignal(active, colour);
     }
 
-    public static TriggerParameterSignal readFromNbt(NBTTagCompound nbt) {
+    public static TriggerParameterSignal readFromNbt(CompoundTag nbt) {
         if (nbt.hasKey("color", Constants.NBT.TAG_ANY_NUMERIC)) {
             EnumDyeColor colour = EnumDyeColor.byMetadata(nbt.getByte("color"));
             boolean active = nbt.getBoolean("active");
@@ -72,14 +72,14 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         if (colour != null) {
             nbt.setByte("color", (byte) colour.getMetadata());
             nbt.setBoolean("active", active);
         }
     }
 
-    public static TriggerParameterSignal readFromBuf(PacketBuffer buffer) {
+    public static TriggerParameterSignal readFromBuf(FriendlyByteBuf buffer) {
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
         EnumDyeColor colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
         if (colour == null) {
@@ -90,7 +90,7 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    public void writeToBuf(PacketBuffer buffer) {
+    public void writeToBuf(FriendlyByteBuf buffer) {
         MessageUtil.writeEnumOrNull(buffer, colour);
         if (colour != null) {
             buffer.writeBoolean(active);
@@ -114,7 +114,7 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         if (colour == null) {
             return null;

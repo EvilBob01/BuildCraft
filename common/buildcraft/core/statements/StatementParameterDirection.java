@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,14 +13,14 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.render.ISprite;
@@ -36,13 +36,13 @@ import buildcraft.lib.misc.StackUtil;
 @Deprecated
 public class StatementParameterDirection implements IStatementParameter {
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private static TextureAtlasSprite[] sprites;
 
     @Nullable
-    private EnumFacing direction = null;
+    private Direction direction = null;
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void registerIcons(TextureMap map) {
         sprites = new TextureAtlasSprite[] {
             map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_down")),
@@ -58,12 +58,12 @@ public class StatementParameterDirection implements IStatementParameter {
 
     }
 
-    public StatementParameterDirection(EnumFacing face) {
+    public StatementParameterDirection(Direction face) {
         this.direction = face;
     }
 
     @Nullable
-    public EnumFacing getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 
@@ -74,9 +74,9 @@ public class StatementParameterDirection implements IStatementParameter {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
-        EnumFacing dir = getDirection();
+        Direction dir = getDirection();
         if (dir == null) {
             return null;
         } else {
@@ -90,16 +90,16 @@ public class StatementParameterDirection implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         if (direction != null) {
             nbt.setByte("direction", (byte) direction.ordinal());
         }
     }
 
 //    @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         if (nbt.hasKey("direction")) {
-            direction = EnumFacing.VALUES[nbt.getByte("direction")];
+            direction = Direction.VALUES[nbt.getByte("direction")];
         } else {
             direction = null;
         }
@@ -121,7 +121,7 @@ public class StatementParameterDirection implements IStatementParameter {
 
     @Override
     public String getDescription() {
-        EnumFacing dir = getDirection();
+        Direction dir = getDirection();
         if (dir == null) {
             return "";
         } else {
@@ -137,7 +137,7 @@ public class StatementParameterDirection implements IStatementParameter {
     @Override
     public IStatementParameter rotateLeft() {
         StatementParameterDirection d = new StatementParameterDirection();
-        EnumFacing dir = d.getDirection();
+        Direction dir = d.getDirection();
         if (dir != null && dir.getAxis() != Axis.Y) {
             d.direction = dir.rotateY();
         }

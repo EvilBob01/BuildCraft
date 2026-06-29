@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -8,18 +8,18 @@ package buildcraft.factory.tile;
 import java.io.IOException;
 import java.util.List;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.SafeTimeTracker;
@@ -59,7 +59,7 @@ import buildcraft.factory.BCFactoryGuis;
 
 public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDebuggable {
     public static final FunctionContext MODEL_FUNC_CTX;
-    private static final NodeVariableObject<EnumFacing> MODEL_FACING;
+    private static final NodeVariableObject<Direction> MODEL_FACING;
     private static final NodeVariableBoolean MODEL_ACTIVE;
     private static final NodeVariableLong MODEL_POWER_AVG;
     private static final NodeVariableLong MODEL_POWER_MAX;
@@ -71,7 +71,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
 
     static {
         MODEL_FUNC_CTX = DefaultContexts.createWithAll();
-        MODEL_FACING = MODEL_FUNC_CTX.putVariableObject("direction", EnumFacing.class);
+        MODEL_FACING = MODEL_FUNC_CTX.putVariableObject("direction", Direction.class);
         MODEL_POWER_AVG = MODEL_FUNC_CTX.putVariableLong("power_average");
         MODEL_POWER_MAX = MODEL_FUNC_CTX.putVariableLong("power_max");
         MODEL_ACTIVE = MODEL_FUNC_CTX.putVariableBoolean("active");
@@ -145,8 +145,8 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setTag("tanks", tankManager.serializeNBT());
         nbt.setTag("battery", mjBattery.serializeNBT());
         nbt.setLong("distillPower", distillPower);
@@ -155,16 +155,16 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         // TODO: remove in next version
-        NBTTagCompound tanksTag = nbt.getCompoundTag("tanks");
+        CompoundTag tanksTag = nbt.getCompoundTag("tanks");
         if (tanksTag.hasKey("out_gas")) {
             tanksTag.setTag("gasOut", tanksTag.getTag("out_gas"));
         }
         if (tanksTag.hasKey("out_liquid")) {
             tanksTag.setTag("liquidOut", tanksTag.getTag("out_liquid"));
         }
-        super.readFromNBT(nbt);
+        super.loadAdditional(nbt);
         tankManager.deserializeNBT(nbt.getCompoundTag("tanks"));
         // TODO: remove in next version
         if (nbt.hasKey("mjBattery")) {
@@ -178,7 +178,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_TANK_IN, buffer, side);
                 writePayload(NET_TANK_GAS_OUT, buffer, side);
@@ -203,7 +203,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_TANK_IN, buffer, side, ctx);
                 readPayload(NET_TANK_GAS_OUT, buffer, side, ctx);
@@ -232,7 +232,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         MODEL_ACTIVE.value = false;
         MODEL_POWER_AVG.value = 0;
         MODEL_POWER_MAX.value = 6;
-        MODEL_FACING.value = EnumFacing.WEST;
+        MODEL_FACING.value = Direction.WEST;
     }
 
     public void setClientModelVariables(float partialTicks) {
@@ -241,23 +241,23 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         MODEL_ACTIVE.value = isActive;
         MODEL_POWER_AVG.value = powerAvgClient / MjAPI.MJ;
         MODEL_POWER_MAX.value = MAX_MJ_PER_TICK / MjAPI.MJ;
-        MODEL_FACING.value = EnumFacing.WEST;
+        MODEL_FACING.value = Direction.WEST;
 
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         if (state.getBlock() == BCFactoryBlocks.distiller) {
             MODEL_FACING.value = state.getValue(BlockBCBase_Neptune.PROP_FACING);
         }
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY,
+    public boolean onActivated(Player player, InteractionHand hand, Direction facing, float hitX, float hitY,
         float hitZ) {
 
         if (super.onActivated(player, hand, facing, hitX, hitY, hitZ)) {
             return true;
         }
 
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             BCFactoryGuis.DISTILLER.openGUI(player, pos);
         }
 
@@ -273,7 +273,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         smoothedTankIn.tick(getWorld());
         smoothedTankGasOut.tick(getWorld());
         smoothedTankLiquidOut.tick(getWorld());
-        if (world.isRemote) {
+        if (world.isClientSide) {
             setClientModelVariables(1);
             clientModelData.tick();
             return;
@@ -333,7 +333,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("In = " + tankIn.getDebugString());
         left.add("GasOut = " + tankGasOut.getDebugString());
         left.add("LiquidOut = " + tankLiquidOut.getDebugString());
@@ -343,9 +343,9 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         left.add("CurrRecipe = " + currentRecipe);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void getClientDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getClientDebugInfo(List<String> left, List<String> right, Direction side) {
         setClientModelVariables(1);
         left.add("Model Variables:");
         left.add("  facing = " + MODEL_FACING.value);

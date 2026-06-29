@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,7 +6,7 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.PipeEventHandler;
@@ -20,7 +20,7 @@ public class PipeBehaviourQuartz extends PipeBehaviourSeparate {
         super(pipe);
     }
 
-    public PipeBehaviourQuartz(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourQuartz(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 

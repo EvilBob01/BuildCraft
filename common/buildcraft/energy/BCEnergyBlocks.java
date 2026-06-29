@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,7 +6,7 @@
 
 package buildcraft.energy;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.api.enums.EnumEngineType;
 import buildcraft.api.enums.EnumSpring;
@@ -39,7 +39,7 @@ public class BCEnergyBlocks {
         }
 
         if (BCEnergyConfig.enableMjDynamo) {
-            mjDynamo = HELPER.addForcedBlock(new BlockDynamoMJ(Material.IRON, "block.mj_dynamo"));
+            mjDynamo = HELPER.addForcedBlock(new BlockDynamoMJ(Block.Properties.of(), "block.mj_dynamo"));
             HELPER.addForcedItem(new ItemBlockBC_Neptune(mjDynamo));
             HELPER.registerTile(TileDynamoMJ.class, "tile.mj_dynamo");
         }

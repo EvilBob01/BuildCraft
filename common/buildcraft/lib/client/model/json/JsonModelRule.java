@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,9 +12,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import buildcraft.lib.client.model.MutableQuad;
 import buildcraft.lib.client.model.ResourceLoaderContext;
@@ -49,10 +49,10 @@ public abstract class JsonModelRule {
             if ("rotate_facing".equals(builtin)) {
                 fnCtx = new FunctionContext(fnCtx, ExpressionCompat.ENUM_FACING);
                 String from = JsonUtils.getString(obj, "from");
-                INodeObject<EnumFacing> nodeFrom = JsonVariableModelPart.convertStringToObjectNode(from, fnCtx, EnumFacing.class);
+                INodeObject<Direction> nodeFrom = JsonVariableModelPart.convertStringToObjectNode(from, fnCtx, Direction.class);
 
                 String to = JsonUtils.getString(obj, "to");
-                INodeObject<EnumFacing> nodeTo = JsonVariableModelPart.convertStringToObjectNode(to, fnCtx, EnumFacing.class);
+                INodeObject<Direction> nodeTo = JsonVariableModelPart.convertStringToObjectNode(to, fnCtx, Direction.class);
 
                 INodeDouble[] origin;
                 if (obj.has("origin")) {
@@ -95,10 +95,10 @@ public abstract class JsonModelRule {
         private static final NodeConstantDouble CONST_ORIGIN = new NodeConstantDouble(8);
         public static final INodeDouble[] DEFAULT_ORIGIN = { CONST_ORIGIN, CONST_ORIGIN, CONST_ORIGIN };
 
-        public final INodeObject<EnumFacing> from, to;
+        public final INodeObject<Direction> from, to;
         public final INodeDouble[] origin;
 
-        public RuleRotateFacing(INodeBoolean when, INodeObject<EnumFacing> from, INodeObject<EnumFacing> to,
+        public RuleRotateFacing(INodeBoolean when, INodeObject<Direction> from, INodeObject<Direction> to,
             INodeDouble[] origin) {
             super(when);
             this.from = from;
@@ -108,8 +108,8 @@ public abstract class JsonModelRule {
 
         @Override
         public void apply(List<MutableQuad> quads) {
-            EnumFacing faceFrom = from.evaluate();
-            EnumFacing faceTo = to.evaluate();
+            Direction faceFrom = from.evaluate();
+            Direction faceTo = to.evaluate();
             if (faceFrom == faceTo) {
                 // don't bother rotating: there is nothing to rotate!
                 return;
@@ -149,13 +149,13 @@ public abstract class JsonModelRule {
                 return;
             }
 
-            float cx = MathHelper.cos(ax);
-            float cy = MathHelper.cos(ay);
-            float cz = MathHelper.cos(az);
+            float cx = Mth.cos(ax);
+            float cy = Mth.cos(ay);
+            float cz = Mth.cos(az);
 
-            float sx = MathHelper.sin(ax);
-            float sy = MathHelper.sin(ay);
-            float sz = MathHelper.sin(az);
+            float sx = Mth.sin(ax);
+            float sy = Mth.sin(ay);
+            float sz = Mth.sin(az);
 
             for (MutableQuad q : quads) {
                 q.translatef(-ox, -oy, -oz);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -8,13 +8,13 @@ package buildcraft.lib.fluid;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class SingleUseTank extends Tank {
 
@@ -22,7 +22,7 @@ public class SingleUseTank extends Tank {
 
     private FluidStack acceptedFluid;
 
-    public SingleUseTank(@Nonnull String name, int capacity, TileEntity tile) {
+    public SingleUseTank(@Nonnull String name, int capacity, BlockEntity tile) {
         super(name, capacity, tile);
     }
 
@@ -69,15 +69,15 @@ public class SingleUseTank extends Tank {
     }
 
     @Override
-    public void writeTankToNBT(NBTTagCompound nbt) {
+    public void writeTankToNBT(CompoundTag nbt) {
         super.writeTankToNBT(nbt);
         if (acceptedFluid != null) {
-            nbt.setTag(NBT_ACCEPTED_FLUID, acceptedFluid.writeToNBT(new NBTTagCompound()));
+            nbt.setTag(NBT_ACCEPTED_FLUID, acceptedFluid.saveAdditional(new CompoundTag()));
         }
     }
 
     @Override
-    public void readTankFromNBT(NBTTagCompound nbt) {
+    public void readTankFromNBT(CompoundTag nbt) {
         super.readTankFromNBT(nbt);
         if (nbt.hasKey(NBT_ACCEPTED_FLUID, Constants.NBT.TAG_STRING)) {
             setAcceptedFluid(FluidRegistry.getFluid(nbt.getString(NBT_ACCEPTED_FLUID)));

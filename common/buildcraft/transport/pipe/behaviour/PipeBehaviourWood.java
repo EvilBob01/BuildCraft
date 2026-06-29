@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,11 +11,11 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjRedstoneReceiver;
@@ -46,22 +46,22 @@ public class PipeBehaviourWood extends PipeBehaviourDirectional implements IMjRe
         super(pipe);
     }
 
-    public PipeBehaviourWood(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourWood(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 
     @Override
-    public PipeFaceTex getTextureData(EnumFacing face) {
+    public PipeFaceTex getTextureData(Direction face) {
         return (face != null && face == getCurrentDir()) ? TEX_FILLED : TEX_CLEAR;
     }
 
     @Override
-    public boolean canConnect(EnumFacing face, PipeBehaviour other) {
+    public boolean canConnect(Direction face, PipeBehaviour other) {
         return !(other instanceof PipeBehaviourWood);
     }
 
     @Override
-    protected boolean canFaceDirection(EnumFacing dir) {
+    protected boolean canFaceDirection(Direction dir) {
         return dir != null && pipe.getConnectedType(dir) == ConnectedType.TILE;
     }
 
@@ -97,12 +97,12 @@ public class PipeBehaviourWood extends PipeBehaviourDirectional implements IMjRe
         return power;
     }
 
-    protected int extractItems(IFlowItems flow, EnumFacing dir, int count, boolean simulate) {
+    protected int extractItems(IFlowItems flow, Direction dir, int count, boolean simulate) {
         return flow.tryExtractItems(count, dir, null, StackFilter.ALL, simulate);
     }
 
     @Nullable
-    protected FluidStack extractFluid(IFlowFluid flow, EnumFacing dir, int millibuckets, boolean simulate) {
+    protected FluidStack extractFluid(IFlowFluid flow, Direction dir, int millibuckets, boolean simulate) {
         return flow.tryExtractFluid(millibuckets, dir, null, simulate);
     }
 
@@ -125,12 +125,12 @@ public class PipeBehaviourWood extends PipeBehaviourDirectional implements IMjRe
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, Direction facing) {
         return mjCaps.getCapability(capability, facing);
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("Facing = " + currentDir);
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,16 +8,16 @@ package buildcraft.robotics.zone;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 public class ZonePlannerMapChunk {
     private final MapColourData[][] data = new MapColourData[16][16];
 
-    public ZonePlannerMapChunk(World world, ZonePlannerMapChunkKey key) {
-        Chunk chunk = world.getChunkFromChunkCoords(key.chunkPos.x, key.chunkPos.z);
+    public ZonePlannerMapChunk(Level world, ZonePlannerMapChunkKey key) {
+        LevelChunk chunk = world.getChunkFromChunkCoords(key.chunkPos.x, key.chunkPos.z);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 // Scan down from the max height value of a chunk until we find a block
@@ -32,7 +32,7 @@ public class ZonePlannerMapChunk {
         }
     }
 
-    public ZonePlannerMapChunk(PacketBuffer buffer) {
+    public ZonePlannerMapChunk(FriendlyByteBuf buffer) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int posY = buffer.readInt();
@@ -44,7 +44,7 @@ public class ZonePlannerMapChunk {
         }
     }
 
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 MapColourData colour = data[x][z];

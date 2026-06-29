@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
 
@@ -19,7 +19,7 @@ public class KeyPlugLens extends PluggableModelKey {
     public final boolean isFilter;
     private final int hash;
 
-    public KeyPlugLens(BlockRenderLayer layer, EnumFacing side, EnumDyeColor colour, boolean isFilter) {
+    public KeyPlugLens(BlockRenderLayer layer, Direction side, EnumDyeColor colour, boolean isFilter) {
         super(layer, side);
         this.colour = colour;
         this.isFilter = isFilter;

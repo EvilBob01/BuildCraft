@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,8 +8,8 @@ package buildcraft.silicon.container;
 
 import java.util.ArrayList;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -18,7 +18,7 @@ import buildcraft.lib.gui.slot.SlotDisplay;
 import buildcraft.silicon.tile.TileAssemblyTable;
 
 public class ContainerAssemblyTable extends ContainerBCTile<TileAssemblyTable> {
-    public ContainerAssemblyTable(EntityPlayer player, TileAssemblyTable tile) {
+    public ContainerAssemblyTable(Player player, TileAssemblyTable tile) {
         super(player, tile);
         addFullPlayerInventory(123);
 

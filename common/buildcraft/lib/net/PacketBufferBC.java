@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,12 +11,12 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
 
-/** Special {@link PacketBuffer} class that provides methods specific to "offset" reading and writing - like writing a
+/** Special {@link FriendlyByteBuf} class that provides methods specific to "offset" reading and writing - like writing a
  * single bit to the stream, and auto-compacting it with similar bits into a single byte. */
-public class PacketBufferBC extends PacketBuffer {
+public class PacketBufferBC extends FriendlyByteBuf {
 
     // Byte-based flag access
     private int readPartialOffset = 8;// so it resets down to 0 and reads a byte on read
@@ -265,7 +265,7 @@ public class PacketBufferBC extends PacketBuffer {
         if (possible == null) throw new IllegalArgumentException("Not an enum " + value.getClass());
         if (possible.length == 0) throw new IllegalArgumentException("Tried to write an enum value without any values! How did you do this?");
         if (possible.length == 1) return this;
-        writeFixedBits(value.ordinal(), MathHelper.log2DeBruijn(possible.length));
+        writeFixedBits(value.ordinal(), Mth.log2DeBruijn(possible.length));
         return this;
     }
 
@@ -276,7 +276,7 @@ public class PacketBufferBC extends PacketBuffer {
         if (enums == null) throw new IllegalArgumentException("Not an enum " + enumClass);
         if (enums.length == 0) throw new IllegalArgumentException("Tried to read an enum value without any values! How did you do this?");
         if (enums.length == 1) return enums[0];
-        int length = MathHelper.log2DeBruijn(enums.length);
+        int length = Mth.log2DeBruijn(enums.length);
         int index = readFixedBits(length);
         return enums[index];
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,17 +9,17 @@ package buildcraft.lib.fluid;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.registry.RegistrationHelper;
 
@@ -39,8 +39,8 @@ public class FluidManager {
 
         Material material = new BCMaterialFluid(fluid.getMapColour(), fluid.isFlammable());
         BCFluidBlock block = new BCFluidBlock(fluid, material);
-        block.setRegistryName(Loader.instance().activeModContainer().getModId(), "fluid_block_" + fluid.getBlockName());
-        block.setUnlocalizedName("blockFluid_" + fluid.getBlockName());
+        block/* setRegistryName removed - use registry directly */.getModContainerById(BCLib.MODID).orElse(null).getModId(), "fluid_block_" + fluid.getBlockName());
+        block/* setUnlocalizedName removed in 1.21 */);
         block.setLightOpacity(fluid.getLightOpacity());
         HELPER.addForcedBlock(block);
         fluid.setBlock(block);
@@ -50,7 +50,7 @@ public class FluidManager {
     }
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void onModelBake(ModelBakeEvent event) {
         for (BCFluidBlock fluid : fluidBlocks) {
             event.getModelManager().getBlockModelShapes().registerBlockWithStateMapper(fluid,

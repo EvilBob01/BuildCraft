@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,20 +16,20 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.MjAPI;
@@ -69,15 +69,15 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         caps.addProvider(new MjCapabilityHelper(new MjBatteryReceiver(battery)));
     }
 
-    public static boolean hasInventoryAtPosition(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        TileEntity tile = world.getTileEntity(pos);
+    public static boolean hasInventoryAtPosition(BlockGetter world, BlockPos pos, Direction side) {
+        BlockEntity tile = world.getBlockEntity(pos);
         return ItemTransactorHelper.getTransactor(tile, side.getOpposite()) != NoSpaceTransactor.INSTANCE;
     }
 
-    private void pickupItems(EnumFacing currentSide) {
-        AxisAlignedBB aabb = BoundingBoxUtil.extrudeFace(getPos(), currentSide, 0.25);
+    private void pickupItems(Direction currentSide) {
+        AABB aabb = BoundingBoxUtil.extrudeFace(getPos(), currentSide, 0.25);
         int count = PICKUP_MAX;
-        for (EntityItem entity : world.getEntitiesWithinAABB(EntityItem.class, aabb, EntitySelectors.IS_ALIVE)) {
+        for (ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
             int moved = ItemTransactorHelper.move(new TransactorEntityItem(entity), inv, count);
             count -= moved;
             if (count <= 0) {
@@ -86,18 +86,18 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         }
     }
 
-    private void putInNearInventories(EnumFacing currentSide) {
+    private void putInNearInventories(Direction currentSide) {
         boolean[] didWork = { false };
-        List<EnumFacing> sides = new ArrayList<>(Arrays.asList(EnumFacing.VALUES));
+        List<Direction> sides = new ArrayList<>(Arrays.asList(Direction.VALUES));
         Collections.shuffle(sides, new Random());
         sides.removeIf(Predicate.isEqual(currentSide));
-        Stream.<Pair<EnumFacing, ICapabilityProvider>>concat(
+        Stream.<Pair<Direction, ICapabilityProvider>>concat(
             sides.stream()
-                .map(side -> Pair.of(side, world.getTileEntity(pos.offset(side)))),
+                .map(side -> Pair.of(side, world.getBlockEntity(pos.offset(side)))),
             sides.stream()
                 .flatMap(side ->
-                    world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.offset(side))).stream()
-                        .filter(entity -> !(entity instanceof EntityLivingBase))
+                    world.getEntitiesWithinAABB(Entity.class, new AABB(pos.offset(side))).stream()
+                        .filter(entity -> !(entity instanceof LivingEntity))
                         .map(entity -> Pair.of(side, entity))
                 )
         )
@@ -117,7 +117,7 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
 
     @Override
     public void update() {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
 
@@ -127,10 +127,10 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
 
         battery.tick(getWorld(), getPos());
 
-        EnumFacing currentSide = world.getBlockState(pos).getValue(BlockBCBase_Neptune.BLOCK_FACING_6);
+        Direction currentSide = world.getBlockState(pos).getValue(BlockBCBase_Neptune.BLOCK_FACING_6);
 
         int target = 100000;
-        if (currentSide == EnumFacing.UP) {
+        if (currentSide == Direction.UP) {
             progress += 1000; // can be free because of gravity
         }
         progress += battery.extractPower(0, target - progress);
@@ -144,15 +144,15 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         progress = nbt.getInteger("progress");
         battery.deserializeNBT(nbt.getCompoundTag("battery"));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setInteger("progress", progress);
         nbt.setTag("battery", battery.serializeNBT());
         return nbt;
@@ -161,7 +161,7 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     // IDebuggable
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("battery = " + battery.getDebugString());
         left.add("progress = " + progress);
     }

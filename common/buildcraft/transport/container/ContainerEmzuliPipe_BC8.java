@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,10 +9,10 @@ package buildcraft.transport.container;
 import java.io.IOException;
 import java.util.EnumMap;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.EnumDyeColor;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import buildcraft.api.transport.pipe.IPipeHolder.PipeMessageReceiver;
@@ -32,7 +32,7 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
     public final EnumMap<SlotIndex, PaintWidget> paintWidgets = new EnumMap<>(SlotIndex.class);
     private final ItemHandlerSimple filterInv;
 
-    public ContainerEmzuliPipe_BC8(EntityPlayer player, PipeBehaviourEmzuli behaviour) {
+    public ContainerEmzuliPipe_BC8(Player player, PipeBehaviourEmzuli behaviour) {
         super(player, behaviour.pipe.getHolder());
         this.behaviour = behaviour;
         this.filterInv = behaviour.invFilters;
@@ -57,7 +57,7 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(Player player) {
         super.onContainerClosed(player);
         behaviour.pipe.getHolder().onPlayerClose(player);
     }

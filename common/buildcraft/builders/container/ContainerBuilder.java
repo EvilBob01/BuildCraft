@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,8 +9,8 @@ package buildcraft.builders.container;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.enums.EnumSnapshotType;
 
@@ -24,7 +24,7 @@ import buildcraft.builders.tile.TileBuilder;
 public class ContainerBuilder extends ContainerBCTile<TileBuilder> {
     public final List<WidgetFluidTank> widgetTanks;
 
-    public ContainerBuilder(EntityPlayer player, TileBuilder tile) {
+    public ContainerBuilder(Player player, TileBuilder tile) {
         super(player, tile);
 
         addFullPlayerInventory(140);

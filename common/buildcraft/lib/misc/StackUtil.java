@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.items.IList;
 import buildcraft.api.recipes.IngredientStack;
@@ -67,7 +67,7 @@ public class StackUtil {
     /** Attempts to get an item stack that might place down the given blockstate. Obviously this isn't perfect, and so
      * cannot be relied on for anything more than simple blocks. */
     @Nonnull
-    public static ItemStack getItemStackForState(IBlockState state) {
+    public static ItemStack getItemStackForState(BlockState state) {
         Block b = state.getBlock();
         ItemStack stack = new ItemStack(b);
         if (stack.isEmpty()) {
@@ -137,8 +137,8 @@ public class StackUtil {
         return true;
     }
 
-    public static NBTTagCompound stripNonFunctionNbt(@Nonnull ItemStack from) {
-        NBTTagCompound nbt = NBTUtilBC.getItemData(from).copy();
+    public static CompoundTag stripNonFunctionNbt(@Nonnull ItemStack from) {
+        CompoundTag nbt = NBTUtilBC.getItemData(from).copy();
         if (nbt.getSize() == 0) {
             return nbt;
         }
@@ -148,8 +148,8 @@ public class StackUtil {
     }
 
     public static boolean doesStackNbtMatch(@Nonnull ItemStack target, @Nonnull ItemStack with) {
-        NBTTagCompound nbtTarget = stripNonFunctionNbt(target);
-        NBTTagCompound nbtWith = stripNonFunctionNbt(with);
+        CompoundTag nbtTarget = stripNonFunctionNbt(target);
+        CompoundTag nbtWith = stripNonFunctionNbt(with);
         return nbtTarget.equals(nbtWith);
     }
 
@@ -226,7 +226,7 @@ public class StackUtil {
             int[] idBase = OreDictionary.getOreIDs(base);
             if (idBase.length > 0) {
                 for (int id : idBase) {
-                    for (ItemStack itemstack : OreDictionary.getOres(OreDictionary.getOreName(id))) {
+                    for (ItemStack itemstack : /* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(OreDictionary.getOreName(id))) {
                         if (comparison.getItem() == itemstack.getItem()
                             && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
                                 || comparison.getItemDamage() == itemstack.getItemDamage())) {
@@ -243,7 +243,7 @@ public class StackUtil {
     public static boolean isCraftingEquivalent(int[] oreIDs, ItemStack comparison) {
         if (oreIDs.length > 0) {
             for (int id : oreIDs) {
-                for (ItemStack itemstack : OreDictionary.getOres(OreDictionary.getOreName(id))) {
+                for (ItemStack itemstack : /* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(OreDictionary.getOreName(id))) {
                     if (comparison.getItem() == itemstack.getItem()
                         && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
                             || comparison.getItemDamage() == itemstack.getItemDamage())) {
@@ -316,7 +316,7 @@ public class StackUtil {
             }
         }
         if (matchNBT) {
-            NBTTagCompound baseTag = base.getTagCompound();
+            CompoundTag baseTag = base.getTagCompound();
             if (baseTag != null && !baseTag.equals(comparison.getTagCompound())) {
                 return false;
             }

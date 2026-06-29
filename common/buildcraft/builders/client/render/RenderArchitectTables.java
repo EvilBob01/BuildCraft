@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,15 +19,15 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.ModelUtil;
 import buildcraft.lib.client.render.DetachedRenderer;
@@ -35,28 +35,28 @@ import buildcraft.lib.client.render.DetachedRenderer;
 import buildcraft.builders.BCBuildersConfig;
 import buildcraft.builders.client.ClientArchitectTables;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer {
     INSTANCE;
 
     @Override
-    public void render(EntityPlayer player, float partialTicks) {
-        List<AxisAlignedBB> boxes = new ArrayList<>(ClientArchitectTables.BOXES.keySet());
+    public void render(Player player, float partialTicks) {
+        List<AABB> boxes = new ArrayList<>(ClientArchitectTables.BOXES.keySet());
         boxes.sort(
-            Comparator.<AxisAlignedBB>comparingDouble(bb ->
+            Comparator.<AABB>comparingDouble(bb ->
                 bb.getCenter().distanceTo(player.getPositionVector())
             ).reversed()
         );
         List<BlockPos> poses = new ArrayList<>(ClientArchitectTables.SCANNED_BLOCKS.keySet());
         poses.sort(
             Comparator.<BlockPos>comparingDouble(pos ->
-                new Vec3d(pos).distanceTo(player.getPositionVector())
+                new Vec3(pos).distanceTo(player.getPositionVector())
             ).reversed()
         );
 
         final boolean __STENCIL = BCBuildersConfig.enableStencil && Minecraft.getMinecraft().getFramebuffer().isStencilEnabled();
 
-        for (AxisAlignedBB bb : boxes) {
+        for (AABB bb : boxes) {
             if (__STENCIL) {
             GL11.glStencilMask(0xff);
             GL11.glClearStencil(1);
@@ -116,10 +116,10 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
             );
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             for (BlockPos pos : poses) {
-                if (!bb.intersects(new AxisAlignedBB(pos))) {
+                if (!bb.intersects(new AABB(pos))) {
                     continue;
                 }
-                for (EnumFacing face : EnumFacing.VALUES) {
+                for (Direction face : Direction.VALUES) {
                     ModelUtil.createFace(
                         face,
                         new Point3f(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F),

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -7,22 +7,22 @@ package buildcraft.lib.registry;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class CreativeTabManager {
     private static final Map<String, CreativeTabBC> tabMap = new HashMap<>();
 
-    public static CreativeTabs getTab(String name) {
+    public static CreativeModeTab getTab(String name) {
         if (name.startsWith("vanilla.")) {
             String after = name.substring("vanilla.".length());
             switch (after) {
                 case "misc":
-                    return CreativeTabs.MISC;
+                    return CreativeModeTab.MISC;
                 case "materials":
-                    return CreativeTabs.MATERIALS;
+                    return CreativeModeTab.MATERIALS;
             }
         }
         if (tabMap.containsKey(name)) {
@@ -55,7 +55,7 @@ public class CreativeTabManager {
         }
     }
 
-    public static class CreativeTabBC extends CreativeTabs {
+    public static class CreativeTabBC extends CreativeModeTab {
         private ItemStack item = new ItemStack(Items.COMPARATOR); // Temp.
 
         private CreativeTabBC(String name) {

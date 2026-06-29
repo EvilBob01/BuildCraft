@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,8 +8,8 @@ package buildcraft.builders.snapshot;
 
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 
 @SuppressWarnings("WeakerAccess")
 public class JsonRule {
@@ -20,7 +20,7 @@ public class JsonRule {
     public List<BlockPos> updateBlockOffsets = null;
     public String placeBlock = null;
     public List<String> canBeReplacedWithBlocks = null;
-    public NBTTagCompound replaceNbt = null;
+    public CompoundTag replaceNbt = null;
     public boolean ignore = false; // blacklist for blocks
     public boolean capture = false; // whitelist for entities
 }

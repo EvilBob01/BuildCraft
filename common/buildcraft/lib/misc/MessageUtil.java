@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,19 +19,19 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.StringUtil;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.management.PlayerChunkMapEntry;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import buildcraft.api.core.BCLog;
@@ -73,9 +73,9 @@ public class MessageUtil {
         }
     }
 
-    public static void sendToAllWatching(World worldObj, BlockPos pos, IMessage message) {
-        if (worldObj instanceof WorldServer) {
-            WorldServer server = (WorldServer) worldObj;
+    public static void sendToAllWatching(Level worldObj, BlockPos pos, IMessage message) {
+        if (worldObj instanceof ServerLevel) {
+            ServerLevel server = (ServerLevel) worldObj;
             PlayerChunkMapEntry playerChunkMap = server.getPlayerChunkMap().getEntry(pos.getX() >> 4, pos.getZ() >> 4);
             if (playerChunkMap == null) {
                 // No-one was watching this chunk.
@@ -93,35 +93,35 @@ public class MessageUtil {
         }
     }
 
-    public static void sendToPlayers(Iterable<EntityPlayer> players, IMessage message) {
-        for (EntityPlayer player : players) {
-            if (player instanceof EntityPlayerMP) {
-                MessageManager.sendTo(message, (EntityPlayerMP) player);
+    public static void sendToPlayers(Iterable<Player> players, IMessage message) {
+        for (Player player : players) {
+            if (player instanceof ServerPlayer) {
+                MessageManager.sendTo(message, (ServerPlayer) player);
             }
         }
     }
 
-    public static void writeBooleanArray(PacketBuffer buf, boolean[] bool) {
+    public static void writeBooleanArray(FriendlyByteBuf buf, boolean[] bool) {
         PacketBufferBC bufBc = PacketBufferBC.asPacketBufferBc(buf);
         for (boolean b : bool) {
             bufBc.writeBoolean(b);
         }
     }
 
-    public static boolean[] readBooleanArray(PacketBuffer buf, int length) {
+    public static boolean[] readBooleanArray(FriendlyByteBuf buf, int length) {
         boolean[] total = new boolean[length];
         readBooleanArray(buf, total);
         return total;
     }
 
-    public static void readBooleanArray(PacketBuffer buf, boolean[] into) {
+    public static void readBooleanArray(FriendlyByteBuf buf, boolean[] into) {
         PacketBufferBC bufBc = PacketBufferBC.asPacketBufferBc(buf);
         for (int i = 0; i < into.length; i++) {
             into[i] = bufBc.readBoolean();
         }
     }
 
-    public static void writeBlockPosArray(PacketBuffer buffer, BlockPos[] arr) {
+    public static void writeBlockPosArray(FriendlyByteBuf buffer, BlockPos[] arr) {
         boolean[] existsArray = new boolean[arr.length];
         for (int i = 0; i < arr.length; i++) {
             existsArray[i] = arr[i] != null;
@@ -134,7 +134,7 @@ public class MessageUtil {
         }
     }
 
-    public static BlockPos[] readBlockPosArray(PacketBuffer buffer, int length) {
+    public static BlockPos[] readBlockPosArray(FriendlyByteBuf buffer, int length) {
         BlockPos[] arr = new BlockPos[length];
         boolean[] existsArray = readBooleanArray(buffer, length);
         for (int i = 0; i < length; i++) {
@@ -145,27 +145,27 @@ public class MessageUtil {
         return arr;
     }
 
-    public static void writeBlockPos(PacketBuffer buffer, BlockPos pos) {
+    public static void writeBlockPos(FriendlyByteBuf buffer, BlockPos pos) {
         buffer.writeVarInt(pos.getX());
         buffer.writeVarInt(pos.getY());
         buffer.writeVarInt(pos.getZ());
     }
 
-    public static BlockPos readBlockPos(PacketBuffer buffer) {
+    public static BlockPos readBlockPos(FriendlyByteBuf buffer) {
         return new BlockPos(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt());
     }
 
-    public static void writeVec3d(PacketBuffer buffer, Vec3d vec) {
+    public static void writeVec3d(FriendlyByteBuf buffer, Vec3 vec) {
         buffer.writeDouble(vec.x);
         buffer.writeDouble(vec.y);
         buffer.writeDouble(vec.z);
     }
 
-    public static Vec3d readVec3d(PacketBuffer buffer) {
-        return new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+    public static Vec3 readVec3d(FriendlyByteBuf buffer) {
+        return new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
-    public static void writeGameProfile(PacketBuffer buffer, GameProfile profile) {
+    public static void writeGameProfile(FriendlyByteBuf buffer, GameProfile profile) {
         if (profile != null && profile.isComplete()) {
             buffer.writeBoolean(true);
             buffer.writeUniqueId(profile.getId());
@@ -175,7 +175,7 @@ public class MessageUtil {
         }
     }
 
-    public static GameProfile readGameProfile(PacketBuffer buffer) {
+    public static GameProfile readGameProfile(FriendlyByteBuf buffer) {
         if (buffer.readBoolean()) {
             UUID uuid = buffer.readUniqueId();
             String name = buffer.readString(256);
@@ -188,16 +188,16 @@ public class MessageUtil {
     }
 
     /** Writes a block state using the block ID and its metadata. Not suitable for full states. */
-    public static void writeBlockState(PacketBuffer buf, IBlockState state) {
+    public static void writeBlockState(FriendlyByteBuf buf, BlockState state) {
         Block block = state.getBlock();
         buf.writeVarInt(Block.REGISTRY.getIDForObject(block));
         int meta = block.getMetaFromState(state);
         buf.writeByte(meta);
-        IBlockState readState = block.getStateFromMeta(meta);
+        BlockState readState = block.getStateFromMeta(meta);
         if (readState != state) {
             buf.writeBoolean(true);
-            Map<IProperty, Comparable<?>> differingProperties = new HashMap<>();
-            for (IProperty<?> property : state.getPropertyKeys()) {
+            Map<Property, Comparable<?>> differingProperties = new HashMap<>();
+            for (Property<?> property : state.getPropertyKeys()) {
                 Comparable<?> inputValue = state.getValue(property);
                 Comparable<?> readValue = readState.getValue(property);
                 if (!inputValue.equals(readValue)) {
@@ -205,7 +205,7 @@ public class MessageUtil {
                 }
             }
             buf.writeByte(differingProperties.size());
-            for (Entry<IProperty, Comparable<?>> entry : differingProperties.entrySet()) {
+            for (Entry<Property, Comparable<?>> entry : differingProperties.entrySet()) {
                 buf.writeString(entry.getKey().getName());
                 buf.writeString(entry.getKey().getName(entry.getValue()));
             }
@@ -214,29 +214,29 @@ public class MessageUtil {
         }
     }
 
-    public static IBlockState readBlockState(PacketBuffer buf) {
+    public static BlockState readBlockState(FriendlyByteBuf buf) {
         int id = buf.readVarInt();
         Block block = Block.REGISTRY.getObjectById(id);
         int meta = buf.readUnsignedByte();
-        IBlockState state = block.getStateFromMeta(meta);
+        BlockState state = block.getStateFromMeta(meta);
         if (buf.readBoolean()) {
             int count = buf.readByte();
             for (int p = 0; p < count; p++) {
                 String name = buf.readString(256);
                 String value = buf.readString(256);
-                IProperty<?> prop = state.getBlock().getBlockState().getProperty(name);
+                Property<?> prop = state.getBlock().getBlockState().getProperty(name);
                 state = propertyReadHelper(state, value, prop);
             }
         }
         return state;
     }
 
-    private static <T extends Comparable<T>> IBlockState propertyReadHelper(IBlockState state, String value,
-        IProperty<T> prop) {
+    private static <T extends Comparable<T>> BlockState propertyReadHelper(BlockState state, String value,
+        Property<T> prop) {
         return state.withProperty(prop, prop.parseValue(value).orNull());
     }
 
-    /** {@link PacketBuffer#writeEnumValue(Enum)} can only write *actual* enum values - so not null. This method allows
+    /** {@link FriendlyByteBuf#writeEnumValue(Enum)} can only write *actual* enum values - so not null. This method allows
      * for writing an enum value, or null. */
     public static void writeEnumOrNull(ByteBuf buffer, Enum<?> value) {
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
@@ -248,7 +248,7 @@ public class MessageUtil {
         }
     }
 
-    /** {@link PacketBuffer#readEnumValue(Class)} can only read *actual* enum values - so not null. This method allows
+    /** {@link FriendlyByteBuf#readEnumValue(Class)} can only read *actual* enum values - so not null. This method allows
      * for reading an enum value, or null. */
     public static <E extends Enum<E>> E readEnumOrNull(ByteBuf buffer, Class<E> clazz) {
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
@@ -282,20 +282,20 @@ public class MessageUtil {
     }
 
     public static void sendReturnMessage(MessageContext context, IMessage reply) {
-        EntityPlayer player = BCLibProxy.getProxy().getPlayerForContext(context);
-        if (player instanceof EntityPlayerMP) {
-            EntityPlayerMP playerMP = (EntityPlayerMP) player;
+        Player player = BCLibProxy.getProxy().getPlayerForContext(context);
+        if (player instanceof ServerPlayer) {
+            ServerPlayer playerMP = (ServerPlayer) player;
             MessageManager.sendTo(reply, playerMP);
         } else if (player != null) {
             MessageManager.sendToServer(reply);
         }
     }
 
-    public static PacketBuffer asPacketBuffer(ByteBuf buf) {
-        if (buf instanceof PacketBuffer) {
-            return (PacketBuffer) buf;
+    public static FriendlyByteBuf asPacketBuffer(ByteBuf buf) {
+        if (buf instanceof FriendlyByteBuf) {
+            return (FriendlyByteBuf) buf;
         }
-        return new PacketBuffer(buf);
+        return new FriendlyByteBuf(buf);
     }
 
     /** Checks to make sure that this buffer has been *completely* read (so that there are no readable bytes left

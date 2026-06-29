@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -7,7 +7,7 @@
 package buildcraft.transport;
 
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.statements.StatementManager;
 
@@ -69,8 +69,8 @@ public class BCTransportStatements {
             ACTION_EXTRACTION_PRESET[index.ordinal()] = new ActionExtractionPreset(index);
         }
 
-        ACTION_PIPE_DIRECTION = new ActionPipeDirection[EnumFacing.VALUES.length];
-        for (EnumFacing face : EnumFacing.VALUES) {
+        ACTION_PIPE_DIRECTION = new ActionPipeDirection[Direction.VALUES.length];
+        for (Direction face : Direction.VALUES) {
             ACTION_PIPE_DIRECTION[face.ordinal()] = new ActionPipeDirection(face);
         }
 

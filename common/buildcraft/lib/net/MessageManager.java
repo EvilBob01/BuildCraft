@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  *
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -12,15 +12,15 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.IBuildCraftMod;
 import buildcraft.api.core.BCDebugging;
@@ -99,14 +99,14 @@ public class MessageManager {
             return;
         }
         Side specificSide = sides != null && sides.length == 1 ? sides[0] : null;
-        if (specificSide == null || specificSide == Side.CLIENT) {
+        if (specificSide == null || specificSide == Dist.CLIENT) {
             if (messageInfo.clientHandler != null && DEBUG) {
                 BCLog.logger.info("[lib.messages] Replacing existing client handler for " + netName + " " + messageClass
                     + " " + messageInfo.clientHandler + " with " + messageHandler);
             }
             messageInfo.clientHandler = messageHandler;
         }
-        if (specificSide == null || specificSide == Side.SERVER) {
+        if (specificSide == null || specificSide == Dist.DEDICATED_SERVER) {
             if (messageInfo.serverHandler != null && DEBUG) {
                 BCLog.logger.info("[lib.messages] Replacing existing server handler for " + netName + " " + messageClass
                     + " " + messageInfo.serverHandler + " with " + messageHandler);
@@ -148,7 +148,7 @@ public class MessageManager {
         boolean cl = info.clientHandler != null;
         boolean sv = info.serverHandler != null;
         if (!(cl | sv)) {
-            if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            if (FMLCommonHandler.instance().getSide() == Dist.CLIENT) {
                 // the client should *always* be able to handle everything.
                 throw new IllegalStateException("Found a registered message " + info.messageClass + " for "
                     + info.modHandler.module.getModId() + " that didn't have any handlers!");
@@ -156,8 +156,8 @@ public class MessageManager {
         }
 
         Class<I> msgClass = info.messageClass;
-        handler.netWrapper.registerMessage(wrapHandler(info.clientHandler, msgClass), msgClass, id, Side.CLIENT);
-        handler.netWrapper.registerMessage(wrapHandler(info.serverHandler, msgClass), msgClass, id, Side.SERVER);
+        handler.netWrapper.registerMessage(wrapHandler(info.clientHandler, msgClass), msgClass, id, Dist.CLIENT);
+        handler.netWrapper.registerMessage(wrapHandler(info.serverHandler, msgClass), msgClass, id, Dist.DEDICATED_SERVER);
         if (DEBUG) {
             String sides = cl ? (sv ? "{client, server}" : "{client}") : "{server}";
             BCLog.logger.info("[lib.messages]      " + id + ": " + msgClass + " on sides: " + sides);
@@ -168,9 +168,9 @@ public class MessageManager {
         Class<I> messageClass) {
         if (messageHandler == null) {
             return (message, context) -> {
-                if (context.side == Side.SERVER) {
+                if (context.side == Dist.DEDICATED_SERVER) {
                     // Bad/Buggy client
-                    EntityPlayerMP player = context.getServerHandler().player;
+                    ServerPlayer player = context.getServerHandler().player;
                     BCLog.logger.warn(
                         "[lib.messages] The client " + player.getName() + " (ID = " + player.getGameProfile().getId()
                             + ") sent an invalid message " + messageClass + ", when they should only receive them!");
@@ -182,7 +182,7 @@ public class MessageManager {
             };
         } else {
             return (message, context) -> {
-                EntityPlayer player = BCLibProxy.getProxy().getPlayerForContext(context);
+                Player player = BCLibProxy.getProxy().getPlayerForContext(context);
                 if (player == null || player.world == null) {
                     return null;
                 }
@@ -217,7 +217,7 @@ public class MessageManager {
      *
      * @param message The message to send
      * @param player The player to send it to */
-    public static void sendTo(IMessage message, EntityPlayerMP player) {
+    public static void sendTo(IMessage message, ServerPlayer player) {
         getSimpleNetworkWrapper(message).sendTo(message, player);
     }
 

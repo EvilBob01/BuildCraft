@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,16 +12,16 @@ import java.util.stream.Collectors;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelFluid;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.enums.EnumEngineType;
 import buildcraft.api.enums.EnumPowerStage;
@@ -46,7 +46,7 @@ import buildcraft.energy.tile.TileEngineStone_BC8;
 public class BCEnergyModels {
     private static final NodeVariableDouble ENGINE_PROGRESS;
     private static final NodeVariableObject<EnumPowerStage> ENGINE_STAGE;
-    private static final NodeVariableObject<EnumFacing> ENGINE_FACING;
+    private static final NodeVariableObject<Direction> ENGINE_FACING;
 
     private static final ModelHolderVariable ENGINE_STONE;
     private static final ModelHolderVariable ENGINE_IRON;
@@ -57,7 +57,7 @@ public class BCEnergyModels {
         FunctionContext fnCtx = new FunctionContext(ExpressionCompat.ENUM_POWER_STAGE, DefaultContexts.createWithAll());
         ENGINE_PROGRESS = fnCtx.putVariableDouble("progress");
         ENGINE_STAGE = fnCtx.putVariableObject("stage", EnumPowerStage.class);
-        ENGINE_FACING = fnCtx.putVariableObject("direction", EnumFacing.class);
+        ENGINE_FACING = fnCtx.putVariableObject("direction", Direction.class);
         // TODO: Item models from "item/engine_stone.json"
         ENGINE_STONE = new ModelHolderVariable(
             "buildcraftenergy:models/block/engine_stone.json",
@@ -78,11 +78,11 @@ public class BCEnergyModels {
     }
 
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCEnergyModels.class);
+        NeoForge.EVENT_BUS.register(BCEnergyModels.class);
     }
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void onModelRegistry(ModelRegistryEvent event) {
         for (BCFluid fluid : BCEnergyFluids.allFluids) {
             ModelLoader.setCustomStateMapper(fluid.getBlock(), b -> Collections.emptyMap());
@@ -93,7 +93,7 @@ public class BCEnergyModels {
     public static void onModelBake(ModelBakeEvent event) {
         ENGINE_PROGRESS.value = 0.2;
         ENGINE_STAGE.value = EnumPowerStage.BLUE;
-        ENGINE_FACING.value = EnumFacing.UP;
+        ENGINE_FACING.value = Direction.UP;
         ModelVariableData varData = new ModelVariableData();
         varData.setNodes(ENGINE_STONE.createTickableNodes());
         varData.tick();

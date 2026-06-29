@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.client.render.DetachedRenderer;
 import buildcraft.lib.client.render.laser.LaserBoxRenderer;
@@ -29,7 +29,7 @@ public enum RenderVolumeBoxes implements DetachedRenderer.IDetachedRenderer {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void render(EntityPlayer player, float partialTicks) {
+    public void render(Player player, float partialTicks) {
         GlStateManager.enableBlend();
 
         BufferBuilder bb = Tessellator.getInstance().getBuffer();

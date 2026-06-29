@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -7,8 +7,8 @@
 package buildcraft.transport.gui;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.transport.pipe.IFlowItems;
 
@@ -42,7 +42,7 @@ public class GuiDiamondWoodPipe extends GuiBC8<ContainerDiamondWoodPipe> impleme
 
     private PipeBehaviourWoodDiamond pipe;
 
-    public GuiDiamondWoodPipe(EntityPlayer player, PipeBehaviourWoodDiamond pipe) {
+    public GuiDiamondWoodPipe(Player player, PipeBehaviourWoodDiamond pipe) {
         super(new ContainerDiamondWoodPipe(player, pipe));
 
         this.pipe = pipe;

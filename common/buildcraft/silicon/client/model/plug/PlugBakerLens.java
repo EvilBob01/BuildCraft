@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,7 +13,7 @@ import java.util.Map;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.IPluggableStaticBaker;
 
@@ -67,6 +67,6 @@ public enum PlugBakerLens implements IPluggableStaticBaker<KeyPlugLens> {
     }
 
     interface IQuadGetter {
-        MutableQuad[] get(EnumFacing side, EnumDyeColor colour);
+        MutableQuad[] get(Direction side, EnumDyeColor colour);
     }
 }

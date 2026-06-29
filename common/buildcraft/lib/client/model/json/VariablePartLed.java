@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -8,7 +8,7 @@ package buildcraft.lib.client.model.json;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.model.ModelLoader;
 
@@ -31,7 +31,7 @@ public class VariablePartLed extends VariablePartCuboidBase {
     }
 
     @Override
-    protected VariableFaceData getFaceData(EnumFacing side, ITextureGetter spriteLookup) {
+    protected VariableFaceData getFaceData(Direction side, ITextureGetter spriteLookup) {
         FACE_DATA.uvs.minU = 1 / 16.0f;
         FACE_DATA.uvs.minV = 2 / 16.0f;
         FACE_DATA.uvs.maxU = 1 / 16.0f;

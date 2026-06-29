@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,7 +9,7 @@ package buildcraft.lib.particle;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public enum ParticleDirectionalSpread implements IParticlePositionPipe {
     SMALL(0.01),
@@ -27,13 +27,13 @@ public enum ParticleDirectionalSpread implements IParticlePositionPipe {
     public List<ParticlePosition> pipe(ParticlePosition pos) {
         List<ParticlePosition> list = new ArrayList<>();
 
-        Vec3d nMotion = modifyMotion(pos.motion);
+        Vec3 nMotion = modifyMotion(pos.motion);
         list.add(new ParticlePosition(pos.position, nMotion));
 
         return list;
     }
 
-    private Vec3d modifyMotion(Vec3d motion) {
+    private Vec3 modifyMotion(Vec3 motion) {
         double dx = getRandom();
         double dy = getRandom();
         double dz = getRandom();

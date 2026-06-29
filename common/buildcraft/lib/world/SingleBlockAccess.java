@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,28 +6,28 @@
 
 package buildcraft.lib.world;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Biomes;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 
-/** An {@link IBlockAccess} for getting the properties of a single {@link IBlockState}
+/** An {@link BlockGetter} for getting the properties of a single {@link BlockState}
  * at the {@link SingleBlockAccess#POS} */
-public class SingleBlockAccess implements IBlockAccess {
+public class SingleBlockAccess implements BlockGetter {
     public static final BlockPos POS = BlockPos.ORIGIN;
-    public final IBlockState state;
+    public final BlockState state;
 
-    public SingleBlockAccess(IBlockState state) {
+    public SingleBlockAccess(BlockState state) {
         this.state = state;
     }
 
     @Override
-    public TileEntity getTileEntity(BlockPos pos) {
+    public BlockEntity getTileEntity(BlockPos pos) {
         return null;
     }
 
@@ -37,7 +37,7 @@ public class SingleBlockAccess implements IBlockAccess {
     }
 
     @Override
-    public IBlockState getBlockState(BlockPos pos) {
+    public BlockState getBlockState(BlockPos pos) {
         return POS.equals(pos) ? state : Blocks.AIR.getDefaultState();
     }
 
@@ -52,7 +52,7 @@ public class SingleBlockAccess implements IBlockAccess {
     }
 
     @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction) {
+    public int getStrongPower(BlockPos pos, Direction direction) {
         return 0;
     }
 
@@ -62,7 +62,7 @@ public class SingleBlockAccess implements IBlockAccess {
     }
 
     @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    public boolean isSideSolid(BlockPos pos, Direction side, boolean _default) {
         if (POS.equals(pos)) {
             return _default;
         }

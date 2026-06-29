@@ -1,18 +1,18 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.factory.client.render.RenderMiningWell;
 import buildcraft.factory.client.render.RenderPump;
@@ -38,8 +38,8 @@ public abstract class BCFactoryProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+    public Object getServerGuiElement(int ID, Player player, Level world, int x, int y, int z) {
+        BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
         if (ID == BCFactoryGuis.AUTO_WORKBENCH_ITEMS.ordinal()) {
             if (tile instanceof TileAutoWorkbenchItems) {
                 TileAutoWorkbenchItems workbench = (TileAutoWorkbenchItems) tile;
@@ -66,7 +66,7 @@ public abstract class BCFactoryProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
@@ -80,16 +80,16 @@ public abstract class BCFactoryProxy implements IGuiHandler {
     }
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCFactoryProxy {
     }
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCFactoryProxy {
         @Override
-        public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-            TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+        public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
+            BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
             if (ID == BCFactoryGuis.AUTO_WORKBENCH_ITEMS.ordinal()) {
                 if (tile instanceof TileAutoWorkbenchItems) {
                     TileAutoWorkbenchItems workbench = (TileAutoWorkbenchItems) tile;

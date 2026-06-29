@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,15 +6,15 @@
 
 package buildcraft.lib.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.block.BlockStainedGlassPane;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.world.InteractionResult;
 
 import buildcraft.api.blocks.CustomPaintHelper;
 import buildcraft.api.blocks.ICustomPaintHandler;
@@ -27,35 +27,35 @@ public class VanillaPaintHandlers {
         registerDoubleTypedHandler(Blocks.HARDENED_CLAY, Blocks.STAINED_HARDENED_CLAY, BlockColored.COLOR);
     }
 
-    private static void registerDoubleTypedHandler(Block clear, Block dyed, IProperty<EnumDyeColor> colourProp) {
+    private static void registerDoubleTypedHandler(Block clear, Block dyed, Property<EnumDyeColor> colourProp) {
         ICustomPaintHandler handler = createDoubleTypedPainter(clear, dyed, colourProp);
         CustomPaintHelper.INSTANCE.registerHandler(clear, handler);
         CustomPaintHelper.INSTANCE.registerHandler(dyed, handler);
     }
 
-    public static ICustomPaintHandler createDoubleTypedPainter(Block clear, Block dyed, IProperty<EnumDyeColor> colourProp) {
+    public static ICustomPaintHandler createDoubleTypedPainter(Block clear, Block dyed, Property<EnumDyeColor> colourProp) {
         return (world, pos, state, hitPos, hitSide, to) -> {
             if (state.getBlock() == clear) {
                 // We are currently clear
                 if (to == null) {
-                    return EnumActionResult.FAIL;
+                    return InteractionResult.FAIL;
                 }
-                IBlockState painted = dyed.getDefaultState().withProperty(colourProp, to);
-                world.setBlockState(pos, painted);
-                return EnumActionResult.SUCCESS;
+                BlockState painted = dyed.getDefaultState().withProperty(colourProp, to);
+                world.setBlock(pos, painted);
+                return InteractionResult.SUCCESS;
             } else if (state.getBlock() == dyed) {
                 if (to == state.getValue(colourProp)) {
-                    return EnumActionResult.FAIL;
+                    return InteractionResult.FAIL;
                 }
                 if (to == null) {
                     state = clear.getDefaultState();
                 } else {
                     state = state.withProperty(colourProp, to);
                 }
-                world.setBlockState(pos, state);
-                return EnumActionResult.SUCCESS;
+                world.setBlock(pos, state);
+                return InteractionResult.SUCCESS;
             }
-            return EnumActionResult.PASS;
+            return InteractionResult.PASS;
         };
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -9,8 +9,8 @@ package buildcraft.factory.client.render;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import net.minecraftforge.client.model.animation.FastTESR;
 
@@ -38,9 +38,9 @@ public class RenderTube extends FastTESR<TileMiner> {
         BlockPos from = tile.getPos();
         buffer.setTranslation(x - from.getX(), y - from.getY(), z - from.getZ());
 
-        Vec3d start = new Vec3d(from.getX() + 0.5, from.getY(), from.getZ() + 0.5);
+        Vec3 start = new Vec3(from.getX() + 0.5, from.getY(), from.getZ() + 0.5);
 
-        Vec3d end = new Vec3d(from.getX() + 0.5, tubeY, from.getZ() + 0.5);
+        Vec3 end = new Vec3(from.getX() + 0.5, tubeY, from.getZ() + 0.5);
 
         LaserData_BC8 data = new LaserData_BC8(laserType, start, end, 1 / 16.0);
         LaserRenderer_BC8.renderLaserDynamic(data, buffer);

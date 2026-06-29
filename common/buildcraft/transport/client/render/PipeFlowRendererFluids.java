@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -18,14 +18,14 @@ import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.transport.pipe.IPipeFlowRenderer;
@@ -40,7 +40,7 @@ import buildcraft.lib.misc.VecUtil;
 import buildcraft.transport.pipe.Pipe;
 import buildcraft.transport.pipe.flow.PipeFlowFluids;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> {
     INSTANCE;
 
@@ -58,7 +58,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
         Arrays.fill(sides, true);
 
         double[] amounts = flow.getAmountsForRender(partialTicks);
-        Vec3d[] offsets = flow.getOffsetsForRender(partialTicks);
+        Vec3[] offsets = flow.getOffsetsForRender(partialTicks);
 
         int blocklight = forRender.getFluid().getLuminosity(forRender);
         IPipeHolder holder = flow.pipe.getHolder();
@@ -73,33 +73,33 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
             boolean gas = forRender.getFluid().isGaseous(forRender);
             boolean horizontal = false;
-            boolean vertical = flow.pipe.isConnected(gas ? EnumFacing.DOWN : EnumFacing.UP);
+            boolean vertical = flow.pipe.isConnected(gas ? Direction.DOWN : Direction.UP);
 
             prof.endStartSection("build");
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 double size = ((Pipe) flow.pipe).getConnectedDist(face);
                 double amount = amounts[face.getIndex()];
                 if (face.getAxis() != Axis.Y) {
                     horizontal |= flow.pipe.isConnected(face) && amount > 0;
                 }
 
-                Vec3d center = VecUtil.offset(new Vec3d(0.5, 0.5, 0.5), face, 0.245 + size / 2);
-                Vec3d radius = new Vec3d(0.24, 0.24, 0.24);
+                Vec3 center = VecUtil.offset(new Vec3(0.5, 0.5, 0.5), face, 0.245 + size / 2);
+                Vec3 radius = new Vec3(0.24, 0.24, 0.24);
                 radius = VecUtil.replaceValue(radius, face.getAxis(), 0.005 + size / 2);
 
                 if (face.getAxis() == Axis.Y) {
                     double perc = amount / flow.capacity;
                     perc = Math.sqrt(perc);
-                    radius = new Vec3d(perc * 0.24, radius.y, perc * 0.24);
+                    radius = new Vec3(perc * 0.24, radius.y, perc * 0.24);
                 }
 
-                Vec3d offset = offsets[face.getIndex()];
-                if (offset == null) offset = Vec3d.ZERO;
+                Vec3 offset = offsets[face.getIndex()];
+                if (offset == null) offset = Vec3.ZERO;
                 center = center.add(offset);
                 fluidBuffer.setTranslation(x - offset.x, y - offset.y, z - offset.z);
 
-                Vec3d min = center.subtract(radius);
-                Vec3d max = center.add(radius);
+                Vec3 min = center.subtract(radius);
+                Vec3 max = center.add(radius);
 
                 if (face.getAxis() == Axis.Y) {
                     FluidRenderer.renderFluid(FluidSpriteType.FROZEN, forRender, 1, 1, min, max, fluidBuffer, sides);
@@ -113,13 +113,13 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
             double horizPos = 0.26;
 
-            Vec3d offset = offsets[EnumPipePart.CENTER.getIndex()];
-            if (offset == null) offset = Vec3d.ZERO;
+            Vec3 offset = offsets[EnumPipePart.CENTER.getIndex()];
+            if (offset == null) offset = Vec3.ZERO;
             fluidBuffer.setTranslation(x - offset.x, y - offset.y, z - offset.z);
 
             if (horizontal | !vertical) {
-                Vec3d min = new Vec3d(0.26, 0.26, 0.26);
-                Vec3d max = new Vec3d(0.74, 0.74, 0.74);
+                Vec3 min = new Vec3(0.26, 0.26, 0.26);
+                Vec3 max = new Vec3(0.74, 0.74, 0.74);
 
                 min = min.add(offset);
                 max = max.add(offset);
@@ -138,8 +138,8 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
                 double yMin = gas ? 0.26 : horizPos;
                 double yMax = gas ? 1 - horizPos : 0.74;
 
-                Vec3d min = new Vec3d(minXZ, yMin, minXZ);
-                Vec3d max = new Vec3d(maxXZ, yMax, maxXZ);
+                Vec3 min = new Vec3(minXZ, yMin, minXZ);
+                Vec3 max = new Vec3(maxXZ, yMax, maxXZ);
                 min = min.add(offset);
                 max = max.add(offset);
 
