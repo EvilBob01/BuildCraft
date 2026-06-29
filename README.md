@@ -1,135 +1,162 @@
-## Welcome to BuildCraft on GitHub
+# BuildCraft — NeoForge 1.21.1 Port
 
-### Reporting an issue
+> **This is a community fork** porting BuildCraft to **Minecraft 1.21.1 + NeoForge 21.1.x**,
+> targeting compatibility with the **All the Mods 10** modpack.
+>
+> Original project: [BuildCraft/BuildCraft](https://github.com/BuildCraft/BuildCraft)
+> Fork maintainer: [EvilBob01](https://github.com/EvilBob01)
 
-Please open an issue for a bug report only if:
+---
 
-* you are sure the bug is caused by BuildCraft and not by any other mod,
-* you have at least one of the following:
-  * a crash report, 
-  * means of reproducing the bug in question,
-  * screenshots/videos/etc. to demonstrate the bug.
+## What is BuildCraft?
 
-**If you are not sure if a bug report is valid, please use the "Ask Help!" subforum.**
+BuildCraft extends Minecraft with automation, transportation, and construction tools:
 
-Please only use **official BuildCraft releases** for any kind of bug reports unless otherwise told to do by the BuildCraft team. Custom builds (for instance from Jenkins) are unsupported, often buggy and will **not** get any support from the developers.
+- **Quarries** — automated mining machines that dig out large areas
+- **Pipes** — item, fluid, and power transport networks
+- **Engines** — Redstone, Stone, Iron, and Combustion engines providing Minecraft Joules (MJ)
+- **Builders & Fillers** — automated construction and filling of large volumes
+- **Robots** — programmable worker bots for complex tasks
+- **Gates & Wires** — Redstone-like logic built into pipes
+- **Assembly & Integration Tables** — advanced crafting with laser power
+- **Tanks, Pumps, Flood Gates** — fluid management
 
-Please check if the bug has been reported beforehand. Also, provide the version of BuildCraft used - if it's a version compiled from source, link to the commit/tree you complied from.
+---
 
-Please mention if you are using MCPC+, Cauldron, OptiFine, FastCraft or any other mods which optimize or otherwise severely modify the functioning of the Minecraft engine. That is very helpful when trying to reproduce a bug.
+## Current Status: Active Port (WIP)
 
-Please do not open issues for features unless you are a member of the BuildCraft team. For that, use the "Feature Requests" subforum.
+The `8.0.x-1.21.1-neoforge` branch is under active development.
+See the full [ROADMAP](ROADMAP.md) and [CHANGELOG](CHANGELOG.md) for details.
 
-BuildCraft, being an open-source project, gives you the right to submit a pull request if a particular fix or feature is important to you. However, if the change in question is major, please contact the team beforehand - we wish to prevent wasted effort.
+| Component | Status |
+|-----------|--------|
+| Build system (NeoGradle 7, Gradle 8.8, Java 21) | ✅ Complete |
+| Mod metadata (`neoforge.mods.toml`) | ✅ Complete |
+| Package/class/method bulk renames (~1,315 files) | ✅ Complete |
+| `@Mod` entry points (NeoForge event bus) | ✅ Complete |
+| Block API (`Block.Properties`, `BlockState`) | ✅ Complete |
+| Registry system (`RegisterEvent` on mod bus) | ✅ Complete |
+| Networking (`SimpleNetworkWrapper` → `CustomPacketPayload`) | 🔄 In progress |
+| Capability system (NeoForge 1.21.1 caps) | 🔄 In progress |
+| Rendering (`BlockEntityRenderer`, `RenderSystem`) | 🔄 In progress |
+| Config system & Tags (replacing OreDictionary) | 🔄 In progress |
+| Compilation clean (zero errors) | ⏳ Pending |
+| In-game testing | ⏳ Pending |
 
-### Contributing
+---
 
-If you wish to submit a pull request to fix bugs or broken behaviour feel free to do so. If you would like to add 
-features or change existing behaviour or balance, please discuss it on discord before submitting a PR (https://discord.gg/v4geqgA).
+## Building
 
-Do not submit pull requests which solely "fix" formatting. As these kinds of changes are usually very intrusive in commit history and everyone has their own idea what "proper formatting" is, they should be done by one of the main contributors. 
-Please only submit "code cleanup", if the changes actually have a substantial impact on readability.
+### Requirements
 
-PR implementing new features or changing large portions of code are helpful. But if you're doing such a change and if it gets accepted, please don't "fire and forget". Complex changes are introducing bugs, and as thorough as testing and peer review may be, there will be bugs. Please carry on playing your changes after initial commit and fix residual issues. It is extremely frustrating for others to spend days fixing regressions introduced by unmaintained submissions.
+- **Java 21** (JDK 21+)
+- **Git** with submodule support
+- Internet connection for first build (downloads NeoForge and Minecraft)
 
-#### Frequently reported
+### Steps
 
-* java.lang.AbstractMethodError, java.lang.NoSuchMethodException
-  * A mod has not updated to the current BuildCraft API
-  * You are not using the correct version of BuildCraft for your Forge/Minecraft versions
-  * You are using the dev version on a normal game instance (or vice versa)
-* Render issue (Quarry causes flickering) - Try without OptiFine first! This is a known issue with some versions of OptiFine.
+```bash
+# 1. Clone the fork
+git clone https://github.com/EvilBob01/BuildCraft.git
+cd BuildCraft
 
-### Compiling and packaging BuildCraft
-1. Ensure that `Java` (found [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)), `Git` (found [here](http://git-scm.com/)) are installed correctly on your system.
- * Optional: Install `Gradle` (found [here](http://www.gradle.org/downloads)). You probably want to install version 4.3.1.
-2. Create a base directory for the build
-3. Clone the BuildCraft repository into 'baseDir/BuildCraft/'
-4. Clone (and update) the submodules into 'baseDir/BuildCraft with 'git submodule init' and 'git submodule update'
-5. Navigate to basedir/BuildCraft in a shell and run one of two commands:
-    * `./gradlew setupCIWorkspace build` to just build a current jar (this may take a while).
-    * `./gradlew setupDecompWorkspace` to setup a complete development environment.
-    * With `Gradle` installed: use `gradle` instead of `./gradlew`
-    * On Windows: use `gradlew.bat` instead of `./gradlew`
-6. The compiles and obfuscated module jars will be in 'baseDir/BuildCraft/build/libs/&lt;build number&gt;/modules'
+# 2. Checkout the porting branch
+git checkout 8.0.x-1.21.1-neoforge
 
-Your directory structure should look like this before running gradle:
-***
+# 3. Initialize submodules
+git submodule update --init
 
-    baseDir
-    \- BuildCraft
-     |- buildcraft_resources
-     |- common
-     |- ...
-     \- BuildCraftAPI
-      |- api
-      |- ...
-     \- BuildCraft-Localization
-      |- lang
-      |- ...
+# 4. Build (Linux/macOS)
+./gradlew build
 
-***
-
-And like this after running gradle:
-***
-
-    basedir
-    \- BuildCraft
-     |- .gradle
-     |- build
-     |- buildcraft_resources
-     |- common
-     |- ...
-     \- BuildCraftAPI
-      |- api
-      |- ...
-     \- BuildCraft-Localization
-      |- lang
-      |- ...
-
-***
-
-### Localizations
-
-Localizations can be submitted [here](https://github.com/BuildCraft/BuildCraft-Localization). Localization PRs against
-this repository will have to be rejected.
-
-### Depending on BuildCraft
-
-Instructions for depending on BC 7.1.x can be found [here](https://github.com/BuildCraft/BuildCraft/blob/7.1.x/README.md) (for 1.7.10).
-
-8.0.x hasn't been finished yet, so there are no instructions for depending on it :(
-
-The following instructions are for BC 7.99.12 (1.12.2):
-
-Add the following to your build.gradle file:
+# 4. Build (Windows)
+gradlew.bat build
 ```
+
+The output jar will be in `build/libs/`.
+
+### Development setup (IntelliJ / Eclipse)
+
+```bash
+# Generate IDE run configurations
+./gradlew genIntellijRuns   # IntelliJ IDEA
+./gradlew genEclipseRuns    # Eclipse
+```
+
+### Directory structure
+
+```
+BuildCraft/
+├── common/buildcraft/       # Main source — all 8 modules
+│   ├── lib/                 # Shared library (BCLib)
+│   ├── core/                # Core blocks & items (BCCore)
+│   ├── builders/            # Quarry, Filler, Builder
+│   ├── energy/              # Engines, oil, fuel
+│   ├── factory/             # Pump, Tank, Mining Well
+│   ├── silicon/             # Assembly Table, Gates, Facades
+│   ├── transport/           # Pipes, Wires
+│   └── robotics/            # Robots, Zone Planner
+├── BuildCraftAPI/api/       # Public API (submodule)
+├── buildcraft_resources/    # Assets, data packs, mod metadata
+│   └── META-INF/
+│       └── neoforge.mods.toml
+├── sub_projects/expression/ # Math expression library
+├── build.gradle             # NeoGradle 7 build script
+├── settings.gradle          # Multi-project settings
+└── gradle.properties        # NeoForge 21.1.172 / MC 1.21.1
+```
+
+---
+
+## Modules
+
+| Mod ID | Module | Description |
+|--------|--------|-------------|
+| `buildcraftlib` | Lib | Shared library, networking, rendering helpers |
+| `buildcraftcore` | Core | Engines, markers, wrench, gears |
+| `buildcraftbuilders` | Builders | Quarry, Filler, Architect, Builder, Replacer |
+| `buildcraftenergy` | Energy | Combustion engine, oil springs, fuel refinery |
+| `buildcraftfactory` | Factory | Pump, Tank, Mining Well, Chute, Heat Exchanger |
+| `buildcraftsilicon` | Silicon | Assembly Table, Lasers, Gates, Facades |
+| `buildcrafttransport` | Transport | Pipes, Pipe Wires, Filtered Buffer |
+| `buildcraftrobotics` | Robotics | Robots, Zone Planner |
+
+All modules ship in a single jar. You do not need to install them separately.
+
+---
+
+## Depending on BuildCraft (mod developers)
+
+> Maven releases for 1.21.1 are not yet published. Once the port stabilizes, artifacts will be available.
+
+For the 1.12.2 build (current stable release), add to your `build.gradle`:
+
+```groovy
 repositories {
-    maven {
-        name "BuildCraft"
-        url = "https://mod-buildcraft.com/maven"
-    }
+    maven { url = "https://mod-buildcraft.com/maven" }
 }
-````
-
-If you want to depend on JUST the API then do this:
-````
 dependencies {
-    deobfCompile "com.mod-buildcraft:buildcraft-api:7.99.12"
-}
-````
-
-If you want to depend on JUST the lib then do this:
-````
-dependencies {
-    deobfCompile "com.mod-buildcraft:buildcraft-lib:7.99.12"
-}
-````
-
-If you want to depend on the whole of buildcraft do this:
-```
-dependencies {
-    deobfCompile "com.mod-buildcraft:buildcraft:7.99.12"
+    // API only
+    compileOnly "com.mod-buildcraft:buildcraft-api:8.0.1-pre.2"
 }
 ```
-Where `7.99.12` is the desired version of BuildCraft.
+
+---
+
+## Contributing
+
+Pull requests for bug fixes and compatibility improvements are welcome.
+
+- **Bug reports** — open an issue with a crash log or reproduction steps
+- **Feature requests** — discuss in Issues before submitting a PR
+- **Port contributions** — check the [ROADMAP](ROADMAP.md) for areas needing work; all help is appreciated
+- **Formatting-only PRs** — please avoid; they clutter history without value
+
+If you'd like to help with the 1.21.1 port, the highest-priority areas are listed in [ROADMAP.md](ROADMAP.md).
+
+---
+
+## License
+
+BuildCraft is licensed under the [Mozilla Public License 2.0](LICENSE).
+The BuildCraft API submodule is licensed under the [MIT License](BuildCraftAPI/LICENSE).
