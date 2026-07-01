@@ -6,6 +6,61 @@ Format: `[Version] — Date — Description`
 
 ---
 
+## [8.0.1-1.21.1] — 2026-06-30 — Core Networking Ported to NeoForge Payload API (WIP)
+
+Continued from the same-day "First Successful compileJava Invocation" session below, picking up Phase 5
+(networking) as a self-contained, verifiable slice rather than attempting the full remaining ~21,800-error
+surface at once.
+
+### Phase 5 networking core (verified against the real NeoForge 21.1.172 jar)
+
+- Added `buildcraft.lib.net.IMessage` / `IMessageHandler` / `MessageContext` — local interfaces matching
+  the exact shape of the removed Forge `simpleimpl` classes, so the 15 existing message classes kept their
+  `toBytes`/`fromBytes` bodies completely unchanged and only needed an import fix
+- Added `buildcraft.lib.net.BCPayload` — a single NeoForge `CustomPacketPayload` record carrying
+  `(message-class-id, raw-bytes)`. Routes every legacy `IMessage` over one channel instead of requiring a
+  bespoke `CustomPacketPayload` for each of the ~25 message classes
+- Rewrote `MessageManager` on `RegisterPayloadHandlersEvent` / `PayloadRegistrar` / `IPayloadContext` /
+  `PacketDistributor`. All guessed NeoForge API names (there is no way to verify NeoForge internals without
+  a working compiler, which this session finally had) turned out correct on the first `compileJava` run —
+  zero errors in any of the 5 new networking files
+- Decoupled message handlers from `BCLibProxy` (whose `SidedProxy`/`IGuiHandler`/`Minecraft` client-API
+  surface is its own large, separate rewrite, out of scope for this pass) by resolving the player directly
+  from `IPayloadContext.player()` instead of `BCLibProxy.getPlayerForContext()`
+- `MessageContainer`'s container-dispatch body stubbed with a `TODO (Phase 6.5)` — it fundamentally depends
+  on `ContainerBC_Neptune`, which still extends the removed 1.12.2 `Container` class
+
+### MessageUtil.java fixes
+
+- `sendToAllWatching`: replaced the removed `PlayerChunkMapEntry` chunk-watcher API with
+  `ServerLevel#getChunkSource().chunkMap.getPlayers(ChunkPos, boolean)`
+- `writeBlockState`/`readBlockState`: replaced the old "block id + metadata + differing properties" NBT-ish
+  encoding with the modern `Block.BLOCK_STATE_REGISTRY.getId(state)`/`.byId(id)` — actually *simpler* than
+  the original code, since block states haven't used metadata subtypes since 1.13
+- `GameProfile.isComplete()` was removed upstream from Mojang's authlib — replaced with a null-check on
+  `getId()`/`getName()`
+- `FriendlyByteBuf.writeUniqueId`/`readUniqueId`/`writeString` renamed upstream to `writeUUID`/`readUUID`/`writeUtf`
+
+### Bulk mechanical fixes (each verified via real compile, not guessed)
+
+| Fix | Files |
+|---|---|
+| `EnumDyeColor` → `DyeColor` (class moved from `net.minecraft.item` to `net.minecraft.world.item` in 1.13+) | 77 |
+| `Minecraft.getMinecraft()` → `Minecraft.getInstance()`, `.world` → `.level` | 75 |
+| `net.minecraftforge.common.util.Constants.NBT.TAG_*` → `net.minecraft.nbt.Tag.TAG_*` (vanilla already defines identical tag-type byte constants — no new class needed) | 27 |
+| Remaining `IMessage`/`IMessageHandler`/`MessageContext` imports in files that reference these types without implementing `IMessage` (tile entities overriding `receivePayload`, containers, `PipeBehaviour`/`PipePluggable`) | ~40 |
+
+### Result
+
+Real error census (via `compileJava -Xmaxerrs 100000`): **~21,800 → ~19,404**. Diminishing returns are
+expected from here — most remaining files stack multiple *separate* legacy-API problems (e.g. a container
+class typically needs the container/menu rewrite *and* a capability rewrite *and* a rendering fix before it
+compiles), so fixing one subsystem no longer fully unblocks files that also depend on another unfinished
+one. See `ROADMAP.md` for the updated per-phase status and the recommended next targets (container/menu
+rewrite, capability rewrite).
+
+---
+
 ## [8.0.1-1.21.1] — 2026-06-30 — First Successful `compileJava` Invocation (WIP)
 
 This session got `./gradlew compileJava` past Gradle configuration and into real `javac` compilation for

@@ -58,6 +58,14 @@ With those fixed, `-Xmaxerrs 100000` surfaced the **real** error count: **~21,80
 
 **Takeaway:** the remaining work is exactly what Phases 4–10 below already describe — it is not new scope, but now has real numbers behind it instead of estimates. The GUI/rendering and container-menu rewrites are the single biggest chunks (250+ and 114+ errors respectively) and will need dedicated sessions, not bulk regex.
 
+**Update (same day, later session):** Phase 5's core networking transport is now done and verified — see the Phase 5 section below. Along the way, several more mechanical stragglers were found and bulk-fixed with the same "verify via real compile" approach:
+- `EnumDyeColor` → `DyeColor` (moved package in 1.13+), 77 files
+- `Minecraft.getMinecraft()` → `Minecraft.getInstance()`, `.world` → `.level`, 75 files
+- `net.minecraftforge.common.util.Constants.NBT.TAG_*` → `net.minecraft.nbt.Tag.TAG_*` (vanilla already defines the same tag-type byte constants, no new class needed), 27 files
+- Remaining `IMessage`/`IMessageHandler`/`MessageContext` import stragglers across ~40 more files that reference these types without implementing `IMessage` themselves
+
+Running error count: ~21,800 → ~19,404 (per `compileJava -Xmaxerrs 100000`). Each additional fix now yields smaller returns because most remaining files stack multiple *separate* legacy-API problems (e.g. a container class might need both the container/menu rewrite *and* a capability rewrite *and* a rendering fix before it compiles clean) — so a fix to one subsystem partially but doesn't fully unblock files that also depend on another unfinished subsystem. The next highest-leverage moves are the container/menu rewrite (Phase 6.5) and the capability rewrite (Phase 6), since those block the largest number of otherwise-close-to-compiling files.
+
 ---
 
 ## Phase 2 — Bulk API Migration ✅
@@ -111,14 +119,18 @@ How blocks, items, and block entities are registered.
 
 ---
 
-## Phase 5 — Networking 🔄
+## Phase 5 — Networking ✅ (core), 🔄 (call sites)
 
 BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 
-- ⏳ **MessageManager** — Rewrite `SimpleNetworkWrapper` → NeoForge `SimpleChannel` or `PayloadRegistrar` (1 file is the hub)
-- ⏳ **Packet classes (~25 files)** — Each class implementing `IMessage` needs to implement `CustomPacketPayload` instead
-  - Key packets: `MessageUpdateTile`, `MessageMarker`, `MessageContainer`, `MessageMultiPipeItem`, `MessageWireSystems`, `MessageVolumeBoxes`, `MessageSnapshotRequest/Response`
-- ⏳ **Packet dispatch** — Replace `INSTANCE.sendToServer()` / `sendTo()` / `sendToAllAround()` with `PacketDistributor`
+- ✅ **MessageManager** — Rewritten on top of NeoForge's real `RegisterPayloadHandlersEvent` / `PayloadRegistrar` / `IPayloadContext` / `PacketDistributor`. Verified against the real NeoForge 21.1.172 jar via `compileJava` with zero errors.
+- ✅ **Adapter interfaces** — Added local `buildcraft.lib.net.IMessage` / `IMessageHandler` / `MessageContext`, API-compatible with the removed Forge `simpleimpl` classes, so the 15 existing message classes kept their `toBytes`/`fromBytes` bodies unchanged and only needed import fixes
+- ✅ **BCPayload** — A single `CustomPacketPayload` record (message-class-id + raw bytes) carries every legacy `IMessage`, avoiding a per-class `CustomPacketPayload` rewrite
+- ✅ **Packet dispatch** — `sendToAll`/`sendTo`/`sendToServer` rewritten against `PacketDistributor`
+- ✅ **12 of 15 message classes** compile cleanly; the other 3 (`MessageUtil`, `MessageDebugRequest/Response`, `MessageZoneMapRequest`, `MessageWireSystemsPowered`) had their own separate legacy breakage (`GameProfile.isComplete()` removed upstream, `writeUniqueId`→`writeUUID`, `Minecraft.getMinecraft()`→`getInstance()`) — all fixed
+- ⏳ **sendToDimension** — Stubbed; dimensions are `ResourceKey<Level>` now, not `int`, and its only two callers (`WorldSavedDataVolumeBoxes`, `MarkerSubCache`) still reference the separately-broken `Level.provider` field
+- 🔄 **MessageContainer's dispatch body** — Stubbed with a Phase 6.5 TODO; it dispatches into `ContainerBC_Neptune`, which still extends the removed 1.12.2 `Container` class
+- 🔄 **~40 more call-site files** (tile entities overriding `receivePayload`, container classes, `PipeBehaviour`/`PipePluggable` API) had their `IMessage`/`MessageContext` imports fixed to point at the new local classes, but many still have unrelated errors from other subsystems (containers, capabilities) that block them from fully compiling
 
 ---
 
