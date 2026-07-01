@@ -39,7 +39,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
         location = SpriteUtil.transformLocation(srcLocation);
-        TextureAtlasSprite src = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(srcLocation.toString());
+        TextureAtlasSprite src = Minecraft.getInstance().getTextureMapBlocks().getTextureExtry(srcLocation.toString());
         if (src == null) {
             BCLog.logger.warn("[lib.fluid] Failed to create a frozen sprite of " + srcLocation.toString() + " as the source sprite wasn't able to be loaded!");
             return true;
@@ -62,7 +62,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
                             return true;
                         }
                         src.loadSprite(size, hasAnimation);
-                        src.loadSpriteFrames(resource, Minecraft.getMinecraft().gameSettings.mipmapLevels + 1);
+                        src.loadSpriteFrames(resource, Minecraft.getInstance().gameSettings.mipmapLevels + 1);
                     }
                 } catch (IOException io) {
                     io.printStackTrace();
@@ -78,7 +78,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
 
             int[][] srcData = src.getFrameTextureData(0);
 
-            data = new int[Minecraft.getMinecraft().gameSettings.mipmapLevels + 1][];
+            data = new int[Minecraft.getInstance().gameSettings.mipmapLevels + 1][];
             for (int m = 0; m < data.length; m++) {
                 data[m] = new int[width * height / (m + 1) / (m + 1)];
             }

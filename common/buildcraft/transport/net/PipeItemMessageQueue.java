@@ -9,7 +9,7 @@ import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -30,7 +30,7 @@ public class PipeItemMessageQueue {
     }
 
     public static void appendTravellingItem(Level world, BlockPos pos, int stackId, byte stackCount, boolean toCenter,
-        Direction side, @Nullable EnumDyeColor colour, byte timeToDest) {
+        Direction side, @Nullable DyeColor colour, byte timeToDest) {
         ServerLevel server = (ServerLevel) world;
         PlayerChunkMapEntry playerChunkMap = server.getPlayerChunkMap().getEntry(pos.getX() >> 4, pos.getZ() >> 4);
         if (playerChunkMap == null) {

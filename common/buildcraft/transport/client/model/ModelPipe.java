@@ -84,7 +84,7 @@ public enum ModelPipe implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        return Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
     }
 
     @Override

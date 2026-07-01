@@ -34,7 +34,7 @@ public class SpriteRaw implements ISprite {
 
     @Override
     public void bindTexture() {
-        Minecraft.getMinecraft().renderEngine.bindTexture(location);
+        Minecraft.getInstance().renderEngine.bindTexture(location);
     }
 
     @Override

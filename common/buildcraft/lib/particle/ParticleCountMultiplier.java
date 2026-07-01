@@ -18,7 +18,7 @@ public enum ParticleCountMultiplier implements IParticlePositionPipe {
     ALL(13);
 
     public static ParticleCountMultiplier getForOption() {
-        GameSettings gs = Minecraft.getMinecraft().gameSettings;
+        GameSettings gs = Minecraft.getInstance().gameSettings;
         int count = gs.particleSetting % 3;
         if (count == 0) {
             return ALL;

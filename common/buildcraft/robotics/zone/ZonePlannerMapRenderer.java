@@ -117,7 +117,7 @@ public enum ZonePlannerMapRenderer {
     }
 
     private void genChunk(ZonePlannerMapChunkKey key) {
-        ZonePlannerMapChunk zonePlannerMapChunk = ZonePlannerMapDataClient.INSTANCE.getChunk(Minecraft.getMinecraft().world, key);
+        ZonePlannerMapChunk zonePlannerMapChunk = ZonePlannerMapDataClient.INSTANCE.getChunk(Minecraft.getInstance().level, key);
         if (zonePlannerMapChunk == null) {
             return;
         }

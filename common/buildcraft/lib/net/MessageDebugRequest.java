@@ -16,8 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 import buildcraft.api.tiles.IDebuggable;
 
@@ -54,7 +52,7 @@ public class MessageDebugRequest implements IMessage {
         if (!ItemDebugger.isShowDebugInfo(player)) {
             return new MessageDebugResponse();
         }
-        BlockEntity tile = player.world.getBlockEntity(message.pos);
+        BlockEntity tile = player.level().getBlockEntity(message.pos);
         if (tile instanceof IDebuggable) {
             List<String> left = new ArrayList<>();
             List<String> right = new ArrayList<>();

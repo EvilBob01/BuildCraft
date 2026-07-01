@@ -29,7 +29,7 @@ public class ResourceLoaderContext {
             throw new JsonSyntaxException("Already loaded " + location + " from " + loadingStack.peek());
         }
         loadingStack.push(location);
-        IResource res = Minecraft.getMinecraft().getResourceManager().getResource(location);
+        IResource res = Minecraft.getInstance().getResourceManager().getResource(location);
         return new InputStreamReader(res.getInputStream(), StandardCharsets.UTF_8);
     }
 

@@ -12,15 +12,12 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-
 import buildcraft.api.core.BCLog;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.misc.MessageUtil;
 
 public class MessageUpdateTile implements IMessage {
@@ -59,11 +56,12 @@ public class MessageUpdateTile implements IMessage {
 
     public static final IMessageHandler<MessageUpdateTile, IMessage> HANDLER = (message, ctx) -> {
         try {
-            Player player = BCLibProxy.getProxy().getPlayerForContext(ctx);
-            if (player == null || player.world == null) {
+            Player player = ctx.getPayloadContext().player();
+            Level level = player == null ? null : player.level();
+            if (level == null) {
                 return null;
             }
-            BlockEntity tile = player.world.getBlockEntity(message.pos);
+            BlockEntity tile = level.getBlockEntity(message.pos);
             if (tile instanceof IPayloadReceiver) {
                 return ((IPayloadReceiver) tile).receivePayload(ctx, message.payload);
             } else {

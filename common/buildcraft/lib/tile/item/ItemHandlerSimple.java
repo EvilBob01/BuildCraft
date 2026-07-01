@@ -16,7 +16,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ReportedException;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
@@ -93,7 +93,7 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        ListTag list = nbt.getTagList("items", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount() && i < getSlots(); i++) {
             setStackInternal(i, new ItemStack(list.getCompoundTagAt(i)));
         }

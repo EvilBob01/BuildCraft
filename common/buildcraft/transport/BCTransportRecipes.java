@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -56,7 +56,7 @@ public class BCTransportRecipes {
         addPipeRecipe(BCTransportItems.pipeItemClay, Blocks.CLAY);
         addPipeRecipe(BCTransportItems.pipeItemSandstone,
             new ItemStack(Blocks.SANDSTONE, 1, OreDictionary.WILDCARD_VALUE));
-        addPipeRecipe(BCTransportItems.pipeItemVoid, new ItemStack(Items.DYE, 1, EnumDyeColor.BLACK.getDyeDamage()),
+        addPipeRecipe(BCTransportItems.pipeItemVoid, new ItemStack(Items.DYE, 1, DyeColor.BLACK.getDyeDamage()),
             "dustRedstone");
         addPipeRecipe(BCTransportItems.pipeItemObsidian, Blocks.OBSIDIAN);
         addPipeRecipe(BCTransportItems.pipeItemDiamond, Items.DIAMOND);
@@ -101,7 +101,7 @@ public class BCTransportRecipes {
         }
 
         if (BCTransportItems.wire != null) {
-            for (EnumDyeColor color : ColourUtil.COLOURS) {
+            for (DyeColor color : ColourUtil.COLOURS) {
                 String name = StringUtilBC.formatDirect("wire-%s", color.getUnlocalizedName());
                 ImmutableSet<IngredientStack> input = ImmutableSet.of(IngredientStack.of("dustRedstone"),
                     IngredientStack.of(ColourUtil.getDyeName(color)));

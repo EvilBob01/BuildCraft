@@ -17,7 +17,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.lib.BCLib;
 import buildcraft.lib.guide.GuideBook;
@@ -65,7 +65,7 @@ public class ItemGuide extends ItemBC_Neptune {
 
     public static String getBookName(ItemStack stack) {
         CompoundTag nbt = stack.getTagCompound();
-        if (nbt == null || !nbt.hasKey(TAG_BOOK_NAME, Constants.NBT.TAG_STRING)) {
+        if (nbt == null || !nbt.hasKey(TAG_BOOK_NAME, Tag.TAG_STRING)) {
             // So that existing guide books continue to work
             return ItemGuide.DEFAULT_BOOK;
         }

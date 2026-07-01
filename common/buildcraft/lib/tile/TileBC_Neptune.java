@@ -41,7 +41,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import net.neoforged.neoforge.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -565,7 +565,7 @@ public abstract class TileBC_Neptune extends BlockEntity implements IPayloadRece
     public void handleUpdateTag(CompoundTag tag) {
         // Explicitly don't read the (server) data from NBT
         super.loadAdditional(tag);
-        if (!tag.hasKey("d", Constants.NBT.TAG_BYTE_ARRAY)) {
+        if (!tag.hasKey("d", Tag.TAG_BYTE_ARRAY)) {
             // A bit odd, but ok - this was probably sent by something else
             return;
         }
@@ -689,10 +689,10 @@ public abstract class TileBC_Neptune extends BlockEntity implements IPayloadRece
         if (nbt.hasKey("owner")) {
             owner = NBTUtil.readGameProfileFromNBT(nbt.getCompoundTag("owner"));
         }
-        if (nbt.hasKey("items", Constants.NBT.TAG_COMPOUND)) {
+        if (nbt.hasKey("items", Tag.TAG_COMPOUND)) {
             itemManager.deserializeNBT(nbt.getCompoundTag("items"));
         }
-        if (nbt.hasKey("tanks", Constants.NBT.TAG_COMPOUND)) {
+        if (nbt.hasKey("tanks", Tag.TAG_COMPOUND)) {
             tankManager.deserializeNBT(nbt.getCompoundTag("tanks"));
         }
     }

@@ -67,7 +67,7 @@ public class ModelHeatExchange extends ModelItemSimple {
         VAR_DIRECTION.value = Direction.NORTH;
 
         if (BCFactoryModels.HEAT_EXCHANGE_STATIC.getCutoutQuads().length == 0) {
-            particle = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            particle = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
         } else {
             particle = BCFactoryModels.HEAT_EXCHANGE_STATIC.getCutoutQuads()[0].toBakedItem().getSprite();
         }

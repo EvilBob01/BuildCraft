@@ -8,7 +8,7 @@ package buildcraft.lib.inventory;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 
@@ -24,7 +24,7 @@ public enum NoSpaceInjectable implements IInjectable {
 
     @Nonnull
     @Override
-    public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, Direction from, EnumDyeColor color, double speed) {
+    public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, Direction from, DyeColor color, double speed) {
         return stack;
     }
 }

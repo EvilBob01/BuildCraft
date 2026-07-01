@@ -8,7 +8,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -29,18 +29,18 @@ public class BlockPlastic extends BlockBCBase_Neptune {
 
     @Override
     public int getMetaFromState(BlockState state) {
-        EnumDyeColor colour = state.getValue(BuildCraftProperties.BLOCK_COLOR);
+        DyeColor colour = state.getValue(BuildCraftProperties.BLOCK_COLOR);
         return colour.getMetadata();
     }
 
     @Override
     public BlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_COLOR, EnumDyeColor.byMetadata(meta));
+        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_COLOR, DyeColor.byMetadata(meta));
     }
 
     @Override
     public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
-        for (EnumDyeColor dye : EnumDyeColor.values()) {
+        for (DyeColor dye : DyeColor.values()) {
             list.add(new ItemStack(this, 1, dye.getMetadata()));
         }
     }

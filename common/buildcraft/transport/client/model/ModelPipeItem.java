@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
@@ -160,7 +160,7 @@ public enum ModelPipeItem implements IBakedModel {
         }
 
         if (colour > 0 && colour <= 16) {
-            EnumDyeColor rColour = EnumDyeColor.byMetadata(colour - 1);
+            DyeColor rColour = DyeColor.byMetadata(colour - 1);
             int rgb = 0xFF_00_00_00 | ColourUtil.swapArgbToAbgr(ColourUtil.getLightHex(rColour));
             if (colourType == EnumPipeColourType.TRANSLUCENT) {
                 TextureAtlasSprite sprite = BCTransportSprites.PIPE_COLOUR.getSprite();

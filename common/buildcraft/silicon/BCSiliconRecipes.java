@@ -27,7 +27,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -105,7 +105,7 @@ public class BCSiliconRecipes {
             builder.add(" m ");
             builder.map('g', ironGateBase);
 
-            builder.map('m', new ItemStack(Items.DYE, 1, EnumDyeColor.BLUE.getDyeDamage()));
+            builder.map('m', new ItemStack(Items.DYE, 1, DyeColor.BLUE.getDyeDamage()));
             makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.LAPIS);
 
             builder.map('m', Items.QUARTZ);
@@ -190,7 +190,7 @@ public class BCSiliconRecipes {
         }
 
         if (BCSiliconItems.plugLens != null) {
-            for (EnumDyeColor colour : ColourUtil.COLOURS) {
+            for (DyeColor colour : ColourUtil.COLOURS) {
                 String name = StringUtilBC.formatDirect("lens-regular-%s", colour.getUnlocalizedName());
                 IngredientStack stainedGlass = IngredientStack.of("blockGlass" + ColourUtil.getName(colour));
                 ImmutableSet<IngredientStack> input = ImmutableSet.of(stainedGlass);

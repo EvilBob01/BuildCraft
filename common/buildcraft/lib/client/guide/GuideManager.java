@@ -120,7 +120,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
     }
 
     public void reload() {
-        reload(Minecraft.getMinecraft().getResourceManager());
+        reload(Minecraft.getInstance().getResourceManager());
     }
 
     private void reload(IResourceManager resourceManager) {
@@ -182,7 +182,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         pages.clear();
 
         prof.endStartSection("load_lang");
-        Language currentLanguage = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
+        Language currentLanguage = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
         String langCode;
         if (currentLanguage == null) {
             BCLog.logger.warn("Current language was null!");

@@ -40,7 +40,7 @@ public class SpriteUtil {
     }
 
     public static void bindTexture(ResourceLocation identifier) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(identifier);
+        Minecraft.getInstance().renderEngine.bindTexture(identifier);
     }
 
     /** Transforms the given {@link ResourceLocation}, adding ".png" to the end and prepending that
@@ -60,7 +60,7 @@ public class SpriteUtil {
         if (profile == null) {
             return null;
         }
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
 
         if (CACHED.containsKey(profile) && CACHED.get(profile) == null && Math.random() >= 0.99) {
             CACHED.remove(profile);
@@ -115,6 +115,6 @@ public class SpriteUtil {
     }
 
     public static TextureAtlasSprite missingSprite() {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        return Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
     }
 }

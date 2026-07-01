@@ -222,7 +222,7 @@ public class JsonVariableModel extends JsonVariableObject {
             attempts++;
         }
         lookup = texture.location;
-        sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(lookup);
+        sprite = Minecraft.getInstance().getTextureMapBlocks().getAtlasSprite(lookup);
         TexturedFace face = new TexturedFace();
         face.sprite = sprite;
         face.faceData = texture.faceData;

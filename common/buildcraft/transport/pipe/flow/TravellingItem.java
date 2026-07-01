@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
@@ -27,7 +27,7 @@ public class TravellingItem {
     @Nonnull
     public final Supplier<ItemStack> clientItemLink;
     public int stackSize;
-    public EnumDyeColor colour;
+    public DyeColor colour;
 
     // Server fields
     /** The server itemstack */
@@ -81,7 +81,7 @@ public class TravellingItem {
         clientItemLink = () -> ItemStack.EMPTY;
         stack = new ItemStack(nbt.getCompoundTag("stack"));
         int c = nbt.getByte("colour");
-        this.colour = c == 0 ? null : EnumDyeColor.byMetadata(c - 1);
+        this.colour = c == 0 ? null : DyeColor.byMetadata(c - 1);
         this.toCenter = nbt.getBoolean("toCenter");
         this.speed = nbt.getDouble("speed");
         if (speed < 0.001) {

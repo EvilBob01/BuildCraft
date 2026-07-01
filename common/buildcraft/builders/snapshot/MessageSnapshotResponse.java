@@ -6,16 +6,18 @@
 
 package buildcraft.builders.snapshot;
 
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.IMessageHandler;
+import buildcraft.lib.net.MessageContext;
+
 import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
-import net.minecraft.nbt.CompressedStreamTools;
-
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
 
 public class MessageSnapshotResponse implements IMessage {
     private Snapshot snapshot;
@@ -40,7 +42,7 @@ public class MessageSnapshotResponse implements IMessage {
 //            throw new RuntimeException(e);
 //        }
         try {
-            CompressedStreamTools.writeCompressed(Snapshot.saveAdditional(snapshot), new ByteBufOutputStream(buf));
+            NbtIo.writeCompressed(Snapshot.saveAdditional(snapshot), new ByteBufOutputStream(buf));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,9 +51,8 @@ public class MessageSnapshotResponse implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         try {
-//            snapshot = Snapshot.loadAdditional(NbtSquisher.expand(buf.readBytes(buf.readInt()).array()));
-//            snapshot = Snapshot.loadAdditional(CompressedStreamTools.read(new ByteBufInputStream(buf), NBTSizeTracker.INFINITE));
-            snapshot = Snapshot.loadAdditional(CompressedStreamTools.readCompressed(new ByteBufInputStream(buf)));
+            snapshot = Snapshot
+                .loadAdditional(NbtIo.readCompressed(new ByteBufInputStream(buf), NbtAccounter.unlimitedHeap()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

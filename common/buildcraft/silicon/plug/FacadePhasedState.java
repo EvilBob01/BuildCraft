@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.core.Direction;
@@ -20,9 +20,9 @@ public class FacadePhasedState implements IFacadePhasedState {
     public final FacadeBlockStateInfo stateInfo;
 
     @Nullable
-    public final EnumDyeColor activeColour;
+    public final DyeColor activeColour;
 
-    public FacadePhasedState(FacadeBlockStateInfo stateInfo, EnumDyeColor activeColour) {
+    public FacadePhasedState(FacadeBlockStateInfo stateInfo, DyeColor activeColour) {
         this.stateInfo = stateInfo;
         this.activeColour = activeColour;
     }
@@ -40,7 +40,7 @@ public class FacadePhasedState implements IFacadePhasedState {
                 throw new RuntimeException("Failed badly when reading a facade state!", t);
             }
         }
-        EnumDyeColor colour = NBTUtilBC.readEnum(nbt.getTag("activeColour"), EnumDyeColor.class);
+        DyeColor colour = NBTUtilBC.readEnum(nbt.getTag("activeColour"), DyeColor.class);
         return new FacadePhasedState(stateInfo, colour);
     }
 
@@ -62,7 +62,7 @@ public class FacadePhasedState implements IFacadePhasedState {
 
     public static FacadePhasedState readFromBuffer(PacketBufferBC buf) {
         BlockState state = MessageUtil.readBlockState(buf);
-        EnumDyeColor colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
+        DyeColor colour = MessageUtil.readEnumOrNull(buf, DyeColor.class);
         FacadeBlockStateInfo info = FacadeStateManager.validFacadeStates.get(state);
         if (info == null) {
             info = FacadeStateManager.defaultState;
@@ -79,7 +79,7 @@ public class FacadePhasedState implements IFacadePhasedState {
         MessageUtil.writeEnumOrNull(buf, activeColour);
     }
 
-    public FacadePhasedState withColour(EnumDyeColor colour) {
+    public FacadePhasedState withColour(DyeColor colour) {
         return new FacadePhasedState(stateInfo, colour);
     }
 
@@ -104,7 +104,7 @@ public class FacadePhasedState implements IFacadePhasedState {
     }
 
     @Override
-    public EnumDyeColor getActiveColor() {
+    public DyeColor getActiveColor() {
         return activeColour;
     }
 }

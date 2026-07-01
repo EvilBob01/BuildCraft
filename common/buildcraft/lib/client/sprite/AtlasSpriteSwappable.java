@@ -46,10 +46,10 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
     @Override
     public void updateAnimation() {
         if (current == null) {
-            copyFrom(Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite());
+            copyFrom(Minecraft.getInstance().getTextureMapBlocks().getMissingSprite());
             return;
         }
-        Profiler p = Minecraft.getMinecraft().mcProfiler;
+        Profiler p = Minecraft.getInstance().mcProfiler;
         // MAPPING: func_194340_a: Profiler.startSection
         p.func_194340_a(getClass()::getSimpleName);
         if (needsSwapping) {
@@ -80,7 +80,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
                 this.width = other.getIconWidth();
                 this.height = other.getIconHeight();
             }
-            generateMipmaps(Minecraft.getMinecraft().gameSettings.mipmapLevels);
+            generateMipmaps(Minecraft.getInstance().gameSettings.mipmapLevels);
             needsSwapping = true;
             return true;
         }
@@ -100,7 +100,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
     }
 
     public static TextureAtlasSprite loadSprite(String name, ResourceLocation location, boolean careIfMissing) {
-        return loadSprite(Minecraft.getMinecraft().getResourceManager(), name, location, careIfMissing);
+        return loadSprite(Minecraft.getInstance().getResourceManager(), name, location, careIfMissing);
     }
 
     public static TextureAtlasSprite loadSprite(IResourceManager manager, String name, ResourceLocation location,
@@ -113,7 +113,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
             try (IResource iresource = manager.getResource(location)) {
                 boolean flag = iresource.getMetadata("animation") != null;
                 sprite.loadSprite(pngsizeinfo, flag);
-                sprite.loadSpriteFrames(iresource, Minecraft.getMinecraft().gameSettings.mipmapLevels + 1);
+                sprite.loadSpriteFrames(iresource, Minecraft.getInstance().gameSettings.mipmapLevels + 1);
                 return sprite;
             }
         } catch (IOException io) {

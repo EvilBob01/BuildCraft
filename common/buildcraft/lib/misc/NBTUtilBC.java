@@ -29,7 +29,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.BCLog;
 
@@ -48,7 +48,7 @@ public final class NBTUtilBC {
         if (destination == null) {
             return source;
         }
-        if (destination.getId() == Constants.NBT.TAG_COMPOUND && source.getId() == Constants.NBT.TAG_COMPOUND) {
+        if (destination.getId() == Tag.TAG_COMPOUND && source.getId() == Tag.TAG_COMPOUND) {
             CompoundTag result = new CompoundTag();
             for (String key : Sets.union(
                 ((CompoundTag) destination).getKeySet(),
@@ -112,14 +112,14 @@ public final class NBTUtilBC {
             return null;
         }
         switch (base.getId()) {
-            case Constants.NBT.TAG_INT_ARRAY: {
+            case Tag.TAG_INT_ARRAY: {
                 int[] array = ((IntArrayTag) base).getIntArray();
                 if (array.length == 3){
                     return new BlockPos(array[0], array[1], array[2]);
                 }
                 return null;
             }
-            case Constants.NBT.TAG_COMPOUND: {
+            case Tag.TAG_COMPOUND: {
                 CompoundTag nbt = (CompoundTag) base;
                 BlockPos pos = null;
                 if (nbt.hasKey("i")) {

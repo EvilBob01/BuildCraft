@@ -169,7 +169,7 @@ public abstract class BCBuildersProxy implements IGuiHandler {
                 } else {
                     BCBuildersConfig.internalStencilCrashTest.set(true);
                     BCCoreConfig.saveConfigs();
-                    Framebuffer framebuffer = Minecraft.getMinecraft().getFramebuffer();
+                    Framebuffer framebuffer = Minecraft.getInstance().getFramebuffer();
                     if (!framebuffer.isStencilEnabled()) {
                         framebuffer.enableStencil();
                     }

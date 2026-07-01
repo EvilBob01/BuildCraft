@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -432,7 +432,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
     }
 
     @Override
-    public IFacadePhasedState createPhasedState(IFacadeState state, EnumDyeColor activeColor) {
+    public IFacadePhasedState createPhasedState(IFacadeState state, DyeColor activeColor) {
         return new FacadePhasedState((FacadeBlockStateInfo) state, activeColor);
     }
 

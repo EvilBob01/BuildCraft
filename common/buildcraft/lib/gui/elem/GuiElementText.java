@@ -68,13 +68,13 @@ public class GuiElementText extends GuiElementSimple {
 
     @Override
     public double getWidth() {
-        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+        FontRenderer fr = Minecraft.getInstance().fontRenderer;
         return fr.getStringWidth(text.get());
     }
 
     @Override
     public double getHeight() {
-        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+        FontRenderer fr = Minecraft.getInstance().fontRenderer;
         return fr.FONT_HEIGHT;
     }
 
@@ -97,7 +97,7 @@ public class GuiElementText extends GuiElementSimple {
             centered, (float) scale.getAsDouble());
         // final double s = scale.getAsDouble();
         // final boolean needsScaling = s != 1;
-        // FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+        // FontRenderer fr = Minecraft.getInstance().fontRenderer;
         // if (needsScaling) {
         // GuiUtil.drawScaledText(fr, text.get(), getX(), getY(), colour.getAsInt(), dropShadow, centered, s);
         // return;

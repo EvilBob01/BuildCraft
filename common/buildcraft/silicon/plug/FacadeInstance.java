@@ -5,12 +5,12 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.facades.FacadeType;
 import buildcraft.api.facades.IFacade;
@@ -42,7 +42,7 @@ public class FacadeInstance implements IFacade {
     }
 
     public static FacadeInstance readFromNbt(CompoundTag nbt) {
-        ListTag list = nbt.getTagList("states", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("states", Tag.TAG_COMPOUND);
         if (list.hasNoTags()) {
             return FacadeInstance.createSingle(FacadeStateManager.defaultState, false);
         }
@@ -83,7 +83,7 @@ public class FacadeInstance implements IFacade {
         }
     }
 
-    public boolean canAddColour(EnumDyeColor colour) {
+    public boolean canAddColour(DyeColor colour) {
         for (FacadePhasedState state : phasedStates) {
             if (state.activeColour == colour) {
                 return false;

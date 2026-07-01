@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
@@ -34,9 +34,9 @@ import buildcraft.lib.net.PacketBufferBC;
 
 public class WireManager implements IWireManager {
     private final IPipeHolder holder;
-    public final Map<EnumWirePart, EnumDyeColor> parts = new EnumMap<>(EnumWirePart.class);
+    public final Map<EnumWirePart, DyeColor> parts = new EnumMap<>(EnumWirePart.class);
     public final Set<EnumWirePart> poweredClient = EnumSet.noneOf(EnumWirePart.class);
-    public final Map<EnumWireBetween, EnumDyeColor> betweens = new EnumMap<>(EnumWireBetween.class);
+    public final Map<EnumWireBetween, DyeColor> betweens = new EnumMap<>(EnumWireBetween.class);
     public boolean initialised = false;
     // TODO: Wire connections to adjacent blocks
 
@@ -78,7 +78,7 @@ public class WireManager implements IWireManager {
     }
 
     @Override
-    public boolean addPart(EnumWirePart part, EnumDyeColor colour) {
+    public boolean addPart(EnumWirePart part, DyeColor colour) {
         if (getColorOfPart(part) == null) {
             parts.put(part, colour);
             if (!holder.getPipeWorld().isClientSide) {
@@ -93,8 +93,8 @@ public class WireManager implements IWireManager {
     }
 
     @Override
-    public EnumDyeColor removePart(EnumWirePart part) {
-        EnumDyeColor color = getColorOfPart(part);
+    public DyeColor removePart(EnumWirePart part) {
+        DyeColor color = getColorOfPart(part);
         if (color == null) {
             return null;
         } else {
@@ -163,12 +163,12 @@ public class WireManager implements IWireManager {
     }
 
     @Override
-    public EnumDyeColor getColorOfPart(EnumWirePart part) {
+    public DyeColor getColorOfPart(EnumWirePart part) {
         return parts.get(part);
     }
 
     @Override
-    public boolean hasPartOfColor(EnumDyeColor color) {
+    public boolean hasPartOfColor(DyeColor color) {
         return parts.values().contains(color);
     }
 
@@ -192,9 +192,9 @@ public class WireManager implements IWireManager {
     }
 
     @Override
-    public boolean isAnyPowered(EnumDyeColor color) {
+    public boolean isAnyPowered(DyeColor color) {
         if (!this.parts.isEmpty()) {
-            for (Map.Entry<EnumWirePart, EnumDyeColor> partColor : this.parts.entrySet()) {
+            for (Map.Entry<EnumWirePart, DyeColor> partColor : this.parts.entrySet()) {
                 if (partColor.getValue() == color && this.isPowered(partColor.getKey())) {
                     return true;
                 }
@@ -220,14 +220,14 @@ public class WireManager implements IWireManager {
         parts.clear();
         int[] wiresArray = nbt.getIntArray("parts");
         for (int i = 0; i < wiresArray.length; i += 2) {
-            parts.put(EnumWirePart.VALUES[wiresArray[i]], EnumDyeColor.byMetadata(wiresArray[i + 1]));
+            parts.put(EnumWirePart.VALUES[wiresArray[i]], DyeColor.byMetadata(wiresArray[i + 1]));
         }
     }
 
     public void writePayload(PacketBufferBC buffer, Side side) {
         if (side == Dist.DEDICATED_SERVER) {
             buffer.writeInt(parts.size());
-            for (Entry<EnumWirePart, EnumDyeColor> entry : parts.entrySet()) {
+            for (Entry<EnumWirePart, DyeColor> entry : parts.entrySet()) {
                 buffer.writeEnumValue(entry.getKey());
                 buffer.writeEnumValue(entry.getValue());
             }
@@ -241,7 +241,7 @@ public class WireManager implements IWireManager {
             int count = buffer.readInt();
             for (int i = 0; i < count; i++) {
                 EnumWirePart part = buffer.readEnumValue(EnumWirePart.class);
-                EnumDyeColor colour = buffer.readEnumValue(EnumDyeColor.class);
+                DyeColor colour = buffer.readEnumValue(DyeColor.class);
                 parts.put(part, colour);
             }
             updateBetweens(false);

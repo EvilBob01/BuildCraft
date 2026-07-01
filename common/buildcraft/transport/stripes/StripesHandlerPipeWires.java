@@ -7,7 +7,7 @@
 package buildcraft.transport.stripes;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
@@ -25,7 +25,7 @@ public class StripesHandlerPipeWires implements IStripesHandlerItem {
 
     @Override
     public boolean handle(Level world, BlockPos pos, Direction direction, ItemStack stack, Player player, IStripesActivator activator) {
-        EnumDyeColor pipeWireColor = EnumDyeColor.byMetadata(stack.getMetadata());
+        DyeColor pipeWireColor = DyeColor.byMetadata(stack.getMetadata());
 
         for (int i = PIPES_TO_TRY; i > 0; i--) {
             pos = pos.offset(direction.getOpposite());

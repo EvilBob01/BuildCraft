@@ -9,7 +9,7 @@ package buildcraft.transport.client.model.key;
 import java.util.Arrays;
 import java.util.Objects;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -33,11 +33,11 @@ public final class PipeModelKey {
     public final PipeFaceTex center;
     public final PipeFaceTex[] sides;
     public final float[] connected;
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
     private final int hash;
 
     public PipeModelKey(PipeDefinition definition, PipeFaceTex center, PipeFaceTex[] sides, float[] connected,
-        EnumDyeColor colour) {
+        DyeColor colour) {
         this.definition = definition;
         this.center = center;
         this.sides = sides;

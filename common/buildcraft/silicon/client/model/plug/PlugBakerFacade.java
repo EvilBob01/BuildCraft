@@ -204,7 +204,7 @@ public enum PlugBakerFacade implements IPluggableStaticBaker<KeyPlugFacade> {
     }
 
     public List<MutableQuad> bakeForKey(KeyPlugFacade key) {
-        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(key.state);
+        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(key.state);
         BlockRenderLayer renderLayer = MinecraftForgeClient.getRenderLayer();
         ForgeHooksClient.setRenderLayer(null);
         List<MutableQuad> quads = new ArrayList<>();

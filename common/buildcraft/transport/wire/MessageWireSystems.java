@@ -6,6 +6,10 @@
 
 package buildcraft.transport.wire;
 
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.IMessageHandler;
+import buildcraft.lib.net.MessageContext;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +20,6 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 public class MessageWireSystems implements IMessage {
     private Map<Integer, WireSystem> wireSystems = new HashMap<>();

@@ -11,7 +11,7 @@ import java.util.Collections;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
@@ -43,7 +43,7 @@ public enum ActionProviderPipes implements IActionProvider {
             holder.fireEvent(new PipeEventStatement.AddActionInternal(holder, actions));
 
             if (container instanceof IWireEmitter) {
-                for (EnumDyeColor colour : ColourUtil.COLOURS) {
+                for (DyeColor colour : ColourUtil.COLOURS) {
                     if (TriggerPipeSignal.doesGateHaveColour(gate, colour)) {
                         actions.add(BCTransportStatements.ACTION_PIPE_SIGNAL[colour.ordinal()]);
                     }

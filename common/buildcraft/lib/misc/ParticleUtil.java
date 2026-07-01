@@ -8,7 +8,7 @@ package buildcraft.lib.misc;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.core.BlockPos;
@@ -19,7 +19,7 @@ import buildcraft.lib.particle.ParticlePipes;
 import buildcraft.lib.particle.ParticlePosition;
 
 public class ParticleUtil {
-    public static void showChangeColour(Level world, Vec3 pos, @Nullable EnumDyeColor colour) {
+    public static void showChangeColour(Level world, Vec3 pos, @Nullable DyeColor colour) {
         if (colour == null) {
             showWaterParticles(world, pos);
         }

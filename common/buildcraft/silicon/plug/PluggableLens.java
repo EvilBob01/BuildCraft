@@ -6,7 +6,7 @@
 
 package buildcraft.silicon.plug;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -48,12 +48,12 @@ public class PluggableLens extends PipePluggable {
         BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
     }
 
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
     public final boolean isFilter;
 
     // Manual constructor (called by the specific item pluggable code)
 
-    public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, EnumDyeColor colour,
+    public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, DyeColor colour,
         boolean isFilter) {
         super(def, holder, side);
         this.colour = colour;
@@ -65,9 +65,9 @@ public class PluggableLens extends PipePluggable {
     public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
         if (nbt.hasKey("colour")) {
-            colour = NBTUtilBC.readEnum(nbt.getTag("colour"), EnumDyeColor.class);
+            colour = NBTUtilBC.readEnum(nbt.getTag("colour"), DyeColor.class);
         } else {
-            colour = EnumDyeColor.byMetadata(nbt.getByte("c"));
+            colour = DyeColor.byMetadata(nbt.getByte("c"));
         }
         isFilter = nbt.getBoolean("f");
     }
@@ -85,7 +85,7 @@ public class PluggableLens extends PipePluggable {
     public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, FriendlyByteBuf buffer) {
         super(def, holder, side);
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
-        colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
+        colour = MessageUtil.readEnumOrNull(buf, DyeColor.class);
         isFilter = buf.readBoolean();
     }
 
@@ -127,7 +127,7 @@ public class PluggableLens extends PipePluggable {
     @PipeEventHandler
     public void tryInsert(PipeEventItem.TryInsert tryInsert) {
         if (isFilter && tryInsert.from == side) {
-            EnumDyeColor itemColour = tryInsert.colour;
+            DyeColor itemColour = tryInsert.colour;
             if (itemColour != null && itemColour != colour) {
                 tryInsert.cancel();
             }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -34,9 +34,9 @@ public class BCLibConfig {
 
     public static File guiConfigFile = null;
 
-    /** If true then items and blocks will display the colour of an item (one of {@link EnumDyeColor}) with the correct
+    /** If true then items and blocks will display the colour of an item (one of {@link DyeColor}) with the correct
      * {@link ChatFormatting} colour value.<br>
-     * This changes the behaviour of {@link ColourUtil#convertColourToTextFormat(EnumDyeColor)}. */
+     * This changes the behaviour of {@link ColourUtil#convertColourToTextFormat(DyeColor)}. */
     public static boolean useColouredLabels = true;
 
     /** If this and {@link #useColouredLabels} is true then only colours which strongly contrast with the base colour

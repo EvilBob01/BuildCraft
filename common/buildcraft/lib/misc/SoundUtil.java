@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -49,7 +49,7 @@ public class SoundUtil {
         world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 0.2f, pitch);
     }
 
-    public static void playChangeColour(Level world, BlockPos pos, @Nullable EnumDyeColor colour) {
+    public static void playChangeColour(Level world, BlockPos pos, @Nullable DyeColor colour) {
         SoundType soundType = SoundType.SLIME;
         final SoundEvent soundEvent;
         if (colour == null) {

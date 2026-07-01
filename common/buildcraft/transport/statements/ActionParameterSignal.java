@@ -15,11 +15,11 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.gates.IGate;
@@ -38,49 +38,49 @@ import buildcraft.transport.BCTransportSprites;
 public class ActionParameterSignal implements IStatementParameter {
 
     public static final ActionParameterSignal EMPTY = new ActionParameterSignal(null);
-    private static final Map<EnumDyeColor, ActionParameterSignal> SIGNALS;
+    private static final Map<DyeColor, ActionParameterSignal> SIGNALS;
 
     static {
-        SIGNALS = new EnumMap<>(EnumDyeColor.class);
-        for (EnumDyeColor colour : ColourUtil.COLOURS) {
+        SIGNALS = new EnumMap<>(DyeColor.class);
+        for (DyeColor colour : ColourUtil.COLOURS) {
             SIGNALS.put(colour, new ActionParameterSignal(colour));
         }
     }
 
     @Nullable
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
 
-    private ActionParameterSignal(EnumDyeColor colour) {
+    private ActionParameterSignal(DyeColor colour) {
         this.colour = colour;
     }
 
-    public static ActionParameterSignal get(EnumDyeColor colour) {
+    public static ActionParameterSignal get(DyeColor colour) {
         return colour == null ? EMPTY : SIGNALS.get(colour);
     }
 
     public static ActionParameterSignal readFromNbt(CompoundTag nbt) {
-        if (nbt.hasKey("color", Constants.NBT.TAG_ANY_NUMERIC)) {
-            return get(EnumDyeColor.byMetadata(nbt.getByte("color")));
+        if (nbt.hasKey("color", Tag.TAG_ANY_NUMERIC)) {
+            return get(DyeColor.byMetadata(nbt.getByte("color")));
         }
         return EMPTY;
     }
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        EnumDyeColor c = colour;
+        DyeColor c = colour;
         if (c != null) {
             nbt.setByte("color", (byte) c.getMetadata());
         }
     }
 
     @Nullable
-    public EnumDyeColor getColor() {
+    public DyeColor getColor() {
         return colour;
     }
 
     @Override
     public ISprite getSprite() {
-        EnumDyeColor c = colour;
+        DyeColor c = colour;
         if (c == null) {
             return null;
         } else {
@@ -112,7 +112,7 @@ public class ActionParameterSignal implements IStatementParameter {
 
     @Override
     public String getDescription() {
-        EnumDyeColor c = colour;
+        DyeColor c = colour;
         if (c == null) {
             return null;
         }
@@ -145,7 +145,7 @@ public class ActionParameterSignal implements IStatementParameter {
         IGate gate = (IGate) source;
         List<IStatementParameter> poss = new ArrayList<>(1 + ColourUtil.COLOURS.length);
         poss.add(EMPTY);
-        for (EnumDyeColor c : ColourUtil.COLOURS) {
+        for (DyeColor c : ColourUtil.COLOURS) {
             if (TriggerPipeSignal.doesGateHaveColour(gate, c)) {
                 poss.add(get(c));
             }

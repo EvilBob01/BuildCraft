@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.Direction;
@@ -35,7 +35,7 @@ import buildcraft.transport.BCTransportStatements;
 import buildcraft.transport.statements.ActionPipeColor;
 
 public class PipeBehaviourLapis extends PipeBehaviour {
-    private EnumDyeColor colour = EnumDyeColor.WHITE;
+    private DyeColor colour = DyeColor.WHITE;
 
     public PipeBehaviourLapis(IPipe pipe) {
         super(pipe);
@@ -43,9 +43,9 @@ public class PipeBehaviourLapis extends PipeBehaviour {
 
     public PipeBehaviourLapis(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        colour = NBTUtilBC.readEnum(nbt.getTag("colour"), EnumDyeColor.class);
+        colour = NBTUtilBC.readEnum(nbt.getTag("colour"), DyeColor.class);
         if (colour == null) {
-            colour = EnumDyeColor.WHITE;
+            colour = DyeColor.WHITE;
         }
     }
 
@@ -68,7 +68,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
     public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         if (side == Dist.CLIENT) {
-            colour = EnumDyeColor.byMetadata(buffer.readUnsignedByte());
+            colour = DyeColor.byMetadata(buffer.readUnsignedByte());
         }
     }
 
@@ -85,7 +85,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
         if (EntityUtil.getWrenchHand(player) != null) {
             EntityUtil.activateWrench(player, trace);
             int n = colour.getMetadata() + (player.isSneaking() ? 15 : 1);
-            colour = EnumDyeColor.byMetadata(n & 15);
+            colour = DyeColor.byMetadata(n & 15);
             pipe.getHolder().scheduleNetworkUpdate(PipeMessageReceiver.BEHAVIOUR);
             return true;
         }

@@ -102,8 +102,8 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
 
     @OnlyIn(Dist.CLIENT)
     public int getLevel() {
-        BlockPos blockPos = Minecraft.getMinecraft().player.getPosition();
-        while (!Minecraft.getMinecraft().world.getBlockState(blockPos).isSideSolid(Minecraft.getMinecraft().world, blockPos, Direction.DOWN) && blockPos.getY() < 255) {
+        BlockPos blockPos = Minecraft.getInstance().player.getPosition();
+        while (!Minecraft.getInstance().level.getBlockState(blockPos).isSideSolid(Minecraft.getInstance().level, blockPos, Direction.DOWN) && blockPos.getY() < 255) {
             blockPos = new BlockPos(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ());
         }
         return (int) Math.floor((double) blockPos.getY() / ZonePlannerMapChunkKey.LEVEL_HEIGHT);

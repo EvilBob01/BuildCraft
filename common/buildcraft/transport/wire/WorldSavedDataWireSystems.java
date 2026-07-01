@@ -20,7 +20,7 @@ import com.google.common.base.Predicates;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.transport.EnumWirePart;
@@ -135,7 +135,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
         return null;
     }
 
-    public boolean isEmitterEmitting(WireSystem.WireElement element, EnumDyeColor color) {
+    public boolean isEmitterEmitting(WireSystem.WireElement element, DyeColor color) {
         if (!world.isBlockLoaded(element.blockPos)) {
             BCLog.logger.warn("[transport.wire] Ghost loading " + element.blockPos + " to look for an emitter!");
         }
@@ -203,7 +203,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
         wireSystems.clear();
         this.elementsToWireSystemsIndex.clear();
 
-        ListTag entriesList = nbt.getTagList("entries", Constants.NBT.TAG_COMPOUND);
+        ListTag entriesList = nbt.getTagList("entries", Tag.TAG_COMPOUND);
         for(int i = 0; i < entriesList.tagCount(); i++) {
             CompoundTag entry = entriesList.getCompoundTagAt(i);
             this.addWireSystem(new WireSystem(entry.getCompoundTag("wireSystem")), entry.getBoolean("powered"));

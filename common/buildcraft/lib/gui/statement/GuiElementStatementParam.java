@@ -103,7 +103,7 @@ public class GuiElementStatementParam extends GuiElementSimple
             StatementMouseClick clickEvent = new StatementMouseClick(0, false);
 
             final ItemStack heldStack;
-            Player currentPlayer = Minecraft.getMinecraft().player;
+            Player currentPlayer = Minecraft.getInstance().player;
             if (currentPlayer == null) {
                 heldStack = ItemStack.EMPTY;
             } else {

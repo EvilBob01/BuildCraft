@@ -11,7 +11,7 @@ public class ProfilerBC {
 
     @OnlyIn(Dist.CLIENT)
     public static ProfilerBC getClient() {
-        return new ProfilerBC(Minecraft.getMinecraft().mcProfiler);
+        return new ProfilerBC(Minecraft.getInstance().mcProfiler);
     }
 
     private final Profiler profiler;

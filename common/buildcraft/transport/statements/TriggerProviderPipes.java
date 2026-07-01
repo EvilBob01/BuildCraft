@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
@@ -39,7 +39,7 @@ public enum TriggerProviderPipes implements ITriggerProvider {
             IPipeHolder holder = gate.getPipeHolder();
             holder.fireEvent(new PipeEventStatement.AddTriggerInternal(holder, triggers));
 
-            for (EnumDyeColor colour : ColourUtil.COLOURS) {
+            for (DyeColor colour : ColourUtil.COLOURS) {
                 if (TriggerPipeSignal.doesGateHaveColour(gate, colour)) {
                     triggers.add(BCTransportStatements.TRIGGER_PIPE_SIGNAL[colour.ordinal() * 2 + 0]);
                     triggers.add(BCTransportStatements.TRIGGER_PIPE_SIGNAL[colour.ordinal() * 2 + 1]);

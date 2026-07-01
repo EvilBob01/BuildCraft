@@ -51,7 +51,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
             return;
         }
 
-        Profiler prof = Minecraft.getMinecraft().mcProfiler;
+        Profiler prof = Minecraft.getInstance().mcProfiler;
         prof.startSection("calc");
 
         boolean[] sides = new boolean[6];
@@ -148,7 +148,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
             // gl state setup
             RenderHelper.disableStandardItemLighting();
-            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
             GlStateManager.enableCull();

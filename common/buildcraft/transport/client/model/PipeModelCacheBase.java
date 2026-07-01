@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
 import buildcraft.api.transport.pipe.EnumPipeColourType;
 import buildcraft.api.transport.pipe.PipeDefinition;
@@ -46,7 +46,7 @@ public class PipeModelCacheBase {
         public final PipeFaceTex centerSprite;
         public final PipeFaceTex[] sideSprites;
         public final float[] connections;
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
         public final EnumPipeColourType colourType;
         private final int hashCode;
 
@@ -99,7 +99,7 @@ public class PipeModelCacheBase {
     }
 
     public static final class PipeBaseTranslucentKey {
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
         public final float[] connections;
         private final int hashCode;
 

@@ -28,7 +28,7 @@ public class ClientDebuggables {
 
     @Nullable
     public static IDebuggable getDebuggableObject(BlockHitResult mouseOver) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         if (mc.gameSettings.reducedDebugInfo ||
             mc.player.hasReducedDebug() ||
             !mc.gameSettings.showDebugInfo ||

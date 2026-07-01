@@ -34,8 +34,8 @@ public class RenderLaser extends FastTESR<TileLaser> {
     public void renderTileEntityFast(@Nonnull TileLaser tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
 
         if (BCSiliconConfig.renderLaserBeams || isPlayerWearingGoggles()) {
-            Minecraft.getMinecraft().mcProfiler.startSection("bc");
-            Minecraft.getMinecraft().mcProfiler.startSection("laser");
+            Minecraft.getInstance().mcProfiler.startSection("bc");
+            Minecraft.getInstance().mcProfiler.startSection("laser");
 
             buffer.setTranslation(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
 
@@ -56,13 +56,13 @@ public class RenderLaser extends FastTESR<TileLaser> {
 
             buffer.setTranslation(0, 0, 0);
 
-            Minecraft.getMinecraft().mcProfiler.endSection();
-            Minecraft.getMinecraft().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.endSection();
         }
     }
 
     private boolean isPlayerWearingGoggles() {
-        Item headArmor = Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
+        Item headArmor = Minecraft.getInstance().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
         return headArmor instanceof ItemGoggles;
     }
 }

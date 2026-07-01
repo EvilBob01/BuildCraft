@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -52,7 +52,7 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Nonnull
-    public ItemStack getStack(EnumDyeColor colour, boolean isFilter) {
+    public ItemStack getStack(DyeColor colour, boolean isFilter) {
         return getStack(new LensData(colour, isFilter));
     }
 
@@ -107,10 +107,10 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     public static class LensData {
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
         public final boolean isFilter;
 
-        public LensData(EnumDyeColor colour, boolean isFilter) {
+        public LensData(DyeColor colour, boolean isFilter) {
             this.colour = colour;
             this.isFilter = isFilter;
         }
@@ -124,7 +124,7 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
                 colour = null;
                 isFilter = damage == 33;
             } else {
-                colour = EnumDyeColor.byDyeDamage(damage & 15);
+                colour = DyeColor.byDyeDamage(damage & 15);
                 isFilter = damage >= 16;
             }
         }

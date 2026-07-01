@@ -13,7 +13,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -55,7 +55,7 @@ public final class Pipe implements IPipe, IDebuggable {
     public final PipeDefinition definition;
     public final PipeBehaviour behaviour;
     public final PipeFlow flow;
-    private EnumDyeColor colour = null;
+    private DyeColor colour = null;
     private boolean updateMarked = true;
     private final EnumMap<Direction, Float> connected = new EnumMap<>(Direction.class);
     private final EnumMap<Direction, ConnectedType> types = new EnumMap<>(Direction.class);
@@ -74,7 +74,7 @@ public final class Pipe implements IPipe, IDebuggable {
 
     public Pipe(IPipeHolder holder, CompoundTag nbt) throws InvalidInputDataException {
         this.holder = holder;
-        this.colour = NBTUtilBC.readEnum(nbt.getTag("col"), EnumDyeColor.class);
+        this.colour = NBTUtilBC.readEnum(nbt.getTag("col"), DyeColor.class);
         this.definition = PipeRegistry.INSTANCE.loadDefinition(nbt.getString("def"));
         if (!definition.canBeColoured) {
             colour = null;
@@ -163,7 +163,7 @@ public final class Pipe implements IPipe, IDebuggable {
             types.clear();
 
             int nColour = buffer.readUnsignedByte();
-            colour = nColour == 0 ? null : EnumDyeColor.byMetadata(nColour - 1);
+            colour = nColour == 0 ? null : DyeColor.byMetadata(nColour - 1);
 
             for (Direction face : Direction.VALUES) {
                 if (buffer.readBoolean()) {
@@ -209,12 +209,12 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     @Override
-    public EnumDyeColor getColour() {
+    public DyeColor getColour() {
         return this.colour;
     }
 
     @Override
-    public void setColour(EnumDyeColor colour) {
+    public void setColour(DyeColor colour) {
         if (definition.canBeColoured) {
             this.colour = colour;
             markForUpdate();
@@ -341,7 +341,7 @@ public final class Pipe implements IPipe, IDebuggable {
         && canFlowsConnect(to, one.getFlow(), two.getFlow());
     }
 
-    public static boolean canColoursConnect(EnumDyeColor one, EnumDyeColor two) {
+    public static boolean canColoursConnect(DyeColor one, DyeColor two) {
         return one == null || two == null || one == two;
     }
 

@@ -32,7 +32,7 @@ public class GuideImageFactory implements GuidePartFactory {
     }
 
     public GuideImageFactory(String location, int width, int height) {
-        TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureMap textureMap = Minecraft.getInstance().getTextureMapBlocks();
         TextureAtlasSprite stitched = textureMap.getAtlasSprite(location);
         if (stitched != textureMap.getMissingSprite()) {
             this.sprite = new SpriteAtlas(stitched);
@@ -42,7 +42,7 @@ public class GuideImageFactory implements GuidePartFactory {
             ISprite s;
             int sw, sh;
             ResourceLocation resLoc = new ResourceLocation(location);
-            try (IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(resLoc)) {
+            try (IResource resource = Minecraft.getInstance().getResourceManager().getResource(resLoc)) {
                 PngSizeInfo size = PngSizeInfo.makeFromResource(resource);
                 s = new SpriteRaw(resLoc, 0, 0, 1, 1);
                 sw = size.pngWidth;

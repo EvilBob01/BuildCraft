@@ -23,7 +23,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -219,7 +219,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
         recipesStates.clear();
-        ListTag recipesStatesTag = nbt.getTagList("recipes_states", Constants.NBT.TAG_COMPOUND);
+        ListTag recipesStatesTag = nbt.getTagList("recipes_states", Tag.TAG_COMPOUND);
         for (int i = 0; i < recipesStatesTag.tagCount(); i++) {
             CompoundTag entryTag = recipesStatesTag.getCompoundTagAt(i);
             String name = entryTag.getString("recipe");

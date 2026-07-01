@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.tiles.IDebuggable;
 
@@ -60,7 +60,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        ListTag list = nbt.getTagList("pumpProgress", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("pumpProgress", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
             PlayerPumpInfo info = new PlayerPumpInfo(list.getCompoundTagAt(i));
             pumpProgress.put(info.profile, info);

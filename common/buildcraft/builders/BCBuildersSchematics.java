@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.block.BlockBanner;
 import net.minecraft.block.BlockVine;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.item.ItemBanner;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
@@ -51,7 +51,7 @@ public class BCBuildersSchematics {
             @Override
             public List<ItemStack> computeRequiredItems() {
                 return Collections.singletonList(ItemBanner.makeBanner(
-                    EnumDyeColor.byDyeDamage(tileNbt.getInteger("Base")), tileNbt.getTagList("Patterns", 10)));
+                    DyeColor.byDyeDamage(tileNbt.getInteger("Base")), tileNbt.getTagList("Patterns", 10)));
             }
         };
     }

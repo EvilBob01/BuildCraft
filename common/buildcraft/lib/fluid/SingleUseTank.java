@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -79,7 +79,7 @@ public class SingleUseTank extends Tank {
     @Override
     public void readTankFromNBT(CompoundTag nbt) {
         super.readTankFromNBT(nbt);
-        if (nbt.hasKey(NBT_ACCEPTED_FLUID, Constants.NBT.TAG_STRING)) {
+        if (nbt.hasKey(NBT_ACCEPTED_FLUID, Tag.TAG_STRING)) {
             setAcceptedFluid(FluidRegistry.getFluid(nbt.getString(NBT_ACCEPTED_FLUID)));
         } else {
             acceptedFluid = FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag(NBT_ACCEPTED_FLUID));

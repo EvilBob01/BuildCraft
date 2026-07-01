@@ -20,7 +20,7 @@ public class MetadataLoader {
     private static void register() {
         if (!hasRegistered) {
             hasRegistered = true;
-            MetadataSerializer metaReg = Minecraft.getMinecraft().getResourcePackRepository().rprMetadataSerializer;
+            MetadataSerializer metaReg = Minecraft.getInstance().getResourcePackRepository().rprMetadataSerializer;
             metaReg.registerMetadataSectionType(DataMetadataSection.DESERIALISER, DataMetadataSection.class);
         }
     }
@@ -28,7 +28,7 @@ public class MetadataLoader {
     /** @param samePack If true, then only the data in the same resource pack will be returned. */
     @Nullable
     public static DataMetadataSection getData(ResourceLocation location, boolean samePack) {
-        IResourceManager resManager = Minecraft.getMinecraft().getResourceManager();
+        IResourceManager resManager = Minecraft.getInstance().getResourceManager();
         register();
         try {
             List<IResource> resources = resManager.getAllResources(location);

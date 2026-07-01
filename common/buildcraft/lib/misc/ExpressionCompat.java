@@ -1,6 +1,6 @@
 package buildcraft.lib.misc;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 
@@ -27,7 +27,7 @@ public class ExpressionCompat {
     // Minecraft Types
     public static final NodeType<Axis> ENUM_AXIS;
     public static final NodeType<Direction> ENUM_FACING;
-    public static final NodeType<EnumDyeColor> ENUM_DYE_COLOUR;
+    public static final NodeType<DyeColor> ENUM_DYE_COLOUR;
 
     // BuildCraft API types
     public static final NodeType<EnumPowerStage> ENUM_POWER_STAGE;
@@ -53,12 +53,12 @@ public class ExpressionCompat {
             ENUM_FACING.putConstant("" + f, f);
         }
 
-        ENUM_DYE_COLOUR = new NodeType<>("Dye Colour", EnumDyeColor.WHITE);
+        ENUM_DYE_COLOUR = new NodeType<>("Dye Colour", DyeColor.WHITE);
         NodeTypes.addType("DyeColor", ENUM_DYE_COLOUR);
         NodeTypes.addType("DyeColour", ENUM_DYE_COLOUR);
         ENUM_DYE_COLOUR.put_t_l("to_argb", c -> 0xFF_00_00_00 | ColourUtil.getLightHex(c));
-        ENUM_DYE_COLOUR.put_t_o("(string)", String.class, EnumDyeColor::getName);
-        for (EnumDyeColor c : EnumDyeColor.values()) {
+        ENUM_DYE_COLOUR.put_t_o("(string)", String.class, DyeColor::getName);
+        for (DyeColor c : DyeColor.values()) {
             ENUM_DYE_COLOUR.putConstant("" + c, c);
         }
 
@@ -111,13 +111,13 @@ public class ExpressionCompat {
     }
 
     private static long convertColourToAbgr(String c) {
-        EnumDyeColor colour = ColourUtil.parseColourOrNull(c);
+        DyeColor colour = ColourUtil.parseColourOrNull(c);
         if (colour == null) return 0xFF_FF_FF_FF;
         return 0xFF_00_00_00 | ColourUtil.swapArgbToAbgr(ColourUtil.getLightHex(colour));
     }
 
     private static long convertColourToArgb(String c) {
-        EnumDyeColor colour = ColourUtil.parseColourOrNull(c);
+        DyeColor colour = ColourUtil.parseColourOrNull(c);
         if (colour == null) return 0xFF_FF_FF_FF;
         return 0xFF_00_00_00 | ColourUtil.getLightHex(colour);
     }

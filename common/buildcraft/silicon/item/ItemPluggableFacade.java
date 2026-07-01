@@ -15,7 +15,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,7 +25,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -76,7 +76,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
         }
 
         if (!nbt.hasKey("facade") && nbt.hasKey("states")) {
-            ListTag states = nbt.getTagList("states", Constants.NBT.TAG_COMPOUND);
+            ListTag states = nbt.getTagList("states", Tag.TAG_COMPOUND);
             if (states.tagCount() > 0) {
                 // Only migrate if we actually have a facade to migrate.
                 boolean isHollow = states.getCompoundTagAt(0).getBoolean("isHollow");
@@ -117,8 +117,8 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
         if (stone != null) {
             FacadePhasedState[] states = { //
                 FacadeStateManager.getInfoForBlock(Blocks.STONE).createPhased(null), //
-                FacadeStateManager.getInfoForBlock(Blocks.PLANKS).createPhased(EnumDyeColor.RED), //
-                FacadeStateManager.getInfoForBlock(Blocks.LOG).createPhased(EnumDyeColor.CYAN),//
+                FacadeStateManager.getInfoForBlock(Blocks.PLANKS).createPhased(DyeColor.RED), //
+                FacadeStateManager.getInfoForBlock(Blocks.LOG).createPhased(DyeColor.CYAN),//
             };
             FacadeInstance inst = new FacadeInstance(states, false);
             subItems.add(createItemStack(inst));

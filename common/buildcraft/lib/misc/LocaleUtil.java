@@ -14,7 +14,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.util.text.translation.I18n;
 
@@ -109,9 +109,9 @@ public class LocaleUtil {
         return I18n.canTranslate(key);
     }
 
-    /** @param colour The {@link EnumDyeColor} to localize.
+    /** @param colour The {@link DyeColor} to localize.
      * @return a localised name for the given colour. */
-    public static String localizeColour(EnumDyeColor colour) {
+    public static String localizeColour(DyeColor colour) {
         return localize("item.fireworksCharge." + colour.getUnlocalizedName());
     }
 

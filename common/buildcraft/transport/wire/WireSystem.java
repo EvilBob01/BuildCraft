@@ -28,7 +28,7 @@ import com.google.common.base.Predicates;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,7 +39,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.transport.EnumWirePart;
 import buildcraft.api.transport.IWireEmitter;
@@ -59,7 +59,7 @@ public final class WireSystem {
     }
 
     public final ImmutableList<WireElement> elements;
-    public final EnumDyeColor color;
+    public final DyeColor color;
     public final int networkId;
 
     private transient final int cachedHashCode;
@@ -120,11 +120,11 @@ public final class WireSystem {
         return Collections.emptyList();
     }
 
-    public WireSystem(ImmutableList<WireElement> elements, EnumDyeColor color) {
+    public WireSystem(ImmutableList<WireElement> elements, DyeColor color) {
         this(nextServerNetworkId(), elements, color);
     }
 
-    public WireSystem(int netId, ImmutableList<WireElement> elements, EnumDyeColor color) {
+    public WireSystem(int netId, ImmutableList<WireElement> elements, DyeColor color) {
         this.networkId = netId;
         this.elements = Objects.requireNonNull(elements, "elements");
         this.color = color;
@@ -142,7 +142,7 @@ public final class WireSystem {
         Queue<WireElement> queue = new ArrayDeque<>();
         queue.add(startElement);
 
-        EnumDyeColor tempColor = null;
+        DyeColor tempColor = null;
         ImmutableList.Builder<WireElement> elementBuilder = ImmutableList.builder();
 
         while (!queue.isEmpty()) {
@@ -160,14 +160,14 @@ public final class WireSystem {
                 IPipeHolder holder = holdersCache.get(element.blockPos);
                 if (holder != null) {
                     if (element.type == WireElement.Type.WIRE_PART) {
-                        EnumDyeColor colorOfPart = holder.getWireManager().getColorOfPart(element.wirePart);
+                        DyeColor colorOfPart = holder.getWireManager().getColorOfPart(element.wirePart);
                         if (tempColor == null) {
                             if (colorOfPart != null) {
                                 tempColor = colorOfPart;
                             }
                         }
                         if (tempColor != null && colorOfPart == tempColor) {
-                            EnumDyeColor colorButFinal = tempColor; //damn you java
+                            DyeColor colorButFinal = tempColor; //damn you java
                             wireSystems.getWireSystemsWithElement(element).stream().filter(wireSystem -> wireSystem != this && wireSystem.color == colorButFinal).forEach(wireSystems::removeWireSystem);
                             elementBuilder.add(element);
                             queue.addAll(getConnectedElementsOfElement(wireSystems.world, element));
@@ -237,10 +237,10 @@ public final class WireSystem {
 
     public WireSystem(CompoundTag nbt) {
         networkId = nextServerNetworkId();
-        ListTag elementsList = nbt.getTagList("elements", Constants.NBT.TAG_COMPOUND);
+        ListTag elementsList = nbt.getTagList("elements", Tag.TAG_COMPOUND);
         //noinspection UnstableApiUsage
         elements = IntStream.range(0, elementsList.tagCount()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
-        color = EnumDyeColor.byMetadata(nbt.getInteger("color"));
+        color = DyeColor.byMetadata(nbt.getInteger("color"));
 
         this.cachedHashCode = this.computeHashCode();
         this.cachedWiresHashCode = this.computeCachedWiresHashCode();

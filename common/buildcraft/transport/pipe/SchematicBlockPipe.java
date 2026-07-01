@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -56,9 +56,9 @@ public class SchematicBlockPipe implements ISchematicBlock {
             PipeDefinition definition = PipeRegistry.INSTANCE.loadDefinition(
                 tileNbt.getCompoundTag("pipe").getString("def")
             );
-            EnumDyeColor color = NBTUtilBC.readEnum(
+            DyeColor color = NBTUtilBC.readEnum(
                 tileNbt.getCompoundTag("pipe").getTag("col"),
-                EnumDyeColor.class
+                DyeColor.class
             );
             Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(definition);
             if (item != null) {

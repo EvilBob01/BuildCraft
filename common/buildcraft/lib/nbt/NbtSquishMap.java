@@ -30,7 +30,7 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.InvalidInputDataException;
 
@@ -288,17 +288,17 @@ public class NbtSquishMap {
 
     public int size(int typeFlags) {
         int total = 0;
-        if (isFlag(typeFlags, Constants.NBT.TAG_BYTE)) total += bytes.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_SHORT)) total += shorts.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_INT)) total += ints.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_LONG)) total += longs.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_FLOAT)) total += floats.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_DOUBLE)) total += doubles.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_BYTE_ARRAY)) total += byteArrays.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_INT_ARRAY)) total += intArrays.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_STRING)) total += strings.size();
-        if (isFlag(typeFlags, Constants.NBT.TAG_COMPOUND)) total += complex.size();
-        else if (isFlag(typeFlags, Constants.NBT.TAG_LIST)) total += complex.size();
+        if (isFlag(typeFlags, Tag.TAG_BYTE)) total += bytes.size();
+        if (isFlag(typeFlags, Tag.TAG_SHORT)) total += shorts.size();
+        if (isFlag(typeFlags, Tag.TAG_INT)) total += ints.size();
+        if (isFlag(typeFlags, Tag.TAG_LONG)) total += longs.size();
+        if (isFlag(typeFlags, Tag.TAG_FLOAT)) total += floats.size();
+        if (isFlag(typeFlags, Tag.TAG_DOUBLE)) total += doubles.size();
+        if (isFlag(typeFlags, Tag.TAG_BYTE_ARRAY)) total += byteArrays.size();
+        if (isFlag(typeFlags, Tag.TAG_INT_ARRAY)) total += intArrays.size();
+        if (isFlag(typeFlags, Tag.TAG_STRING)) total += strings.size();
+        if (isFlag(typeFlags, Tag.TAG_COMPOUND)) total += complex.size();
+        else if (isFlag(typeFlags, Tag.TAG_LIST)) total += complex.size();
 
         return total;
     }

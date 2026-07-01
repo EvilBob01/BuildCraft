@@ -1,5 +1,9 @@
 package buildcraft.transport.net;
 
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.IMessageHandler;
+import buildcraft.lib.net.MessageContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,21 +14,19 @@ import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pipe.PipeFlow;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.misc.MessageUtil;
 import buildcraft.lib.net.PacketBufferBC;
 
@@ -76,7 +78,7 @@ public class MessageMultiPipeItem implements IMessage {
     }
 
     public void append(BlockPos pos, int stackId, byte stackCount, boolean toCenter, Direction side,
-        EnumDyeColor colour, byte timeToDest) {
+        DyeColor colour, byte timeToDest) {
         List<TravellingItemData> list = items.get(pos);
         if (list == null) {
             if (items.size() >= MAX_POSITIONS) {
@@ -96,10 +98,10 @@ public class MessageMultiPipeItem implements IMessage {
         public final byte stackCount;
         public final boolean toCenter;
         public final Direction side;
-        public final @Nullable EnumDyeColor colour;
+        public final @Nullable DyeColor colour;
         public final byte timeToDest;
 
-        public TravellingItemData(int stackId, byte stackCount, boolean toCenter, Direction side, EnumDyeColor colour,
+        public TravellingItemData(int stackId, byte stackCount, boolean toCenter, Direction side, DyeColor colour,
             byte timeToDest) {
             this.stackId = stackId;
             this.stackCount = stackCount;
@@ -114,7 +116,7 @@ public class MessageMultiPipeItem implements IMessage {
             stackCount = buf.readByte();
             toCenter = buf.readBoolean();
             side = buf.readEnumValue(Direction.class);
-            colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
+            colour = MessageUtil.readEnumOrNull(buf, DyeColor.class);
             timeToDest = buf.readByte();
         }
 
@@ -133,7 +135,8 @@ public class MessageMultiPipeItem implements IMessage {
 
             @Override
             public IMessage onMessage(MessageMultiPipeItem message, MessageContext ctx) {
-                Level world = BCLibProxy.getProxy().getClientWorld();
+                Player player = ctx.getPayloadContext().player();
+                Level world = player == null ? null : player.level();
                 if (world == null) {
                     return null;
                 }

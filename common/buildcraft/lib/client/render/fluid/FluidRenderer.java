@@ -208,7 +208,7 @@ public class FluidRenderer {
         if (fluid == null || fluid.getFluid() == null || amount <= 0) {
             return;
         }
-        Profiler prof = Minecraft.getMinecraft().mcProfiler;
+        Profiler prof = Minecraft.getInstance().mcProfiler;
         prof.startSection("fluid");
         if (sideRender == null) {
             sideRender = DEFAULT_FACES;
@@ -352,9 +352,9 @@ public class FluidRenderer {
 
         sprite = FluidRenderer.fluidSprites.get(FluidSpriteType.STILL).get(fluid.getFluid().getName());
         if (sprite == null) {
-            sprite = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            sprite = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
         }
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         RenderUtil.setGLColorFromInt(fluid.getFluid().getColor(fluid));
 
         Tessellator tess = Tessellator.getInstance();

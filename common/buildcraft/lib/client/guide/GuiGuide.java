@@ -203,7 +203,7 @@ public class GuiGuide extends GuiScreen {
     private GuiGuide(@Nullable GuideBook book) {
         this.book = book;
         this.bookData = book != null ? book.data : GuideManager.BOOK_ALL_DATA;
-        mc = Minecraft.getMinecraft();
+        mc = Minecraft.getInstance();
         openPage(new GuidePageContents(this));
     }
 

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -282,12 +282,12 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public boolean isEmitting(EnumDyeColor colour) {
+    public boolean isEmitting(DyeColor colour) {
         return logic.isEmitting(colour);
     }
 
     @Override
-    public void emitWire(EnumDyeColor colour) {
+    public void emitWire(DyeColor colour) {
         logic.emitWire(colour);
     }
 

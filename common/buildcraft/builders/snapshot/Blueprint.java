@@ -24,7 +24,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Rotation;
 import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.core.InvalidInputDataException;
@@ -87,10 +87,10 @@ public class Blueprint extends Snapshot {
             palette.add(SchematicBlockManager.loadAdditional(schematicBlockTag));
         }
         data = new int[Snapshot.getDataSize(size)];
-        ListTag serializedDataList = nbt.hasKey("data", Constants.NBT.TAG_LIST)
-            ? nbt.getTagList("data", Constants.NBT.TAG_INT)
+        ListTag serializedDataList = nbt.hasKey("data", Tag.TAG_LIST)
+            ? nbt.getTagList("data", Tag.TAG_INT)
             : null;
-        int[] serializedDataIntArray = nbt.hasKey("data", Constants.NBT.TAG_INT_ARRAY)
+        int[] serializedDataIntArray = nbt.hasKey("data", Tag.TAG_INT_ARRAY)
             ? nbt.getIntArray("data")
             : null;
         if (serializedDataIntArray == null && serializedDataList == null) {

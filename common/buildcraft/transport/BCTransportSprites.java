@@ -9,7 +9,7 @@ package buildcraft.transport;
 import java.util.EnumMap;
 import java.util.Locale;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -39,8 +39,8 @@ public class BCTransportSprites {
 
     public static final SpriteHolder[] ACTION_PIPE_COLOUR;
     public static final EnumMap<SlotIndex, SpriteHolder> ACTION_EXTRACTION_PRESET;
-    private static final EnumMap<EnumDyeColor, SpriteHolder> PIPE_SIGNAL_ON;
-    private static final EnumMap<EnumDyeColor, SpriteHolder> PIPE_SIGNAL_OFF;
+    private static final EnumMap<DyeColor, SpriteHolder> PIPE_SIGNAL_ON;
+    private static final EnumMap<DyeColor, SpriteHolder> PIPE_SIGNAL_OFF;
     private static final EnumMap<Direction, SpriteHolder> ACTION_PIPE_DIRECTION;
 
     public static final SpriteHolder POWER_FLOW;
@@ -59,14 +59,14 @@ public class BCTransportSprites {
         PIPE_COLOUR_BORDER_INNER = getHolder("pipes/colour_border_inner");
 
         ACTION_PIPE_COLOUR = new SpriteHolder[ColourUtil.COLOURS.length];
-        for (EnumDyeColor colour : ColourUtil.COLOURS) {
+        for (DyeColor colour : ColourUtil.COLOURS) {
             ACTION_PIPE_COLOUR[colour.ordinal()] = getHolder("core", "items/paintbrush/" + colour.getName());
         }
 
-        PIPE_SIGNAL_OFF = new EnumMap<>(EnumDyeColor.class);
-        PIPE_SIGNAL_ON = new EnumMap<>(EnumDyeColor.class);
+        PIPE_SIGNAL_OFF = new EnumMap<>(DyeColor.class);
+        PIPE_SIGNAL_ON = new EnumMap<>(DyeColor.class);
 
-        for (EnumDyeColor colour : ColourUtil.COLOURS) {
+        for (DyeColor colour : ColourUtil.COLOURS) {
             String pre = "triggers/trigger_pipesignal_" + colour.getName().toLowerCase(Locale.ROOT) + "_";
             PIPE_SIGNAL_OFF.put(colour, getHolder(pre + "inactive"));
             PIPE_SIGNAL_ON.put(colour, getHolder(pre + "active"));
@@ -135,7 +135,7 @@ public class BCTransportSprites {
         PipeFlowRendererItems.onModelBake();
     }
 
-    public static SpriteHolder getPipeSignal(boolean active, EnumDyeColor colour) {
+    public static SpriteHolder getPipeSignal(boolean active, DyeColor colour) {
         return (active ? PIPE_SIGNAL_ON : PIPE_SIGNAL_OFF).get(colour);
     }
 

@@ -61,7 +61,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -435,27 +435,27 @@ public class JsonUtil {
                                 return JsonNull.INSTANCE;
                             }
                             switch (src.getId()) {
-                                case Constants.NBT.TAG_BYTE:
+                                case Tag.TAG_BYTE:
                                     return context.serialize(src, ByteTag.class);
-                                case Constants.NBT.TAG_SHORT:
+                                case Tag.TAG_SHORT:
                                     return context.serialize(src, ShortTag.class);
-                                case Constants.NBT.TAG_INT:
+                                case Tag.TAG_INT:
                                     return context.serialize(src, IntTag.class);
-                                case Constants.NBT.TAG_LONG:
+                                case Tag.TAG_LONG:
                                     return context.serialize(src, LongTag.class);
-                                case Constants.NBT.TAG_FLOAT:
+                                case Tag.TAG_FLOAT:
                                     return context.serialize(src, FloatTag.class);
-                                case Constants.NBT.TAG_DOUBLE:
+                                case Tag.TAG_DOUBLE:
                                     return context.serialize(src, DoubleTag.class);
-                                case Constants.NBT.TAG_BYTE_ARRAY:
+                                case Tag.TAG_BYTE_ARRAY:
                                     return context.serialize(src, ByteArrayTag.class);
-                                case Constants.NBT.TAG_STRING:
+                                case Tag.TAG_STRING:
                                     return context.serialize(src, StringTag.class);
-                                case Constants.NBT.TAG_LIST:
+                                case Tag.TAG_LIST:
                                     return context.serialize(src, ListTag.class);
-                                case Constants.NBT.TAG_COMPOUND:
+                                case Tag.TAG_COMPOUND:
                                     return context.serialize(src, CompoundTag.class);
-                                case Constants.NBT.TAG_INT_ARRAY:
+                                case Tag.TAG_INT_ARRAY:
                                     return context.serialize(src, IntArrayTag.class);
                                 default:
                                     throw new IllegalArgumentException(src.toString());

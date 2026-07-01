@@ -68,7 +68,7 @@ public class BuildCraftGui {
 
     public static final GuiSpriteScaled SPRITE_DEBUG = new GuiSpriteScaled(BCLibSprites.DEBUG, 16, 16);
 
-    public final Minecraft mc = Minecraft.getMinecraft();
+    public final Minecraft mc = Minecraft.getInstance();
     public final GuiScreen gui;
     public final MousePosition mouse = new MousePosition();
 

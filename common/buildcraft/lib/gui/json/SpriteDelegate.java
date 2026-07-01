@@ -14,7 +14,7 @@ public class SpriteDelegate implements ISprite {
     }
 
     public SpriteDelegate() {
-        this(new SpriteAtlas(Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite()));
+        this(new SpriteAtlas(Minecraft.getInstance().getTextureMapBlocks().getMissingSprite()));
     }
 
     @Override

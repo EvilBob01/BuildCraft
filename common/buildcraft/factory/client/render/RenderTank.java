@@ -46,12 +46,12 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         if (forRender == null) {
             return;
         }
-        Minecraft.getMinecraft().mcProfiler.startSection("bc");
-        Minecraft.getMinecraft().mcProfiler.startSection("tank");
+        Minecraft.getInstance().mcProfiler.startSection("bc");
+        Minecraft.getInstance().mcProfiler.startSection("tank");
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -86,8 +86,8 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         // gl state finish
         RenderHelper.enableStandardItemLighting();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
     }
 
     private static boolean isFullyConnected(TileTank thisTank, Direction face, float partialTicks) {

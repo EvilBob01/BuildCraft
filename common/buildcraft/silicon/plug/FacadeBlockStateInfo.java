@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -45,7 +45,7 @@ public class FacadeBlockStateInfo implements IFacadeState {
 
     // Helper methods
 
-    public FacadePhasedState createPhased(EnumDyeColor activeColour) {
+    public FacadePhasedState createPhased(DyeColor activeColour) {
         return new FacadePhasedState(this, activeColour);
     }
 

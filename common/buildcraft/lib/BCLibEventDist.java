@@ -118,7 +118,7 @@ public enum BCLibEventDist {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void renderWorldLast(RenderWorldLastEvent event) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
         float partialTicks = event.getPartialTicks();
@@ -140,7 +140,7 @@ public enum BCLibEventDist {
         if (event.phase == Phase.END) {
             BuildCraftObjectCaches.onClientTick();
             MessageUtil.postClientTick();
-            Minecraft mc = Minecraft.getMinecraft();
+            Minecraft mc = Minecraft.getInstance();
             EntityPlayerSP player = mc.player;
             if (player != null && ItemDebugger.isShowDebugInfo(player)) {
                 BlockHitResult mouseOver = mc.objectMouseOver;

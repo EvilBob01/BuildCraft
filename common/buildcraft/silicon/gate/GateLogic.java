@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
@@ -96,7 +96,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
     public int redstoneOutput, redstoneOutputSide;
 
-    private final EnumSet<EnumDyeColor> wireBroadcasts;
+    private final EnumSet<DyeColor> wireBroadcasts;
 
     /** Used on the client to determine if this gate should glow or not. */
     public boolean isOn;
@@ -113,7 +113,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
         triggerOn = new boolean[variant.numSlots];
         actionOn = new boolean[variant.numSlots];
 
-        wireBroadcasts = EnumSet.noneOf(EnumDyeColor.class);
+        wireBroadcasts = EnumSet.noneOf(DyeColor.class);
     }
 
     // Saving + Loading
@@ -123,7 +123,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
         readConfigData(nbt);
 
-        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.getTag("wireBroadcasts"), EnumDyeColor.class));
+        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.getTag("wireBroadcasts"), DyeColor.class));
     }
 
     public void readConfigData(CompoundTag nbt) {
@@ -136,14 +136,14 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
             String tName = "trigger[" + i + "]";
             String aName = "action[" + i + "]";
             // Legacy
-            if (nbt.hasKey(tName, Constants.NBT.TAG_STRING)) {
+            if (nbt.hasKey(tName, Tag.TAG_STRING)) {
                 CompoundTag nbt2 = new CompoundTag();
                 nbt2.setString("kind", nbt.getString(tName));
                 nbt2.setByte("side", nbt.getByte(tName + ".side"));
                 nbt.setTag(tName, nbt2);
             }
             // Legacy
-            if (nbt.hasKey(aName, Constants.NBT.TAG_STRING)) {
+            if (nbt.hasKey(aName, Tag.TAG_STRING)) {
                 CompoundTag nbt2 = new CompoundTag();
                 nbt2.setString("kind", nbt.getString(aName));
                 nbt2.setByte("side", nbt.getByte(aName + ".side"));
@@ -175,7 +175,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 nbt.setTag("action[" + s + "]", statements[s].action.writeToNbt());
             }
         }
-        nbt.setTag("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, EnumDyeColor.class));
+        nbt.setTag("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, DyeColor.class));
         return nbt;
     }
 
@@ -342,7 +342,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     // Wire related
 
     @Override
-    public boolean isEmitting(EnumDyeColor colour) {
+    public boolean isEmitting(DyeColor colour) {
         BlockEntity tile = getPipeHolder().getPipeTile();
         if (tile.isInvalid()) {
             throw new UnsupportedOperationException("Cannot check an invalid emitter!");
@@ -351,7 +351,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     }
 
     @Override
-    public void emitWire(EnumDyeColor colour) {
+    public void emitWire(DyeColor colour) {
         wireBroadcasts.add(colour);
     }
 
@@ -377,7 +377,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
         activeActions.clear();
 
-        EnumSet<EnumDyeColor> previousBroadcasts = EnumSet.copyOf(wireBroadcasts);
+        EnumSet<DyeColor> previousBroadcasts = EnumSet.copyOf(wireBroadcasts);
         wireBroadcasts.clear();
 
         for (int triggerIndex = 0; triggerIndex < statements.length; triggerIndex++) {
@@ -448,11 +448,11 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
         if (!previousBroadcasts.equals(wireBroadcasts)) {
             IWireManager wires = getPipeHolder().getWireManager();
-            EnumSet<EnumDyeColor> turnedOff = EnumSet.copyOf(previousBroadcasts);
+            EnumSet<DyeColor> turnedOff = EnumSet.copyOf(previousBroadcasts);
             turnedOff.removeAll(wireBroadcasts);
             // FIXME: add call to "wires.stopEmittingColour(turnedOff)"
 
-            EnumSet<EnumDyeColor> turnedOn = EnumSet.copyOf(wireBroadcasts);
+            EnumSet<DyeColor> turnedOn = EnumSet.copyOf(wireBroadcasts);
             turnedOn.removeAll(previousBroadcasts);
             // FIXME: add call to "wires.emittingColour(turnedOff)"
 

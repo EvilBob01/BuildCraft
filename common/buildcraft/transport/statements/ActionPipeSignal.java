@@ -8,7 +8,7 @@ package buildcraft.transport.statements;
 
 import java.util.Locale;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatementContainer;
@@ -26,9 +26,9 @@ import buildcraft.transport.BCTransportStatements;
 
 public class ActionPipeSignal extends BCStatement implements IActionInternal {
 
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
 
-    public ActionPipeSignal(EnumDyeColor colour) {
+    public ActionPipeSignal(DyeColor colour) {
         super("buildcraft:pipe.wire.output." + colour.name().toLowerCase(Locale.ROOT), //
                 "buildcraft.pipe.wire.output." + colour.name().toLowerCase(Locale.ROOT));
 

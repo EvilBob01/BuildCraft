@@ -88,7 +88,7 @@ public class RenderTickListener {
 
     @SubscribeEvent
     public static void renderOverlay(RenderGameOverlayEvent.Text event) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         IDebuggable debuggable = ClientDebuggables.getDebuggableObject(mc.objectMouseOver);
         if (debuggable != null) {
             List<String> clientLeft = new ArrayList<>();
@@ -136,8 +136,8 @@ public class RenderTickListener {
     }
 
     private static void renderHeldItemInWorld(float partialTicks) {
-        Minecraft mc = Minecraft.getMinecraft();
-        Player player = Minecraft.getMinecraft().player;
+        Minecraft mc = Minecraft.getInstance();
+        Player player = Minecraft.getInstance().player;
         if (player == null) {
             return;
         }
@@ -205,7 +205,7 @@ public class RenderTickListener {
     }
 
     private static void renderMarkerConnector(WorldClient world, Player player) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("marker");
         for (MarkerCache<?> cache : MarkerCache.CACHES) {
             profiler.startSection(cache.name);
@@ -216,7 +216,7 @@ public class RenderTickListener {
     }
 
     private static void renderMarkerCache(Player player, MarkerSubCache<?> cache) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("compute");
         Set<LaserData_BC8> toRender = new HashSet<>();
         for (final BlockPos a : cache.getAllMarkers()) {

@@ -743,7 +743,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             double z = from.z;
 
             Vec3 motion = VecUtil.scale(vecDir, 0.4);
-            int particleCount = Minecraft.getMinecraft().gameSettings.particleSetting;
+            int particleCount = Minecraft.getInstance().gameSettings.particleSetting;
             Level w = getTile().getWorld();
             if (particleCount == 2 || w == null) {
                 return;

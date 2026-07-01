@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -197,7 +197,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             }
             int meta = stack.getMetadata();
             if (meta > 0 && meta <= 16) {
-                pipe.setColour(EnumDyeColor.byMetadata(meta - 1));
+                pipe.setColour(DyeColor.byMetadata(meta - 1));
             }
             eventBus.fireEvent(new PipeEventPlaced(this, placer, stack));
         }

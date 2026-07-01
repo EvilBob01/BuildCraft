@@ -91,10 +91,10 @@ public class ModelHolderVariable extends ModelHolder {
         if (lookup.startsWith("~")) {
             sprite = customSprites.get(lookup.substring(1));
             if (sprite == null) {
-                sprite = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+                sprite = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
             }
         } else {
-            sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(lookup);
+            sprite = Minecraft.getInstance().getTextureMapBlocks().getAtlasSprite(lookup);
         }
         TexturedFace face = new TexturedFace();
         face.sprite = sprite;

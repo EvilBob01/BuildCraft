@@ -21,7 +21,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.enums.EnumSnapshotType;
@@ -153,7 +153,7 @@ public abstract class Snapshot {
 
     public void computeKey() {
         CompoundTag nbt = writeToNBT(this);
-        if (nbt.hasKey("key", Constants.NBT.TAG_COMPOUND)) {
+        if (nbt.hasKey("key", Tag.TAG_COMPOUND)) {
             nbt.removeTag("key");
         }
         key = new Key(key, HashUtil.computeHash(nbt));

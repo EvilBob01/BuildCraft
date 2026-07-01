@@ -29,7 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.data.NbtSquishConstants;
@@ -161,7 +161,7 @@ public class NbtSquisher {
             return readBuildCraftV1Direct(new DataInputStream(stream));
         } else if (type == TYPE_BC_1_GZIP) {
             return readBuildCraftV1Direct(new DataInputStream(new GZIPInputStream(stream)));
-        } else if (type == Constants.NBT.TAG_COMPOUND) {
+        } else if (type == Tag.TAG_COMPOUND) {
             // Assume vanilla, but reset back to the first byte as vanilla needs
             stream.reset();
             return CompressedStreamTools.read(new DataInputStream(stream));

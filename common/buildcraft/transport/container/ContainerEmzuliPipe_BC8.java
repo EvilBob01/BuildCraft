@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.EnumMap;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -70,13 +70,13 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
             this.index = index;
         }
 
-        public void setColour(EnumDyeColor colour) {
+        public void setColour(DyeColor colour) {
             sendWidgetData((buffer) -> MessageUtil.writeEnumOrNull(buffer, colour));
         }
 
         @Override
         public IMessage handleWidgetDataServer(MessageContext ctx, PacketBufferBC buffer) throws IOException {
-            EnumDyeColor colour = MessageUtil.readEnumOrNull(buffer, EnumDyeColor.class);
+            DyeColor colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
             if (colour == null) {
                 container.behaviour.slotColours.remove(index);
             } else {

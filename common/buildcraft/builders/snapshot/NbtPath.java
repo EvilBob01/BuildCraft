@@ -24,7 +24,7 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.lib.misc.NBTUtilBC;
 
@@ -166,27 +166,27 @@ public class NbtPath {
 
     public Tag get(Tag tag) {
         switch (tag.getId()) {
-            case Constants.NBT.TAG_BYTE:
+            case Tag.TAG_BYTE:
                 return get((ByteTag) tag);
-            case Constants.NBT.TAG_SHORT:
+            case Tag.TAG_SHORT:
                 return get((ShortTag) tag);
-            case Constants.NBT.TAG_INT:
+            case Tag.TAG_INT:
                 return get((IntTag) tag);
-            case Constants.NBT.TAG_LONG:
+            case Tag.TAG_LONG:
                 return get((LongTag) tag);
-            case Constants.NBT.TAG_FLOAT:
+            case Tag.TAG_FLOAT:
                 return get((FloatTag) tag);
-            case Constants.NBT.TAG_DOUBLE:
+            case Tag.TAG_DOUBLE:
                 return get((DoubleTag) tag);
-            case Constants.NBT.TAG_BYTE_ARRAY:
+            case Tag.TAG_BYTE_ARRAY:
                 return get((ByteArrayTag) tag);
-            case Constants.NBT.TAG_STRING:
+            case Tag.TAG_STRING:
                 return get((StringTag) tag);
-            case Constants.NBT.TAG_LIST:
+            case Tag.TAG_LIST:
                 return get((ListTag) tag);
-            case Constants.NBT.TAG_COMPOUND:
+            case Tag.TAG_COMPOUND:
                 return get((CompoundTag) tag);
-            case Constants.NBT.TAG_INT_ARRAY:
+            case Tag.TAG_INT_ARRAY:
                 return get((IntArrayTag) tag);
             default:
                 return NBTUtilBC.NBT_NULL;

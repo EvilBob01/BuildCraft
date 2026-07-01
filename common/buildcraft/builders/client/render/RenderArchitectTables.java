@@ -54,7 +54,7 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
             ).reversed()
         );
 
-        final boolean __STENCIL = BCBuildersConfig.enableStencil && Minecraft.getMinecraft().getFramebuffer().isStencilEnabled();
+        final boolean __STENCIL = BCBuildersConfig.enableStencil && Minecraft.getInstance().getFramebuffer().isStencilEnabled();
 
         for (AABB bb : boxes) {
             if (__STENCIL) {
@@ -108,7 +108,7 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
             }
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            Minecraft.getMinecraft().renderEngine.bindTexture(
+            Minecraft.getInstance().renderEngine.bindTexture(
                 new ResourceLocation(
                     "buildcraftbuilders",
                     "textures/blocks/scan.png"

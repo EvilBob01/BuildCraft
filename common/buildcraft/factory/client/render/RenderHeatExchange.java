@@ -89,7 +89,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             return;
         }
 
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("bc");
         profiler.startSection("heat_exchange");
 
@@ -97,7 +97,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -187,7 +187,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
 
     private static void renderFlow(Vec3 diff, Direction face, BufferBuilder bb, double s, double e, FluidStack fluid,
         int point, float partialTicks) {
-        double tickTime = Minecraft.getMinecraft().world.getTotalWorldTime();
+        double tickTime = Minecraft.getInstance().level.getTotalWorldTime();
         double offset = (tickTime + partialTicks) % 31 / 31.0;
         if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
             offset = -offset;

@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -64,7 +64,7 @@ public enum PatternParameterXZDir implements IStatementParameter {
 
     public static PatternParameterXZDir readFromNbt(CompoundTag nbt) {
         Direction dir;
-        if (nbt.hasKey("dir", Constants.NBT.TAG_ANY_NUMERIC)) {
+        if (nbt.hasKey("dir", Tag.TAG_ANY_NUMERIC)) {
             // Older versions
             int d = nbt.getByte("dir") + 2;
             dir = Direction.from2DDataValue(d);

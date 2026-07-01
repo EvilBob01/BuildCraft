@@ -13,7 +13,7 @@ import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.InteractionResult;
 
 import buildcraft.api.blocks.CustomPaintHelper;
@@ -27,13 +27,13 @@ public class VanillaPaintHandlers {
         registerDoubleTypedHandler(Blocks.HARDENED_CLAY, Blocks.STAINED_HARDENED_CLAY, BlockColored.COLOR);
     }
 
-    private static void registerDoubleTypedHandler(Block clear, Block dyed, Property<EnumDyeColor> colourProp) {
+    private static void registerDoubleTypedHandler(Block clear, Block dyed, Property<DyeColor> colourProp) {
         ICustomPaintHandler handler = createDoubleTypedPainter(clear, dyed, colourProp);
         CustomPaintHelper.INSTANCE.registerHandler(clear, handler);
         CustomPaintHelper.INSTANCE.registerHandler(dyed, handler);
     }
 
-    public static ICustomPaintHandler createDoubleTypedPainter(Block clear, Block dyed, Property<EnumDyeColor> colourProp) {
+    public static ICustomPaintHandler createDoubleTypedPainter(Block clear, Block dyed, Property<DyeColor> colourProp) {
         return (world, pos, state, hitPos, hitSide, to) -> {
             if (state.getBlock() == clear) {
                 // We are currently clear

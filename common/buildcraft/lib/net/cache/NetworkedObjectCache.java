@@ -89,7 +89,7 @@ public abstract class NetworkedObjectCache<T> {
      *         make sure that this really is the client thread. */
     public ClientView client() {
         if (DEBUG_LOG) {
-            if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
+            if (!Minecraft.getInstance().isCallingFromMinecraftThread()) {
                 throw new IllegalStateException("");
             }
         }

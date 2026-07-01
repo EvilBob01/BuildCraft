@@ -11,7 +11,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -38,14 +38,14 @@ public class ItemWire extends ItemBC_Neptune {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
-        for (EnumDyeColor color : EnumDyeColor.values()) {
+        for (DyeColor color : DyeColor.values()) {
             addVariant(variants, color.getMetadata(), color.getName());
         }
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return ColourUtil.getTextFullTooltipSpecial(EnumDyeColor.byMetadata(stack.getMetadata())) + " " + super.getItemStackDisplayName(stack);
+        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byMetadata(stack.getMetadata())) + " " + super.getItemStackDisplayName(stack);
     }
 
     @Override

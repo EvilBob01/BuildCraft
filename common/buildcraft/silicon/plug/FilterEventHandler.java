@@ -6,7 +6,7 @@
 
 package buildcraft.silicon.plug;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pipe.IPipe;
@@ -28,7 +28,7 @@ public class FilterEventHandler {
             PipePluggable neighbourPlug = neighbour.getHolder().getPluggable(side.getOpposite());
             PipePluggable atPlug = event.holder.getPluggable(side);
             if (neighbourPlug instanceof PluggableLens) {
-                EnumDyeColor colourAt = event.colour;
+                DyeColor colourAt = event.colour;
                 if (atPlug instanceof PluggableLens) {
                     PluggableLens lens = (PluggableLens) atPlug;
                     if (!lens.isFilter) {

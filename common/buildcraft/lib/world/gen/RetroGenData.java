@@ -23,7 +23,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.storage.WorldSavedData;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -45,7 +45,7 @@ public class RetroGenData extends WorldSavedData {
     public void readFromNBT(CompoundTag nbt) {
         gennedChunks.clear();
 
-        ListTag registry = nbt.getTagList("registry", Constants.NBT.TAG_STRING);
+        ListTag registry = nbt.getTagList("registry", Tag.TAG_STRING);
         String[] names = new String[registry.tagCount()];
         for (int i = 0; i < registry.tagCount(); i++) {
             names[i] = registry.getStringTagAt(i);

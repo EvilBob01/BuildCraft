@@ -125,7 +125,7 @@ public class ModelItemSimple implements IBakedModel {
         this.quads = quads == null ? ImmutableList.of() : quads;
         this.isGui3d = isGui3d;
         if (quads.isEmpty()) {
-            particle = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            particle = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
         } else {
             particle = quads.get(0).getSprite();
         }

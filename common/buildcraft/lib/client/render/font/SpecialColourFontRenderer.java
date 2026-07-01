@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 
@@ -17,8 +17,8 @@ public class SpecialColourFontRenderer extends FontRenderer {
     public static final SpecialColourFontRenderer INSTANCE = new SpecialColourFontRenderer();
 
     private SpecialColourFontRenderer() {
-        super(Minecraft.getMinecraft().gameSettings, new ResourceLocation("textures/font/ascii.png"),
-            Minecraft.getMinecraft().renderEngine, false);
+        super(Minecraft.getInstance().gameSettings, new ResourceLocation("textures/font/ascii.png"),
+            Minecraft.getInstance().renderEngine, false);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
             int thisColour = color;
             try {
                 int ord = Integer.parseInt(Character.toString(c), 16);
-                thisColour = ColourUtil.getLightHex(EnumDyeColor.byMetadata(ord));
+                thisColour = ColourUtil.getLightHex(DyeColor.byMetadata(ord));
             } catch (NumberFormatException nfe) {
                 BCLog.logger
                     .warn("[lib.font] Invalid colour string for SpecialColourFontRenderer! " + nfe.getMessage());
@@ -68,7 +68,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
     }
 
     private static FontRenderer getRealRenderer() {
-        return Minecraft.getMinecraft().fontRenderer;
+        return Minecraft.getInstance().fontRenderer;
     }
 
     // Delegate methods (To ensure we have the exact same behaviour as the normal font renderer)

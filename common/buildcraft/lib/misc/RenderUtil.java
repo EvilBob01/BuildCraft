@@ -68,13 +68,13 @@ public class RenderUtil {
 
     public static void registerBlockColour(@Nullable Block block, IBlockColor colour) {
         if (block != null) {
-            Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(colour, block);
+            Minecraft.getInstance().getBlockColors().registerBlockColorHandler(colour, block);
         }
     }
 
     public static void registerItemColour(@Nullable Item item, IItemColor colour) {
         if (item != null) {
-            Minecraft.getMinecraft().getItemColors().registerItemColorHandler(colour, item);
+            Minecraft.getInstance().getItemColors().registerItemColorHandler(colour, item);
         }
     }
 
@@ -113,7 +113,7 @@ public class RenderUtil {
     /** @return true if this thread is the main minecraft thread, used for all client side game logic and (by default)
      *         tile entity rendering. */
     public static boolean isMainRenderThread() {
-        return Minecraft.getMinecraft().isCallingFromMinecraftThread();
+        return Minecraft.getInstance().isCallingFromMinecraftThread();
     }
 
     /** @return The first unused {@link Tessellator} for the current thread that uses the given vertex format. (Unused =

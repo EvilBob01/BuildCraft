@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -30,7 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.neoforge.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -74,7 +74,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
 
     public PipeFlowItems(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        ListTag list = nbt.getTagList("items", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("items", Tag.TAG_COMPOUND);
         long tickNow = pipe.getHolder().getPipeWorld().getTotalWorldTime();
         for (int i = 0; i < list.tagCount(); i++) {
             TravellingItem item = new TravellingItem(list.getCompoundTagAt(i), tickNow);
@@ -113,7 +113,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
                 TravellingItem item = new TravellingItem(link, count);
                 item.toCenter = buffer.readBoolean();
                 item.side = buffer.readEnumValue(Direction.class);
-                item.colour = MessageUtil.readEnumOrNull(buffer, EnumDyeColor.class);
+                item.colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
                 item.timeToDest = buffer.readUnsignedShort();
                 item.tickStarted = pipe.getHolder().getPipeWorld().getTotalWorldTime() + 1;
                 item.tickFinished = item.tickStarted + item.timeToDest;
@@ -175,7 +175,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     // IFlowItems
 
     @Override
-    public int tryExtractItems(int count, Direction from, EnumDyeColor colour, IStackFilter filter, boolean simulate) {
+    public int tryExtractItems(int count, Direction from, DyeColor colour, IStackFilter filter, boolean simulate) {
         if (pipe.getHolder().getPipeWorld().isClientSide) {
             throw new IllegalStateException("Cannot extract items on the client side!");
         }
@@ -221,7 +221,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     }
 
     @Override
-    public void sendPhantomItem(ItemStack stack, Direction from, Direction to, EnumDyeColor colour) {
+    public void sendPhantomItem(ItemStack stack, Direction from, Direction to, DyeColor colour) {
         if (from == null && to == null) {
             return;
         }
@@ -518,7 +518,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
 
     @Nonnull
     @Override
-    public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, Direction from, EnumDyeColor colour,
+    public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, Direction from, DyeColor colour,
         double speed) {
         if (pipe.getHolder().getPipeWorld().isClientSide) {
             throw new IllegalStateException("Cannot inject items on the client side!");
@@ -553,7 +553,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     }
 
     @Override
-    public void insertItemsForce(@Nonnull ItemStack stack, Direction from, EnumDyeColor colour, double speed) {
+    public void insertItemsForce(@Nonnull ItemStack stack, Direction from, DyeColor colour, double speed) {
         Level world = pipe.getHolder().getPipeWorld();
         if (world.isClientSide) {
             throw new IllegalStateException("Cannot inject items on the client side!");
@@ -594,7 +594,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     }
 
     /** Used internally to split up manual insertions from controlled extractions. */
-    private void insertItemEvents(@Nonnull ItemStack toInsert, EnumDyeColor colour, double speed, Direction from) {
+    private void insertItemEvents(@Nonnull ItemStack toInsert, DyeColor colour, double speed, Direction from) {
         IPipeHolder holder = pipe.getHolder();
 
         PipeEventItem.OnInsert onInsert = new PipeEventItem.OnInsert(holder, this, colour, toInsert, from);

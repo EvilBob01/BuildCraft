@@ -22,7 +22,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.Explosion;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -79,7 +79,7 @@ public class PluggableFacade extends PipePluggable implements IFacade {
     public PluggableFacade(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
         if (nbt.hasKey("states") && !nbt.hasKey("facade")) {
-            ListTag tagStates = nbt.getTagList("states", Constants.NBT.TAG_COMPOUND);
+            ListTag tagStates = nbt.getTagList("states", Tag.TAG_COMPOUND);
             if (tagStates.tagCount() > 0) {
                 boolean isHollow = tagStates.getCompoundTagAt(0).getBoolean("isHollow");
                 CompoundTag tagFacade = new CompoundTag();
@@ -181,7 +181,7 @@ public class PluggableFacade extends PipePluggable implements IFacade {
     @OnlyIn(Dist.CLIENT)
     public int getBlockColor(int tintIndex) {
         FacadePhasedState state = states.phasedStates[activeState];
-        BlockColors colours = Minecraft.getMinecraft().getBlockColors();
+        BlockColors colours = Minecraft.getInstance().getBlockColors();
         return colours.colorMultiplier(state.stateInfo.state, holder.getPipeWorld(), holder.getPipePos(), tintIndex);
     }
 

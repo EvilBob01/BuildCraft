@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -45,16 +45,16 @@ import buildcraft.transport.statements.ActionExtractionPreset;
 public class PipeBehaviourEmzuli extends PipeBehaviourWood {
 
     public enum SlotIndex {
-        SQUARE(EnumDyeColor.RED),
-        CIRCLE(EnumDyeColor.GREEN),
-        TRIANGLE(EnumDyeColor.BLUE),
-        CROSS(EnumDyeColor.YELLOW);
+        SQUARE(DyeColor.RED),
+        CIRCLE(DyeColor.GREEN),
+        TRIANGLE(DyeColor.BLUE),
+        CROSS(DyeColor.YELLOW);
 
         public static final SlotIndex[] VALUES = values();
 
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
 
-        SlotIndex(EnumDyeColor colour) {
+        SlotIndex(DyeColor colour) {
             this.colour = colour;
         }
 
@@ -71,7 +71,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         }
     }
 
-    public final EnumMap<SlotIndex, EnumDyeColor> slotColours = new EnumMap<>(SlotIndex.class);
+    public final EnumMap<SlotIndex, DyeColor> slotColours = new EnumMap<>(SlotIndex.class);
     public final ItemHandlerSimple invFilters = new ItemHandlerSimple(4, null);
     private final EnumSet<SlotIndex> activeSlots;
     private final byte[] activatedTtl = new byte[SlotIndex.VALUES.length];
@@ -92,7 +92,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         for (SlotIndex index : SlotIndex.VALUES) {
             byte c = nbt.getByte("slotColors[" + index.ordinal() + "]");
             if (c > 0 && c <= 16) {
-                slotColours.put(index, EnumDyeColor.byMetadata(c - 1));
+                slotColours.put(index, DyeColor.byMetadata(c - 1));
             }
         }
     }
@@ -104,7 +104,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         nbt.setTag("activeSlots", NBTUtilBC.writeEnumSet(activeSlots, SlotIndex.class));
         nbt.setTag("currentSlot", NBTUtilBC.writeEnum(currentSlot));
         for (SlotIndex index : SlotIndex.VALUES) {
-            EnumDyeColor c = slotColours.get(index);
+            DyeColor c = slotColours.get(index);
             nbt.setByte("slotColors[" + index.ordinal() + "]", (byte) (c == null ? 0 : c.getMetadata() + 1));
         }
         return nbt;
@@ -115,7 +115,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         super.readPayload(buffer, side, ctx);
         if (side == Dist.CLIENT) {
             for (SlotIndex index : SlotIndex.VALUES) {
-                EnumDyeColor colour = MessageUtil.readEnumOrNull(buffer, EnumDyeColor.class);
+                DyeColor colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
                 if (colour == null) {
                     slotColours.remove(index);
                 } else {

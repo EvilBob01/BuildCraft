@@ -19,25 +19,22 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.StringUtil;
 
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
 import buildcraft.api.core.BCLog;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.misc.data.DelayedList;
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.MessageContext;
 import buildcraft.lib.net.MessageManager;
 import buildcraft.lib.net.PacketBufferBC;
 
@@ -74,22 +71,10 @@ public class MessageUtil {
     }
 
     public static void sendToAllWatching(Level worldObj, BlockPos pos, IMessage message) {
-        if (worldObj instanceof ServerLevel) {
-            ServerLevel server = (ServerLevel) worldObj;
-            PlayerChunkMapEntry playerChunkMap = server.getPlayerChunkMap().getEntry(pos.getX() >> 4, pos.getZ() >> 4);
-            if (playerChunkMap == null) {
-                // No-one was watching this chunk.
-                return;
-            }
-            // Slightly ugly hack to iterate through all players watching the chunk
-            playerChunkMap.hasPlayerMatchingInRange(0, player -> {
+        if (worldObj instanceof ServerLevel server) {
+            for (ServerPlayer player : server.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false)) {
                 MessageManager.sendTo(message, player);
-                // Always return false so that the iteration doesn't stop early
-                return false;
-            });
-            // We could just use this instead, but that requires extra packet size as we are wrapping our
-            // packet in an FML packet and sending it through the vanilla system, which is not really desired
-            // playerChunkMap.sendPacket(MessageManager.getPacketFrom(message));
+            }
         }
     }
 
@@ -166,10 +151,10 @@ public class MessageUtil {
     }
 
     public static void writeGameProfile(FriendlyByteBuf buffer, GameProfile profile) {
-        if (profile != null && profile.isComplete()) {
+        if (profile != null && profile.getId() != null && profile.getName() != null) {
             buffer.writeBoolean(true);
-            buffer.writeUniqueId(profile.getId());
-            buffer.writeString(profile.getName());
+            buffer.writeUUID(profile.getId());
+            buffer.writeUtf(profile.getName());
         } else {
             buffer.writeBoolean(false);
         }
@@ -177,63 +162,24 @@ public class MessageUtil {
 
     public static GameProfile readGameProfile(FriendlyByteBuf buffer) {
         if (buffer.readBoolean()) {
-            UUID uuid = buffer.readUniqueId();
-            String name = buffer.readString(256);
-            GameProfile profile = new GameProfile(uuid, name);
-            if (profile.isComplete()) {
-                return profile;
-            }
+            UUID uuid = buffer.readUUID();
+            String name = buffer.readUtf(256);
+            return new GameProfile(uuid, name);
         }
         return null;
     }
 
-    /** Writes a block state using the block ID and its metadata. Not suitable for full states. */
+    /** Writes a full {@link BlockState} as a single int id. Modern block states (post-1.13) no longer use
+     * metadata subtypes, so the old "block id + metadata + differing properties" encoding is unnecessary -
+     * {@link Block#BLOCK_STATE_REGISTRY} already maps every possible state to a stable int. */
     public static void writeBlockState(FriendlyByteBuf buf, BlockState state) {
-        Block block = state.getBlock();
-        buf.writeVarInt(Block.REGISTRY.getIDForObject(block));
-        int meta = block.getMetaFromState(state);
-        buf.writeByte(meta);
-        BlockState readState = block.getStateFromMeta(meta);
-        if (readState != state) {
-            buf.writeBoolean(true);
-            Map<Property, Comparable<?>> differingProperties = new HashMap<>();
-            for (Property<?> property : state.getPropertyKeys()) {
-                Comparable<?> inputValue = state.getValue(property);
-                Comparable<?> readValue = readState.getValue(property);
-                if (!inputValue.equals(readValue)) {
-                    differingProperties.put(property, inputValue);
-                }
-            }
-            buf.writeByte(differingProperties.size());
-            for (Entry<Property, Comparable<?>> entry : differingProperties.entrySet()) {
-                buf.writeString(entry.getKey().getName());
-                buf.writeString(entry.getKey().getName(entry.getValue()));
-            }
-        } else {
-            buf.writeBoolean(false);
-        }
+        buf.writeVarInt(Block.BLOCK_STATE_REGISTRY.getId(state));
     }
 
     public static BlockState readBlockState(FriendlyByteBuf buf) {
         int id = buf.readVarInt();
-        Block block = Block.REGISTRY.getObjectById(id);
-        int meta = buf.readUnsignedByte();
-        BlockState state = block.getStateFromMeta(meta);
-        if (buf.readBoolean()) {
-            int count = buf.readByte();
-            for (int p = 0; p < count; p++) {
-                String name = buf.readString(256);
-                String value = buf.readString(256);
-                Property<?> prop = state.getBlock().getBlockState().getProperty(name);
-                state = propertyReadHelper(state, value, prop);
-            }
-        }
-        return state;
-    }
-
-    private static <T extends Comparable<T>> BlockState propertyReadHelper(BlockState state, String value,
-        Property<T> prop) {
-        return state.withProperty(prop, prop.parseValue(value).orNull());
+        BlockState state = Block.BLOCK_STATE_REGISTRY.byId(id);
+        return state == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : state;
     }
 
     /** {@link FriendlyByteBuf#writeEnumValue(Enum)} can only write *actual* enum values - so not null. This method allows
@@ -282,7 +228,7 @@ public class MessageUtil {
     }
 
     public static void sendReturnMessage(MessageContext context, IMessage reply) {
-        Player player = BCLibProxy.getProxy().getPlayerForContext(context);
+        Player player = context.getPayloadContext().player();
         if (player instanceof ServerPlayer) {
             ServerPlayer playerMP = (ServerPlayer) player;
             MessageManager.sendTo(reply, playerMP);

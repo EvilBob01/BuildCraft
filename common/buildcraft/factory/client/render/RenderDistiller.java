@@ -70,7 +70,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
             return;
         }
 
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("bc");
         profiler.startSection("distiller");
 
@@ -80,7 +80,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 

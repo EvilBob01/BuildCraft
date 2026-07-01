@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -103,7 +103,7 @@ public class ItemPipeHolder extends BlockItem implements IItemBuildCraft, IItemP
         String colourComponent = "";
         int meta = stack.getMetadata();
         if (meta > 0 && meta <= 16) {
-            EnumDyeColor colour = EnumDyeColor.byMetadata(meta - 1);
+            DyeColor colour = DyeColor.byMetadata(meta - 1);
             colourComponent = ColourUtil.getTextFullTooltipSpecial(colour) + " ";
         }
         return colourComponent + super.getItemStackDisplayName(stack);

@@ -168,7 +168,7 @@ public abstract class BCLibProxy implements IGuiHandler {
         void fmlPostInit() {
             super.fmlPostInit();
             if (BCLibItems.isGuideEnabled()) {
-                IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+                IResourceManager manager = Minecraft.getInstance().getResourceManager();
                 IReloadableResourceManager reloadable = (IReloadableResourceManager) manager;
                 reloadable.registerReloadListener(GuideManager.INSTANCE);
             }
@@ -177,12 +177,12 @@ public abstract class BCLibProxy implements IGuiHandler {
 
         @Override
         public Level getClientWorld() {
-            return Minecraft.getMinecraft().world;
+            return Minecraft.getInstance().level;
         }
 
         @Override
         public Player getClientPlayer() {
-            return Minecraft.getMinecraft().player;
+            return Minecraft.getInstance().player;
         }
 
         @Override
@@ -196,7 +196,7 @@ public abstract class BCLibProxy implements IGuiHandler {
         @Override
         public void addScheduledTask(Level world, Runnable task) {
             if (world instanceof WorldClient) {
-                Minecraft.getMinecraft().addScheduledTask(task);
+                Minecraft.getInstance().addScheduledTask(task);
             } else {
                 super.addScheduledTask(world, task);
             }
@@ -207,7 +207,7 @@ public abstract class BCLibProxy implements IGuiHandler {
         public <T extends BlockEntity> T getServerTile(T tile) {
             if (tile != null && tile.hasWorld()) {
                 Level world = tile.getWorld();
-                if (world.isClientSide && Minecraft.getMinecraft().isSingleplayer()) {
+                if (world.isClientSide && Minecraft.getInstance().isSingleplayer()) {
                     ServerLevel server = DimensionManager.getWorld(world.provider.getDimension());
                     if (server == null) return tile;
                     BlockEntity atServer = server.getBlockEntity(tile.getPos());
@@ -222,13 +222,13 @@ public abstract class BCLibProxy implements IGuiHandler {
 
         @Override
         public File getGameDirectory() {
-            return Minecraft.getMinecraft().mcDataDir;
+            return Minecraft.getInstance().mcDataDir;
         }
 
         @Override
         public Iterable<File> getLoadedResourcePackFiles() {
             List<File> files = new ArrayList<>();
-            for (ResourcePackRepository.Entry entry : Minecraft.getMinecraft().getResourcePackRepository()
+            for (ResourcePackRepository.Entry entry : Minecraft.getInstance().getResourcePackRepository()
                 .getRepositoryEntries()) {
                 IResourcePack pack = entry.getResourcePack();
                 if (pack instanceof AbstractResourcePack) {
@@ -260,7 +260,7 @@ public abstract class BCLibProxy implements IGuiHandler {
 
         @Override
         public InputStream getStreamForIdentifier(ResourceLocation identifier) throws IOException {
-            return Minecraft.getMinecraft().getResourceManager().getResource(identifier).getInputStream();
+            return Minecraft.getInstance().getResourceManager().getResource(identifier).getInputStream();
         }
     }
 }

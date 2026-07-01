@@ -145,7 +145,7 @@ public enum BCBuildersEventDist {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onTickClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !Minecraft.getMinecraft().isGamePaused()) {
+        if (event.phase == TickEvent.Phase.END && !Minecraft.getInstance().isGamePaused()) {
             ClientArchitectTables.tick();
         }
     }

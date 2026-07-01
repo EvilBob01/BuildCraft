@@ -59,13 +59,13 @@ public class GuiUtil {
     /** @return The relative screen width. (Relative - changes with both the window size and the game setting "gui
      *         scale".) */
     public static int getScreenWidth() {
-        return Minecraft.getMinecraft().currentScreen.width;
+        return Minecraft.getInstance().currentScreen.width;
     }
 
     /** @return The relative screen height. (Relative - changes with both the window size and the game setting "gui
      *         scale".) */
     public static int getScreenHeight() {
-        return Minecraft.getMinecraft().currentScreen.height;
+        return Minecraft.getInstance().currentScreen.height;
     }
 
     public static IGuiArea moveRectangleToCentre(GuiRectangle area) {
@@ -115,7 +115,7 @@ public class GuiUtil {
 
     public static void drawItemStackAt(ItemStack stack, int x, int y) {
         RenderHelper.enableGUIStandardItemLighting();
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         RenderItem itemRender = mc.getRenderItem();
         itemRender.renderItemAndEffectIntoGUI(mc.player, stack, x, y);
         itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stack, x, y, null);
@@ -299,7 +299,7 @@ public class GuiUtil {
         int v = Mth.floor(textureY);
         int w = Mth.floor(width);
         int h = Mth.floor(height);
-        Gui gui = Minecraft.getMinecraft().currentScreen;
+        Gui gui = Minecraft.getInstance().currentScreen;
         gui.drawTexturedModalRect(x, y, u, v, w, h);
     }
 
@@ -385,7 +385,7 @@ public class GuiUtil {
     }
 
     private static void scissor0(double x, double y, double width, double height) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         ScaledResolution res = new ScaledResolution(mc);
         double scaleW = mc.displayWidth / res.getScaledWidth_double();
         double scaleH = mc.displayHeight / res.getScaledHeight_double();
@@ -445,7 +445,7 @@ public class GuiUtil {
     }
 
     public static List<String> getUnFormattedTooltip(ItemStack stack) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         List<String> list = stack.getTooltip(mc.player, getTooltipFlags());
         if (list.isEmpty()) {
             return Collections.singletonList(getStackDisplayName(stack));
@@ -467,7 +467,7 @@ public class GuiUtil {
     }
 
     private static ITooltipFlag getTooltipFlags() {
-        boolean adv = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
+        boolean adv = Minecraft.getInstance().gameSettings.advancedItemTooltips;
         return adv ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL;
     }
 

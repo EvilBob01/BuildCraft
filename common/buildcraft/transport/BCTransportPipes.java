@@ -8,7 +8,7 @@ package buildcraft.transport;
 
 import java.util.Arrays;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 
@@ -218,7 +218,7 @@ public class BCTransportPipes {
         obsidianItem = builder.idTex("obsidian_item").flowItem().define();
         // obsidianFluid = builder.idTex("obsidian_fluid").flowFluid().define();
 
-        EnumDyeColor[] colourArray = EnumDyeColor.values();
+        DyeColor[] colourArray = DyeColor.values();
         String[] texSuffix = new String[16];
         for (int i = 0; i < 16; i++) {
             texSuffix[i] = "_" + colourArray[i].getName();

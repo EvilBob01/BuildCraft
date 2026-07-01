@@ -32,7 +32,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.stats.StatList;
@@ -357,7 +357,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (tile == null) {
             return FULL_BLOCK_AABB;
         }
-        BlockHitResult trace = Minecraft.getMinecraft().objectMouseOver;
+        BlockHitResult trace = Minecraft.getInstance().objectMouseOver;
         if (trace == null || trace.subHit < 0 || !pos.equals(trace.getBlockPos())) {
             // Perhaps we aren't the object the mouse is over
             return FULL_BLOCK_AABB;
@@ -507,7 +507,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 );
             }
             if (wirePart != null && attachTile != null) {
-                EnumDyeColor colour = EnumDyeColor.byMetadata(held.getMetadata());
+                DyeColor colour = DyeColor.byMetadata(held.getMetadata());
                 boolean attached = attachTile.getWireManager().addPart(wirePart, colour);
                 attachTile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
                 if (attached) {
@@ -636,7 +636,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 pluggable.addDrops(toDrop, fortune);
             }
         }
-        for (EnumDyeColor color : tile.wireManager.parts.values()) {
+        for (DyeColor color : tile.wireManager.parts.values()) {
             toDrop.add(new ItemStack(BCTransportItems.wire, 1, color.getMetadata()));
         }
         Pipe pipe = tile.getPipe();
@@ -821,7 +821,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 particle.setBlockPos(pipe.getPos());
                 particle.setParticleTexture(info.sprite);
 
-                Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+                Minecraft.getInstance().effectRenderer.addEffect(particle);
             }
         }
     }
@@ -852,7 +852,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             particle.setBlockPos(pipe.getPos());
             particle.setParticleTexture(info.sprite);
 
-            Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+            Minecraft.getInstance().effectRenderer.addEffect(particle);
         }
     }
 
@@ -898,7 +898,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         } else if (6 + 6 + 1 <= p && p < 1 + 6 + 6 + 8) {
             EnumWirePart wirePart = EnumWirePart.values()[p - 6 - 6 - 1];
             aabb = wirePart.boundingBox;
-            EnumDyeColor colour = pipeHolder.getWireManager().getColorOfPart(wirePart);
+            DyeColor colour = pipeHolder.getWireManager().getColorOfPart(wirePart);
             if (colour == null) {
                 return null;
             }
@@ -906,7 +906,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         } else if (6 + 6 + 1 + 8 < p && p <= 6 + 6 + 1 + 8 + 36) {
             EnumWireBetween wireBetween = EnumWireBetween.values()[p - 6 - 6 - 1 - 8];
             aabb = wireBetween.boundingBox;
-            EnumDyeColor colour = pipeHolder.getWireManager().betweens.get(wireBetween);
+            DyeColor colour = pipeHolder.getWireManager().betweens.get(wireBetween);
             if (colour == null) {
                 return null;
             }
@@ -979,7 +979,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(Level world, BlockPos pos, ParticleManager manager) {
-        BlockHitResult hitResult = Minecraft.getMinecraft().objectMouseOver;
+        BlockHitResult hitResult = Minecraft.getInstance().objectMouseOver;
         if (hitResult == null || !pos.equals(hitResult.getBlockPos())) {
             return false;
         }
@@ -1037,7 +1037,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
     @Override
     public InteractionResult attemptPaint(
-        Level world, BlockPos pos, BlockState state, Vec3 hitPos, Direction hitSide, EnumDyeColor paintColour
+        Level world, BlockPos pos, BlockState state, Vec3 hitPos, Direction hitSide, DyeColor paintColour
     ) {
         TilePipeHolder tile = getPipe(world, pos, true);
         if (tile == null) {

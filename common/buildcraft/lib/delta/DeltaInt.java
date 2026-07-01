@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.lib.delta.DeltaManager.EnumDeltaMessage;
 import buildcraft.lib.delta.DeltaManager.EnumNetworkVisibility;
@@ -155,7 +155,7 @@ public class DeltaInt {
         staticEndValue = nbt.getInteger("static-end");
         // dynamic is calculated every tick so there is no need to read + write it
         changingEntries.clear();
-        ListTag list = nbt.getTagList("changing", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getTagList("changing", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
             CompoundTag entryNbt = list.getCompoundTagAt(i);
             long start = entryNbt.getLong("start");

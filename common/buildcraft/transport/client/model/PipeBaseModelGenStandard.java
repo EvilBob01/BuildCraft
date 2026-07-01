@@ -23,7 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.resources.ResourceLocation;
@@ -373,7 +373,7 @@ public enum PipeBaseModelGenStandard implements IPipeBaseModelGen {
 
     private static TextureAtlasSprite getSprite(TextureAtlasSprite[] array, int index) {
         if (array == null || index < 0 || index >= array.length) {
-            return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            return Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
         }
         return array[index];
     }
@@ -401,7 +401,7 @@ public enum PipeBaseModelGenStandard implements IPipeBaseModelGen {
         return bakedQuads;
     }
 
-    private static int getPipeModelColour(EnumDyeColor c) {
+    private static int getPipeModelColour(DyeColor c) {
         return 0xFF_00_00_00 | ColourUtil.swapArgbToAbgr(ColourUtil.getLightHex(c));
     }
 

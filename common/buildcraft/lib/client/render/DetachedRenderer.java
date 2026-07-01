@@ -78,8 +78,8 @@ public enum DetachedRenderer {
     }
 
     public void renderWorldLastEvent(Player player, float partialTicks) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().entityRenderer.enableLightmap();
 
         for (RenderMatrixType type : RenderMatrixType.values()) {
             List<IDetachedRenderer> rendersForType = this.renders.get(type);
@@ -91,7 +91,7 @@ public enum DetachedRenderer {
             type.glPost();
         }
 
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        Minecraft.getInstance().entityRenderer.disableLightmap();
     }
 
     public static void fromWorldOriginPre(Player player, float partialTicks) {

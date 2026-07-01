@@ -13,7 +13,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
@@ -58,7 +58,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         addVariant(variants, 0, "clean");
-        for (EnumDyeColor colour : EnumDyeColor.values()) {
+        for (DyeColor colour : DyeColor.values()) {
             addVariant(variants, colour.getMetadata() + 1, colour.getName());
         }
     }
@@ -135,10 +135,10 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
 
     /** Delegate class for handling */
     public class Brush {
-        public EnumDyeColor colour;
+        public DyeColor colour;
         public int usesLeft;
 
-        public Brush(EnumDyeColor colour) {
+        public Brush(DyeColor colour) {
             this.colour = colour;
             usesLeft = MAX_USES;
         }
@@ -146,7 +146,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         public Brush(ItemStack stack) {
             int meta = stack.getMetadata();
             if (meta > 0 && meta <= 16) {
-                colour = EnumDyeColor.byMetadata(meta - 1);
+                colour = DyeColor.byMetadata(meta - 1);
                 CompoundTag nbt = stack.getTagCompound();
                 if (nbt == null) {
                     usesLeft = MAX_USES;

@@ -75,7 +75,7 @@ public class SpriteHolderRegistry {
         if (!DEBUG) {
             return;
         }
-        TextureMap map = Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureMap map = Minecraft.getInstance().getTextureMapBlocks();
         GlStateManager.bindTexture(map.getGlTextureId());
 
         for (int l = 0; l < 4; l++) {
@@ -108,7 +108,7 @@ public class SpriteHolderRegistry {
             locations.addAll(HOLDER_MAP.keySet());
             locations.sort(Comparator.comparing(ResourceLocation::toString));
 
-            TextureAtlasSprite missing = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            TextureAtlasSprite missing = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
 
             for (ResourceLocation r : locations) {
                 SpriteHolder sprite = HOLDER_MAP.get(r);

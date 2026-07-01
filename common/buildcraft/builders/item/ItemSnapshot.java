@@ -21,7 +21,7 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -57,7 +57,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
             if (EnumItemSnapshotType.getFromStack(stack).used) {
                 CompoundTag nbt = stack.getTagCompound();
                 if (nbt != null) {
-                    if (nbt.hasKey("header", Constants.NBT.TAG_COMPOUND)) {
+                    if (nbt.hasKey("header", Tag.TAG_COMPOUND)) {
                         return new Header(nbt.getCompoundTag("header"));
                     }
                 }

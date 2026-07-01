@@ -57,7 +57,7 @@ public class ItemRenderUtil {
 
     private static final ItemEntity dummyEntityItem = new ItemEntity(null);
     private static final RenderEntityItem customItemRenderer =
-        new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()) {
+        new RenderEntityItem(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getRenderItem()) {
             @Override
             public boolean shouldSpreadItems() {
                 return false;
@@ -151,7 +151,7 @@ public class ItemRenderUtil {
         }
         dir = BCLibConfig.rotateTravelingItems.changeFacing(dir);
 
-        IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
+        IBakedModel model = Minecraft.getInstance().getRenderItem().getItemModelMesher().getItemModel(stack);
         model = model.getOverrides().handleItemState(model, stack, null, null);
         boolean requireGl = stack.hasEffect() || model.isBuiltInRenderer();
 
@@ -184,7 +184,7 @@ public class ItemRenderUtil {
                         q.rotate(Direction.SOUTH, dir, 0, 0, 0);
                         if (quad.hasTintIndex()) {
                             int colour =
-                                Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, quad.getTintIndex());
+                                Minecraft.getInstance().getItemColors().colorMultiplier(stack, quad.getTintIndex());
                             if (EntityRenderer.anaglyphEnable) {
                                 colour = TextureUtil.anaglyphColor(colour);
                             }
@@ -205,7 +205,7 @@ public class ItemRenderUtil {
 
         if (!inBatch) {
             inBatch = true;
-            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GL11.glPushMatrix();
             GL11.glTranslated(x, y, z);
             GL11.glScaled(0.3, 0.3, 0.3);
@@ -213,7 +213,7 @@ public class ItemRenderUtil {
         }
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightc % (float) 0x1_00_00,
             lightc / (float) 0x1_00_00);
-        Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
+        Minecraft.getInstance().getRenderItem().renderItem(stack, model);
     }
 
     private static void setupModelOffsetRandom(ItemStack stack) {
