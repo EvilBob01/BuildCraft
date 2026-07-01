@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 

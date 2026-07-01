@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;

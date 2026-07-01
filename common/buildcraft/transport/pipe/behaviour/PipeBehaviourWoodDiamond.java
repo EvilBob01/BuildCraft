@@ -19,7 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidTypeUtil;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 

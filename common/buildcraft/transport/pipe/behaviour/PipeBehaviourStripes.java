@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 
 import net.neoforged.neoforge.capabilities.Capability;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.BuildCraftAPI;

@@ -12,8 +12,7 @@ import java.util.EnumMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 
 import buildcraft.api.transport.pipe.IPipeHolder.PipeMessageReceiver;
 

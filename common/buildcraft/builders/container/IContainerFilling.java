@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.filler.IFillerPattern;

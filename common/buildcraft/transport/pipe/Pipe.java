@@ -23,7 +23,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.core.BlockPos;
 
 import net.neoforged.neoforge.capabilities.Capability;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

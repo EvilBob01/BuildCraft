@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.lists.ListMatchHandler;

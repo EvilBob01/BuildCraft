@@ -31,7 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.neoforge.fluids.FluidType;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;

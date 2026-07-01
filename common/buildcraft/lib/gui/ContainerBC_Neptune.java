@@ -24,7 +24,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
