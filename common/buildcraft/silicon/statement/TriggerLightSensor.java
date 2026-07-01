@@ -6,12 +6,12 @@
 
 package buildcraft.silicon.statement;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
@@ -39,8 +39,8 @@ public class TriggerLightSensor extends BCStatement implements ITriggerInternalS
     }
 
     @Override
-    public boolean isTriggerActive(EnumFacing side, IStatementContainer source, IStatementParameter[] parameters) {
-        TileEntity tile = source.getTile();
+    public boolean isTriggerActive(Direction side, IStatementContainer source, IStatementParameter[] parameters) {
+        BlockEntity tile = source.getTile();
         BlockPos pos = tile.getPos().offset(side);
         int light = tile.getWorld().getLightFromNeighbors(pos);
         return (light < 8) ^ bright;
@@ -52,7 +52,7 @@ public class TriggerLightSensor extends BCStatement implements ITriggerInternalS
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return bright ? BCSiliconSprites.TRIGGER_LIGHT_HIGH : BCSiliconSprites.TRIGGER_LIGHT_LOW;
     }

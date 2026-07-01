@@ -1,12 +1,12 @@
 package buildcraft.energy;
 
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.core.BCLog;
 
@@ -42,13 +42,13 @@ public class BCEnergyWorldGen {
         }
         if (BCCoreConfig.worldGen) {
             if (BCEnergyConfig.enableOilGeneration) {
-                MinecraftForge.EVENT_BUS.register(OilGenerator.class);
+                NeoForge.EVENT_BUS.register(OilGenerator.class);
                 BCLog.logger.info("[energy.oilgen] Registered the oil spout generator");
             } else {
                 BCLog.logger.info("[energy.oilgen] Not registering the oil spout generator, as it has been disabled by the config file.");
             }
             if (BCEnergyConfig.enableOilOceanBiome || BCEnergyConfig.enableOilDesertBiome) {
-                MinecraftForge.TERRAIN_GEN_BUS.register(new BiomeInitializer());
+                NeoForge.TERRAIN_GEN_BUS.register(new BiomeInitializer());
                 BCLog.logger.info("[energy.oilgen] Registered the oil biome initiializer");
             } else {
                 BCLog.logger.info("[energy.oilgen] Not registering the oil biome initiializer, as it has been disabled by the config file.");
@@ -59,7 +59,7 @@ public class BCEnergyWorldGen {
     }
 
     @SubscribeEvent
-    public static void registerBiomes(RegistryEvent.Register<Biome> event) {
+    public static void registerBiomes(RegisterEvent<Biome> event) {
         if (BCEnergyConfig.enableOilDesertBiome) {
             event.getRegistry().register(new BiomeOilOcean());
         }

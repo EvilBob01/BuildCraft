@@ -11,8 +11,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.statements.IAction;
@@ -37,7 +37,7 @@ public abstract class ActionWrapper extends StatementWrapper implements IActionI
         return (IAction) delegate;
     }
 
-    public static ActionWrapper wrap(IStatement statement, EnumFacing side) {
+    public static ActionWrapper wrap(IStatement statement, Direction side) {
         if (statement == null) {
             return null;
         } else if (statement instanceof ActionWrapper) {
@@ -109,7 +109,7 @@ public abstract class ActionWrapper extends StatementWrapper implements IActionI
     public static class ActionWrapperInternalSided extends ActionWrapper {
         public final IActionInternalSided action;
 
-        public ActionWrapperInternalSided(IActionInternalSided action, @Nonnull EnumFacing side) {
+        public ActionWrapperInternalSided(IActionInternalSided action, @Nonnull Direction side) {
             super(action, EnumPipePart.fromFacing(side));
             this.action = action;
         }
@@ -129,7 +129,7 @@ public abstract class ActionWrapper extends StatementWrapper implements IActionI
     public static class ActionWrapperExternal extends ActionWrapper {
         public final IActionExternal action;
 
-        public ActionWrapperExternal(IActionExternal action, @Nonnull EnumFacing side) {
+        public ActionWrapperExternal(IActionExternal action, @Nonnull Direction side) {
             super(action, EnumPipePart.fromFacing(side));
             this.action = action;
         }
@@ -141,7 +141,7 @@ public abstract class ActionWrapper extends StatementWrapper implements IActionI
                     return;
                 }
             }
-            TileEntity neighbourTile = getNeighbourTile(source);
+            BlockEntity neighbourTile = getNeighbourTile(source);
             if (neighbourTile == null) {
                 return;
             }

@@ -4,7 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.marker;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.marker.MarkerCache;
 
@@ -16,7 +16,7 @@ public class PathCache extends MarkerCache<PathSubCache> {
     }
 
     @Override
-    protected PathSubCache createSubCache(World world) {
+    protected PathSubCache createSubCache(Level world) {
         return new PathSubCache(world);
     }
 }

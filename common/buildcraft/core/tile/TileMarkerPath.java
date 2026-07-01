@@ -6,7 +6,7 @@ package buildcraft.core.tile;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.IPathProvider;
 
@@ -45,7 +45,7 @@ public class TileMarkerPath extends TileMarker<PathConnection> implements IPathP
     }
 
     public void reverseDirection() {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
         PathConnection connection = getCurrentConnection();

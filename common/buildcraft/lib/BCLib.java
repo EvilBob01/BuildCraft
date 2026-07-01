@@ -1,32 +1,26 @@
 /* Copyright (c) 2016 SpaceToad and the BuildCraft team
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib;
 
 import java.util.function.Consumer;
 
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.core.BCLog;
 
 import buildcraft.lib.block.VanillaPaintHandlers;
 import buildcraft.lib.block.VanillaRotationHandlers;
-import buildcraft.lib.chunkload.ChunkLoaderManager;
 import buildcraft.lib.command.CommandBuildCraft;
 import buildcraft.lib.expression.ExpressionDebugManager;
-import buildcraft.lib.fluid.FluidManager;
 import buildcraft.lib.list.VanillaListHandlers;
 import buildcraft.lib.marker.MarkerCache;
 import buildcraft.lib.misc.ExpressionCompat;
@@ -39,51 +33,48 @@ import buildcraft.lib.registry.TagManager.EnumTagType;
 import buildcraft.lib.registry.TagManager.TagEntry;
 import buildcraft.lib.script.ReloadableRegistryManager;
 
-//@formatter:off
-@Mod(
-    modid = BCLib.MODID,
-    name = "BuildCraft Lib",
-    version = BCLib.VERSION,
-    updateJSON = "https://mod-buildcraft.com/version/versions.json",
-    acceptedMinecraftVersions = "(gradle_replace_mcversion,)",
-    dependencies = "required-after:forge@(gradle_replace_forgeversion,);before:poweradapters@(1.0.10,)"
-)
-//@formatter:on
+@Mod(BCLib.MODID)
 public class BCLib {
     public static final String MODID = "buildcraftlib";
-    public static final String VERSION = "$version";
-    public static final String MC_VERSION = "${mcversion}";
-    public static final String GIT_BRANCH = "${git_branch}";
-    public static final String GIT_COMMIT_HASH = "${git_commit_hash}";
-    public static final String GIT_COMMIT_MSG = "${git_commit_msg}";
-    public static final String GIT_COMMIT_AUTHOR = "${git_commit_author}";
+    public static final String VERSION = "8.0.1-1.21.1";
+    public static final String MC_VERSION = "1.21.1";
+    public static final String GIT_BRANCH = "8.0.x-1.21.1-neoforge";
+    public static final String GIT_COMMIT_HASH = "unknown";
+    public static final String GIT_COMMIT_MSG = "NeoForge 1.21.1 port";
+    public static final String GIT_COMMIT_AUTHOR = "EvilBob01";
 
-    public static final boolean DEV = VERSION.startsWith("$") || Boolean.getBoolean("buildcraft.dev");
+    public static final boolean DEV = Boolean.getBoolean("buildcraft.dev");
 
-    @Instance(MODID)
     public static BCLib INSTANCE;
-
     public static ModContainer MOD_CONTAINER;
 
-    @Mod.EventHandler
-    public static void preInit(FMLPreInitializationEvent evt) {
-        MOD_CONTAINER = Loader.instance().activeModContainer();
-        try {
-            BCLog.logger.info("");
-        } catch (NoSuchFieldError e) {
-            throw throwBadClass(e, BCLog.class);
-        }
+    public BCLib(IEventBus modEventBus, ModContainer modContainer) {
+        INSTANCE = this;
+        MOD_CONTAINER = modContainer;
+
+        BCLib.logStartupInfo();
+        ExpressionDebugManager.logger = BCLog.logger::info;
+        ExpressionCompat.setup();
+
+        BCLibRegistries.init(modEventBus);
+        BCLibItems.init(modEventBus);
+
+        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::loadComplete);
+
+        NeoForge.EVENT_BUS.register(BCLibEventDist.class);
+        NeoForge.EVENT_BUS.register(MigrationManager.INSTANCE);
+        NeoForge.EVENT_BUS.addListener(this::serverStarting);
+
+        BCLibProxy.init(modEventBus);
+        BuildCraftObjectCaches.init(modEventBus);
+        MessageManager.init(modEventBus);
+    }
+
+    private static void logStartupInfo() {
         BCLog.logger.info("Starting BuildCraft " + BCLib.VERSION);
         BCLog.logger.info("Copyright (c) the BuildCraft team, 2011-2018");
         BCLog.logger.info("https://www.mod-buildcraft.com");
-        if (!GIT_COMMIT_HASH.startsWith("${")) {
-            BCLog.logger.info("Detailed Build Information:");
-            BCLog.logger.info("  Branch " + GIT_BRANCH);
-            BCLog.logger.info("  Commit " + GIT_COMMIT_HASH);
-            BCLog.logger.info("    " + GIT_COMMIT_MSG);
-            BCLog.logger.info("    committed by " + GIT_COMMIT_AUTHOR);
-        }
-        BCLog.logger.info("");
         BCLog.logger.info("Loaded Modules:");
         for (BCModules module : BCModules.VALUES) {
             if (module.isLoaded()) {
@@ -96,59 +87,35 @@ public class BCLib {
                 BCLog.logger.info("  - " + module.lowerCaseName);
             }
         }
-        BCLog.logger.info("");
+    }
 
-        ExpressionDebugManager.logger = BCLog.logger::info;
-        ExpressionCompat.setup();
+    private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            BCLibRegistries.commonSetup();
+            VanillaListHandlers.fmlInit();
+            VanillaPaintHandlers.fmlInit();
+            VanillaRotationHandlers.fmlInit();
+            RegistrationHelper.registerTagEntries();
+        });
+    }
 
-        BCLibRegistries.fmlPreInit();
-        BCLibProxy.getProxy().fmlPreInit();
-        BCLibItems.fmlPreInit();
+    private void loadComplete(FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            ReloadableRegistryManager.loadAll();
+            BuildCraftObjectCaches.fmlPostInit();
+            VanillaListHandlers.fmlPostInit();
+            MarkerCache.postInit();
+        });
+    }
 
-        BuildCraftObjectCaches.fmlPreInit();
-        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, BCLibProxy.getProxy());
-
-        MinecraftForge.EVENT_BUS.register(BCLibEventDist.class);
-        MinecraftForge.EVENT_BUS.register(MigrationManager.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(FluidManager.class);
-
-        // Set max chunk limit for quarries: 1 chunk for quarry itself and 5 * 5 chunks square for working area
-        ForgeChunkManager.getConfig().get(MODID, "maximumChunksPerTicket", 26);
-        ForgeChunkManager.syncConfigDefaults();
-        ForgeChunkManager.setForcedChunkLoadingCallback(BCLib.INSTANCE, ChunkLoaderManager::rebindTickets);
+    private void serverStarting(ServerStartingEvent event) {
+        event.getServer().getCommands().getDispatcher().register(CommandBuildCraft.register());
     }
 
     public static Error throwBadClass(Error e, Class<?> cls) throws Error {
         throw new Error(
             "Bad " + cls + " loaded from " + cls.getClassLoader() + " domain: " + cls.getProtectionDomain(), e
         );
-    }
-
-    @Mod.EventHandler
-    public static void init(FMLInitializationEvent evt) {
-        BCLibProxy.getProxy().fmlInit();
-
-        BCLibRegistries.fmlInit();
-        VanillaListHandlers.fmlInit();
-        VanillaPaintHandlers.fmlInit();
-        VanillaRotationHandlers.fmlInit();
-
-        RegistrationHelper.registerOredictEntries();
-    }
-
-    @Mod.EventHandler
-    public static void postInit(FMLPostInitializationEvent evt) {
-        ReloadableRegistryManager.loadAll();
-        BCLibProxy.getProxy().fmlPostInit();
-        BuildCraftObjectCaches.fmlPostInit();
-        VanillaListHandlers.fmlPostInit();
-        MarkerCache.postInit();
-        MessageManager.fmlPostInit();
-    }
-
-    @Mod.EventHandler
-    public static void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandBuildCraft());
     }
 
     static {

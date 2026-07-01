@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import net.minecraftforge.client.model.animation.FastTESR;
 
@@ -22,7 +22,7 @@ public abstract class RenderEngine_BC8<T extends TileEngineBase_BC8> extends Fas
 
     @Override
     public void renderTileEntityFast(@Nonnull T engine, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder vb) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("bc");
         profiler.startSection("engine");
 

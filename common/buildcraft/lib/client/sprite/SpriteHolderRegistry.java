@@ -28,12 +28,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -43,7 +43,7 @@ import buildcraft.lib.client.resource.DataMetadataSection;
 import buildcraft.lib.client.resource.MetadataLoader;
 import buildcraft.lib.misc.SpriteUtil;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class SpriteHolderRegistry {
     public static final boolean DEBUG = BCDebugging.shouldDebugLog("lib.sprite.holder");
 
@@ -75,7 +75,7 @@ public class SpriteHolderRegistry {
         if (!DEBUG) {
             return;
         }
-        TextureMap map = Minecraft.getMinecraft().getTextureMapBlocks();
+        TextureMap map = Minecraft.getInstance().getTextureMapBlocks();
         GlStateManager.bindTexture(map.getGlTextureId());
 
         for (int l = 0; l < 4; l++) {
@@ -108,7 +108,7 @@ public class SpriteHolderRegistry {
             locations.addAll(HOLDER_MAP.keySet());
             locations.sort(Comparator.comparing(ResourceLocation::toString));
 
-            TextureAtlasSprite missing = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+            TextureAtlasSprite missing = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
 
             for (ResourceLocation r : locations) {
                 SpriteHolder sprite = HOLDER_MAP.get(r);
@@ -129,7 +129,7 @@ public class SpriteHolderRegistry {
     /** Holds a reference to a {@link TextureAtlasSprite} that is automatically refreshed when the resource packs are
      * reloaded. As such you should store this in a static final field in a client-side class, and make sure that the
      * class is initialised before init. */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class SpriteHolder implements ISprite {
         public final ResourceLocation spriteLocation;
         private TextureAtlasSprite sprite;

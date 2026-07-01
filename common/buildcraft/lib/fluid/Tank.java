@@ -13,20 +13,20 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeTank;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.IFluidFilter;
 import buildcraft.api.core.IFluidHandlerAdv;
@@ -72,14 +72,14 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     /** Creates a tank with the given name and capacity (in milli buckets) with no filter set (so any fluid can go into
      * the tank) */
-    public Tank(@Nonnull String name, int capacity, TileEntity tile) {
+    public Tank(@Nonnull String name, int capacity, BlockEntity tile) {
         this(name, capacity, tile, null);
     }
 
     /** Creates a tank with the given name and capacity (in milli buckets) with the specified filter set. If the filter
      * returns true for a given fluidstack then it will be allowed in the tank. The given fluidstack will NEVER be
      * null. */
-    public Tank(@Nonnull String name, int capacity, TileEntity tile, @Nullable Predicate<FluidStack> filter) {
+    public Tank(@Nonnull String name, int capacity, BlockEntity tile, @Nullable Predicate<FluidStack> filter) {
         super(capacity);
         this.name = name;
         this.tile = tile;
@@ -115,26 +115,26 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         return fluidStack != null ? fluidStack.getFluid() : null;
     }
 
-    public NBTTagCompound serializeNBT() {
-        return writeToNBT(new NBTTagCompound());
+    public CompoundTag serializeNBT() {
+        return writeToNBT(new CompoundTag());
     }
 
     @Override
-    public final NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public final CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         writeTankToNBT(nbt);
         return nbt;
     }
 
     @Override
-    public final FluidTank readFromNBT(NBTTagCompound nbt) {
+    public final FluidTank readFromNBT(CompoundTag nbt) {
         if (nbt.hasKey(name)) {
             // Old style of saving + loading
-            NBTTagCompound tankData = nbt.getCompoundTag(name);
-            super.readFromNBT(tankData);
+            CompoundTag tankData = nbt.getCompoundTag(name);
+            super.loadAdditional(tankData);
             readTankFromNBT(tankData);
         } else {
-            super.readFromNBT(nbt);
+            super.loadAdditional(nbt);
             readTankFromNBT(nbt);
         }
         return this;
@@ -142,11 +142,11 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     /** Writes some additional information to the nbt, for example {@link SingleUseTank} will write out the filtering
      * fluid. */
-    protected void writeTankToNBT(NBTTagCompound nbt) {}
+    protected void writeTankToNBT(CompoundTag nbt) {}
 
     /** Reads some additional information to the nbt, for example {@link SingleUseTank} will read in the filtering
      * fluid. */
-    protected void readTankFromNBT(NBTTagCompound nbt) {}
+    protected void readTankFromNBT(CompoundTag nbt) {}
 
     public ToolTip getToolTip() {
         return toolTip;
@@ -159,10 +159,10 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         if (fluidStack != null && amount > 0) {
             toolTip.add(fluidStack.getLocalizedName());
         }
-        toolTip.add(TextFormatting.GRAY + LocaleUtil.localizeFluidStaticAmount(amount, getCapacity()));
+        toolTip.add(ChatFormatting.GRAY + LocaleUtil.localizeFluidStaticAmount(amount, getCapacity()));
         FluidStack serverFluid = getFluid();
         if (serverFluid != null && serverFluid.amount > 0) {
-            toolTip.add(TextFormatting.RED + "BUG: Server-side fluid on client!");
+            toolTip.add(ChatFormatting.RED + "BUG: Server-side fluid on client!");
             toolTip.add(serverFluid.getLocalizedName());
             toolTip.add(LocaleUtil.localizeFluidStaticAmount(serverFluid.amount, getCapacity()));
         }
@@ -223,7 +223,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         buffer.writeInt(getFluidAmount());
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void readFromBuffer(PacketBufferBC buffer) {
         if (buffer.readBoolean()) {
             clientFluid = BuildCraftObjectCaches.CACHE_FLUIDS.client().retrieve(buffer.readInt());
@@ -253,14 +253,14 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
     }
 
     public void onGuiClicked(ContainerBC_Neptune container) {
-        EntityPlayer player = container.player;
+        Player player = container.player;
         ItemStack held = player.inventory.getItemStack();
         if (held.isEmpty()) {
             return;
         }
         ItemStack stack = transferStackToTank(container, held);
         player.inventory.setItemStack(stack);
-        ((EntityPlayerMP) player).updateHeldItem();
+        ((ServerPlayer) player).updateHeldItem();
         player.inventoryContainer.detectAndSendChanges();
         if (player.openContainer != null) {
             player.openContainer.detectAndSendChanges();
@@ -271,10 +271,10 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
      *
      * @return The left over item after attempting to add the stack to this tank. */
     public ItemStack transferStackToTank(ContainerBC_Neptune container, ItemStack stack) {
-        EntityPlayer player = container.player;
+        Player player = container.player;
         // first try to fill this tank from the item
 
-        if (player.world.isRemote) {
+        if (player.world.isClientSide) {
             return stack;
         }
 

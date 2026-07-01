@@ -6,12 +6,12 @@
 
 package buildcraft.energy;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.fuels.BuildcraftFuelRegistry;

@@ -8,7 +8,7 @@ package buildcraft.transport.pipe.behaviour;
 
 import java.util.Arrays;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.PipeBehaviour;
@@ -21,7 +21,7 @@ public class PipeBehaviourVoid extends PipeBehaviour {
         super(pipe);
     }
 
-    public PipeBehaviourVoid(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourVoid(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 
@@ -40,7 +40,7 @@ public class PipeBehaviourVoid extends PipeBehaviour {
         */
         Arrays.fill(move.fluidEnteringCentre, 0);
         /*
-        World world = move.holder.getPipeWorld();
+        Level world = move.holder.getPipeWorld();
         BlockPos pos = move.holder.getPipePos();
         if (removed > 0 && (world.getTotalWorldTime() + pos.toLong()) % 23 == 0) {
             SoundType soundType = SoundType.SLIME;

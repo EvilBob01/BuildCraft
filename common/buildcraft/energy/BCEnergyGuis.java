@@ -6,8 +6,8 @@
 
 package buildcraft.energy;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 
 public enum BCEnergyGuis {
     ENGINE_STONE,
@@ -22,11 +22,11 @@ public enum BCEnergyGuis {
         return VALUES[id];
     }
 
-    public void openGUI(EntityPlayer player) {
+    public void openGUI(Player player) {
         player.openGui(BCEnergy.INSTANCE, ordinal(), player.getEntityWorld(), 0, 0, 0);
     }
 
-    public void openGUI(EntityPlayer player, BlockPos pos) {
+    public void openGUI(Player player, BlockPos pos) {
         player.openGui(BCEnergy.INSTANCE, ordinal(), player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
     }
 

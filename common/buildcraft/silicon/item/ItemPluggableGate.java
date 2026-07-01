@@ -14,16 +14,16 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.IItemPluggable;
 import buildcraft.api.transport.pipe.IPipeHolder;
@@ -55,12 +55,12 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
     @Nonnull
     public ItemStack getStack(GateVariant variant) {
         ItemStack stack = new ItemStack(this);
-        NBTUtilBC.getItemData(stack).setTag("gate", variant.writeToNBT());
+        NBTUtilBC.getItemData(stack).setTag("gate", variant.saveAdditional());
         return stack;
     }
 
     @Override
-    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, EnumFacing side, EntityPlayer player, EnumHand hand) {
+    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, Direction side, Player player, InteractionHand hand) {
         GateVariant variant = getVariant(stack);
         SoundUtil.playBlockPlace(holder.getPipeWorld(), holder.getPipePos(), variant.material.block.getDefaultState());
         PluggableDefinition def = BCSiliconPlugs.gate;
@@ -74,8 +74,8 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
 
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag flag) {
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
         GateVariant variant = getVariant(StackUtil.asNonNull(stack));
 
         tooltip.add(LocaleUtil.localize("gate.slots", variant.numSlots));
@@ -95,7 +95,7 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    protected void addSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         subItems.add(new ItemStack(this));
         for (EnumGateMaterial material : EnumGateMaterial.VALUES) {
             if (!material.canBeModified) {
@@ -110,7 +110,7 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         variants.put(0, new ModelResourceLocation("buildcraftsilicon:gate_item#inventory"));
     }

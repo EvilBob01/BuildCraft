@@ -9,7 +9,7 @@ package buildcraft.lib.item;
 import java.util.function.Function;
 
 import net.minecraft.item.ItemMultiTexture;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 

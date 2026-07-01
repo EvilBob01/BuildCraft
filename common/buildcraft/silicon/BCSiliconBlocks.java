@@ -6,7 +6,7 @@
 
 package buildcraft.silicon;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.api.enums.EnumLaserTableType;
 
@@ -33,7 +33,7 @@ public class BCSiliconBlocks {
     public static BlockLaserTable programmingTable;
 
     public static void preInit() {
-        laser = HELPER.addBlockAndItem(new BlockLaser(Material.IRON, "block.laser"));
+        laser = HELPER.addBlockAndItem(new BlockLaser(Block.Properties.of(), "block.laser"));
         assemblyTable = createLaserTable(EnumLaserTableType.ASSEMBLY_TABLE, "block.assembly_table");
         advancedCraftingTable = createLaserTable(EnumLaserTableType.ADVANCED_CRAFTING_TABLE, "block.advanced_crafting_table");
         integrationTable = createLaserTable(EnumLaserTableType.INTEGRATION_TABLE, "block.integration_table");
@@ -53,7 +53,7 @@ public class BCSiliconBlocks {
     }
 
     private static BlockLaserTable createLaserTable(EnumLaserTableType type, String id) {
-        BlockLaserTable block = new BlockLaserTable(type, Material.IRON, id);
+        BlockLaserTable block = new BlockLaserTable(type, Block.Properties.of(), id);
         return HELPER.addBlockAndItem(block);
     }
 }

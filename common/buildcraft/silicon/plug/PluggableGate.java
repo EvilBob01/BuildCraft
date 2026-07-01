@@ -13,21 +13,21 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.Component;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.transport.IWireEmitter;
 import buildcraft.api.transport.pipe.IPipeHolder;
@@ -66,11 +66,11 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     private static final NodeVariableObject<String> MODEL_MATERIAL;
     private static final NodeVariableObject<String> MODEL_MODIFIER;
     private static final NodeVariableObject<String> MODEL_LOGIC;
-    private static final NodeVariableObject<EnumFacing> MODEL_SIDE;
+    private static final NodeVariableObject<Direction> MODEL_SIDE;
     private static final NodeVariableBoolean MODEL_IS_ON;
     public static final ContextInfo MODEL_VAR_INFO;
 
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     private static final ResourceLocation ADVANCEMENT_PLACE_GATE
         = new ResourceLocation("buildcrafttransport:pipe_logic");
@@ -91,18 +91,18 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
         double min = 5 / 16.0;
         double max = 11 / 16.0;
 
-        BOXES[EnumFacing.DOWN.getIndex()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.getIndex()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.getIndex()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.getIndex()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.getIndex()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.getIndex()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.getIndex()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.getIndex()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.getIndex()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.getIndex()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.getIndex()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
 
         MODEL_FUNC_CTX_STATIC = DefaultContexts.createWithAll();
         MODEL_MATERIAL = MODEL_FUNC_CTX_STATIC.putVariableString("material");
         MODEL_MODIFIER = MODEL_FUNC_CTX_STATIC.putVariableString("modifier");
         MODEL_LOGIC = MODEL_FUNC_CTX_STATIC.putVariableString("logic");
-        MODEL_SIDE = MODEL_FUNC_CTX_STATIC.putVariableObject("side", EnumFacing.class);
+        MODEL_SIDE = MODEL_FUNC_CTX_STATIC.putVariableObject("side", Direction.class);
 
         MODEL_FUNC_CTX_DYNAMIC = new FunctionContext(MODEL_FUNC_CTX_STATIC);
         MODEL_IS_ON = MODEL_FUNC_CTX_DYNAMIC.putVariableBoolean("on");
@@ -126,10 +126,10 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
         infoLogic.possibleValues
             .addAll(Arrays.stream(EnumGateLogic.VALUES).map(m -> m.tag).collect(Collectors.toList()));
 
-        VariableInfoObject<EnumFacing> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
+        VariableInfoObject<Direction> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
         infoSide.cacheType = CacheType.ALWAYS;
         infoSide.setIsComplete = true;
-        Collections.addAll(infoSide.possibleValues, EnumFacing.VALUES);
+        Collections.addAll(infoSide.possibleValues, Direction.VALUES);
 
         VariableInfoBoolean infoIsOn = MODEL_VAR_INFO.createInfoBoolean(MODEL_IS_ON);
         infoIsOn.cacheType = CacheType.ALWAYS;
@@ -139,34 +139,34 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
 
     // Manual constructor (called by the specific item pluggable gate code)
 
-    public PluggableGate(PluggableDefinition def, IPipeHolder holder, EnumFacing side, GateVariant variant) {
+    public PluggableGate(PluggableDefinition def, IPipeHolder holder, Direction side, GateVariant variant) {
         super(def, holder, side);
         logic = new GateLogic(this, variant);
     }
 
     // Saving + Loading
 
-    public PluggableGate(PluggableDefinition def, IPipeHolder holder, EnumFacing side, NBTTagCompound nbt) {
+    public PluggableGate(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
         logic = new GateLogic(this, nbt.getCompoundTag("data"));
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setTag("data", logic.writeToNbt());
         return nbt;
     }
 
     // Networking
 
-    public PluggableGate(PluggableDefinition def, IPipeHolder holder, EnumFacing side, PacketBuffer buffer) {
+    public PluggableGate(PluggableDefinition def, IPipeHolder holder, Direction side, FriendlyByteBuf buffer) {
         super(def, holder, side);
         logic = new GateLogic(this, PacketBufferBC.asPacketBufferBc(buffer));
     }
 
     @Override
-    public void writeCreationPayload(PacketBuffer buffer) {
+    public void writeCreationPayload(FriendlyByteBuf buffer) {
         logic.writeCreationToBuf(PacketBufferBC.asPacketBufferBc(buffer));
     }
 
@@ -191,19 +191,19 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public void writePayload(PacketBuffer buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Side side) {
         throw new Error("All messages must have an ID, and we can't just write a payload directly!");
     }
 
     @Override
-    public void readPayload(PacketBuffer b, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf b, Side side, MessageContext ctx) throws IOException {
         logic.readPayload(PacketBufferBC.asPacketBufferBc(b), side, ctx);
     }
 
     // PipePluggable
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.getIndex()];
     }
 
@@ -226,9 +226,9 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public void onPlacedBy(EntityPlayer player) {
+    public void onPlacedBy(Player player) {
         super.onPlacedBy(player);
-        if (!holder.getPipeWorld().isRemote) {
+        if (!holder.getPipeWorld().isClientSide) {
             AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_PLACE_GATE);
             if (logic.variant.numActionArgs >= 1) {
                 AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_PLACE_ADV_GATE);
@@ -237,8 +237,8 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public boolean onPluggableActivate(EntityPlayer player, RayTraceResult trace, float hitX, float hitY, float hitZ) {
-        if (!player.world.isRemote) {
+    public boolean onPluggableActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ) {
+        if (!player.world.isClientSide) {
             if (interactWithCopier(player, player.getHeldItemMainhand())) {
                 return true;
             }
@@ -252,12 +252,12 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
         return true;
     }
 
-    private boolean interactWithCopier(EntityPlayer player, ItemStack stack) {
+    private boolean interactWithCopier(Player player, ItemStack stack) {
         if (!(stack.getItem() instanceof ItemGateCopier)) {
             return false;
         }
 
-        NBTTagCompound stored = ItemGateCopier.getCopiedGateData(stack);
+        CompoundTag stored = ItemGateCopier.getCopiedGateData(stack);
 
         if (stored != null) {
 
@@ -282,12 +282,12 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public boolean isEmitting(EnumDyeColor colour) {
+    public boolean isEmitting(DyeColor colour) {
         return logic.isEmitting(colour);
     }
 
     @Override
-    public void emitWire(EnumDyeColor colour) {
+    public void emitWire(DyeColor colour) {
         logic.emitWire(colour);
     }
 
@@ -296,19 +296,19 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     @Override
     public void onTick() {
         logic.onTick();
-        if (holder.getPipeWorld().isRemote) {
+        if (holder.getPipeWorld().isClientSide) {
             clientModelData.tick();
         }
     }
 
     @Override
-    public boolean canConnectToRedstone(@Nullable EnumFacing to) {
+    public boolean canConnectToRedstone(@Nullable Direction to) {
         return true;
     }
 
     // Model
 
-    public static void setClientModelVariables(EnumFacing side, GateVariant variant) {
+    public static void setClientModelVariables(Direction side, GateVariant variant) {
         MODEL_SIDE.value = side;
         MODEL_MATERIAL.value = variant.material.tag;
         MODEL_MODIFIER.value = variant.modifier.tag;

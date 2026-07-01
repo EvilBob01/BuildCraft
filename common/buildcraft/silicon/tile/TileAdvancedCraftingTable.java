@@ -11,11 +11,11 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.MjAPI;
@@ -54,13 +54,13 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
 
     @Override
     public long getTarget() {
-        return world.isRemote ? POWER_REQ : crafting.canCraft() ? POWER_REQ : 0;
+        return world.isClientSide ? POWER_REQ : crafting.canCraft() ? POWER_REQ : 0;
     }
 
     @Override
     public void update() {
         super.update();
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
         boolean didChange = crafting.tick();
@@ -81,7 +81,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_GUI_DATA) {
                 resultClient = buffer.readItemStack();
             }
@@ -91,7 +91,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_DATA) {
                 buffer.writeItemStack(crafting.getAssumedResult());
             }

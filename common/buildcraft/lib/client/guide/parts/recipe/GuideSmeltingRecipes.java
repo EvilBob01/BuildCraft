@@ -17,12 +17,12 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
 import buildcraft.lib.misc.StackUtil;

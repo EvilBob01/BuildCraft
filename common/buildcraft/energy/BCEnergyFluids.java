@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.material.MapColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.BCModules;
 
@@ -113,7 +113,6 @@ public class BCEnergyFluids {
         def.setMapColour(getMapColor(texDark));
         def.setFlammable(flammable);
         def.setHeat(heat);
-        def.setUnlocalizedName(name);
         def.setTemperature(300 + 20 * heat);
         def.setViscosity(tempAdjustedViscosity);
         def.setDensity(boilAdjustedDensity);

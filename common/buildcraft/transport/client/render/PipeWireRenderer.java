@@ -22,14 +22,14 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.transport.EnumWirePart;
@@ -45,14 +45,14 @@ import buildcraft.lib.misc.VecUtil;
 import buildcraft.transport.tile.TilePipeHolder;
 import buildcraft.transport.wire.EnumWireBetween;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class PipeWireRenderer {
 
     private static final Map<EnumWirePart, MutableQuad[]> partQuads = new EnumMap<>(EnumWirePart.class);
     private static final Map<EnumWireBetween, MutableQuad[]> betweenQuads = new EnumMap<>(EnumWireBetween.class);
 
-    private static final Map<EnumDyeColor, SpriteHolderRegistry.SpriteHolder> wireSprites =
-        new EnumMap<>(EnumDyeColor.class);
+    private static final Map<DyeColor, SpriteHolderRegistry.SpriteHolder> wireSprites =
+        new EnumMap<>(DyeColor.class);
     private static final int[] wireRenderingCache =
         new int[(EnumWireBetween.VALUES.length + EnumWirePart.VALUES.length) * ColourUtil.COLOURS.length * 2];
 
@@ -61,7 +61,7 @@ public class PipeWireRenderer {
     static {
         Arrays.fill(wireRenderingCache, -1);
 
-        for (EnumDyeColor color : EnumDyeColor.values()) {
+        for (DyeColor color : DyeColor.values()) {
             wireSprites.put(color, SpriteHolderRegistry.getHolder("buildcrafttransport:wires/" + color.getName()));
         }
 
@@ -77,7 +77,7 @@ public class PipeWireRenderer {
         Arrays.fill(wireRenderingCache, -1);
     }
 
-    public static SpriteHolderRegistry.SpriteHolder getWireSprite(EnumDyeColor colour) {
+    public static SpriteHolderRegistry.SpriteHolder getWireSprite(DyeColor colour) {
         return wireSprites.get(colour);
     }
 
@@ -96,13 +96,13 @@ public class PipeWireRenderer {
         uvs.maxU = (off + 1) / 16f;
         uvs.minV = 0;
         uvs.maxV = 1 / 16f;
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             quads[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
         }
         return quads;
     }
 
-    private static int func(EnumFacing.AxisDirection dir) {
+    private static int func(Direction.AxisDirection dir) {
         return dir == AxisDirection.POSITIVE ? 1 : 0;
     }
 
@@ -112,8 +112,8 @@ public class PipeWireRenderer {
 
         int i = 0;
 
-        Vec3d center;
-        Vec3d radius;
+        Vec3 center;
+        Vec3 radius;
 
         boolean ax = between.mainAxis == Axis.X;
         boolean ay = between.mainAxis == Axis.Y;
@@ -122,14 +122,14 @@ public class PipeWireRenderer {
         if (between.to == null) {
             double cL = 0.5f - 4.51f / 16f;
             double cU = 0.5f + 4.51f / 16f;
-            center = new Vec3d(//
+            center = new Vec3(//
                 ax ? 0.5f : (between.xy ? cU : cL), //
                 ay ? 0.5f : ((ax ? between.xy : between.yz) ? cU : cL), //
                 az ? 0.5f : (between.yz ? cU : cL) //
             );
             double rC = 4.01f / 16f;
             double rN = 1f / 16f / 2;
-            radius = new Vec3d(//
+            radius = new Vec3(//
                 ax ? rC : rN, //
                 ay ? rC : rN, //
                 az ? rC : rN //
@@ -137,12 +137,12 @@ public class PipeWireRenderer {
         } else {// we are a connection
             double cL = (8 - 4.51) / 16;
             double cU = (8 + 4.51) / 16;
-            radius = new Vec3d(//
+            radius = new Vec3(//
                 ax ? 2.99 / 32 : 1 / 32.0, //
                 ay ? 2.99 / 32 : 1 / 32.0, //
                 az ? 2.99 / 32 : 1 / 32.0 //
             );
-            center = new Vec3d(//
+            center = new Vec3(//
                 ax ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetX()) : (between.xy ? cU : cL), //
                 ay ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetY()) : ((ax ? between.xy : between.yz) ? cU : cL), //
                 az ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetZ()) : (between.yz ? cU : cL) //
@@ -158,7 +158,7 @@ public class PipeWireRenderer {
         Tuple3f centerFloat = VecUtil.convertFloat(center);
         Tuple3f radiusFloat = VecUtil.convertFloat(radius);
 
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (face.getAxis() == between.mainAxis) {
                 continue;
             }
@@ -182,8 +182,8 @@ public class PipeWireRenderer {
                 if (fAxis == Axis.Y) {
                     rotations = 1;
                 }
-                swapU = face == EnumFacing.DOWN;
-                swapV = face != EnumFacing.EAST;
+                swapU = face == Direction.DOWN;
+                swapV = face != Direction.EAST;
             }
 
             if (swapU) {
@@ -212,7 +212,7 @@ public class PipeWireRenderer {
 
         float vOffset = (level & 0xF) / 16f;
         for (MutableQuad q : quads) {
-            if (q.getFace() != EnumFacing.UP && level != 15) {
+            if (q.getFace() != Direction.UP && level != 15) {
                 q = new MutableQuad(q);
                 float shade = 1 - q.getCalculatedDiffuse();
                 shade = shade * (15 - level) / 15;
@@ -236,7 +236,7 @@ public class PipeWireRenderer {
         bb.endVertex();
     }
 
-    private static int compileQuads(MutableQuad[] quads, EnumDyeColor colour, boolean isOn) {
+    private static int compileQuads(MutableQuad[] quads, DyeColor colour, boolean isOn) {
         int index = GlStateManager.glGenLists(1);
         GlStateManager.glNewList(index, GL11.GL_COMPILE);
 
@@ -252,19 +252,19 @@ public class PipeWireRenderer {
         return index;
     }
 
-    private static int getIndex(EnumWirePart part, EnumDyeColor colour, boolean isOn) {
+    private static int getIndex(EnumWirePart part, DyeColor colour, boolean isOn) {
         return part.ordinal() * 32 + colour.ordinal() * 2 + (isOn ? 1 : 0);
     }
 
-    private static int getIndex(EnumWireBetween bet, EnumDyeColor colour, boolean isOn) {
+    private static int getIndex(EnumWireBetween bet, DyeColor colour, boolean isOn) {
         return WIRE_COUNT + bet.ordinal() * 32 + colour.ordinal() * 2 + (isOn ? 1 : 0);
     }
 
-    private static int compileWire(EnumWirePart part, EnumDyeColor colour, boolean isOn) {
+    private static int compileWire(EnumWirePart part, DyeColor colour, boolean isOn) {
         return compileQuads(getQuads(part), colour, isOn);
     }
 
-    private static int compileWire(EnumWireBetween between, EnumDyeColor colour, boolean isOn) {
+    private static int compileWire(EnumWireBetween between, DyeColor colour, boolean isOn) {
         return compileQuads(getQuads(between), colour, isOn);
     }
 
@@ -275,9 +275,9 @@ public class PipeWireRenderer {
         RenderHelper.disableStandardItemLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
-        for (Map.Entry<EnumWirePart, EnumDyeColor> partColor : pipe.getWireManager().parts.entrySet()) {
+        for (Map.Entry<EnumWirePart, DyeColor> partColor : pipe.getWireManager().parts.entrySet()) {
             EnumWirePart part = partColor.getKey();
-            EnumDyeColor color = partColor.getValue();
+            DyeColor color = partColor.getValue();
             boolean isOn = pipe.wireManager.isPowered(part);
             int idx = getIndex(part, color, isOn);
             if (wireRenderingCache[idx] == -1) {
@@ -286,9 +286,9 @@ public class PipeWireRenderer {
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isOn ? 240 : blockLight, skyLight);
             GlStateManager.callList(wireRenderingCache[idx]);
         }
-        for (Map.Entry<EnumWireBetween, EnumDyeColor> betweenColor : pipe.getWireManager().betweens.entrySet()) {
+        for (Map.Entry<EnumWireBetween, DyeColor> betweenColor : pipe.getWireManager().betweens.entrySet()) {
             EnumWireBetween between = betweenColor.getKey();
-            EnumDyeColor color = betweenColor.getValue();
+            DyeColor color = betweenColor.getValue();
             boolean isOn = pipe.wireManager.isPowered(between.parts[0]);
             int idx = getIndex(between, color, isOn);
             if (wireRenderingCache[idx] == -1) {

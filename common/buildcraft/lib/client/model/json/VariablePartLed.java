@@ -8,7 +8,7 @@ package buildcraft.lib.client.model.json;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.model.ModelLoader;
 
@@ -31,7 +31,7 @@ public class VariablePartLed extends VariablePartCuboidBase {
     }
 
     @Override
-    protected VariableFaceData getFaceData(EnumFacing side, ITextureGetter spriteLookup) {
+    protected VariableFaceData getFaceData(Direction side, ITextureGetter spriteLookup) {
         FACE_DATA.uvs.minU = 1 / 16.0f;
         FACE_DATA.uvs.minV = 2 / 16.0f;
         FACE_DATA.uvs.maxU = 1 / 16.0f;

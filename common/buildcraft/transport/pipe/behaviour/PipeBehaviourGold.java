@@ -6,7 +6,7 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.PipeBehaviour;
@@ -21,7 +21,7 @@ public class PipeBehaviourGold extends PipeBehaviour {
         super(pipe);
     }
 
-    public PipeBehaviourGold(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourGold(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 

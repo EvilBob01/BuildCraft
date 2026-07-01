@@ -6,7 +6,7 @@
 
 package buildcraft.builders.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -14,7 +14,7 @@ import buildcraft.lib.gui.slot.SlotBase;
 import buildcraft.builders.tile.TileReplacer;
 
 public class ContainerReplacer extends ContainerBCTile<TileReplacer> {
-    public ContainerReplacer(EntityPlayer player, TileReplacer tile) {
+    public ContainerReplacer(Player player, TileReplacer tile) {
         super(player, tile);
 
         addSlotToContainer(new SlotBase(tile.invSnapshot, 0, 8, 115));

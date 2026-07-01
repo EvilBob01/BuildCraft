@@ -4,8 +4,8 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.properties.Property;
 
 import buildcraft.api.enums.EnumEngineType;
 import buildcraft.api.properties.BuildCraftProperties;
@@ -20,7 +20,7 @@ public class BlockEngine_BC8 extends BlockEngineBase_BC8<EnumEngineType> {
     }
 
     @Override
-    public IProperty<EnumEngineType> getEngineProperty() {
+    public Property<EnumEngineType> getEngineProperty() {
         return BuildCraftProperties.ENGINE_TYPE;
     }
 

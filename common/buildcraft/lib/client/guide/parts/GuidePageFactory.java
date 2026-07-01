@@ -6,13 +6,13 @@
 
 package buildcraft.lib.client.guide.parts;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.guide.GuiGuide;
 
 @FunctionalInterface
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface GuidePageFactory extends GuidePartFactory {
     @Override
     GuidePageBase createNew(GuiGuide gui);

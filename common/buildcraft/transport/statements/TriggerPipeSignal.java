@@ -8,7 +8,7 @@ package buildcraft.transport.statements;
 
 import java.util.Locale;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
 import buildcraft.api.gates.IGate;
 import buildcraft.api.statements.IStatement;
@@ -29,9 +29,9 @@ import buildcraft.transport.BCTransportStatements;
 public class TriggerPipeSignal extends BCStatement implements ITriggerInternal {
 
     private final boolean active;
-    private final EnumDyeColor colour;
+    private final DyeColor colour;
 
-    public TriggerPipeSignal(boolean active, EnumDyeColor colour) {
+    public TriggerPipeSignal(boolean active, DyeColor colour) {
         super(
             "buildcraft:pipe.wire.input." + colour.getName().toLowerCase(Locale.ROOT)
                 + (active ? ".active" : ".inactive"), //
@@ -42,7 +42,7 @@ public class TriggerPipeSignal extends BCStatement implements ITriggerInternal {
         this.colour = colour;
     }
 
-    public static boolean doesGateHaveColour(IGate gate, EnumDyeColor c) {
+    public static boolean doesGateHaveColour(IGate gate, DyeColor c) {
         // FIXME: replace with a check to wires.hasWire(colour)!
         return gate.getPipeHolder().getWireManager().hasPartOfColor(c);
     }

@@ -6,7 +6,7 @@
 
 package buildcraft.builders;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.filler.FillerManager;
 import buildcraft.api.template.TemplateApi;

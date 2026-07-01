@@ -11,8 +11,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 
 public class FakeChunkProvider implements IChunkProvider {
@@ -25,7 +25,7 @@ public class FakeChunkProvider implements IChunkProvider {
 
     @Nullable
     @Override
-    public Chunk getLoadedChunk(int x, int z) {
+    public LevelChunk getLoadedChunk(int x, int z) {
         ChunkPos chunkPos = new ChunkPos(x, z);
         if (!chunks.containsKey(chunkPos)) {
             chunks.put(chunkPos, new Chunk(world, x, z) {
@@ -38,7 +38,7 @@ public class FakeChunkProvider implements IChunkProvider {
     }
 
     @Override
-    public Chunk provideChunk(int x, int z) {
+    public LevelChunk provideChunk(int x, int z) {
         return getLoadedChunk(x, z);
     }
 

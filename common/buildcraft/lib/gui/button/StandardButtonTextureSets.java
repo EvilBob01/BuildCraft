@@ -6,7 +6,7 @@
 
 package buildcraft.lib.gui.button;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public enum StandardButtonTextureSets implements IButtonTextureSet {
     LARGE_BUTTON(0, 0, 20, 200),

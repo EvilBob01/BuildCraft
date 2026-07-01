@@ -9,9 +9,9 @@ package buildcraft.transport.gui;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -51,7 +51,7 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
         PAINT_BUTTON_BUILDER.active = enabled.offset(0, 20);
     }
 
-    public GuiEmzuliPipe_BC8(EntityPlayer player, PipeBehaviourEmzuli behaviour) {
+    public GuiEmzuliPipe_BC8(Player player, PipeBehaviourEmzuli behaviour) {
         super(new ContainerEmzuliPipe_BC8(player, behaviour));
         xSize = SIZE_X;
         ySize = SIZE_Y;
@@ -67,14 +67,14 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
     }
 
     private void addButton(SlotIndex index, int x, int y) {
-        Supplier<EnumDyeColor> getter = () -> container.behaviour.slotColours.get(index);
-        Consumer<EnumDyeColor> setter = c -> container.paintWidgets.get(index).setColour(c);
+        Supplier<DyeColor> getter = () -> container.behaviour.slotColours.get(index);
+        Consumer<DyeColor> setter = c -> container.paintWidgets.get(index).setColour(c);
 
         IGuiPosition elem = mainGui.rootElement.offset(x, y);
         GuiButtonDrawable button = new GuiButtonDrawable(mainGui, index.name(), elem, PAINT_BUTTON_BUILDER);
         button.registerListener((b, key) -> {
-            final EnumDyeColor old = getter.get();
-            EnumDyeColor nColour;
+            final DyeColor old = getter.get();
+            DyeColor nColour;
             switch (key) {
                 case 0: {
                     nColour = ColourUtil.getNextOrNull(old);
@@ -99,7 +99,7 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
         // Button paintbrush
         IGuiArea area = new GuiRectangle(20, 20).offset(elem);
         ISimpleDrawable paintIcon = (px, py) -> {
-            EnumDyeColor colour = getter.get();
+            DyeColor colour = getter.get();
             if (colour == null) {
                 ICON_NO_PAINT.drawAt(px + 2, py + 2);
             } else {
@@ -109,7 +109,7 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
         };
         mainGui.shownElements.add(new GuiElementDrawable(mainGui, area, paintIcon, false));
         ITooltipElement tooltips = list -> {
-            EnumDyeColor colour = getter.get();
+            DyeColor colour = getter.get();
             String line;
             if (colour == null) {
                 line = LocaleUtil.localize("gui.pipes.emzuli.nopaint");

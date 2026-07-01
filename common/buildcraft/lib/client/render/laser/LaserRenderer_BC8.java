@@ -19,18 +19,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.render.laser.LaserData_BC8.LaserType;
 import buildcraft.lib.misc.SpriteUtil;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class LaserRenderer_BC8 {
     private static final Map<LaserType, CompiledLaserType> COMPILED_LASER_TYPES = new HashMap<>();
     private static final LoadingCache<LaserData_BC8, LaserCompiledList> COMPILED_STATIC_LASERS;
@@ -98,7 +98,7 @@ public class LaserRenderer_BC8 {
     }
 
     public static int computeLightmap(double x, double y, double z, int minBlockLight) {
-        World world = Minecraft.getMinecraft().world;
+        Level world = Minecraft.getInstance().level;
         if (world == null) return 0;
         int blockLight =
             minBlockLight >= 15 ? 15 : Math.max(minBlockLight, getLightFor(world, EnumSkyBlock.BLOCK, x, y, z));
@@ -106,7 +106,7 @@ public class LaserRenderer_BC8 {
         return skyLight << 20 | blockLight << 4;
     }
 
-    private static int getLightFor(World world, EnumSkyBlock type, double x, double y, double z) {
+    private static int getLightFor(Level world, EnumSkyBlock type, double x, double y, double z) {
         int max = 0;
         int count = 0;
         int sum = 0;
@@ -148,7 +148,7 @@ public class LaserRenderer_BC8 {
     }
 
     public static void renderLaserStatic(LaserData_BC8 data) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("compute");
         LaserCompiledList compiled = COMPILED_STATIC_LASERS.getUnchecked(data);
         profiler.endStartSection("render");
@@ -159,7 +159,7 @@ public class LaserRenderer_BC8 {
 
     /** Assumes the buffer uses {@link DefaultVertexFormats#BLOCK} */
     public static void renderLaserDynamic(LaserData_BC8 data, BufferBuilder buffer) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("compute");
         LaserCompiledBuffer compiled = COMPILED_DYNAMIC_LASERS.getUnchecked(data);
         profiler.endStartSection("render");

@@ -18,7 +18,7 @@ import com.google.gson.JsonParseException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
 
@@ -131,7 +131,7 @@ public class ModelHolderStatic extends ModelHolder {
     }
 
     private MutableQuad[] bakePart(JsonModelPart[] a) {
-        TextureAtlasSprite missingSprite = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        TextureAtlasSprite missingSprite = Minecraft.getInstance().getTextureMapBlocks().getMissingSprite();
         List<MutableQuad> list = new ArrayList<>();
         for (JsonModelPart part : a) {
             for (JsonQuad quad : part.quads) {
@@ -154,7 +154,7 @@ public class ModelHolderStatic extends ModelHolder {
                         sprite = missingSprite;
                     }
                 } else {
-                    sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(lookup);
+                    sprite = Minecraft.getInstance().getTextureMapBlocks().getAtlasSprite(lookup);
                 }
                 list.add(quad.toQuad(sprite));
             }

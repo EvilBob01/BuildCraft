@@ -21,22 +21,22 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NBTPrimitive;
-import net.minecraft.nbt.NBTTagByteArray;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.BuildCraftAPI;
 import buildcraft.api.core.EnumPipePart;
@@ -55,13 +55,13 @@ import buildcraft.factory.BCFactoryBlocks;
 import buildcraft.factory.block.BlockFloodGate;
 
 public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebuggable {
-    private static final EnumFacing[] SEARCH_NORMAL = new EnumFacing[] { //
-        EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.SOUTH, //
-        EnumFacing.WEST, EnumFacing.EAST //
+    private static final Direction[] SEARCH_NORMAL = new Direction[] { //
+        Direction.DOWN, Direction.NORTH, Direction.SOUTH, //
+        Direction.WEST, Direction.EAST //
     };
-    private static final EnumFacing[] SEARCH_GASEOUS = new EnumFacing[] { //
-        EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, //
-        EnumFacing.WEST, EnumFacing.EAST //
+    private static final Direction[] SEARCH_GASEOUS = new Direction[] { //
+        Direction.UP, Direction.NORTH, Direction.SOUTH, //
+        Direction.WEST, Direction.EAST //
     };
 
     private static final ResourceLocation ADVANCEMENT_FLOOD_SINGLE = new ResourceLocation(
@@ -71,7 +71,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     private static final int[] REBUILD_DELAYS = { 16, 32, 64, 128, 256 };
 
     private final Tank tank = new Tank("tank", 2 * Fluid.BUCKET_VOLUME, this);
-    public final Set<EnumFacing> openSides = EnumSet.copyOf(BlockFloodGate.CONNECTED_MAP.keySet());
+    public final Set<Direction> openSides = EnumSet.copyOf(BlockFloodGate.CONNECTED_MAP.keySet());
     public final Deque<BlockPos> queue = new ArrayDeque<>();
     private final Map<BlockPos, List<BlockPos>> paths = new HashMap<>();
     private int delayIndex = 0;
@@ -98,12 +98,12 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
         Set<BlockPos> checked = new HashSet<>();
         checked.add(pos);
         List<BlockPos> nextPosesToCheck = new ArrayList<>();
-        for (EnumFacing face : openSides) {
+        for (Direction face : openSides) {
             BlockPos offset = pos.offset(face);
             nextPosesToCheck.add(offset);
             paths.put(offset, ImmutableList.of(offset));
         }
-        EnumFacing[] directions = fluid.getFluid().isGaseous(fluid) ? SEARCH_GASEOUS : SEARCH_NORMAL;
+        Direction[] directions = fluid.getFluid().isGaseous(fluid) ? SEARCH_GASEOUS : SEARCH_NORMAL;
         world.profiler.endStartSection("build");
         outer: while (!nextPosesToCheck.isEmpty()) {
             List<BlockPos> nextPosesToCheckCopy = new ArrayList<>(nextPosesToCheck);
@@ -121,7 +121,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                             }
                         }
                         List<BlockPos> checkPath = paths.get(toCheck);
-                        for (EnumFacing side : directions) {
+                        for (Direction side : directions) {
                             BlockPos next = toCheck.offset(side);
                             if (checked.contains(next)) {
                                 continue;
@@ -168,7 +168,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
 
     @Override
     public void update() {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
 
@@ -197,10 +197,10 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                     }
                     if (canFill && canFill(currentPos)) {
                         FakePlayer fakePlayer =
-                            BuildCraftAPI.fakePlayerProvider.getFakePlayer((WorldServer) world, getOwner(), currentPos);
+                            BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) world, getOwner(), currentPos);
                         if (FluidUtil.tryPlaceFluid(fakePlayer, world, currentPos, tank, fluid)) {
                             AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_FLOOD_SINGLE);
-                            for (EnumFacing side : EnumFacing.VALUES) {
+                            for (Direction side : Direction.VALUES) {
                                 world.notifyNeighborsOfStateChange(currentPos.offset(side), BCFactoryBlocks.floodGate,
                                     false);
                             }
@@ -224,10 +224,10 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     // NBT
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         byte b = 0;
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             if (openSides.contains(face)) {
                 b |= 1 << face.getIndex();
             }
@@ -237,23 +237,23 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        NBTBase open = nbt.getTag("openSides");
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        Tag open = nbt.getTag("openSides");
         if (open instanceof NBTPrimitive) {
             byte sides = ((NBTPrimitive) open).getByte();
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 if (((sides >> face.getIndex()) & 1) == 1) {
                     openSides.add(face);
                 } else {
                     openSides.remove(face);
                 }
             }
-        } else if (open instanceof NBTTagByteArray) {
+        } else if (open instanceof ByteArrayTag) {
             // Legacy: 7.99.7 and before
-            byte[] bytes = ((NBTTagByteArray) open).getByteArray();
+            byte[] bytes = ((ByteArrayTag) open).getByteArray();
             BitSet bitSet = BitSet.valueOf(bytes);
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 if (bitSet.get(face.getIndex())) {
                     openSides.add(face);
                 } else {
@@ -268,10 +268,10 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 // tank.writeToBuffer(buffer);
-                MessageUtil.writeEnumSet(buffer, openSides, EnumFacing.class);
+                MessageUtil.writeEnumSet(buffer, openSides, Direction.class);
             }
         }
     }
@@ -279,10 +279,10 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 // tank.readFromBuffer(buffer);
-                EnumSet<EnumFacing> _new = MessageUtil.readEnumSet(buffer, EnumFacing.class);
+                EnumSet<Direction> _new = MessageUtil.readEnumSet(buffer, Direction.class);
                 if (!_new.equals(openSides)) {
                     openSides.clear();
                     openSides.addAll(_new);
@@ -295,7 +295,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     // IDebuggable
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("fluid = " + tank.getDebugString());
         left.add("open sides = " + openSides.stream().map(Enum::name).collect(Collectors.joining(", ")));
         left.add("delay = " + getCurrentDelay());

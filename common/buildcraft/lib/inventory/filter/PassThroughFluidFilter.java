@@ -6,7 +6,7 @@
 
 package buildcraft.lib.inventory.filter;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.core.IFluidFilter;
 

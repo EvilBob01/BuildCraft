@@ -6,16 +6,16 @@
 
 package buildcraft.energy;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.energy.client.gui.GuiDynamoMJ;
 import buildcraft.energy.client.gui.GuiEngineIron_BC8;
@@ -50,16 +50,16 @@ public abstract class BCEnergyProxy implements IGuiHandler {
     public void fmlPostInit() {}
 
     @Override
-    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
     @Override
-    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int id, Player player, Level world, int x, int y, int z) {
         BCEnergyGuis gui = BCEnergyGuis.get(id);
         if (gui == null) return null;
         BlockPos pos = new BlockPos(x, y, z);
-        TileEntity tile = world.getTileEntity(pos);
+        BlockEntity tile = world.getBlockEntity(pos);
         switch (gui) {
             case ENGINE_STONE:
                 if (tile instanceof TileEngineStone_BC8) {
@@ -89,7 +89,7 @@ public abstract class BCEnergyProxy implements IGuiHandler {
         }
     }
 
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCEnergyProxy {
         @Override
         public void fmlPreInit() {
@@ -98,7 +98,7 @@ public abstract class BCEnergyProxy implements IGuiHandler {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCEnergyProxy {
         @Override
         public void fmlPreInit() {
@@ -118,11 +118,11 @@ public abstract class BCEnergyProxy implements IGuiHandler {
         }
 
         @Override
-        public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
             BCEnergyGuis gui = BCEnergyGuis.get(id);
             if (gui == null) return null;
             BlockPos pos = new BlockPos(x, y, z);
-            TileEntity tile = world.getTileEntity(pos);
+            BlockEntity tile = world.getBlockEntity(pos);
             switch (gui) {
                 case ENGINE_STONE:
                     if (tile instanceof TileEngineStone_BC8) {

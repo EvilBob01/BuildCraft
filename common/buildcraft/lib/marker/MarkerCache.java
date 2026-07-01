@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.fml.common.ModContainer;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -38,7 +38,7 @@ public abstract class MarkerCache<S extends MarkerSubCache<?>> {
         if (Loader.instance().hasReachedState(LoaderState.POSTINITIALIZATION)) {
             throw new IllegalStateException("Registered too late!");
         }
-        ModContainer mod = Loader.instance().activeModContainer();
+        ModContainer mod = ModList.get().getModContainerById(BCLib.MODID).orElse(null);
         if (mod == null) {
             throw new IllegalStateException("Tried to register a cache without an active mod!");
         }
@@ -59,29 +59,29 @@ public abstract class MarkerCache<S extends MarkerSubCache<?>> {
         }
     }
 
-    public static void onPlayerJoinWorld(EntityPlayerMP player) {
+    public static void onPlayerJoinWorld(ServerPlayer player) {
         for (MarkerCache<?> cache : CACHES) {
-            World world = player.world;
+            Level world = player.world;
             cache.getSubCache(world).onPlayerJoinWorld(player);
         }
     }
 
-    public static void onWorldUnload(World world) {
+    public static void onWorldUnload(Level world) {
         for (MarkerCache<?> cache : CACHES) {
             cache.onWorldUnloadImpl(world);
         }
     }
 
-    private void onWorldUnloadImpl(World world) {
-        Map<Integer, S> cache = world.isRemote ? cacheClient : cacheServer;
+    private void onWorldUnloadImpl(Level world) {
+        Map<Integer, S> cache = world.isClientSide ? cacheClient : cacheServer;
         Integer key = world.provider.getDimension();
         cache.remove(key);
     }
 
-    protected abstract S createSubCache(World world);
+    protected abstract S createSubCache(Level world);
 
-    public S getSubCache(World world) {
-        Map<Integer, S> cache = world.isRemote ? cacheClient : cacheServer;
+    public S getSubCache(Level world) {
+        Map<Integer, S> cache = world.isClientSide ? cacheClient : cacheServer;
         Integer key = world.provider.getDimension();
         return cache.computeIfAbsent(key, k -> createSubCache(world));
     }

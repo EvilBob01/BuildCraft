@@ -9,7 +9,7 @@ package buildcraft.lib.client.guide.parts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.GuideManager;
@@ -30,7 +30,7 @@ public abstract class GuidePartItem extends GuidePart {
     protected void drawItemStack(ItemStack stack, int x, int y) {
         if (stack != null && !stack.isEmpty()) {
             GlStateManager.color(1, 1, 1);
-            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
             gui.mc.getRenderItem().renderItemIntoGUI(stack, x, y);
             gui.mc.getRenderItem().renderItemOverlays(fr, stack, x, y);
             if (STACK_RECT.offset(x, y).contains(gui.mouse)) {

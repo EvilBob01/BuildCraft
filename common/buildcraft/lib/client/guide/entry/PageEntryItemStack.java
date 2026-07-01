@@ -11,15 +11,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.core.BCLog;
@@ -80,7 +80,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
         }
 
         for (Item item : ForgeRegistries.ITEMS) {
-            ResourceLocation regName = item.getRegistryName();
+            ResourceLocation regName = item.builtInRegistryHolder().key().location();
             if (regName == null || (limitDomains && !domains.contains(regName.getResourceDomain()))) {
                 continue;
             }
@@ -89,7 +89,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
             }
             NonNullList<ItemStack> stacks = NonNullList.create();
             prof.startSection("search");
-            item.getSubItems(CreativeTabs.SEARCH, stacks);
+            item.getSubItems(CreativeModeTab.SEARCH, stacks);
             prof.endStartSection("itr_search");
             if (stacks.size() > 200) {
                 // Likely a "super-item" which is constructed from a different registry
@@ -110,7 +110,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                     consumer.addChild(TAGS, PageLinkItemStack.create(false, stack, prof));
                 } catch (RuntimeException e) {
                     throw new Error(
-                        "Failed to create a page link for " + item.getRegistryName() + " " + item.getClass() + " ("
+                        "Failed to create a page link for " + item.builtInRegistryHolder().key().location() + " " + item.getClass() + " ("
                             + stack.serializeNBT() + ")", e
                     );
                 }

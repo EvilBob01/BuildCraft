@@ -9,7 +9,7 @@ package buildcraft.energy.generation;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.gen.layer.GenLayer;
 
 import net.minecraftforge.common.BiomeDictionary;

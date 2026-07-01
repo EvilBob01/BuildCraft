@@ -5,7 +5,7 @@
 package buildcraft.transport.container;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -15,7 +15,7 @@ import buildcraft.transport.BCTransportSprites;
 import buildcraft.transport.tile.TileFilteredBuffer;
 
 public class ContainerFilteredBuffer_BC8 extends ContainerBCTile<TileFilteredBuffer> {
-    public ContainerFilteredBuffer_BC8(EntityPlayer player, TileFilteredBuffer tile) {
+    public ContainerFilteredBuffer_BC8(Player player, TileFilteredBuffer tile) {
         super(player, tile);
         addFullPlayerInventory(86);
 

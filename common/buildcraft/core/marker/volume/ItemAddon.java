@@ -8,12 +8,12 @@ package buildcraft.core.marker.volume;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.item.ItemBC_Neptune;
 
@@ -26,9 +26,9 @@ public abstract class ItemAddon extends ItemBC_Neptune {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        if (world.isRemote) {
-            return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
+    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+        if (world.isClientSide) {
+            return new ActionResult<>(InteractionResult.PASS, player.getHeldItem(hand));
         }
 
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
@@ -45,12 +45,12 @@ public abstract class ItemAddon extends ItemBC_Neptune {
                     addon.volumeBox = volumeBox;
                     volumeBox.addons.put(slot, addon);
                     volumeBox.addons.get(slot).onAdded();
-                    volumeBoxes.markDirty();
-                    return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+                    volumeBoxes.setChanged();
+                    return new ActionResult<>(InteractionResult.SUCCESS, player.getHeldItem(hand));
                 }
             }
         }
 
-        return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
+        return new ActionResult<>(InteractionResult.PASS, player.getHeldItem(hand));
     }
 }

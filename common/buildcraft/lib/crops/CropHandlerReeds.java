@@ -6,17 +6,17 @@
 
 package buildcraft.lib.crops;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.crops.CropManager;
 import buildcraft.api.crops.ICropHandler;
@@ -31,24 +31,24 @@ public enum CropHandlerReeds implements ICropHandler {
     }
 
     @Override
-    public boolean canSustainPlant(World world, ItemStack seed, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+    public boolean canSustainPlant(Level world, ItemStack seed, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        return block.canSustainPlant(state, world, pos, EnumFacing.UP, Blocks.REEDS) && block != Blocks.REEDS && world.isAirBlock(pos.up());
+        return block.canSustainPlant(state, world, pos, Direction.UP, Blocks.REEDS) && block != Blocks.REEDS && world.isAirBlock(pos.up());
     }
 
     @Override
-    public boolean plantCrop(World world, EntityPlayer player, ItemStack seed, BlockPos pos) {
+    public boolean plantCrop(Level world, Player player, ItemStack seed, BlockPos pos) {
         return CropManager.getDefaultHandler().plantCrop(world, player, seed, pos);
     }
 
     @Override
-    public boolean isMature(IBlockAccess access, IBlockState state, BlockPos pos) {
+    public boolean isMature(BlockGetter access, BlockState state, BlockPos pos) {
         return false;
     }
 
     @Override
-    public boolean harvestCrop(World world, BlockPos pos, NonNullList<ItemStack> drops) {
+    public boolean harvestCrop(Level world, BlockPos pos, NonNullList<ItemStack> drops) {
         return false;
     }
 }

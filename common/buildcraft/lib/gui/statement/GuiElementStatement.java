@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.statements.IStatement;
 

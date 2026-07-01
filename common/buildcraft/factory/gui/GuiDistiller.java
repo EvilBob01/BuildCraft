@@ -9,9 +9,9 @@ package buildcraft.factory.gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.IRefineryRecipeManager.IDistillationRecipe;

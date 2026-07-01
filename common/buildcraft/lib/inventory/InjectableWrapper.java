@@ -8,8 +8,8 @@ package buildcraft.lib.inventory;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 
 import buildcraft.api.core.IStackFilter;
@@ -20,9 +20,9 @@ import buildcraft.lib.misc.StackUtil;
 
 public class InjectableWrapper implements IItemTransactor {
     private final IInjectable injectable;
-    private final EnumFacing from;
+    private final Direction from;
 
-    public InjectableWrapper(IInjectable injectable, EnumFacing facing) {
+    public InjectableWrapper(IInjectable injectable, Direction facing) {
         this.injectable = injectable;
         this.from = facing;
     }

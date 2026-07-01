@@ -6,7 +6,7 @@
 
 package buildcraft.silicon.gui;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 

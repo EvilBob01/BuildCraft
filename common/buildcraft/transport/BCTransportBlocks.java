@@ -6,7 +6,7 @@
 
 package buildcraft.transport;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.lib.registry.RegistrationHelper;
 
@@ -22,8 +22,8 @@ public class BCTransportBlocks {
     public static BlockPipeHolder pipeHolder;
 
     public static void preInit() {
-        filteredBuffer = HELPER.addBlockAndItem(new BlockFilteredBuffer(Material.IRON, "block.filtered_buffer"));
-        pipeHolder = HELPER.addBlock(new BlockPipeHolder(Material.IRON, "block.pipe_holder"));
+        filteredBuffer = HELPER.addBlockAndItem(new BlockFilteredBuffer(Block.Properties.of(), "block.filtered_buffer"));
+        pipeHolder = HELPER.addBlock(new BlockPipeHolder(Block.Properties.of(), "block.pipe_holder"));
 
         HELPER.registerTile(TileFilteredBuffer.class, "tile.filtered_buffer");
         HELPER.registerTile(TilePipeHolder.class, "tile.pipe_holder");

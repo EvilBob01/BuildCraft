@@ -3,7 +3,7 @@ package buildcraft.lib.client.guide.entry;
 import com.google.gson.JsonObject;
 
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.guide.data.JsonTypeTags;
 import buildcraft.lib.misc.JsonUtil;

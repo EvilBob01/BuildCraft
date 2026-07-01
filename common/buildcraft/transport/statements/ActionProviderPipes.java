@@ -11,9 +11,9 @@ import java.util.Collections;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.gates.IGate;
 import buildcraft.api.statements.IActionExternal;
@@ -43,7 +43,7 @@ public enum ActionProviderPipes implements IActionProvider {
             holder.fireEvent(new PipeEventStatement.AddActionInternal(holder, actions));
 
             if (container instanceof IWireEmitter) {
-                for (EnumDyeColor colour : ColourUtil.COLOURS) {
+                for (DyeColor colour : ColourUtil.COLOURS) {
                     if (TriggerPipeSignal.doesGateHaveColour(gate, colour)) {
                         actions.add(BCTransportStatements.ACTION_PIPE_SIGNAL[colour.ordinal()]);
                     }
@@ -74,7 +74,7 @@ public enum ActionProviderPipes implements IActionProvider {
 
     @Override
     public void addInternalSidedActions(
-        Collection<IActionInternalSided> actions, IStatementContainer container, @Nonnull EnumFacing side
+        Collection<IActionInternalSided> actions, IStatementContainer container, @Nonnull Direction side
     ) {
         if (container instanceof IGate) {
             IGate gate = (IGate) container;
@@ -84,7 +84,7 @@ public enum ActionProviderPipes implements IActionProvider {
     }
 
     @Override
-    public void addExternalActions(Collection<IActionExternal> actions, @Nonnull EnumFacing side, TileEntity tile) {
+    public void addExternalActions(Collection<IActionExternal> actions, @Nonnull Direction side, BlockEntity tile) {
 
     }
 }

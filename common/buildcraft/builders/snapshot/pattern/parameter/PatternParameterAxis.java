@@ -10,10 +10,10 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.statements.IStatement;
@@ -31,13 +31,13 @@ public enum PatternParameterAxis implements IStatementParameter {
     Y(Axis.Y),
     Z(Axis.Z);
 
-    public final EnumFacing.Axis axis;
+    public final Direction.Axis axis;
 
     PatternParameterAxis(Axis axis) {
         this.axis = axis;
     }
 
-    public static PatternParameterAxis readFromNbt(NBTTagCompound nbt) {
+    public static PatternParameterAxis readFromNbt(CompoundTag nbt) {
         byte ord = nbt.getByte("a");
         if (ord <= 0) {
             return X;
@@ -76,7 +76,7 @@ public enum PatternParameterAxis implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         nbt.setByte("a", (byte) ordinal());
     }
 

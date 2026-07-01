@@ -8,8 +8,8 @@ package buildcraft.silicon.gate;
 
 import java.util.Objects;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import buildcraft.lib.misc.LocaleUtil;
 import buildcraft.lib.misc.StringUtilBC;
@@ -32,7 +32,7 @@ public class GateVariant {
         this.hash = Objects.hash(logic, material, modifier);
     }
 
-    public GateVariant(NBTTagCompound nbt) {
+    public GateVariant(CompoundTag nbt) {
         this.logic = EnumGateLogic.getByOrdinal(nbt.getByte("logic"));
         this.material = EnumGateMaterial.getByOrdinal(nbt.getByte("material"));
         this.modifier = EnumGateModifier.getByOrdinal(nbt.getByte("modifier"));
@@ -42,15 +42,15 @@ public class GateVariant {
         this.hash = Objects.hash(logic, material, modifier);
     }
 
-    public NBTTagCompound writeToNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setByte("logic", (byte) logic.ordinal());
         nbt.setByte("material", (byte) material.ordinal());
         nbt.setByte("modifier", (byte) modifier.ordinal());
         return nbt;
     }
 
-    public GateVariant(PacketBuffer buffer) {
+    public GateVariant(FriendlyByteBuf buffer) {
         this.logic = EnumGateLogic.getByOrdinal(buffer.readUnsignedByte());
         this.material = EnumGateMaterial.getByOrdinal(buffer.readUnsignedByte());
         this.modifier = EnumGateModifier.getByOrdinal(buffer.readUnsignedByte());
@@ -60,7 +60,7 @@ public class GateVariant {
         this.hash = Objects.hash(logic, material, modifier);
     }
 
-    public void writeToBuffer(PacketBuffer buffer) {
+    public void writeToBuffer(FriendlyByteBuf buffer) {
         buffer.writeByte(logic.ordinal());
         buffer.writeByte(material.ordinal());
         buffer.writeByte(modifier.ordinal());

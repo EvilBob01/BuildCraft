@@ -9,7 +9,7 @@ package buildcraft.lib.client.reload;
 import java.util.EnumSet;
 import java.util.Set;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ReloadUtil {
     /** Searches the given set for all of the {@link SourceType}'s that have been reloaded as the specified location

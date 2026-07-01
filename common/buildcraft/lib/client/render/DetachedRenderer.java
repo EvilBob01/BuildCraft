@@ -15,15 +15,15 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /** Dispatches "detached renderer elements" - rendering that does not require a specific tile or entity in the world
  * (perhaps held item HUD elements) */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum DetachedRenderer {
     INSTANCE;
 
@@ -40,7 +40,7 @@ public enum DetachedRenderer {
         }
 
         @Override
-        public void glPre(EntityPlayer clientPlayer, float partialTicks) {
+        public void glPre(Player clientPlayer, float partialTicks) {
             if (pre != null) pre.glPre(clientPlayer, partialTicks);
         }
 
@@ -52,7 +52,7 @@ public enum DetachedRenderer {
 
     @FunctionalInterface
     public interface IGlPre {
-        void glPre(EntityPlayer clientPlayer, float partialTicks);
+        void glPre(Player clientPlayer, float partialTicks);
     }
 
     @FunctionalInterface
@@ -62,7 +62,7 @@ public enum DetachedRenderer {
 
     @FunctionalInterface
     public interface IDetachedRenderer {
-        void render(EntityPlayer player, float partialTicks);
+        void render(Player player, float partialTicks);
     }
 
     private final Map<RenderMatrixType, List<IDetachedRenderer>> renders = new EnumMap<>(RenderMatrixType.class);
@@ -77,9 +77,9 @@ public enum DetachedRenderer {
         renders.get(type).add(renderer);
     }
 
-    public void renderWorldLastEvent(EntityPlayer player, float partialTicks) {
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
+    public void renderWorldLastEvent(Player player, float partialTicks) {
+        Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().entityRenderer.enableLightmap();
 
         for (RenderMatrixType type : RenderMatrixType.values()) {
             List<IDetachedRenderer> rendersForType = this.renders.get(type);
@@ -91,13 +91,13 @@ public enum DetachedRenderer {
             type.glPost();
         }
 
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        Minecraft.getInstance().entityRenderer.disableLightmap();
     }
 
-    public static void fromWorldOriginPre(EntityPlayer player, float partialTicks) {
+    public static void fromWorldOriginPre(Player player, float partialTicks) {
         GL11.glPushMatrix();
 
-        Vec3d diff = new Vec3d(0, 0, 0);
+        Vec3 diff = new Vec3(0, 0, 0);
         diff = diff.subtract(player.getPositionEyes(partialTicks));
         diff = diff.addVector(0, player.getEyeHeight(), 0);
         GL11.glTranslated(diff.x, diff.y, diff.z);

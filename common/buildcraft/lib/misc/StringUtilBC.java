@@ -15,12 +15,12 @@ import java.util.function.Function;
 
 import com.google.common.base.Splitter;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Vec3i;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public final class StringUtilBC {
 
@@ -36,18 +36,18 @@ public final class StringUtilBC {
     }
 
     /** Formats a string to be displayed on a white background (for example a book background), replacing any
-     * close-to-white colours with darker variants. Replaces instances of {@link TextFormatting} values. */
+     * close-to-white colours with darker variants. Replaces instances of {@link ChatFormatting} values. */
     public static String formatStringForWhite(String string) {
         return formatStringImpl(string, ColourUtil.getTextFormatForWhite);
     }
 
     /** Formats a string to be displayed on a black background (for example an item tooltip), replacing any
-     * close-to-white colours with darker variants. Replaces instances of {@link TextFormatting} values. */
+     * close-to-white colours with darker variants. Replaces instances of {@link ChatFormatting} values. */
     public static String formatStringForBlack(String string) {
         return formatStringImpl(string, ColourUtil.getTextFormatForBlack);
     }
 
-    private static String formatStringImpl(String string, Function<TextFormatting, TextFormatting> fn) {
+    private static String formatStringImpl(String string, Function<ChatFormatting, ChatFormatting> fn) {
         /*
          * FIXME: Normal usage (changing an item's text from onBlack to onWhite) has the disadvantage that colours will
          * be changed to onBlack FIRST, and then onWhite, which means that BLACK will be changed to GRAY despite BLACK
@@ -61,11 +61,11 @@ public final class StringUtilBC {
             if (c == '\u00a7' & string.length() > i + 2) {// \u00a7 - § - the control char used by text formatting
                 i++;
                 char after = string.charAt(i);
-                TextFormatting colour = null;
+                ChatFormatting colour = null;
                 if (after >= '0' & after <= '9') {
-                    colour = TextFormatting.fromColorIndex(after - '0');
+                    colour = ChatFormatting.fromColorIndex(after - '0');
                 } else if (after >= 'a' & after <= 'f') {
-                    colour = TextFormatting.fromColorIndex(after - 'a' + 10);
+                    colour = ChatFormatting.fromColorIndex(after - 'a' + 10);
                 }
                 if (colour == null) {
                     out.append(c);
@@ -102,7 +102,7 @@ public final class StringUtilBC {
     }
 
     // Displaying objects
-    public static String vec3ToDispString(Vec3d vec) {
+    public static String vec3ToDispString(Vec3 vec) {
         if (vec == null) {
             return "null";
         }

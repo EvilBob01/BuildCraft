@@ -6,10 +6,10 @@
 
 package buildcraft.silicon.plug;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pipe.PipeEventHandler;
@@ -24,7 +24,7 @@ import buildcraft.silicon.client.model.key.KeyPlugTimer;
 
 public class PluggableTimer extends PipePluggable {
 
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     static {
         double ll = 2 / 16.0;
@@ -35,22 +35,22 @@ public class PluggableTimer extends PipePluggable {
         double min = 5 / 16.0;
         double max = 11 / 16.0;
 
-        BOXES[EnumFacing.DOWN.ordinal()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.ordinal()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.ordinal()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.ordinal()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.ordinal()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.ordinal()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.ordinal()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.ordinal()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.ordinal()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.ordinal()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.ordinal()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.ordinal()] = new AABB(ul, min, min, uu, max, max);
     }
 
-    public PluggableTimer(PluggableDefinition definition, IPipeHolder holder, EnumFacing side) {
+    public PluggableTimer(PluggableDefinition definition, IPipeHolder holder, Direction side) {
         super(definition, holder, side);
     }
 
     // PipePluggable
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.ordinal()];
     }
 

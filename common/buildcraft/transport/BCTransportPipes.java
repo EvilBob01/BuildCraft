@@ -8,9 +8,9 @@ package buildcraft.transport;
 
 import java.util.Arrays;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.transport.pipe.PipeApi;
 import buildcraft.api.transport.pipe.PipeDefinition;
@@ -171,7 +171,7 @@ public class BCTransportPipes {
         String[] diamondTextureSuffixes = new String[8];
         diamondTextureSuffixes[0] = "";
         diamondTextureSuffixes[7] = "_itemstack";
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             diamondTextureSuffixes[face.ordinal() + 1] = "_" + face.getName();
         }
 
@@ -218,7 +218,7 @@ public class BCTransportPipes {
         obsidianItem = builder.idTex("obsidian_item").flowItem().define();
         // obsidianFluid = builder.idTex("obsidian_fluid").flowFluid().define();
 
-        EnumDyeColor[] colourArray = EnumDyeColor.values();
+        DyeColor[] colourArray = DyeColor.values();
         String[] texSuffix = new String[16];
         for (int i = 0; i < 16; i++) {
             texSuffix[i] = "_" + colourArray[i].getName();

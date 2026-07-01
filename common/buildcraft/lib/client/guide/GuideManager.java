@@ -28,10 +28,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.Language;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -120,7 +120,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
     }
 
     public void reload() {
-        reload(Minecraft.getMinecraft().getResourceManager());
+        reload(Minecraft.getInstance().getResourceManager());
     }
 
     private void reload(IResourceManager resourceManager) {
@@ -182,7 +182,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         pages.clear();
 
         prof.endStartSection("load_lang");
-        Language currentLanguage = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
+        Language currentLanguage = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
         String langCode;
         if (currentLanguage == null) {
             BCLog.logger.warn("Current language was null!");

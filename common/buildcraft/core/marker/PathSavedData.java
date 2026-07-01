@@ -6,7 +6,7 @@ package buildcraft.core.marker;
 
 import java.util.List;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.lib.marker.MarkerSavedData;
 

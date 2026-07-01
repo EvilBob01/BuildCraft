@@ -9,10 +9,9 @@ package buildcraft.lib.gui.widget;
 import java.io.IOException;
 import java.util.List;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.fluid.Tank;
 import buildcraft.lib.gui.BuildCraftGui;
@@ -47,7 +46,7 @@ public class WidgetFluidTank extends Widget_Neptune<ContainerBC_Neptune> {
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IGuiElement createGuiElement(BuildCraftGui gui, IGuiArea area, GuiIcon overlay) {
         return new GuiElementFluidTank(gui, area, overlay);
     }

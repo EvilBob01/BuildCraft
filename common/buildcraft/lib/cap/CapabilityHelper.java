@@ -17,10 +17,10 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 
 import buildcraft.api.core.EnumPipePart;
 
@@ -35,7 +35,7 @@ public class CapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    private Map<Capability<?>, Supplier<?>> getCapMap(EnumFacing facing) {
+    private Map<Capability<?>, Supplier<?>> getCapMap(Direction facing) {
         return caps.get(EnumPipePart.fromFacing(facing));
     }
 
@@ -53,7 +53,7 @@ public class CapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    public <T> void addCapability(@Nullable Capability<T> cap, Function<EnumFacing, T> getter, EnumPipePart... parts) {
+    public <T> void addCapability(@Nullable Capability<T> cap, Function<Direction, T> getter, EnumPipePart... parts) {
         if (cap == null) {
             return;
         }
@@ -70,13 +70,13 @@ public class CapabilityHelper implements ICapabilityProvider {
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
         Map<Capability<?>, Supplier<?>> capMap = getCapMap(facing);
         Supplier<?> supplier = capMap.get(capability);
         if (supplier != null) {

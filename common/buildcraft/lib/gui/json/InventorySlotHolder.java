@@ -7,7 +7,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class InventorySlotHolder {

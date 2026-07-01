@@ -6,7 +6,7 @@
 
 package buildcraft.lib.gui.button;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ButtonTextureSet implements IButtonTextureSet {
     private final ResourceLocation texture;

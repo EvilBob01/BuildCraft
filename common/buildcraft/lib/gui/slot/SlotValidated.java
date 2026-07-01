@@ -8,7 +8,7 @@ package buildcraft.lib.gui.slot;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class SlotValidated extends Slot {
 

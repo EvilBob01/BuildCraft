@@ -19,12 +19,12 @@ import com.google.common.primitives.Bytes;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ITickable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.data.NbtSquishConstants;
@@ -112,7 +112,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     public void update() {
         deltaManager.tick();
 
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
 
@@ -165,7 +165,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 buffer.writeBoolean(selected != null);
                 if (selected != null) {
@@ -181,7 +181,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                         snapshot.key = new Snapshot.Key(snapshot.key, header);
                         buffer.writeBoolean(true);
                         NbtSquisher.squish(
-                            Snapshot.writeToNBT(snapshot),
+                            Snapshot.saveAdditional(snapshot),
                             NbtSquishConstants.BUILDCRAFT_V1_COMPRESSED,
                             buffer
                         );
@@ -201,7 +201,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 if (buffer.readBoolean()) {
                     selected = new Snapshot.Key(buffer);
@@ -211,7 +211,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
             }
             if (id == NET_DOWN) {
                 if (buffer.readBoolean()) {
-                    Snapshot snapshot = Snapshot.readFromNBT(NbtSquisher.expand(buffer));
+                    Snapshot snapshot = Snapshot.loadAdditional(NbtSquisher.expand(buffer));
                     snapshot.computeKey();
                     GlobalSavedDataSnapshots.get(world).addSnapshot(snapshot);
                 }
@@ -256,7 +256,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                             }
                         }) {
                             NbtSquisher.squish(
-                                Snapshot.writeToNBT(snapshot),
+                                Snapshot.saveAdditional(snapshot),
                                 NbtSquishConstants.BUILDCRAFT_V1_COMPRESSED,
                                 outputStream
                             );
@@ -265,7 +265,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                 }
             }
         }
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_UP) {
                 UUID playerId = buffer.readUniqueId();
                 Snapshot.Key key = new Snapshot.Key(buffer);
@@ -274,7 +274,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                 upSnapshotsParts.computeIfAbsent(pair, localPair -> new ArrayList<>()).add(buffer.readByteArray());
                 if (last && upSnapshotsParts.containsKey(pair)) {
                     try {
-                        Snapshot snapshot = Snapshot.readFromNBT(
+                        Snapshot snapshot = Snapshot.loadAdditional(
                             NbtSquisher.expand(
                                 Bytes.concat(
                                     upSnapshotsParts.get(pair)

@@ -4,8 +4,8 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.silicon;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 
 public enum BCSiliconGuis {
     ASSEMBLY_TABLE,
@@ -13,15 +13,15 @@ public enum BCSiliconGuis {
     INTEGRATION_TABLE,
     GATE;
 
-    public void openGUI(EntityPlayer player) {
+    public void openGUI(Player player) {
         player.openGui(BCSilicon.INSTANCE, ordinal(), player.getEntityWorld(), 0, 0, 0);
     }
 
-    public void openGUI(EntityPlayer player, BlockPos pos) {
+    public void openGUI(Player player, BlockPos pos) {
         openGui(player, pos, 0);
     }
 
-    public void openGui(EntityPlayer player, BlockPos pos, int data) {
+    public void openGui(Player player, BlockPos pos, int data) {
         int fullId = (data << 8) | ordinal();
         player.openGui(BCSilicon.INSTANCE, fullId, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
     }

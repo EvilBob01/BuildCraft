@@ -7,7 +7,7 @@
 package buildcraft.builders.filler;
 
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.filler.IFillerPattern;
 import buildcraft.api.statements.IStatementParameter;

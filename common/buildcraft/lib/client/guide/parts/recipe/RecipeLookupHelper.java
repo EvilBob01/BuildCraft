@@ -13,8 +13,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
 

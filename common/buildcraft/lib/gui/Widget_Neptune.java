@@ -8,10 +8,9 @@ package buildcraft.lib.gui;
 
 import java.io.IOException;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.net.IPayloadReceiver;
 import buildcraft.lib.net.IPayloadWriter;
@@ -26,7 +25,7 @@ public abstract class Widget_Neptune<C extends ContainerBC_Neptune> implements I
     }
 
     public boolean isRemote() {
-        return container.player.world.isRemote;
+        return container.player.world.isClientSide;
     }
 
     // Net updating
@@ -39,14 +38,14 @@ public abstract class Widget_Neptune<C extends ContainerBC_Neptune> implements I
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IMessage handleWidgetDataClient(MessageContext ctx, PacketBufferBC buffer) throws IOException {
         return null;
     }
 
     @Override
     public IMessage receivePayload(MessageContext ctx, PacketBufferBC buffer) throws IOException {
-        if (ctx.side == Side.CLIENT) {
+        if (ctx.side == Dist.CLIENT) {
             return handleWidgetDataClient(ctx, buffer);
         } else {
             return handleWidgetDataServer(ctx, buffer);

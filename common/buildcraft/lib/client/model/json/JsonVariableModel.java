@@ -27,7 +27,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
 
@@ -222,7 +222,7 @@ public class JsonVariableModel extends JsonVariableObject {
             attempts++;
         }
         lookup = texture.location;
-        sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(lookup);
+        sprite = Minecraft.getInstance().getTextureMapBlocks().getAtlasSprite(lookup);
         TexturedFace face = new TexturedFace();
         face.sprite = sprite;
         face.faceData = texture.faceData;

@@ -11,10 +11,10 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.phys.Vec3;
 
 import buildcraft.lib.client.render.DetachedRenderer;
 import buildcraft.lib.client.render.laser.LaserData_BC8;
@@ -33,7 +33,7 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
     public static final RenderMarkerVolume INSTANCE = new RenderMarkerVolume();
 
     private static final LaserType LASER_TYPE = BuildCraftLaserManager.MARKER_VOLUME_SIGNAL;
-    private static final Vec3d VEC_HALF = new Vec3d(0.5, 0.5, 0.5);
+    private static final Vec3 VEC_HALF = new Vec3(0.5, 0.5, 0.5);
 
     @Override
     public boolean isGlobalRenderer(TileMarkerVolume te) {
@@ -44,54 +44,54 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
     public void render(TileMarkerVolume marker, double tileX, double tileY, double tileZ, float partialTicks, int destroyStage, float alpha) {
         if (marker == null || !marker.isShowingSignals()) return;
 
-        Minecraft.getMinecraft().mcProfiler.startSection("bc");
-        Minecraft.getMinecraft().mcProfiler.startSection("marker");
-        Minecraft.getMinecraft().mcProfiler.startSection("volume");
+        Minecraft.getInstance().mcProfiler.startSection("bc");
+        Minecraft.getInstance().mcProfiler.startSection("marker");
+        Minecraft.getInstance().mcProfiler.startSection("volume");
 
-        DetachedRenderer.fromWorldOriginPre(Minecraft.getMinecraft().player, partialTicks);
+        DetachedRenderer.fromWorldOriginPre(Minecraft.getInstance().player, partialTicks);
         RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         VolumeConnection volume = marker.getCurrentConnection();
         Set<Axis> taken = volume == null ? ImmutableSet.of() : volume.getConnectedAxis();
 
-        Vec3d start = VecUtil.add(VEC_HALF, marker.getPos());
-        for (EnumFacing face : EnumFacing.VALUES) {
+        Vec3 start = VecUtil.add(VEC_HALF, marker.getPos());
+        for (Direction face : Direction.VALUES) {
             if (taken.contains(face.getAxis())) {
                 continue;
             }
-            Vec3d end = VecUtil.offset(start, face, BCCoreConfig.markerMaxDistance);
+            Vec3 end = VecUtil.offset(start, face, BCCoreConfig.markerMaxDistance);
             renderLaser(start, end, face.getAxis());
         }
 
         RenderHelper.enableStandardItemLighting();
         DetachedRenderer.fromWorldOriginPost();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
     }
 
-    private static void renderLaser(Vec3d min, Vec3d max, Axis axis) {
-        EnumFacing faceForMin = VecUtil.getFacing(axis, true);
-        EnumFacing faceForMax = VecUtil.getFacing(axis, false);
-        Vec3d one = offset(min, faceForMin);
-        Vec3d two = offset(max, faceForMax);
+    private static void renderLaser(Vec3 min, Vec3 max, Axis axis) {
+        Direction faceForMin = VecUtil.getFacing(axis, true);
+        Direction faceForMax = VecUtil.getFacing(axis, false);
+        Vec3 one = offset(min, faceForMin);
+        Vec3 two = offset(max, faceForMax);
         LaserData_BC8 data = new LaserData_BC8(LASER_TYPE, one, two, SCALE);
         LaserRenderer_BC8.renderLaserStatic(data);
     }
 
-    private static Vec3d offset(Vec3d vec, EnumFacing face) {
+    private static Vec3 offset(Vec3 vec, Direction face) {
         double by = 1 / 16.0;
-        if (face == EnumFacing.DOWN) {
+        if (face == Direction.DOWN) {
             return vec.addVector(0, -by, 0);
-        } else if (face == EnumFacing.UP) {
+        } else if (face == Direction.UP) {
             return vec.addVector(0, by, 0);
-        } else if (face == EnumFacing.EAST) {
+        } else if (face == Direction.EAST) {
             return vec.addVector(by, 0, 0);
-        } else if (face == EnumFacing.WEST) {
+        } else if (face == Direction.WEST) {
             return vec.addVector(-by, 0, 0);
-        } else if (face == EnumFacing.SOUTH) {
+        } else if (face == Direction.SOUTH) {
             return vec.addVector(0, 0, by);
         } else {// North
             return vec.addVector(0, 0, -by);

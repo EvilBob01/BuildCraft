@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 

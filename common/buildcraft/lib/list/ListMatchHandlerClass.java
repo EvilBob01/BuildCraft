@@ -8,7 +8,7 @@ package buildcraft.lib.list;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.lists.ListMatchHandler;
 import buildcraft.api.lists.ListRegistry;

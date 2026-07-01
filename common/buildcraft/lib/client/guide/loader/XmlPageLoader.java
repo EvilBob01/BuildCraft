@@ -19,15 +19,15 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.InvalidInputDataException;
@@ -181,7 +181,7 @@ public enum XmlPageLoader implements IPageLoaderText {
                     str.startsWith("~{") && str.endsWith("}") && str.indexOf('{', 2) == -1 && str.indexOf('}') == str
                         .length() - 1
                 ) {
-                    lines.set(i, TextFormatting.DARK_PURPLE + str);
+                    lines.set(i, ChatFormatting.DARK_PURPLE + str);
                     continue;
                 }
                 // FIXME: This doesn't really work properly! We will need to use the same system that the rest of the
@@ -191,11 +191,11 @@ public enum XmlPageLoader implements IPageLoaderText {
                 // everything is simpler)
                 // and then we only need a map of lang name to a def class with all of the formatting defs.
                 // (And customisable syntax highlighting? Why?)
-                str = str.replace("{", TextFormatting.DARK_GREEN + "{" + TextFormatting.RESET);
-                str = str.replace("}", TextFormatting.DARK_GREEN + "}" + TextFormatting.RESET);
-                str = str.replaceAll("\"(.+)\"", TextFormatting.DARK_BLUE + "$0" + TextFormatting.RESET);
-                str = str.replaceAll("%[0-9]+", TextFormatting.DARK_PURPLE + "$0" + TextFormatting.RESET);
-                str = str.replaceAll("//", TextFormatting.DARK_GREEN + "//");
+                str = str.replace("{", ChatFormatting.DARK_GREEN + "{" + ChatFormatting.RESET);
+                str = str.replace("}", ChatFormatting.DARK_GREEN + "}" + ChatFormatting.RESET);
+                str = str.replaceAll("\"(.+)\"", ChatFormatting.DARK_BLUE + "$0" + ChatFormatting.RESET);
+                str = str.replaceAll("%[0-9]+", ChatFormatting.DARK_PURPLE + "$0" + ChatFormatting.RESET);
+                str = str.replaceAll("//", ChatFormatting.DARK_GREEN + "//");
                 lines.set(i, str);
             }
             return gui -> new GuidePartCodeBlock(gui, lines);
@@ -325,8 +325,8 @@ public enum XmlPageLoader implements IPageLoaderText {
                 line = " ";
             }
             prof.startSection("text_format");
-            Set<TextFormatting> formattingElements = EnumSet.noneOf(TextFormatting.class);
-            Deque<TextFormatting> formatColours = new ArrayDeque<>();
+            Set<ChatFormatting> formattingElements = EnumSet.noneOf(ChatFormatting.class);
+            Deque<ChatFormatting> formatColours = new ArrayDeque<>();
             String completeLine = "";
             int i = 0;
             while (i < line.length()) {
@@ -334,7 +334,7 @@ public enum XmlPageLoader implements IPageLoaderText {
                 if (c == '<') {
                     XmlTag currentTag = parseTag(line.substring(i));
                     if (currentTag != null) {
-                        TextFormatting formatting = TextFormatting.getValueByName(currentTag.name.replace("_", ""));
+                        ChatFormatting formatting = ChatFormatting.getValueByName(currentTag.name.replace("_", ""));
                         if (formatting != null) {
                             if (currentTag.state == XmlTagState.END) {
                                 formattingElements.remove(formatting);
@@ -348,11 +348,11 @@ public enum XmlPageLoader implements IPageLoaderText {
                                     formattingElements.add(formatting);
                                 }
                             }
-                            completeLine += TextFormatting.RESET;
+                            completeLine += ChatFormatting.RESET;
                             if (formatColours.peek() != null) {
                                 completeLine += formatColours.peek();
                             }
-                            for (TextFormatting format : formattingElements) {
+                            for (ChatFormatting format : formattingElements) {
                                 completeLine += format;
                             }
                             i += currentTag.originalString.length();

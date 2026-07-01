@@ -7,11 +7,11 @@
 package buildcraft.energy;
 
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.lib.BCLibConfig;
 import buildcraft.lib.fluid.BCFluid;
@@ -20,7 +20,7 @@ import buildcraft.energy.client.sprite.AtlasSpriteFluid;
 
 public class BCEnergySprites {
     public static void fmlPreInit() {
-        MinecraftForge.EVENT_BUS.register(BCEnergySprites.class);
+        NeoForge.EVENT_BUS.register(BCEnergySprites.class);
     }
 
     @SubscribeEvent

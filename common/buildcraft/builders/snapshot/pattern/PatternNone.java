@@ -1,7 +1,7 @@
 package buildcraft.builders.snapshot.pattern;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.filler.IFilledTemplate;
 import buildcraft.api.filler.IFillerPatternShape;
@@ -17,7 +17,7 @@ public class PatternNone extends Pattern implements IFillerPatternShape {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCBuildersSprites.FILLER_NONE;
     }

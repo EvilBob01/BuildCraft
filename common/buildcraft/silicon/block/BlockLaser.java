@@ -6,9 +6,9 @@
 
 package buildcraft.silicon.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.block.BlockBCTile_Neptune;
 import buildcraft.lib.block.IBlockWithFacing;
@@ -22,7 +22,7 @@ public class BlockLaser extends BlockBCTile_Neptune implements IBlockWithFacing 
     }
 
     @Override
-    public TileBC_Neptune createTileEntity(World world, IBlockState state) {
+    public TileBC_Neptune createTileEntity(Level world, BlockState state) {
         return new TileLaser();
     }
 
@@ -32,12 +32,12 @@ public class BlockLaser extends BlockBCTile_Neptune implements IBlockWithFacing 
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 }

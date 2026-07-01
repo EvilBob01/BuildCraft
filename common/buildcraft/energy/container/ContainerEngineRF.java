@@ -6,7 +6,7 @@
 
 package buildcraft.energy.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -15,7 +15,7 @@ import buildcraft.energy.tile.TileEngineRF;
 
 public class ContainerEngineRF extends ContainerBCTile<TileEngineRF> {
 
-    public ContainerEngineRF(EntityPlayer player, TileEngineRF engine) {
+    public ContainerEngineRF(Player player, TileEngineRF engine) {
         super(player, engine);
 
         addFullPlayerInventory(95);

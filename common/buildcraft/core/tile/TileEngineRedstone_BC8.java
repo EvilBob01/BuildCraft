@@ -6,7 +6,7 @@ package buildcraft.core.tile;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.MjAPI;

@@ -9,7 +9,7 @@ package buildcraft.lib.path.task;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.lib.path.MiniChunkCache;
 import buildcraft.lib.path.MiniChunkGraph;

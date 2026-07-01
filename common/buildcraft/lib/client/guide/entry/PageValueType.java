@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.registry.IScriptableRegistry.OptionallyDisabled;
 

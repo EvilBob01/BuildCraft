@@ -8,8 +8,8 @@ package buildcraft.lib.gui.slot;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.tile.item.IItemHandlerAdv;
 
@@ -25,7 +25,7 @@ public class SlotUntouchable extends SlotBase implements IPhantomSlot {
     }
 
     @Override
-    public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+    public boolean canTakeStack(Player par1EntityPlayer) {
         return false;
     }
 

@@ -6,9 +6,6 @@ package buildcraft.lib.net;
 
 import java.io.IOException;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
 public interface IPayloadReceiver {
     IMessage receivePayload(MessageContext ctx, PacketBufferBC buffer) throws IOException;
 }

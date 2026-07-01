@@ -1,17 +1,17 @@
 package buildcraft.lib.misc.data;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /** An extension for minecraft's {@link Profiler} class that returns {@link AutoCloseable} profiler sections. */
 public class ProfilerBC {
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ProfilerBC getClient() {
-        return new ProfilerBC(Minecraft.getMinecraft().mcProfiler);
+        return new ProfilerBC(Minecraft.getInstance().mcProfiler);
     }
 
     private final Profiler profiler;

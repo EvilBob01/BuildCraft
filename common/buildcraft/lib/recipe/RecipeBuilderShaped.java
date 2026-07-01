@@ -13,14 +13,9 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TCharObjectHashMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import buildcraft.lib.misc.StackUtil;
 
 public class RecipeBuilderShaped {
@@ -119,7 +114,7 @@ public class RecipeBuilderShaped {
             objs[offset++] = c;
             objs[offset++] = objects.get(c);
         }
-        return new ShapedOreRecipe(result.getItem().getRegistryName(), result, objs);
+        return new ShapedOreRecipe(result.getItem().builtInRegistryHolder().key().location(), result, objs);
     }
 
     private void ensureValid() {
@@ -128,22 +123,19 @@ public class RecipeBuilderShaped {
         }
     }
 
+    /** TODO (Phase 8 — see ROADMAP.md): recipe registration used {@code ShapedOreRecipe} and
+     * {@code ForgeRegistries.RECIPES}, both removed — recipes are now defined as data pack JSON and
+     * registered via {@code RecipeManager}, not an in-code {@code IForgeRegistry}. Stubbed to a no-op
+     * until callers are converted to JSON recipes (see {@code buildcraft_resources/data/<modid>/recipe/}). */
     public void register() {
         ensureValid();
-        ResourceLocation name = result.getItem().getRegistryName();
-        ShapedOreRecipe recipe = new ShapedOreRecipe(name, result, createRecipeObjectArray());
-        ForgeRegistries.RECIPES.register(recipe.setRegistryName(name));
     }
 
     public void registerNbtAware(String regName) {
         ensureValid();
-        ShapedOreRecipe recipe =
-            new ShapedOreRecipe(result.getItem().getRegistryName(), result, createRecipeObjectArrayNBT());
-        ForgeRegistries.RECIPES.register(recipe.setRegistryName(regName));
     }
 
     public void registerRotated() {
         ensureValid();
-        ForgeRegistries.RECIPES.register(buildRotated().setRegistryName(result.getItem().getRegistryName()));
     }
 }

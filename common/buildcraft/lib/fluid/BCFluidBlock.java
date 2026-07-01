@@ -6,18 +6,18 @@
 
 package buildcraft.lib.fluid;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fluids.BlockFluidClassic;
-import net.minecraftforge.fluids.Fluid;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class BCFluidBlock extends BlockFluidClassic {
     private boolean sticky = false;
@@ -36,25 +36,25 @@ public class BCFluidBlock extends BlockFluidClassic {
     }
 
     @Override
-    public Boolean isEntityInsideMaterial(IBlockAccess world, BlockPos pos, IBlockState state, Entity entity, double yToTest, Material material, boolean testingHead) {
-        if (material == Material.WATER) {
+    public Boolean isEntityInsideMaterial(BlockGetter world, BlockPos pos, BlockState state, Entity entity, double yToTest, Material material, boolean testingHead) {
+        if (material == Block.Properties.of()) {
             return true;
         }
         return null;
     }
 
     @Override
-    public int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face) {
+    public int getFlammability(BlockGetter world, BlockPos pos, Direction face) {
         return blockMaterial.getCanBurn() ? 200 : 0;
     }
 
     @Override
-    public int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face) {
+    public int getFireSpreadSpeed(BlockGetter world, BlockPos pos, Direction face) {
         return blockMaterial.getCanBurn() ? 200 : 0;
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
+    public void onEntityCollidedWithBlock(Level worldIn, BlockPos pos, BlockState state, Entity entityIn) {
         if (sticky) {
             entityIn.setInWeb();
         }

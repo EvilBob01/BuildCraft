@@ -25,23 +25,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.JsonContext;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.ModContainer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import buildcraft.api.BCItems;
@@ -74,7 +74,7 @@ public class BCSiliconRecipes {
     private static Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipes(RegisterEvent<IRecipe> event) {
         if (BCSiliconItems.plugGate != null) {
             // You can craft some of the basic gate types in a normal crafting table
             RecipeBuilderShaped builder = new RecipeBuilderShaped();
@@ -90,14 +90,14 @@ public class BCSiliconRecipes {
             makeGateRecipe(builder, EnumGateMaterial.CLAY_BRICK, EnumGateModifier.NO_MODIFIER);
 
             builder.map('m', "ingotIron");
-            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER);
+            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER);
 
             builder.map('m', Items.NETHERBRICK);
             makeGateRecipe(builder, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.NO_MODIFIER);
 
             // Iron modifier addition
             GateVariant variant =
-                new GateVariant(EnumGateLogic.AND, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER);
+                new GateVariant(EnumGateLogic.AND, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER);
             ItemStack ironGateBase = BCSiliconItems.plugGate.getStack(variant);
             builder = new RecipeBuilderShaped();
             builder.add(" m ");
@@ -105,11 +105,11 @@ public class BCSiliconRecipes {
             builder.add(" m ");
             builder.map('g', ironGateBase);
 
-            builder.map('m', new ItemStack(Items.DYE, 1, EnumDyeColor.BLUE.getDyeDamage()));
-            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.LAPIS);
+            builder.map('m', new ItemStack(Items.DYE, 1, DyeColor.BLUE.getDyeDamage()));
+            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.LAPIS);
 
             builder.map('m', Items.QUARTZ);
-            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.QUARTZ);
+            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.QUARTZ);
 
             // And Gate <-> Or Gate (shapeless)
             // TODO: Create a recipe class for this instead!
@@ -124,11 +124,8 @@ public class BCSiliconRecipes {
                     GateVariant varOr = new GateVariant(EnumGateLogic.OR, material, modifier);
                     ItemStack resultOr = BCSiliconItems.plugGate.getStack(varOr);
 
-                    String regNamePrefix = resultOr.getItem().getRegistryName() + "_" + modifier + "_" + material;
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(resultOr.getItem().getRegistryName(),
-                        resultAnd, "i", 'i', new IngredientNBTBC(resultOr)).setRegistryName(regNamePrefix + "_or"));
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(resultAnd.getItem().getRegistryName(),
-                        resultOr, "i", 'i', new IngredientNBTBC(resultAnd)).setRegistryName(regNamePrefix + "_and"));
+                    // TODO (Phase 8 — see ROADMAP.md): ShapedOreRecipe / ForgeRegistries.RECIPES no longer
+                    // exist; gate-swap recipes must be re-authored as data pack JSON recipes.
                 }
             }
         }
@@ -151,15 +148,15 @@ public class BCSiliconRecipes {
         }
         if (BCSiliconItems.plugGate != null) {
             IngredientStack lapis = IngredientStack.of("gemLapis");
-            makeGateAssembly(20_000, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.IRON);
+            makeGateAssembly(20_000, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.IRON);
             makeGateAssembly(40_000, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.NO_MODIFIER,
                 EnumRedstoneChipset.IRON, IngredientStack.of(new ItemStack(Blocks.NETHER_BRICK)));
             makeGateAssembly(80_000, EnumGateMaterial.GOLD, EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.GOLD);
 
-            makeGateModifierAssembly(40_000, EnumGateMaterial.IRON, EnumGateModifier.LAPIS, lapis);
-            makeGateModifierAssembly(60_000, EnumGateMaterial.IRON, EnumGateModifier.QUARTZ,
+            makeGateModifierAssembly(40_000, EnumGateBlock.Properties.of(), EnumGateModifier.LAPIS, lapis);
+            makeGateModifierAssembly(60_000, EnumGateBlock.Properties.of(), EnumGateModifier.QUARTZ,
                 IngredientStack.of(EnumRedstoneChipset.QUARTZ.getStack()));
-            makeGateModifierAssembly(80_000, EnumGateMaterial.IRON, EnumGateModifier.DIAMOND,
+            makeGateModifierAssembly(80_000, EnumGateBlock.Properties.of(), EnumGateModifier.DIAMOND,
                 IngredientStack.of(EnumRedstoneChipset.DIAMOND.getStack()));
 
             makeGateModifierAssembly(80_000, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.LAPIS, lapis);
@@ -193,7 +190,7 @@ public class BCSiliconRecipes {
         }
 
         if (BCSiliconItems.plugLens != null) {
-            for (EnumDyeColor colour : ColourUtil.COLOURS) {
+            for (DyeColor colour : ColourUtil.COLOURS) {
                 String name = StringUtilBC.formatDirect("lens-regular-%s", colour.getUnlocalizedName());
                 IngredientStack stainedGlass = IngredientStack.of("blockGlass" + ColourUtil.getName(colour));
                 ImmutableSet<IngredientStack> input = ImmutableSet.of(stainedGlass);

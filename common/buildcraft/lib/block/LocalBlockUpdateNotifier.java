@@ -7,10 +7,10 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IWorldEventListener;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.world.WorldEventListenerAdapter;
 
@@ -21,16 +21,16 @@ import buildcraft.lib.world.WorldEventListenerAdapter;
  */
 public class LocalBlockUpdateNotifier {
 
-    private static final Map<World, LocalBlockUpdateNotifier> instanceMap = new WeakHashMap<>();
+    private static final Map<Level, LocalBlockUpdateNotifier> instanceMap = new WeakHashMap<>();
     private final Set<ILocalBlockUpdateSubscriber> subscriberSet = new HashSet<>();
 
 
-    private LocalBlockUpdateNotifier(World world) {
+    private LocalBlockUpdateNotifier(Level world) {
 
         IWorldEventListener worldEventListener = new WorldEventListenerAdapter() {
             @Override
-            public void notifyBlockUpdate(@Nonnull World world, @Nonnull BlockPos eventPos, @Nonnull IBlockState oldState,
-                                          @Nonnull IBlockState newState, int flags) {
+            public void notifyBlockUpdate(@Nonnull Level world, @Nonnull BlockPos eventPos, @Nonnull BlockState oldState,
+                                          @Nonnull BlockState newState, int flags) {
                 notifySubscribersInRange(world, eventPos, oldState, newState, flags);
             }
         };
@@ -40,10 +40,10 @@ public class LocalBlockUpdateNotifier {
     /**
      * Gets the LocalBlockUpdateNotifier for the given world
      *
-     * @param world the World where BlockUpdate events will be listened for
+     * @param world the Level where BlockUpdate events will be listened for
      * @return the instance of LocalBlockUpdateNotifier for the given world
      */
-    public static LocalBlockUpdateNotifier instance(World world) {
+    public static LocalBlockUpdateNotifier instance(Level world) {
         if (!instanceMap.containsKey(world)) {
             instanceMap.put(world, new LocalBlockUpdateNotifier(world));
         }
@@ -79,7 +79,7 @@ public class LocalBlockUpdateNotifier {
      * @param newState from the Block Update
      * @param flags    from the Block Update
      */
-    private void notifySubscribersInRange(World world, BlockPos eventPos, IBlockState oldState, IBlockState newState,
+    private void notifySubscribersInRange(Level world, BlockPos eventPos, BlockState oldState, BlockState newState,
                                           int flags) {
         for (ILocalBlockUpdateSubscriber subscriber : subscriberSet) {
             BlockPos keyPos = subscriber.getSubscriberPos();

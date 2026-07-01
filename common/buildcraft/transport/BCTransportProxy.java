@@ -6,15 +6,15 @@
 
 package buildcraft.transport;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.transport.pipe.IPipe;
@@ -51,10 +51,10 @@ public abstract class BCTransportProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int id, Player player, Level world, int x, int y, int z) {
         BCTransportGuis gui = BCTransportGuis.get(id);
         if (gui == null) return null;
-        TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+        BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
 
         switch (gui) {
             case FILTERED_BUFFER: {
@@ -108,14 +108,14 @@ public abstract class BCTransportProxy implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
         return null;
     }
 
     public void fmlPreInit() {
-        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageWireSystems.class, Side.CLIENT);
-        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageWireSystemsPowered.class, Side.CLIENT);
-        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageMultiPipeItem.class, Side.CLIENT);
+        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageWireSystems.class, Dist.CLIENT);
+        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageWireSystemsPowered.class, Dist.CLIENT);
+        MessageManager.registerMessageClass(BCModules.TRANSPORT, MessageMultiPipeItem.class, Dist.CLIENT);
     }
 
     public void fmlInit() {}
@@ -123,11 +123,11 @@ public abstract class BCTransportProxy implements IGuiHandler {
     public void fmlPostInit() {}
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.SERVER)
+    @OnlyIn(Dist.DEDICATED_SERVER)
     public static class ServerProxy extends BCTransportProxy {}
 
     @SuppressWarnings("unused")
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class ClientProxy extends BCTransportProxy {
         @Override
         public void fmlPreInit() {
@@ -137,9 +137,9 @@ public abstract class BCTransportProxy implements IGuiHandler {
             PipeApiClient.registry = PipeRegistryClient.INSTANCE;
             PipeWireRenderer.init();
 
-            MessageManager.setHandler(MessageWireSystems.class, MessageWireSystems.HANDLER, Side.CLIENT);
-            MessageManager.setHandler(MessageWireSystemsPowered.class, MessageWireSystemsPowered.HANDLER, Side.CLIENT);
-            MessageManager.setHandler(MessageMultiPipeItem.class, MessageMultiPipeItem.HANDLER, Side.CLIENT);
+            MessageManager.setHandler(MessageWireSystems.class, MessageWireSystems.HANDLER, Dist.CLIENT);
+            MessageManager.setHandler(MessageWireSystemsPowered.class, MessageWireSystemsPowered.HANDLER, Dist.CLIENT);
+            MessageManager.setHandler(MessageMultiPipeItem.class, MessageMultiPipeItem.HANDLER, Dist.CLIENT);
         }
 
         @Override
@@ -155,12 +155,12 @@ public abstract class BCTransportProxy implements IGuiHandler {
         }
 
         @Override
-        public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
             BCTransportGuis gui = BCTransportGuis.get(id);
             if (gui == null) {
                 return null;
             }
-            TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+            BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
             switch (gui) {
                 case FILTERED_BUFFER: {
                     if (tile instanceof TileFilteredBuffer) {

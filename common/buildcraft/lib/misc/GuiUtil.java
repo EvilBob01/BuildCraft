@@ -25,12 +25,12 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Mth;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 import buildcraft.api.core.BCLog;
@@ -59,13 +59,13 @@ public class GuiUtil {
     /** @return The relative screen width. (Relative - changes with both the window size and the game setting "gui
      *         scale".) */
     public static int getScreenWidth() {
-        return Minecraft.getMinecraft().currentScreen.width;
+        return Minecraft.getInstance().currentScreen.width;
     }
 
     /** @return The relative screen height. (Relative - changes with both the window size and the game setting "gui
      *         scale".) */
     public static int getScreenHeight() {
-        return Minecraft.getMinecraft().currentScreen.height;
+        return Minecraft.getInstance().currentScreen.height;
     }
 
     public static IGuiArea moveRectangleToCentre(GuiRectangle area) {
@@ -115,7 +115,7 @@ public class GuiUtil {
 
     public static void drawItemStackAt(ItemStack stack, int x, int y) {
         RenderHelper.enableGUIStandardItemLighting();
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         RenderItem itemRender = mc.getRenderItem();
         itemRender.renderItemAndEffectIntoGUI(mc.player, stack, x, y);
         itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stack, x, y, null);
@@ -293,13 +293,13 @@ public class GuiUtil {
 
     public static void drawTexturedModalRect(double posX, double posY, double textureX, double textureY, double width,
         double height) {
-        int x = MathHelper.floor(posX);
-        int y = MathHelper.floor(posY);
-        int u = MathHelper.floor(textureX);
-        int v = MathHelper.floor(textureY);
-        int w = MathHelper.floor(width);
-        int h = MathHelper.floor(height);
-        Gui gui = Minecraft.getMinecraft().currentScreen;
+        int x = Mth.floor(posX);
+        int y = Mth.floor(posY);
+        int u = Mth.floor(textureX);
+        int v = Mth.floor(textureY);
+        int w = Mth.floor(width);
+        int h = Mth.floor(height);
+        Gui gui = Minecraft.getInstance().currentScreen;
         gui.drawTexturedModalRect(x, y, u, v, w, h);
     }
 
@@ -385,7 +385,7 @@ public class GuiUtil {
     }
 
     private static void scissor0(double x, double y, double width, double height) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         ScaledResolution res = new ScaledResolution(mc);
         double scaleW = mc.displayWidth / res.getScaledWidth_double();
         double scaleH = mc.displayHeight / res.getScaledHeight_double();
@@ -438,14 +438,14 @@ public class GuiUtil {
         }
 
         for (int i = 1; i < list.size(); ++i) {
-            list.set(i, TextFormatting.GRAY + list.get(i));
+            list.set(i, ChatFormatting.GRAY + list.get(i));
         }
 
         return list;
     }
 
     public static List<String> getUnFormattedTooltip(ItemStack stack) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         List<String> list = stack.getTooltip(mc.player, getTooltipFlags());
         if (list.isEmpty()) {
             return Collections.singletonList(getStackDisplayName(stack));
@@ -459,7 +459,7 @@ public class GuiUtil {
             // Temp workaround for headcrumbs
             // TODO: Remove this after https://github.com/BuildCraft/BuildCraft/issues/4268 is fixed from their side! */
             Item item = stack.getItem();
-            String info = item.getRegistryName() + " " + item.getClass() + " (" + stack.serializeNBT() + ")";
+            String info = item.builtInRegistryHolder().key().location() + " " + item.getClass() + " (" + stack.serializeNBT() + ")";
             BCLog.logger.warn("[lib.guide] Found null display name! " + info);
             name = "!!NULL stack.getDisplayName(): " + info;
         }
@@ -467,7 +467,7 @@ public class GuiUtil {
     }
 
     private static ITooltipFlag getTooltipFlags() {
-        boolean adv = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
+        boolean adv = Minecraft.getInstance().gameSettings.advancedItemTooltips;
         return adv ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL;
     }
 

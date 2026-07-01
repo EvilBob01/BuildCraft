@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.filler.IFillerPattern;
 
@@ -31,7 +31,7 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
         (statement, paramIndex) -> onStatementChange()
     );
 
-    public ContainerFillerPlanner(EntityPlayer player) {
+    public ContainerFillerPlanner(Player player) {
         super(player);
         Pair<VolumeBox, EnumAddonSlot> selectingVolumeBoxAndSlot = EnumAddonSlot.getSelectingVolumeBoxAndSlot(
             player,
@@ -45,7 +45,7 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
     }
 
     @Override
-    public EntityPlayer getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
@@ -72,8 +72,8 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
     @Override
     public void valuesChanged() {
         addon.updateBuildingInfo();
-        if (!player.world.isRemote) {
-            WorldSavedDataVolumeBoxes.get(getPlayer().world).markDirty();
+        if (!player.world.isClientSide) {
+            WorldSavedDataVolumeBoxes.get(getPlayer().world).setChanged();
         }
     }
 
@@ -85,7 +85,7 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
+    public boolean canInteractWith(Player player) {
         return true;
     }
 }

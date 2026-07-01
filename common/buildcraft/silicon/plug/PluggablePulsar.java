@@ -9,17 +9,17 @@ package buildcraft.silicon.plug;
 import java.io.IOException;
 import java.util.Arrays;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.mj.IMjRedstoneReceiver;
@@ -55,7 +55,7 @@ import buildcraft.transport.BCTransportConfig;
 public class PluggablePulsar extends PipePluggable {
 
     public static final FunctionContext MODEL_FUNC_CTX;
-    private static final NodeVariableObject<EnumFacing> MODEL_SIDE;
+    private static final NodeVariableObject<Direction> MODEL_SIDE;
     private static final NodeVariableDouble MODEL_STAGE;
     private static final NodeVariableBoolean MODEL_ON;
     private static final NodeVariableBoolean MODEL_AUTO;
@@ -64,7 +64,7 @@ public class PluggablePulsar extends PipePluggable {
 
     private static final int PULSE_STAGE = 20;
 
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     public final ModelVariableData clientModelData = new ModelVariableData();
 
@@ -89,25 +89,25 @@ public class PluggablePulsar extends PipePluggable {
         double min = 5 / 16.0;
         double max = 11 / 16.0;
 
-        BOXES[EnumFacing.DOWN.ordinal()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.ordinal()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.ordinal()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.ordinal()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.ordinal()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.ordinal()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.ordinal()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.ordinal()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.ordinal()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.ordinal()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.ordinal()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.ordinal()] = new AABB(ul, min, min, uu, max, max);
 
         MODEL_FUNC_CTX = DefaultContexts.createWithAll();
-        MODEL_SIDE = MODEL_FUNC_CTX.putVariableObject("side", EnumFacing.class);
+        MODEL_SIDE = MODEL_FUNC_CTX.putVariableObject("side", Direction.class);
         MODEL_STAGE = MODEL_FUNC_CTX.putVariableDouble("stage");
         MODEL_ON = MODEL_FUNC_CTX.putVariableBoolean("on");
         MODEL_AUTO = MODEL_FUNC_CTX.putVariableBoolean("auto");
         MODEL_MANUAL = MODEL_FUNC_CTX.putVariableBoolean("manual");
 
         MODEL_VAR_INFO = new ContextInfo(MODEL_FUNC_CTX);
-        VariableInfoObject<EnumFacing> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
+        VariableInfoObject<Direction> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
         infoSide.cacheType = CacheType.ALWAYS;
         infoSide.setIsComplete = true;
-        infoSide.possibleValues.addAll(Arrays.asList(EnumFacing.VALUES));
+        infoSide.possibleValues.addAll(Arrays.asList(Direction.VALUES));
 
         VariableInfoDouble infoStage = MODEL_VAR_INFO.createInfoDouble(MODEL_STAGE);
         infoStage.cacheType = CacheType.IN_SET;
@@ -115,13 +115,13 @@ public class PluggablePulsar extends PipePluggable {
         infoStage.possibleValues.add(0.0);
     }
 
-    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, EnumFacing side) {
+    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, Direction side) {
         super(definition, holder, side);
     }
 
     // Saving + Loading
 
-    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, EnumFacing side, NBTTagCompound nbt) {
+    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(definition, holder, side);
         this.manuallyEnabled = nbt.getBoolean("manuallyEnabled");
         gateEnabledTicks = nbt.getInteger("gateEnabledTicks");
@@ -130,8 +130,8 @@ public class PluggablePulsar extends PipePluggable {
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setBoolean("manuallyEnabled", manuallyEnabled);
         nbt.setInteger("gateEnabledTicks", gateEnabledTicks);
         nbt.setInteger("gateSinglePulses", gateSinglePulses);
@@ -141,34 +141,34 @@ public class PluggablePulsar extends PipePluggable {
 
     // Networking
 
-    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, EnumFacing side, PacketBuffer buffer) {
+    public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, Direction side, FriendlyByteBuf buffer) {
         super(definition, holder, side);
         readData(buffer);
     }
 
     @Override
-    public void writeCreationPayload(PacketBuffer buffer) {
+    public void writeCreationPayload(FriendlyByteBuf buffer) {
         super.writeCreationPayload(buffer);
         writeData(buffer);
     }
 
     @Override
-    public void readPayload(PacketBuffer buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             readData(buffer);
         }
     }
 
     @Override
-    public void writePayload(PacketBuffer buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Side side) {
         super.writePayload(buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             writeData(buffer);
         }
     }
 
-    private void writeData(PacketBuffer b) {
+    private void writeData(FriendlyByteBuf b) {
         PacketBufferBC buffer = PacketBufferBC.asPacketBufferBc(b);
         buffer.writeBoolean(isPulsing());
         buffer.writeBoolean(gateEnabledTicks > 0 || gateSinglePulses > 0);
@@ -176,7 +176,7 @@ public class PluggablePulsar extends PipePluggable {
         buffer.writeByte(pulseStage);
     }
 
-    private void readData(PacketBuffer b) {
+    private void readData(FriendlyByteBuf b) {
         PacketBufferBC buffer = PacketBufferBC.asPacketBufferBc(b);
         isPulsing = buffer.readBoolean();
         autoEnabled = buffer.readBoolean();
@@ -187,7 +187,7 @@ public class PluggablePulsar extends PipePluggable {
     // PipePluggable
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.ordinal()];
     }
 
@@ -203,7 +203,7 @@ public class PluggablePulsar extends PipePluggable {
 
     @Override
     public void onTick() {
-        if (holder.getPipeWorld().isRemote) {
+        if (holder.getPipeWorld().isClientSide) {
             if (isPulsing) {
                 pulseStage++;
                 if (pulseStage == PULSE_STAGE) {
@@ -274,8 +274,8 @@ public class PluggablePulsar extends PipePluggable {
     }
 
     @Override
-    public boolean onPluggableActivate(EntityPlayer player, RayTraceResult trace, float hitX, float hitY, float hitZ) {
-        if (!holder.getPipeWorld().isRemote) {
+    public boolean onPluggableActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ) {
+        if (!holder.getPipeWorld().isClientSide) {
             manuallyEnabled = !manuallyEnabled;
             SoundUtil.playLeverSwitch(holder.getPipeWorld(), holder.getPipePos(), manuallyEnabled);
             scheduleNetworkUpdate();
@@ -308,7 +308,7 @@ public class PluggablePulsar extends PipePluggable {
         MODEL_AUTO.value = false;
         MODEL_MANUAL.value = false;
         MODEL_ON.value = false;
-        MODEL_SIDE.value = EnumFacing.WEST;
+        MODEL_SIDE.value = Direction.WEST;
     }
 
     public void setModelVariables(float partialTicks) {

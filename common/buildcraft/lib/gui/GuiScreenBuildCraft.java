@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.gui.json.BuildCraftJsonGui;
 import buildcraft.lib.gui.ledger.LedgerHelp;

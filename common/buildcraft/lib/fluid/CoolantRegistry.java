@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.fuels.ICoolant;
 import buildcraft.api.fuels.ICoolantManager;

@@ -9,9 +9,9 @@ package buildcraft.lib.net.cache;
 import java.io.IOException;
 import java.util.Objects;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.lib.net.PacketBufferBC;
 

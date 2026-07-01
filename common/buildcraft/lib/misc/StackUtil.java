@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.items.IList;
 import buildcraft.api.recipes.IngredientStack;
@@ -67,7 +67,7 @@ public class StackUtil {
     /** Attempts to get an item stack that might place down the given blockstate. Obviously this isn't perfect, and so
      * cannot be relied on for anything more than simple blocks. */
     @Nonnull
-    public static ItemStack getItemStackForState(IBlockState state) {
+    public static ItemStack getItemStackForState(BlockState state) {
         Block b = state.getBlock();
         ItemStack stack = new ItemStack(b);
         if (stack.isEmpty()) {
@@ -137,8 +137,8 @@ public class StackUtil {
         return true;
     }
 
-    public static NBTTagCompound stripNonFunctionNbt(@Nonnull ItemStack from) {
-        NBTTagCompound nbt = NBTUtilBC.getItemData(from).copy();
+    public static CompoundTag stripNonFunctionNbt(@Nonnull ItemStack from) {
+        CompoundTag nbt = NBTUtilBC.getItemData(from).copy();
         if (nbt.getSize() == 0) {
             return nbt;
         }
@@ -148,13 +148,16 @@ public class StackUtil {
     }
 
     public static boolean doesStackNbtMatch(@Nonnull ItemStack target, @Nonnull ItemStack with) {
-        NBTTagCompound nbtTarget = stripNonFunctionNbt(target);
-        NBTTagCompound nbtWith = stripNonFunctionNbt(with);
+        CompoundTag nbtTarget = stripNonFunctionNbt(target);
+        CompoundTag nbtWith = stripNonFunctionNbt(with);
         return nbtTarget.equals(nbtWith);
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): previously used {@code OreDictionary.itemMatches()} (which also
+     * matched wildcard-metadata ore entries). OreDictionary no longer exists; this now falls back to a
+     * plain item-type match until rewritten against {@code ItemTags}. */
     public static boolean doesEitherStackMatch(@Nonnull ItemStack stackA, @Nonnull ItemStack stackB) {
-        return OreDictionary.itemMatches(stackA, stackB, false) || OreDictionary.itemMatches(stackB, stackA, false);
+        return ItemStack.isSameItem(stackA, stackB);
     }
 
     public static boolean canStacksOrListsMerge(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
@@ -216,43 +219,17 @@ public class StackUtil {
      * @param comparison The stack to compare.
      * @param oreDictionary true to take the Forge OreDictionary into account.
      * @return true if comparison should be considered a crafting equivalent for base. */
+    /** TODO (Phase 11 — see ROADMAP.md): the {@code oreDictionary} parameter previously widened the match
+     * using {@code OreDictionary.getOres()}. OreDictionary no longer exists (replaced by item tags); the
+     * ore-based widening is dropped until this is rewritten against {@code ItemTags}. */
     public static boolean isCraftingEquivalent(@Nonnull ItemStack base, @Nonnull ItemStack comparison,
         boolean oreDictionary) {
-        if (isMatchingItem(base, comparison, true, false)) {
-            return true;
-        }
-
-        if (oreDictionary) {
-            int[] idBase = OreDictionary.getOreIDs(base);
-            if (idBase.length > 0) {
-                for (int id : idBase) {
-                    for (ItemStack itemstack : OreDictionary.getOres(OreDictionary.getOreName(id))) {
-                        if (comparison.getItem() == itemstack.getItem()
-                            && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
-                                || comparison.getItemDamage() == itemstack.getItemDamage())) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
+        return isMatchingItem(base, comparison, true, false);
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): stubbed to false until rewritten against {@code ItemTags}; the
+     * int[] ore-ID based lookup this used to perform no longer has a direct equivalent. */
     public static boolean isCraftingEquivalent(int[] oreIDs, ItemStack comparison) {
-        if (oreIDs.length > 0) {
-            for (int id : oreIDs) {
-                for (ItemStack itemstack : OreDictionary.getOres(OreDictionary.getOreName(id))) {
-                    if (comparison.getItem() == itemstack.getItem()
-                        && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
-                            || comparison.getItemDamage() == itemstack.getItemDamage())) {
-                        return true;
-                    }
-                }
-            }
-        }
-
         return false;
     }
 
@@ -316,7 +293,7 @@ public class StackUtil {
             }
         }
         if (matchNBT) {
-            NBTTagCompound baseTag = base.getTagCompound();
+            CompoundTag baseTag = base.getTagCompound();
             if (baseTag != null && !baseTag.equals(comparison.getTagCompound())) {
                 return false;
             }
@@ -358,7 +335,8 @@ public class StackUtil {
      * @param damage The damage to check
      * @return True if the damage does specify a wildcard, false if not. */
     public static boolean isWildcard(int damage) {
-        return damage == -1 || damage == OreDictionary.WILDCARD_VALUE;
+        // 32767 was OreDictionary.WILDCARD_VALUE; kept as a literal since OreDictionary no longer exists.
+        return damage == -1 || damage == 32767;
     }
 
     /** @return An empty, nonnull list that cannot be modified (as it cannot be expanded and it has a size of 0) */

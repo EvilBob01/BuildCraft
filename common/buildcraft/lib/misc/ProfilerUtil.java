@@ -9,7 +9,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.NumberFormat;
 import java.util.List;
 
-import net.minecraft.profiler.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import buildcraft.api.core.BCLog;
 

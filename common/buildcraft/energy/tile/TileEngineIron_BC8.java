@@ -10,17 +10,17 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.util.Mth;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.IFluidFilter;
@@ -92,11 +92,11 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
         caps.addCapabilityInstance(CapUtil.CAP_FLUIDS, fluidHandler, EnumPipePart.VALUES);
     }
 
-    // TileEntity overrides
+    // BlockEntity overrides
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setInteger("penaltyCooling", penaltyCooling);
         nbt.setDouble("burnTime", burnTime);
         nbt.setDouble("residueAmount", residueAmount);
@@ -104,8 +104,8 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         penaltyCooling = nbt.getInteger("penaltyCooling");
         burnTime = nbt.getDouble("burnTime");
         residueAmount = Math.max(0, nbt.getDouble("residueAmount"));
@@ -114,7 +114,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 tankManager.readData(buffer);
             }
@@ -124,7 +124,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 tankManager.writeData(buffer);
             }
@@ -134,7 +134,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     // TileEngineBase overrides
 
     @Override
-    public boolean onActivated(EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY,
+    public boolean onActivated(Player player, InteractionHand hand, Direction side, float hitX, float hitY,
         float hitZ) {
         ItemStack current = player.getHeldItem(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
@@ -148,7 +148,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                 return false;
             }
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             BCEnergyGuis.ENGINE_IRON.openGUI(player, getPos());
         }
         return true;
@@ -212,7 +212,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                                 FluidStack residueFluid = dirtyFuel.getResidue().copy();
                                 residueAmount += residueFluid.amount / 1000.0;
                                 if (residueAmount >= 1) {
-                                    residueFluid.amount = MathHelper.floor(residueAmount);
+                                    residueFluid.amount = Mth.floor(residueAmount);
                                     residueAmount -= tankResidue.fill(residueFluid, true);
                                 } else if (tankResidue.getFluid() == null) {
                                     residueFluid.amount = 0;
@@ -351,7 +351,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
 
     private boolean isResidue(FluidStack fluid) {
         // If this is the client then we don't have a current fuel- just trust the server that its correct
-        if (world != null && world.isRemote) {
+        if (world != null && world.isClientSide) {
             return true;
         }
         if (currentFuel instanceof IDirtyFuel) {

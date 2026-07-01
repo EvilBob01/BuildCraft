@@ -7,11 +7,11 @@ package buildcraft.lib.item;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.BCLog;
 
@@ -23,17 +23,19 @@ import buildcraft.lib.registry.TagManager.EnumTagType;
 public interface IItemBuildCraft {
     String id();
 
+    /** TODO (Phase 4 — see ROADMAP.md): in 1.12.2 this set the unlocalized name, registry name, and
+     * creative tab post-construction. In 1.21.1 the translation key and registry name are implicit from
+     * the {@code DeferredRegister} entry, and creative tab membership is declared via a
+     * {@code BuildCreativeModeTabContentsEvent} listener instead of a per-item setter. Left as a no-op
+     * until that listener is wired up. */
     default void init() {
-        Item thisItem = (Item) this;
-        thisItem.setUnlocalizedName(TagManager.getTag(id(), EnumTagType.UNLOCALIZED_NAME));
-        thisItem.setRegistryName(TagManager.getTag(id(), EnumTagType.REGISTRY_NAME));
-        thisItem.setCreativeTab(CreativeTabManager.getTab(TagManager.getTag(id(), EnumTagType.CREATIVE_TAB)));
+        // no-op: see TODO above
     }
 
     /** Sets up all of the model information for this item. This is called multiple times, and you *must* make sure that
      * you add all the same values each time. Use {@link #addVariant(TIntObjectHashMap, int, String)} to help get
      * everything correct. */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         addVariant(variants, 0, "");
     }
@@ -43,7 +45,7 @@ public interface IItemBuildCraft {
         variants.put(meta, new ModelResourceLocation(tag + suffix, "inventory"));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void registerVariants() {
         Item thisItem = (Item) this;
         TIntObjectHashMap<ModelResourceLocation> variants = new TIntObjectHashMap<>();
@@ -51,7 +53,7 @@ public interface IItemBuildCraft {
         for (int key : variants.keys()) {
             ModelResourceLocation variant = variants.get(key);
             if (RegistryConfig.DEBUG) {
-                BCLog.logger.info("[lib.registry][" + thisItem.getRegistryName() + "] Registering a variant " + variant
+                BCLog.logger.info("[lib.registry][" + thisItem.builtInRegistryHolder().key().location() + "] Registering a variant " + variant
                     + " for damage " + key);
             }
             ModelLoader.setCustomModelResourceLocation(thisItem, key, variant);

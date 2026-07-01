@@ -3,15 +3,15 @@ package buildcraft.transport.plug;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import buildcraft.api.mj.IMjReadable;
 import buildcraft.api.mj.IMjReceiver;
@@ -26,7 +26,7 @@ import buildcraft.transport.client.model.key.KeyPlugPowerAdaptor;
 
 public class PluggablePowerAdaptor extends PipePluggable {
 
-    private static final AxisAlignedBB[] BOXES = new AxisAlignedBB[6];
+    private static final AABB[] BOXES = new AABB[6];
 
     static {
         double ll = 0 / 16.0;
@@ -37,34 +37,34 @@ public class PluggablePowerAdaptor extends PipePluggable {
         double min = 3 / 16.0;
         double max = 13 / 16.0;
 
-        BOXES[EnumFacing.DOWN.getIndex()] = new AxisAlignedBB(min, ll, min, max, lu, max);
-        BOXES[EnumFacing.UP.getIndex()] = new AxisAlignedBB(min, ul, min, max, uu, max);
-        BOXES[EnumFacing.NORTH.getIndex()] = new AxisAlignedBB(min, min, ll, max, max, lu);
-        BOXES[EnumFacing.SOUTH.getIndex()] = new AxisAlignedBB(min, min, ul, max, max, uu);
-        BOXES[EnumFacing.WEST.getIndex()] = new AxisAlignedBB(ll, min, min, lu, max, max);
-        BOXES[EnumFacing.EAST.getIndex()] = new AxisAlignedBB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.getIndex()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.getIndex()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.getIndex()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.getIndex()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.getIndex()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
     }
 
     private long storedMJ = 0;
 
-    public PluggablePowerAdaptor(PluggableDefinition definition, IPipeHolder holder, EnumFacing side) {
+    public PluggablePowerAdaptor(PluggableDefinition definition, IPipeHolder holder, Direction side) {
         super(definition, holder, side);
     }
 
-    public PluggablePowerAdaptor(PluggableDefinition definition, IPipeHolder holder, EnumFacing side, NBTTagCompound nbt) {
+    public PluggablePowerAdaptor(PluggableDefinition definition, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(definition, holder, side);
         storedMJ = nbt.getLong("storedMJ");
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setLong("storedMJ", storedMJ);
         return nbt;
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AABB getBoundingBox() {
         return BOXES[side.getIndex()];
     }
 

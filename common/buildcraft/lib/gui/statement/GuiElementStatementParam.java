@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
@@ -103,7 +103,7 @@ public class GuiElementStatementParam extends GuiElementSimple
             StatementMouseClick clickEvent = new StatementMouseClick(0, false);
 
             final ItemStack heldStack;
-            EntityPlayer currentPlayer = Minecraft.getMinecraft().player;
+            Player currentPlayer = Minecraft.getInstance().player;
             if (currentPlayer == null) {
                 heldStack = ItemStack.EMPTY;
             } else {

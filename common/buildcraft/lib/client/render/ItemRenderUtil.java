@@ -31,16 +31,16 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
 import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.EnumPipePart;
 
@@ -48,16 +48,16 @@ import buildcraft.lib.BCLibConfig;
 import buildcraft.lib.client.model.MutableQuad;
 import buildcraft.lib.misc.ItemStackKey;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ItemRenderUtil {
 
     private static final LoadingCache<ItemStackKey, Integer> glListCache;
 
     private static final Random modelOffsetRandom = new Random(0);
 
-    private static final EntityItem dummyEntityItem = new EntityItem(null);
+    private static final ItemEntity dummyEntityItem = new ItemEntity(null);
     private static final RenderEntityItem customItemRenderer =
-        new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()) {
+        new RenderEntityItem(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getRenderItem()) {
             @Override
             public boolean shouldSpreadItems() {
                 return false;
@@ -98,7 +98,7 @@ public class ItemRenderUtil {
         // This is broken - some stacks render too big but some render way too small.
         // Also not all stacks are centered :/
 
-        if (stack.getItem() instanceof ItemBlock) {
+        if (stack.getItem() instanceof BlockItem) {
             dummyEntityItem.hoverStart = 0;
         } else {
             // Items are rotated by 45 degrees
@@ -117,7 +117,7 @@ public class ItemRenderUtil {
 
     /** Used to render a lot of items in sequential order. Assumes that you don't change the glstate inbetween calls.
      * You must call {@link #endItemBatch()} after your have rendered all of the items. */
-    public static void renderItemStack(double x, double y, double z, ItemStack stack, int lightc, EnumFacing dir,
+    public static void renderItemStack(double x, double y, double z, ItemStack stack, int lightc, Direction dir,
         BufferBuilder bb) {
         renderItemStack(x, y, z, stack, stack.getCount(), lightc, dir, bb);
     }
@@ -125,7 +125,7 @@ public class ItemRenderUtil {
     /** Used to render a lot of items in sequential order. Assumes that you don't change the glstate inbetween calls.
      * You must call {@link #endItemBatch()} after your have rendered all of the items. */
     public static void renderItemStack(double x, double y, double z, ItemStack stack, int stackCount, int lightc,
-        EnumFacing dir, BufferBuilder bb) {
+        Direction dir, BufferBuilder bb) {
         if (stack.isEmpty()) {
             return;
         }
@@ -144,14 +144,14 @@ public class ItemRenderUtil {
     }
 
     private static void renderItemStackInternal(
-        double x, double y, double z, ItemStack stack, int stackCount, int lightc, EnumFacing dir, BufferBuilder bb
+        double x, double y, double z, ItemStack stack, int stackCount, int lightc, Direction dir, BufferBuilder bb
     ) {
         if (dir == null) {
-            dir = EnumFacing.EAST;
+            dir = Direction.EAST;
         }
         dir = BCLibConfig.rotateTravelingItems.changeFacing(dir);
 
-        IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
+        IBakedModel model = Minecraft.getInstance().getRenderItem().getItemModelMesher().getItemModel(stack);
         model = model.getOverrides().handleItemState(model, stack, null, null);
         boolean requireGl = stack.hasEffect() || model.isBuiltInRenderer();
 
@@ -181,10 +181,10 @@ public class ItemRenderUtil {
                         q.fromBakedItem(quad);
                         q.translated(-0.5, -0.5, -0.5);
                         q.scaled(scale);
-                        q.rotate(EnumFacing.SOUTH, dir, 0, 0, 0);
+                        q.rotate(Direction.SOUTH, dir, 0, 0, 0);
                         if (quad.hasTintIndex()) {
                             int colour =
-                                Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, quad.getTintIndex());
+                                Minecraft.getInstance().getItemColors().colorMultiplier(stack, quad.getTintIndex());
                             if (EntityRenderer.anaglyphEnable) {
                                 colour = TextureUtil.anaglyphColor(colour);
                             }
@@ -205,7 +205,7 @@ public class ItemRenderUtil {
 
         if (!inBatch) {
             inBatch = true;
-            Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            Minecraft.getInstance().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GL11.glPushMatrix();
             GL11.glTranslated(x, y, z);
             GL11.glScaled(0.3, 0.3, 0.3);
@@ -213,7 +213,7 @@ public class ItemRenderUtil {
         }
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightc % (float) 0x1_00_00,
             lightc / (float) 0x1_00_00);
-        Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
+        Minecraft.getInstance().getRenderItem().renderItem(stack, model);
     }
 
     private static void setupModelOffsetRandom(ItemStack stack) {
@@ -221,7 +221,7 @@ public class ItemRenderUtil {
         if (stack.isEmpty()) {
             seed = 137;
         } else {
-            ResourceLocation regName = stack.getItem().getRegistryName();
+            ResourceLocation regName = stack.getItem().builtInRegistryHolder().key().location();
             if (regName == null) {
                 seed = 127;
             } else {

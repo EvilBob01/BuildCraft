@@ -7,10 +7,10 @@
 package buildcraft.transport.client.render;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.pipe.IPipeBehaviourRenderer;
 
@@ -19,13 +19,13 @@ import buildcraft.lib.client.model.MutableQuad;
 import buildcraft.transport.BCTransportModels;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourStripes;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum PipeBehaviourRendererStripes implements IPipeBehaviourRenderer<PipeBehaviourStripes> {
     INSTANCE;
 
     @Override
     public void render(PipeBehaviourStripes stripes, double x, double y, double z, float partialTicks, BufferBuilder bb) {
-        EnumFacing dir = stripes.direction;
+        Direction dir = stripes.direction;
         if (dir == null) return;
         MutableQuad[] quads = BCTransportModels.getStripesDynQuads(dir);
         bb.setTranslation(x, y, z);

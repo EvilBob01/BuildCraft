@@ -11,10 +11,10 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.core.IStackFilter;
 import buildcraft.api.recipes.StackDefinition;

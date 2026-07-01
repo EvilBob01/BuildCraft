@@ -6,11 +6,11 @@
 
 package buildcraft.transport.gui;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import buildcraft.lib.BCLibConfig;
 import buildcraft.lib.gui.GuiBC8;
@@ -30,7 +30,7 @@ public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
     IInventory playerInventory;
     IItemHandler filterInventory;
 
-    public GuiDiamondPipe(EntityPlayer player, PipeBehaviourDiamond pipe) {
+    public GuiDiamondPipe(Player player, PipeBehaviourDiamond pipe) {
         super(new ContainerDiamondPipe(player, pipe));
         this.playerInventory = player.inventory;
         this.filterInventory = pipe.filters;

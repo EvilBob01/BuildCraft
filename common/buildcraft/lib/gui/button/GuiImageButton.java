@@ -7,17 +7,17 @@
 package buildcraft.lib.gui.button;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.gui.BuildCraftGui;
 import buildcraft.lib.gui.pos.GuiRectangle;
 import buildcraft.lib.misc.GuiUtil;
 
 /** An image button that draws its states downwards, starting at baseU. */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @Deprecated
 public class GuiImageButton extends GuiAbstractButton {
     private final int u, v, baseU, baseV;

@@ -18,14 +18,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
 import buildcraft.lib.misc.ItemStackKey;

@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 /** Stores several types of "tag" (strings) for BuildCraft. A central place for all of them to init in. Refer to the
  * "static" block for all of the tag ID's

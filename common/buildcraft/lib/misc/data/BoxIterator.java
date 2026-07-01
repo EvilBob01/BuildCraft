@@ -10,10 +10,10 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.IBox;
 
@@ -49,7 +49,7 @@ public class BoxIterator implements Iterator<BlockPos> {
         this.current = current == null ? getStart() : current;
     }
 
-    public static BoxIterator readFromNbt(NBTTagCompound nbt) {
+    public static BoxIterator readFromNbt(CompoundTag nbt) {
         BlockPos min = NBTUtilBC.readBlockPos(nbt.getTag("min"));
         BlockPos max = NBTUtilBC.readBlockPos(nbt.getTag("max"));
         boolean invert = nbt.getBoolean("invert");
@@ -62,8 +62,8 @@ public class BoxIterator implements Iterator<BlockPos> {
         return new BoxIterator(min, max, invert, repeat, order, current);
     }
 
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setTag("min", NBTUtilBC.writeBlockPos(min));
         nbt.setTag("max", NBTUtilBC.writeBlockPos(max));
         nbt.setBoolean("invert", invert);
@@ -82,7 +82,7 @@ public class BoxIterator implements Iterator<BlockPos> {
         return replace(pos, order.third);
     }
 
-    private BlockPos replace(BlockPos toReplace, EnumFacing facing) {
+    private BlockPos replace(BlockPos toReplace, Direction facing) {
         BlockPos with = facing.getAxisDirection() == AxisDirection.POSITIVE ? min : max;
         return VecUtil.replaceValue(toReplace, facing.getAxis(), VecUtil.getValue(with, facing.getAxis()));
     }
@@ -156,13 +156,13 @@ public class BoxIterator implements Iterator<BlockPos> {
         return getCurrent();
     }
 
-    private static BlockPos increment(BlockPos pos, EnumFacing facing) {
+    private static BlockPos increment(BlockPos pos, Direction facing) {
         int diff = facing.getAxisDirection().getOffset();
         int value = VecUtil.getValue(pos, facing.getAxis()) + diff;
         return VecUtil.replaceValue(pos, facing.getAxis(), value);
     }
 
-    private boolean shouldReset(EnumFacing facing) {
+    private boolean shouldReset(Direction facing) {
         int lstReturned = VecUtil.getValue(current, facing.getAxis());
         BlockPos goingTo = facing.getAxisDirection() == AxisDirection.POSITIVE ? max : min;
         int to = VecUtil.getValue(goingTo, facing.getAxis());
@@ -218,7 +218,7 @@ public class BoxIterator implements Iterator<BlockPos> {
         return compare(pos, order.first);
     }
 
-    private int compare(BlockPos pos, EnumFacing direction) {
+    private int compare(BlockPos pos, Direction direction) {
         int argVal = VecUtil.getValue(pos, direction.getAxis());
         int currentVal = VecUtil.getValue(current, direction.getAxis());
         return (currentVal - argVal) * direction.getAxisDirection().getOffset();
@@ -232,9 +232,9 @@ public class BoxIterator implements Iterator<BlockPos> {
             throw new IllegalArgumentException("This " + this + " doesn't contain " + pos + "!");
         }
 
-        EnumFacing a = order.first;
-        EnumFacing b = order.second;
-        EnumFacing c = order.third;
+        Direction a = order.first;
+        Direction b = order.second;
+        Direction c = order.third;
 
         int valueA = VecUtil.getValue(pos, a.getAxis());
         int valueB = VecUtil.getValue(pos, b.getAxis());

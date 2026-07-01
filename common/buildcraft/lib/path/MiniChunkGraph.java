@@ -14,9 +14,9 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.path.task.TaskMiniChunkAnalyser;
 
@@ -30,7 +30,7 @@ public class MiniChunkGraph {
 
     public final BlockPos min;
     public final ChunkType type;
-    public final Map<EnumFacing, MiniChunkGraph> neighbours = new EnumMap<>(EnumFacing.class);
+    public final Map<Direction, MiniChunkGraph> neighbours = new EnumMap<>(Direction.class);
     public final ImmutableList<MiniChunkNode> nodes;
     final byte[][][] expenseArray, graphArray;
 
@@ -85,14 +85,14 @@ public class MiniChunkGraph {
             return MiniChunkGraph.this;
         }
 
-        public void requestAllConnected(World world) {
+        public void requestAllConnected(Level world) {
             // Request all first, and THEN wait for all of them.
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 if (!neighbours.containsKey(face)) {
                     MiniChunkCache.requestGraph(world, min.offset(face, 16));
                 }
             }
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 if (!neighbours.containsKey(face)) {
                     MiniChunkCache.requestAndWait(world, min.offset(face, 16));
                 }

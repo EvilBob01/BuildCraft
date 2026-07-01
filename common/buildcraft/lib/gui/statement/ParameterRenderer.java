@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.statements.IStatementParameter;

@@ -10,9 +10,9 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Predicate that compares values of specified NBT keys subset.
@@ -26,12 +26,12 @@ public class StackNbtMatcher implements StackMatchingPredicate {
 
     @Override
     public boolean isMatching(@Nonnull ItemStack base, @Nonnull ItemStack comparison) {
-        NBTTagCompound baseNBT = base.getTagCompound();
-        NBTTagCompound comparisonNBT = comparison.getTagCompound();
+        CompoundTag baseNBT = base.getTagCompound();
+        CompoundTag comparisonNBT = comparison.getTagCompound();
 
         for (String key : keys) {
-            NBTBase baseValue = baseNBT != null ? baseNBT.getTag(key) : null;
-            NBTBase comparisonValue = comparisonNBT != null ? comparisonNBT.getTag(key) : null;
+            Tag baseValue = baseNBT != null ? baseNBT.getTag(key) : null;
+            Tag comparisonValue = comparisonNBT != null ? comparisonNBT.getTag(key) : null;
             if (!Objects.equals(baseValue, comparisonValue)) {
                 return false;
             }

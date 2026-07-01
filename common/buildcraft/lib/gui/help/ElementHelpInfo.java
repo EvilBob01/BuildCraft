@@ -10,8 +10,8 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.gui.BuildCraftGui;
 import buildcraft.lib.gui.IGuiElement;
@@ -48,19 +48,19 @@ public class ElementHelpInfo {
         return new ElementHelpInfo(title, colour, true, lines);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public final HelpPosition target(IGuiArea target) {
         return new HelpPosition(this, target);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addGuiElements(GuiElementContainerHelp container) {
         BuildCraftGui gui = container.gui;
         int y = 20;
         for (int i = 0; i < localeKeys.length; i++) {
             String key = localeKeys[i];
             if (key == null) {
-                y += Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT + 5;
+                y += Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 5;
                 continue;
             }
             String localized = isPreTranslated ? key : LocaleUtil.localize(key);
@@ -75,7 +75,7 @@ public class ElementHelpInfo {
     }
 
     /** Stores an {@link ElementHelpInfo} information, as well as the target area which the help element relates to. */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static final class HelpPosition {
         public final ElementHelpInfo info;
         public final IGuiArea target;

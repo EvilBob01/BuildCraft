@@ -15,19 +15,19 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -53,10 +53,10 @@ public abstract class ContainerBC_Neptune extends Container {
     public static final int NET_SET_PHANTOM = IDS.allocId("SET_PHANTOM");
     public static final int NET_SET_PHANTOM_MULTI = IDS.allocId("NET_SET_PHANTOM_MULTI");
 
-    public final EntityPlayer player;
+    public final Player player;
     private final List<Widget_Neptune<?>> widgets = new ArrayList<>();
 
-    public ContainerBC_Neptune(EntityPlayer player) {
+    public ContainerBC_Neptune(Player player) {
         this.player = player;
     }
 
@@ -95,7 +95,7 @@ public abstract class ContainerBC_Neptune extends Container {
 
     @Nullable
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, Player player) {
         Slot slot = slotId < 0 ? null : this.inventorySlots.get(slotId);
         if (slot == null) {
             return super.slotClick(slotId, dragType, clickType, player);
@@ -123,7 +123,7 @@ public abstract class ContainerBC_Neptune extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
         Slot firstSlot = this.inventorySlots.get(0);
@@ -193,17 +193,17 @@ public abstract class ContainerBC_Neptune extends Container {
     }
 
     public final void sendMessage(int id) {
-        Side side = player.world.isRemote ? Side.CLIENT : Side.SERVER;
+        Side side = player.world.isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         sendMessage(id, (buffer) -> writeMessage(id, buffer, side));
     }
 
     public final void sendMessage(int id, IPayloadWriter writer) {
         PacketBufferBC payload = PacketBufferBC.write(writer);
         MessageContainer message = new MessageContainer(windowId, id, payload);
-        if (player.world.isRemote) {
+        if (player.world.isClientSide) {
             MessageManager.sendToServer(message);
         } else {
-            MessageManager.sendTo(message, (EntityPlayerMP) player);
+            MessageManager.sendTo(message, (ServerPlayer) player);
         }
     }
 
@@ -215,20 +215,20 @@ public abstract class ContainerBC_Neptune extends Container {
             if (widgetId < 0 || widgetId >= widgets.size()) {
                 if (DEBUG) {
                     String string = "Received unknown or invalid widget ID " + widgetId + " on side " + side;
-                    if (side == Side.SERVER) {
+                    if (side == Dist.DEDICATED_SERVER) {
                         string += " (for player " + player.getName() + ")";
                     }
                     BCLog.logger.warn(string);
                 }
             } else {
                 Widget_Neptune<?> widget = widgets.get(widgetId);
-                if (side == Side.SERVER) {
+                if (side == Dist.DEDICATED_SERVER) {
                     widget.handleWidgetDataServer(ctx, buffer);
-                } else if (side == Side.CLIENT) {
+                } else if (side == Dist.CLIENT) {
                     widget.handleWidgetDataClient(ctx, buffer);
                 }
             }
-        } else if (side == Side.SERVER) {
+        } else if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_SET_PHANTOM) {
                 readSingleSetPhantom(buffer, ctx);
             } else if (id == NET_SET_PHANTOM_MULTI) {

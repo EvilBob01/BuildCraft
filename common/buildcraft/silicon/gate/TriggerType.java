@@ -2,7 +2,7 @@ package buildcraft.silicon.gate;
 
 import java.io.IOException;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.EnumPipePart;
@@ -34,7 +34,7 @@ public class TriggerType extends StatementType<TriggerWrapper> {
     }
 
     @Override
-    public TriggerWrapper readFromNbt(NBTTagCompound nbt) {
+    public TriggerWrapper readFromNbt(CompoundTag nbt) {
         if (nbt == null) {
             return null;
         }
@@ -52,8 +52,8 @@ public class TriggerType extends StatementType<TriggerWrapper> {
     }
 
     @Override
-    public NBTTagCompound writeToNbt(TriggerWrapper slot) {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt(TriggerWrapper slot) {
+        CompoundTag nbt = new CompoundTag();
         if (slot == null) {
             return nbt;
         }

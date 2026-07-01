@@ -15,14 +15,14 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.lib.client.render.fluid.FluidRenderer;
 import buildcraft.lib.client.render.fluid.FluidSpriteType;
@@ -33,10 +33,10 @@ import buildcraft.lib.misc.RenderUtil.AutoTessellator;
 import buildcraft.factory.tile.TileTank;
 
 public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
-    private static final Vec3d MIN = new Vec3d(0.13, 0.01, 0.13);
-    private static final Vec3d MAX = new Vec3d(0.86, 0.99, 0.86);
-    private static final Vec3d MIN_CONNECTED = new Vec3d(0.13, 0, 0.13);
-    private static final Vec3d MAX_CONNECTED = new Vec3d(0.86, 1 - 1e-5, 0.86);
+    private static final Vec3 MIN = new Vec3(0.13, 0.01, 0.13);
+    private static final Vec3 MAX = new Vec3(0.86, 0.99, 0.86);
+    private static final Vec3 MIN_CONNECTED = new Vec3(0.13, 0, 0.13);
+    private static final Vec3 MAX_CONNECTED = new Vec3(0.86, 1 - 1e-5, 0.86);
 
     public RenderTank() {}
 
@@ -46,12 +46,12 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         if (forRender == null) {
             return;
         }
-        Minecraft.getMinecraft().mcProfiler.startSection("bc");
-        Minecraft.getMinecraft().mcProfiler.startSection("tank");
+        Minecraft.getInstance().mcProfiler.startSection("bc");
+        Minecraft.getInstance().mcProfiler.startSection("tank");
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -62,13 +62,13 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
             bb.setTranslation(x, y, z);
 
             boolean[] sideRender = { true, true, true, true, true, true };
-            boolean connectedUp = isFullyConnected(tile, EnumFacing.UP, partialTicks);
-            boolean connectedDown = isFullyConnected(tile, EnumFacing.DOWN, partialTicks);
-            sideRender[EnumFacing.DOWN.ordinal()] = !connectedDown;
-            sideRender[EnumFacing.UP.ordinal()] = !connectedUp;
+            boolean connectedUp = isFullyConnected(tile, Direction.UP, partialTicks);
+            boolean connectedDown = isFullyConnected(tile, Direction.DOWN, partialTicks);
+            sideRender[Direction.DOWN.ordinal()] = !connectedDown;
+            sideRender[Direction.UP.ordinal()] = !connectedUp;
 
-            Vec3d min = connectedDown ? MIN_CONNECTED : MIN;
-            Vec3d max = connectedUp ? MAX_CONNECTED : MAX;
+            Vec3 min = connectedDown ? MIN_CONNECTED : MIN;
+            Vec3 max = connectedUp ? MAX_CONNECTED : MAX;
             FluidStack fluid = forRender.fluid;
             int blocklight = fluid.getFluid().getLuminosity(fluid);
             int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), blocklight);
@@ -86,13 +86,13 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         // gl state finish
         RenderHelper.enableStandardItemLighting();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
     }
 
-    private static boolean isFullyConnected(TileTank thisTank, EnumFacing face, float partialTicks) {
+    private static boolean isFullyConnected(TileTank thisTank, Direction face, float partialTicks) {
         BlockPos pos = thisTank.getPos().offset(face);
-        TileEntity oTile = thisTank.getWorld().getTileEntity(pos);
+        BlockEntity oTile = thisTank.getWorld().getBlockEntity(pos);
         if (oTile instanceof TileTank) {
             TileTank oTank = (TileTank) oTile;
             if (!TileTank.canTanksConnect(thisTank, oTank, face)) {
@@ -112,7 +112,7 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
             if (fluid.getFluid().isGaseous(fluid)) {
                 face = face.getOpposite();
             }
-            return forRender.amount >= oTank.tank.getCapacity() || face == EnumFacing.UP;
+            return forRender.amount >= oTank.tank.getCapacity() || face == Direction.UP;
         } else {
             return false;
         }

@@ -6,7 +6,7 @@
 
 package buildcraft.builders.gui;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.gui.GuiBC8;
 import buildcraft.lib.gui.GuiIcon;

@@ -22,14 +22,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.net.MessageManager;
 
@@ -55,7 +55,7 @@ public enum ClientSnapshots {
         snapshots.add(snapshot);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderSnapshot(Snapshot.Header header, int offsetX, int offsetY, int sizeX, int sizeY) {
         if (header == null) {
             return;
@@ -67,7 +67,7 @@ public enum ClientSnapshots {
         renderSnapshot(snapshot, offsetX, offsetY, sizeX, sizeY);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderSnapshot(Snapshot snapshot, int offsetX, int offsetY, int sizeX, int sizeY) {
         FakeWorld world = worlds.computeIfAbsent(snapshot.key, key -> {
             FakeWorld localWorld = new FakeWorld();
@@ -90,7 +90,7 @@ public enum ClientSnapshots {
                             -FakeWorld.BLUEPRINT_OFFSET.getY(),
                             -FakeWorld.BLUEPRINT_OFFSET.getZ()
                         );
-                        Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(
+                        Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(
                             world.getBlockState(pos),
                             pos,
                             world,
@@ -110,9 +110,9 @@ public enum ClientSnapshots {
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getInstance());
         int viewportX = offsetX * scaledResolution.getScaleFactor();
-        int viewportY = Minecraft.getMinecraft().displayHeight - (sizeY + offsetY) * scaledResolution.getScaleFactor();
+        int viewportY = Minecraft.getInstance().displayHeight - (sizeY + offsetY) * scaledResolution.getScaleFactor();
         int viewportWidth = sizeX * scaledResolution.getScaleFactor();
         int viewportHeight = sizeY * scaledResolution.getScaleFactor();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -142,7 +142,7 @@ public enum ClientSnapshots {
         GlStateManager.rotate((System.currentTimeMillis() % 3600) / 10F, 0, 1, 0);
         GlStateManager.translate(-snapshot.size.getX() / 2F, -snapshot.size.getY() / 2F, -snapshot.size.getZ() / 2F);
         GlStateManager.translate(0, snapshotSize * 0.1F, 0);
-        Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getRenderManager().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         new WorldVertexBufferUploader().draw(bufferBuilder);
         if (snapshotSize < 32) {
             TileEntityRendererDispatcher.instance.preDrawBatch();
@@ -153,7 +153,7 @@ public enum ClientSnapshots {
                         GlStateManager.pushAttrib();
                         // noinspection ConstantConditions
                         TileEntityRendererDispatcher.instance.render(
-                            world.getTileEntity(pos),
+                            world.getBlockEntity(pos),
                             pos.getX() - FakeWorld.BLUEPRINT_OFFSET.getX(),
                             pos.getY() - FakeWorld.BLUEPRINT_OFFSET.getY(),
                             pos.getZ() - FakeWorld.BLUEPRINT_OFFSET.getZ(),
@@ -167,9 +167,9 @@ public enum ClientSnapshots {
         }
         // noinspection Guava
         for (Entity entity : world.getEntities(Entity.class, Predicates.alwaysTrue())) {
-            Vec3d pos = entity.getPositionVector();
+            Vec3 pos = entity.getPositionVector();
             GlStateManager.pushAttrib();
-            Minecraft.getMinecraft().getRenderManager().renderEntity(
+            Minecraft.getInstance().getRenderManager().renderEntity(
                 entity,
                 pos.x - FakeWorld.BLUEPRINT_OFFSET.getX(),
                 pos.y - FakeWorld.BLUEPRINT_OFFSET.getY(),
@@ -183,7 +183,7 @@ public enum ClientSnapshots {
         GlStateManager.popMatrix();
         GlStateManager.disableRescaleNormal();
         GlStateManager.matrixMode(GL11.GL_PROJECTION);
-        GlStateManager.viewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
+        GlStateManager.viewport(0, 0, Minecraft.getInstance().displayWidth, Minecraft.getInstance().displayHeight);
         GlStateManager.popMatrix();
         GlStateManager.matrixMode(GL11.GL_MODELVIEW);
         GlStateManager.popMatrix();

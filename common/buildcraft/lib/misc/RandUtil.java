@@ -2,7 +2,7 @@ package buildcraft.lib.misc;
 
 import java.util.Random;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 /** Utilities based around more complex (but common) usages of {@link Random}. */
 public class RandUtil {
@@ -16,7 +16,7 @@ public class RandUtil {
      *            place. It is recommended that you generate a random number once, and place it statically in the
      *            generator class (Perhaps by using <code>new SecureRandom().nextLong()</code>).
      * @return A {@link Random} instance that starts off with the same seed given the same arguments. */
-    public static Random createRandomForChunk(World world, int chunkX, int chunkY, long magicNumber) {
+    public static Random createRandomForChunk(Level world, int chunkX, int chunkY, long magicNumber) {
         long worldSeed = world.getSeed();
         return createRandomForChunk(worldSeed, chunkX, chunkY, magicNumber);
     }

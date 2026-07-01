@@ -6,7 +6,7 @@
 
 package buildcraft.lib.gui.ledger;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 

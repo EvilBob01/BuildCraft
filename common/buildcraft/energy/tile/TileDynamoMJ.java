@@ -4,26 +4,26 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.biome.Biome;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.enums.EnumPowerStage;
 import buildcraft.api.mj.MjAPI;
@@ -72,7 +72,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     private int progressPart = 0;
 
     protected EnumPowerStage powerStage = EnumPowerStage.BLUE;
-    protected EnumFacing currentDirection = EnumFacing.UP;
+    protected Direction currentDirection = Direction.UP;
 
     public long currentOutput;// TODO: sync gui data
     public boolean isRedstonePowered = false;
@@ -93,8 +93,8 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     // TileEngineBase_BC8
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setTag("currentDirection", NBTUtilBC.writeEnum(currentDirection));
         nbt.setBoolean("isRedstonePowered", isRedstonePowered);
         nbt.setDouble("heat", heat);
@@ -106,11 +106,11 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        currentDirection = NBTUtilBC.readEnum(nbt.getTag("currentDirection"), EnumFacing.class);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        currentDirection = NBTUtilBC.readEnum(nbt.getTag("currentDirection"), Direction.class);
         if (currentDirection == null) {
-            currentDirection = EnumFacing.UP;
+            currentDirection = Direction.UP;
         }
         isRedstonePowered = nbt.getBoolean("isRedstonePowered");
         heat = nbt.getDouble("heat");
@@ -123,10 +123,10 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 isPumping = buffer.readBoolean();
-                currentDirection = buffer.readEnumValue(EnumFacing.class);
+                currentDirection = buffer.readEnumValue(Direction.class);
                 powerStage = buffer.readEnumValue(EnumPowerStage.class);
                 progress = buffer.readFloat();
             } else if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
@@ -141,7 +141,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 buffer.writeBoolean(isPumping);
                 buffer.writeEnumValue(currentDirection);
@@ -156,9 +156,9 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         }
     }
 
-    public EnumActionResult attemptRotation() {
-        OrderedEnumMap<EnumFacing> possible = VanillaRotationHandlers.ROTATE_FACING;
-        EnumFacing current = currentDirection;
+    public InteractionResult attemptRotation() {
+        OrderedEnumMap<Direction> possible = VanillaRotationHandlers.ROTATE_FACING;
+        Direction current = currentDirection;
         for (int i = 0; i < 6; i++) {
             current = possible.next(current);
             if (isFacingReceiver(current)) {
@@ -168,15 +168,15 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
                     sendNetworkUpdate(NET_RENDER_DATA);
                     redrawBlock();
                     world.notifyNeighborsRespectDebug(getPos(), getBlockType(), true);
-                    return EnumActionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
-                return EnumActionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
-        return EnumActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
-    private boolean isFacingReceiver(EnumFacing dir) {
+    private boolean isFacingReceiver(Direction dir) {
         return getReceiverToPower(dir) != null;
     }
 
@@ -195,12 +195,12 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         }
         attemptRotation();
         if (currentDirection == null) {
-            currentDirection = EnumFacing.UP;
+            currentDirection = Direction.UP;
         }
     }
 
     @Override
-    public void onPlacedBy(EntityLivingBase placer, ItemStack stack) {
+    public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
         currentDirection = null;// Force rotateIfInvalid to always attempt to rotate
         rotateIfInvalid();
@@ -233,7 +233,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
     @Override
     public final EnumPowerStage getPowerStage() {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             EnumPowerStage newStage = computePowerStage();
 
             if (powerStage != newStage) {
@@ -286,7 +286,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
         boolean overheat = getPowerStage() == EnumPowerStage.OVERHEAT;
 
-        if (world.isRemote) {
+        if (world.isClientSide) {
             lastProgress = progress;
 
             if (isPumping) {
@@ -436,7 +436,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         return extracted;
     }
 
-    public final boolean isPoweredTile(TileEntity tile, EnumFacing side) {
+    public final boolean isPoweredTile(BlockEntity tile, Direction side) {
         if (tile == null) return false;
         if (tile.getClass() == getClass()) {
             TileDynamoMJ other = (TileDynamoMJ) tile;
@@ -445,9 +445,9 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         return getReceiverToPower(tile, side) != null;
     }
 
-    /** @deprecated Replaced with {@link #getReceiverToPower(EnumFacing)}. */
+    /** @deprecated Replaced with {@link #getReceiverToPower(Direction)}. */
     @Deprecated
-    public IEnergyStorage getReceiverToPower(TileEntity tile, EnumFacing side) {
+    public IEnergyStorage getReceiverToPower(BlockEntity tile, Direction side) {
         if (tile == null) return null;
         IEnergyStorage rec = tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
         if (rec != null && rec.canReceive()) {
@@ -457,9 +457,9 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         }
     }
 
-    public IEnergyStorage getReceiverToPower(EnumFacing side) {
+    public IEnergyStorage getReceiverToPower(Direction side) {
         TileDynamoMJ engine = this;
-        TileEntity next = null;
+        BlockEntity next = null;
 
         for (int len = 0; len <= getMaxChainLength(); len++) {
             next = engine.getNeighbourTile(side);
@@ -497,7 +497,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if (facing == currentDirection) {
             if (CapabilityEnergy.ENERGY == capability) {
                 return CapabilityEnergy.ENERGY .cast(rf);
@@ -546,7 +546,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
     @Override
     public boolean onActivated(
-        EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ
+        Player player, InteractionHand hand, Direction side, float hitX, float hitY, float hitZ
     ) {
         ItemStack current = player.getHeldItem(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
@@ -560,7 +560,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
                 return false;
             }
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             BCEnergyGuis.DYNAMO_MJ.openGUI(player, getPos());
         }
         return true;
@@ -646,7 +646,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         return currentRF;
     }
 
-    public EnumFacing getCurrentDirection() {
+    public Direction getCurrentDirection() {
         return currentDirection;
     }
 
@@ -690,7 +690,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public float getProgressClient(float partialTicks) {
         float last = lastProgress;
         float now = progress;

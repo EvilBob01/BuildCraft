@@ -15,7 +15,7 @@ import java.util.Set;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
 
 import buildcraft.lib.BCLib;
 import buildcraft.lib.BCLibConfig;
@@ -159,7 +159,7 @@ public class GuidePageContents extends GuidePageBase {
             int _y = y + (height - _height) / 2;
 
             if (gui.bookData.loadedMods.size() > 0) {
-                drawCenteredText(TextFormatting.BOLD + "Loaded Mods:", x, _y, width);
+                drawCenteredText(ChatFormatting.BOLD + "Loaded Mods:", x, _y, width);
                 _y += perLineHeight;
                 for (String text : gui.bookData.loadedMods) {
                     drawCenteredText(text, x, _y, width);
@@ -167,7 +167,7 @@ public class GuidePageContents extends GuidePageBase {
                 }
             }
             if (gui.bookData.loadedOther.size() > 0) {
-                drawCenteredText(TextFormatting.BOLD + "Loaded Resource Packs:", x, _y, width);
+                drawCenteredText(ChatFormatting.BOLD + "Loaded Resource Packs:", x, _y, width);
                 _y += perLineHeight;
                 for (String text : gui.bookData.loadedOther) {
                     drawCenteredText(text, x, _y, width);

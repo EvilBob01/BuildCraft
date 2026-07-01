@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.BCLibSprites;
 import buildcraft.lib.expression.api.IVariableNode.IVariableNodeBoolean;
@@ -68,7 +68,7 @@ public class BuildCraftGui {
 
     public static final GuiSpriteScaled SPRITE_DEBUG = new GuiSpriteScaled(BCLibSprites.DEBUG, 16, 16);
 
-    public final Minecraft mc = Minecraft.getMinecraft();
+    public final Minecraft mc = Minecraft.getInstance();
     public final GuiScreen gui;
     public final MousePosition mouse = new MousePosition();
 

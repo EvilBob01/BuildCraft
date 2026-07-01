@@ -12,8 +12,8 @@ import java.util.Set;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.BCLog;
 
@@ -143,7 +143,7 @@ public class DetailedConfigOption {
         return Math.min(max, Math.max(min, getAsFloat()));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public enum ReloadListener implements IResourceManagerReloadListener {
         INSTANCE;
 

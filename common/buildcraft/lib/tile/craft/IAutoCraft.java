@@ -1,6 +1,6 @@
 package buildcraft.lib.tile.craft;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.tile.item.ItemHandlerSimple;
 

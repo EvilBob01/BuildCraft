@@ -8,7 +8,7 @@ package buildcraft.builders.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.client.render.HudRenderer;
 

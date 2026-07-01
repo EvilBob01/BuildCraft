@@ -12,12 +12,12 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class DynamicTextureBC {
     public final int width, height;
     private final int[] colorMap;
@@ -28,8 +28,8 @@ public class DynamicTextureBC {
     public DynamicTextureBC(int iWidth, int iHeight) {
         width = iWidth;
         height = iHeight;
-        widthPow2 = MathHelper.smallestEncompassingPowerOfTwo(iWidth);
-        heightPow2 = MathHelper.smallestEncompassingPowerOfTwo(iHeight);
+        widthPow2 = Mth.smallestEncompassingPowerOfTwo(iWidth);
+        heightPow2 = Mth.smallestEncompassingPowerOfTwo(iHeight);
         dynamicTexture = new DynamicTexture(widthPow2, heightPow2);
         colorMap = dynamicTexture.getTextureData();
     }

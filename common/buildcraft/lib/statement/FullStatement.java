@@ -3,7 +3,7 @@ package buildcraft.lib.statement;
 import java.io.IOException;
 import java.util.Arrays;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementParameter;
@@ -36,20 +36,20 @@ public class FullStatement<S extends IStatement> implements IReference<S> {
 
     // NBT
 
-    public void readFromNbt(NBTTagCompound nbt) {
+    public void readFromNbt(CompoundTag nbt) {
         statement = type.readFromNbt(nbt.getCompoundTag("s"));
         if (statement == null) {
             Arrays.fill(params, null);
         } else {
             for (int p = 0; p < params.length; p++) {
-                NBTTagCompound pNbt = nbt.getCompoundTag(Integer.toString(p));
+                CompoundTag pNbt = nbt.getCompoundTag(Integer.toString(p));
                 params[p] = StatementTypeParam.INSTANCE.readFromNbt(pNbt);
             }
         }
     }
 
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = new CompoundTag();
         if (statement != null) {
             nbt.setTag("s", type.writeToNbt(statement));
             for (int p = 0; p < params.length; p++) {

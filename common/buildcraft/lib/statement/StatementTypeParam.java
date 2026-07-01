@@ -2,7 +2,7 @@ package buildcraft.lib.statement;
 
 import java.io.IOException;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.statements.IStatementParameter;
@@ -25,7 +25,7 @@ public class StatementTypeParam extends StatementType<IStatementParameter> {
     }
 
     @Override
-    public IStatementParameter readFromNbt(NBTTagCompound nbt) {
+    public IStatementParameter readFromNbt(CompoundTag nbt) {
         String kind = nbt.getString("kind");
         IParameterReader reader = StatementManager.getParameterReader(kind);
         if (reader == null) {
@@ -36,8 +36,8 @@ public class StatementTypeParam extends StatementType<IStatementParameter> {
     }
 
     @Override
-    public NBTTagCompound writeToNbt(IStatementParameter slot) {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag writeToNbt(IStatementParameter slot) {
+        CompoundTag nbt = new CompoundTag();
         if (slot != null) {
             slot.writeToNbt(nbt);
             nbt.setString("kind", slot.getUniqueTag());

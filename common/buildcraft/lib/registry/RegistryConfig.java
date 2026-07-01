@@ -11,14 +11,14 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.ModContainer;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.transport.pipe.IItemPipe;
@@ -60,12 +60,12 @@ public class RegistryConfig {
     // #######################
 
     public static boolean isEnabled(Item item) {
-        return isEnabled(getCategory(item), item.getRegistryName().getResourcePath(),
+        return isEnabled(getCategory(item), item.builtInRegistryHolder().key().location().getResourcePath(),
             item.getUnlocalizedName() + ".name");
     }
 
     public static boolean isEnabled(Block block) {
-        return isEnabled(getCategory(block), block.getRegistryName().getResourcePath(),
+        return isEnabled(getCategory(block), block.builtInRegistryHolder().key().location().getResourcePath(),
             block.getUnlocalizedName() + ".name");
     }
 
@@ -135,7 +135,7 @@ public class RegistryConfig {
     }
 
     private static ModContainer getActiveMod() {
-        ModContainer container = Loader.instance().activeModContainer();
+        ModContainer container = ModList.get().getModContainerById(BCLib.MODID).orElse(null);
         if (container == null) {
             throw new RuntimeException("Was not called within the scope of an active mod!");
         } else {

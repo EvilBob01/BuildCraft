@@ -8,7 +8,7 @@ package buildcraft.lib.gui.slot;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import net.minecraftforge.items.SlotItemHandler;
 

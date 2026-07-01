@@ -12,17 +12,17 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.IItemPluggable;
 import buildcraft.api.transport.pipe.IFlowItems;
@@ -52,7 +52,7 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Nonnull
-    public ItemStack getStack(EnumDyeColor colour, boolean isFilter) {
+    public ItemStack getStack(DyeColor colour, boolean isFilter) {
         return getStack(new LensData(colour, isFilter));
     }
 
@@ -64,8 +64,8 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, EnumFacing side, EntityPlayer player,
-        EnumHand hand) {
+    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, Direction side, Player player,
+        InteractionHand hand) {
         IPipe pipe = holder.getPipe();
         if (pipe == null || !(pipe.getFlow() instanceof IFlowItems)) {
             return null;
@@ -86,20 +86,20 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public FontRenderer getFontRenderer(ItemStack stack) {
         return SpecialColourFontRenderer.INSTANCE;
     }
 
     @Override
-    protected void addSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         for (int i = 0; i < 34; i++) {
             subItems.add(new ItemStack(this, 1, i));
         }
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (int i = 0; i < 34; i++) {
             variants.put(i, new ModelResourceLocation("buildcraftsilicon:lens_item#inventory"));
@@ -107,10 +107,10 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     public static class LensData {
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
         public final boolean isFilter;
 
-        public LensData(EnumDyeColor colour, boolean isFilter) {
+        public LensData(DyeColor colour, boolean isFilter) {
             this.colour = colour;
             this.isFilter = isFilter;
         }
@@ -124,7 +124,7 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
                 colour = null;
                 isFilter = damage == 33;
             } else {
-                colour = EnumDyeColor.byDyeDamage(damage & 15);
+                colour = DyeColor.byDyeDamage(damage & 15);
                 isFilter = damage >= 16;
             }
         }

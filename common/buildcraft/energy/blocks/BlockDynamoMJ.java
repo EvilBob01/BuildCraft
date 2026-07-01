@@ -1,16 +1,16 @@
 package buildcraft.energy.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.blocks.ICustomRotationHandler;
 
@@ -27,32 +27,32 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
     }
 
     @Override
-    public TileBC_Neptune createTileEntity(World world, IBlockState state) {
+    public TileBC_Neptune createTileEntity(Level world, BlockState state) {
         return new TileDynamoMJ();
     }
 
     @Override
     @Deprecated
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 
     @Override
     @Deprecated
-    public boolean isFullBlock(IBlockState state) {
+    public boolean isFullBlock(BlockState state) {
         return false;
     }
 
     @Override
     @Deprecated
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(BlockState state) {
         return false;
     }
 
     @Override
     @Deprecated
-    public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-        TileEntity tile = world.getTileEntity(pos);
+    public BlockFaceShape getBlockFaceShape(BlockGetter world, BlockState state, BlockPos pos, Direction side) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {
             TileDynamoMJ engine = (TileDynamoMJ) tile;
             if (side == engine.getCurrentDirection().getOpposite()) {
@@ -66,8 +66,8 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
 
     @Override
     @Deprecated
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        TileEntity tile = world.getTileEntity(pos);
+    public boolean isSideSolid(BlockState base_state, BlockGetter world, BlockPos pos, Direction side) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {
             TileDynamoMJ engine = (TileDynamoMJ) tile;
             return side == engine.getCurrentDirection().getOpposite();
@@ -77,15 +77,15 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
 
     @Override
     @Deprecated
-    public EnumBlockRenderType getRenderType(IBlockState state) {
+    public EnumBlockRenderType getRenderType(BlockState state) {
         return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos) {
         super.neighborChanged(state, world, pos, block, fromPos);
-        if (world.isRemote) return;
-        TileEntity tile = world.getTileEntity(pos);
+        if (world.isClientSide) return;
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {
             TileDynamoMJ engine = (TileDynamoMJ) tile;
             engine.rotateIfInvalid();
@@ -95,12 +95,12 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
     // ICustomRotationHandler
 
     @Override
-    public EnumActionResult attemptRotation(World world, BlockPos pos, IBlockState state, EnumFacing sideWrenched) {
-        TileEntity tile = world.getTileEntity(pos);
+    public InteractionResult attemptRotation(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
+        BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {
             TileDynamoMJ engine = (TileDynamoMJ) tile;
             return engine.attemptRotation();
         }
-        return EnumActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 }

@@ -10,25 +10,25 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.Tag;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.facades.FacadeType;
 import buildcraft.api.facades.IFacade;
@@ -62,13 +62,13 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
     @Nonnull
     public ItemStack createItemStack(FacadeInstance state) {
         ItemStack item = new ItemStack(this);
-        NBTTagCompound nbt = NBTUtilBC.getItemData(item);
+        CompoundTag nbt = NBTUtilBC.getItemData(item);
         nbt.setTag("facade", state.writeToNbt());
         return item;
     }
 
     public static FacadeInstance getStates(@Nonnull ItemStack item) {
-        NBTTagCompound nbt = NBTUtilBC.getItemData(item);
+        CompoundTag nbt = NBTUtilBC.getItemData(item);
 
         String strPreview = nbt.getString("preview");
         if ("basic".equalsIgnoreCase(strPreview)) {
@@ -76,11 +76,11 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
         }
 
         if (!nbt.hasKey("facade") && nbt.hasKey("states")) {
-            NBTTagList states = nbt.getTagList("states", Constants.NBT.TAG_COMPOUND);
+            ListTag states = nbt.getTagList("states", Tag.TAG_COMPOUND);
             if (states.tagCount() > 0) {
                 // Only migrate if we actually have a facade to migrate.
                 boolean isHollow = states.getCompoundTagAt(0).getBoolean("isHollow");
-                NBTTagCompound tagFacade = new NBTTagCompound();
+                CompoundTag tagFacade = new CompoundTag();
                 tagFacade.setBoolean("isHollow", isHollow);
                 tagFacade.setTag("states", states);
                 nbt.setTag("facade", tagFacade);
@@ -92,7 +92,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
 
     @Nonnull
     @Override
-    public ItemStack getFacadeForBlock(IBlockState state) {
+    public ItemStack getFacadeForBlock(BlockState state) {
         FacadeBlockStateInfo info = FacadeStateManager.validFacadeStates.get(state);
         if (info == null) {
             return StackUtil.EMPTY;
@@ -102,23 +102,23 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
     }
 
     @Override
-    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, EnumFacing side, EntityPlayer player,
-        EnumHand hand) {
+    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, Direction side, Player player,
+        InteractionHand hand) {
         FacadeInstance fullState = getStates(stack);
         SoundUtil.playBlockPlace(holder.getPipeWorld(), holder.getPipePos(), fullState.phasedStates[0].stateInfo.state);
         return new PluggableFacade(BCSiliconPlugs.facade, holder, side, fullState);
     }
 
     @Override
-    public void addSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    public void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         // Add a single phased facade as a default
         // check if the data is present as we only process in post-init
         FacadeBlockStateInfo stone = FacadeStateManager.getInfoForBlock(Blocks.STONE);
         if (stone != null) {
             FacadePhasedState[] states = { //
                 FacadeStateManager.getInfoForBlock(Blocks.STONE).createPhased(null), //
-                FacadeStateManager.getInfoForBlock(Blocks.PLANKS).createPhased(EnumDyeColor.RED), //
-                FacadeStateManager.getInfoForBlock(Blocks.LOG).createPhased(EnumDyeColor.CYAN),//
+                FacadeStateManager.getInfoForBlock(Blocks.PLANKS).createPhased(DyeColor.RED), //
+                FacadeStateManager.getInfoForBlock(Blocks.LOG).createPhased(DyeColor.CYAN),//
             };
             FacadeInstance inst = new FacadeInstance(states, false);
             subItems.add(createItemStack(inst));
@@ -153,9 +153,9 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
         return assumedStack.getDisplayName();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag flag) {
+    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
         FacadeInstance states = getStates(stack);
         if (states.type == FacadeType.Phased) {
             String stateString = LocaleUtil.localize("item.FacadePhased.state");
@@ -172,9 +172,9 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
             }
         } else {
             if (flag.isAdvanced()) {
-                tooltip.add(states.phasedStates[0].stateInfo.state.getBlock().getRegistryName().toString());
+                tooltip.add(states.phasedStates[0].stateInfo.state.getBlock().builtInRegistryHolder().key().location().toString());
             }
-            String propertiesStart = TextFormatting.GRAY + "" + TextFormatting.ITALIC;
+            String propertiesStart = ChatFormatting.GRAY + "" + ChatFormatting.ITALIC;
             FacadeBlockStateInfo info = states.phasedStates[0].stateInfo;
             BlockUtil.getPropertiesStringMap(info.state, info.varyingProperties)
                 .forEach((name, value) -> tooltip.add(propertiesStart + name + " = " + value));

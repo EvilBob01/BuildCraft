@@ -9,11 +9,10 @@ package buildcraft.transport.container;
 import java.io.IOException;
 import java.util.EnumMap;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import buildcraft.lib.net.MessageContext;
 
 import buildcraft.api.transport.pipe.IPipeHolder.PipeMessageReceiver;
 
@@ -32,7 +31,7 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
     public final EnumMap<SlotIndex, PaintWidget> paintWidgets = new EnumMap<>(SlotIndex.class);
     private final ItemHandlerSimple filterInv;
 
-    public ContainerEmzuliPipe_BC8(EntityPlayer player, PipeBehaviourEmzuli behaviour) {
+    public ContainerEmzuliPipe_BC8(Player player, PipeBehaviourEmzuli behaviour) {
         super(player, behaviour.pipe.getHolder());
         this.behaviour = behaviour;
         this.filterInv = behaviour.invFilters;
@@ -57,7 +56,7 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(Player player) {
         super.onContainerClosed(player);
         behaviour.pipe.getHolder().onPlayerClose(player);
     }
@@ -70,13 +69,13 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
             this.index = index;
         }
 
-        public void setColour(EnumDyeColor colour) {
+        public void setColour(DyeColor colour) {
             sendWidgetData((buffer) -> MessageUtil.writeEnumOrNull(buffer, colour));
         }
 
         @Override
         public IMessage handleWidgetDataServer(MessageContext ctx, PacketBufferBC buffer) throws IOException {
-            EnumDyeColor colour = MessageUtil.readEnumOrNull(buffer, EnumDyeColor.class);
+            DyeColor colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
             if (colour == null) {
                 container.behaviour.slotColours.remove(index);
             } else {

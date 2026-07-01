@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.GuideManager;

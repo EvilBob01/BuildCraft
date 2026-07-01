@@ -9,10 +9,10 @@ package buildcraft.lib.item;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.transport.IItemPluggable;
@@ -30,7 +30,7 @@ public class ItemPluggableSimple extends ItemBC_Neptune implements IItemPluggabl
     private static final IPlacementPredicate ALWAYS_CAN = (item, h, s) -> true;
 
     /** Returns true if the {@link IPipeHolder}'s
-     * {@link PipeBehaviour#getCapability(net.minecraftforge.common.capabilities.Capability, EnumFacing)} returns a
+     * {@link PipeBehaviour#getCapability(net.neoforged.neoforge.capabilities.Capability, Direction)} returns a
      * non-null value for {@link MjAPI#CAP_REDSTONE_RECEIVER}. */
     public static final IPlacementPredicate PIPE_BEHAVIOUR_ACCEPTS_RS_POWER = (item, pipeHolder, side) -> {
         IPipe pipe = pipeHolder.getPipe();
@@ -68,8 +68,8 @@ public class ItemPluggableSimple extends ItemBC_Neptune implements IItemPluggabl
     }
 
     @Override
-    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, EnumFacing side, EntityPlayer player,
-        EnumHand hand) {
+    public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, Direction side, Player player,
+        InteractionHand hand) {
         if (!canPlace.canPlace(stack, holder, side)) {
             return null;
         }
@@ -79,6 +79,6 @@ public class ItemPluggableSimple extends ItemBC_Neptune implements IItemPluggabl
 
     @FunctionalInterface
     public interface IPlacementPredicate {
-        boolean canPlace(ItemStack stack, IPipeHolder holder, EnumFacing side);
+        boolean canPlace(ItemStack stack, IPipeHolder holder, Direction side);
     }
 }

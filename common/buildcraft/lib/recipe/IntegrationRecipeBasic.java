@@ -7,9 +7,9 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BuildCraftAPI;
 import buildcraft.api.recipes.IngredientStack;

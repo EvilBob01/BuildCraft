@@ -9,10 +9,10 @@ package buildcraft.builders.container;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.filler.IFillerPattern;
 
@@ -25,7 +25,7 @@ import buildcraft.lib.statement.FullStatement;
 import buildcraft.builders.filler.FillerType;
 
 public interface IContainerFilling {
-    EntityPlayer getPlayer();
+    Player getPlayer();
 
     void sendMessage(int id, IPayloadWriter writer);
 
@@ -44,14 +44,14 @@ public interface IContainerFilling {
     void valuesChanged();
 
     default void init() {
-        if (!getPlayer().world.isRemote) {
+        if (!getPlayer().world.isClientSide) {
             MessageUtil.doDelayedServer(this::sendData);
         }
     }
 
     default void sendData() {
         sendMessage(ContainerBC_Neptune.NET_DATA, buffer -> {
-            (getPlayer().world.isRemote
+            (getPlayer().world.isClientSide
                 ? getPatternStatementClient()
                 : getPatternStatement()).writeToBuffer(buffer);
             buffer.writeBoolean(isInverted());
@@ -68,7 +68,7 @@ public interface IContainerFilling {
     }
 
     default void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == ContainerBC_Neptune.NET_DATA) {
                 if (isLocked()) {
                     new FullStatement<>(
@@ -84,7 +84,7 @@ public interface IContainerFilling {
                 valuesChanged();
                 sendData();
             }
-        } else if (side == Side.CLIENT) {
+        } else if (side == Dist.CLIENT) {
             if (id == ContainerBC_Neptune.NET_DATA) {
                 getPatternStatement().readFromBuffer(buffer);
                 setInverted(buffer.readBoolean());

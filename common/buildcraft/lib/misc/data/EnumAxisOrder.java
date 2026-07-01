@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.core.Direction.Axis;
 
 import buildcraft.lib.misc.data.AxisOrder.Inversion;
 

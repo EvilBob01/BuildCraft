@@ -10,17 +10,14 @@ import java.io.IOException;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.BCLog;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.misc.MessageUtil;
 
 public class MessageUpdateTile implements IMessage {
@@ -44,14 +41,14 @@ public class MessageUpdateTile implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.pos = MessageUtil.readBlockPos(new PacketBuffer(buf));
+        this.pos = MessageUtil.readBlockPos(new FriendlyByteBuf(buf));
         int size = buf.readUnsignedMedium();
         payload = new PacketBufferBC(buf.readBytes(size));
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        MessageUtil.writeBlockPos(new PacketBuffer(buf), pos);
+        MessageUtil.writeBlockPos(new FriendlyByteBuf(buf), pos);
         int length = payload.readableBytes();
         buf.writeMedium(length);
         buf.writeBytes(payload, 0, length);
@@ -59,11 +56,12 @@ public class MessageUpdateTile implements IMessage {
 
     public static final IMessageHandler<MessageUpdateTile, IMessage> HANDLER = (message, ctx) -> {
         try {
-            EntityPlayer player = BCLibProxy.getProxy().getPlayerForContext(ctx);
-            if (player == null || player.world == null) {
+            Player player = ctx.getPayloadContext().player();
+            Level level = player == null ? null : player.level();
+            if (level == null) {
                 return null;
             }
-            TileEntity tile = player.world.getTileEntity(message.pos);
+            BlockEntity tile = level.getBlockEntity(message.pos);
             if (tile instanceof IPayloadReceiver) {
                 return ((IPayloadReceiver) tile).receivePayload(ctx, message.payload);
             } else {

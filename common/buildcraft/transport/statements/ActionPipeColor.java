@@ -6,10 +6,10 @@
 
 package buildcraft.transport.statements;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatement;
@@ -27,9 +27,9 @@ import buildcraft.transport.BCTransportStatements;
 
 public class ActionPipeColor extends BCStatement implements IActionInternal {
 
-    public final EnumDyeColor color;
+    public final DyeColor color;
 
-    public ActionPipeColor(EnumDyeColor color) {
+    public ActionPipeColor(DyeColor color) {
         super("buildcraft:pipe.color." + color.getName(), "buildcraft.pipe." + color.getName());
         this.color = color;
     }
@@ -50,7 +50,7 @@ public class ActionPipeColor extends BCStatement implements IActionInternal {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCTransportSprites.ACTION_PIPE_COLOUR[color.ordinal()];
     }

@@ -8,8 +8,8 @@ package buildcraft.silicon.gate;
 
 import java.util.Locale;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public enum EnumGateMaterial {
     CLAY_BRICK(Blocks.BRICK_BLOCK, 1, false),

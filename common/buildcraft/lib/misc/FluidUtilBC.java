@@ -11,21 +11,21 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import buildcraft.api.core.IFluidFilter;
 import buildcraft.api.core.IFluidHandlerAdv;
@@ -34,18 +34,18 @@ import buildcraft.lib.fluid.Tank;
 
 public class FluidUtilBC {
 
-    public static void pushFluidAround(IBlockAccess world, BlockPos pos, Tank tank) {
+    public static void pushFluidAround(BlockGetter world, BlockPos pos, Tank tank) {
         FluidStack potential = tank.drain(tank.getFluidAmount(), false);
         int drained = 0;
         if (potential == null || potential.amount <= 0) {
             return;
         }
         FluidStack working = potential.copy();
-        for (EnumFacing side : EnumFacing.VALUES) {
+        for (Direction side : Direction.VALUES) {
             if (potential.amount <= 0) {
                 break;
             }
-            TileEntity target = world.getTileEntity(pos.offset(side));
+            BlockEntity target = world.getBlockEntity(pos.offset(side));
             if (target == null) {
                 continue;
             }
@@ -149,7 +149,7 @@ public class FluidUtilBC {
         return new FluidStack(drained, accepted);
     }
 
-    public static boolean onTankActivated(EntityPlayer player, BlockPos pos, EnumHand hand,
+    public static boolean onTankActivated(Player player, BlockPos pos, InteractionHand hand,
         IFluidHandler fluidHandler) {
         ItemStack held = player.getHeldItem(hand);
         if (held.isEmpty()) {
@@ -171,8 +171,8 @@ public class FluidUtilBC {
         if (flItem == null) {
             return false;
         }
-        World world = player.world;
-        if (world.isRemote) {
+        Level world = player.world;
+        if (world.isClientSide) {
             return true;
         }
         boolean changed = true;

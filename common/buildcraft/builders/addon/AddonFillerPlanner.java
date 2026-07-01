@@ -11,11 +11,11 @@ import java.util.stream.IntStream;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.core.IBox;
 import buildcraft.api.filler.IFillerPattern;
@@ -80,20 +80,20 @@ public class AddonFillerPlanner extends Addon implements ISingleAddon, IFillerSt
     }
 
     @Override
-    public void onPlayerRightClick(EntityPlayer player) {
+    public void onPlayerRightClick(Player player) {
         super.onPlayerRightClick(player);
         BCBuildersGuis.FILLER_PLANNER.openGUI(player);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.setTag("patternStatement", patternStatement.writeToNbt());
         nbt.setBoolean("inverted", inverted);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         patternStatement.readFromNbt(nbt.getCompoundTag("patternStatement"));
         inverted = nbt.getBoolean("inverted");
     }
@@ -114,17 +114,17 @@ public class AddonFillerPlanner extends Addon implements ISingleAddon, IFillerSt
     // IFillerStatementContainer
 
     @Override
-    public TileEntity getNeighbourTile(EnumFacing side) {
+    public BlockEntity getNeighbourTile(Direction side) {
         return null;
     }
 
     @Override
-    public TileEntity getTile() {
+    public BlockEntity getTile() {
         return null;
     }
 
     @Override
-    public World getFillerWorld() {
+    public Level getFillerWorld() {
         return volumeBox.world;
     }
 

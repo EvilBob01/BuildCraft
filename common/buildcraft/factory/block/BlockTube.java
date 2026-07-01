@@ -6,20 +6,20 @@
 
 package buildcraft.factory.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 
 import buildcraft.factory.tile.TileMiner;
 
 public class BlockTube extends BlockBCBase_Neptune {
-    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(4 / 16D, 0 / 16D, 4 / 16D, 12 / 16D, 16 / 16D, 12 / 16D);
+    private static final AABB BOUNDING_BOX = new AABB(4 / 16D, 0 / 16D, 4 / 16D, 12 / 16D, 16 / 16D, 12 / 16D);
 
     public BlockTube(Material material, String id) {
         super(material, id);
@@ -27,22 +27,22 @@ public class BlockTube extends BlockBCBase_Neptune {
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest) {
         BlockPos currentPos = pos;
         // noinspection StatementWithEmptyBody
         while (world.getBlockState(currentPos = currentPos.up()).getBlock() == this) {
         }
-        if (!(world.getTileEntity(currentPos) instanceof TileMiner)) {
+        if (!(world.getBlockEntity(currentPos) instanceof TileMiner)) {
             return super.removedByPlayer(state, world, pos, player, willHarvest);
         } else {
             return false;
@@ -50,7 +50,7 @@ public class BlockTube extends BlockBCBase_Neptune {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AABB getBoundingBox(BlockState state, BlockGetter source, BlockPos pos) {
         return BOUNDING_BOX;
     }
 }

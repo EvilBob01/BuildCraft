@@ -32,7 +32,7 @@ class GuiConfigEntry {
             prop = constructor.create(name);
             prop.set(value);
             typeToProperty.put(type, prop);
-            GuiConfigManager.markDirty();
+            GuiConfigManager.setChanged();
         }
         return prop;
     }

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.gui.GuiBC8;
 import buildcraft.lib.gui.GuiIcon;

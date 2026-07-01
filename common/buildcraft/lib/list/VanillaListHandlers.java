@@ -8,7 +8,7 @@ package buildcraft.lib.list;
 
 import net.minecraft.item.ItemFood;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.api.lists.ListRegistry;
 

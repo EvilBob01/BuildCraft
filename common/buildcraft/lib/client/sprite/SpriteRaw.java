@@ -7,7 +7,7 @@
 package buildcraft.lib.client.sprite;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -34,7 +34,7 @@ public class SpriteRaw implements ISprite {
 
     @Override
     public void bindTexture() {
-        Minecraft.getMinecraft().renderEngine.bindTexture(location);
+        Minecraft.getInstance().renderEngine.bindTexture(location);
     }
 
     @Override

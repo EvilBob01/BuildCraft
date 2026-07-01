@@ -6,10 +6,10 @@
 
 package buildcraft.core.statements;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatementContainer;
@@ -66,7 +66,7 @@ public class ActionRedstoneOutput extends BCStatement implements IActionInternal
     @Override
     public void actionActivate(IStatementContainer source, IStatementParameter[] parameters) {
         if (source instanceof IRedstoneStatementContainer) {
-            EnumFacing side = null;
+            Direction side = null;
             if (source instanceof ISidedStatementContainer && isSideOnly(parameters)) {
                 side = ((ISidedStatementContainer) source).getSide();
             }
@@ -83,7 +83,7 @@ public class ActionRedstoneOutput extends BCStatement implements IActionInternal
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCCoreSprites.ACTION_REDSTONE;
     }

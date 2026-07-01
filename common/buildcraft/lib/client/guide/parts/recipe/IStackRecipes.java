@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
 

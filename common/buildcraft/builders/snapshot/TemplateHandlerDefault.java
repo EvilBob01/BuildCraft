@@ -6,12 +6,12 @@
 
 package buildcraft.builders.snapshot;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.template.ITemplateHandler;
 
@@ -19,16 +19,16 @@ public enum TemplateHandlerDefault implements ITemplateHandler {
     INSTANCE;
 
     @Override
-    public boolean handle(World world, BlockPos pos, EntityPlayer player, ItemStack stack) {
+    public boolean handle(Level world, BlockPos pos, Player player, ItemStack stack) {
         return stack.onItemUse(
             player,
             world,
             pos,
             player.getActiveHand(),
-            EnumFacing.UP,
+            Direction.UP,
             0.5F,
             0.0F,
             0.5F
-        ) == EnumActionResult.SUCCESS;
+        ) == InteractionResult.SUCCESS;
     }
 }

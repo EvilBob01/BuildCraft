@@ -14,14 +14,14 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.Tag;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.gates.IGate;
@@ -42,28 +42,28 @@ import buildcraft.transport.BCTransportSprites;
 public class TriggerParameterSignal implements IStatementParameter {
 
     public static final TriggerParameterSignal EMPTY;
-    private static final Map<EnumDyeColor, TriggerParameterSignal> SIGNALS_OFF, SIGNALS_ON;
+    private static final Map<DyeColor, TriggerParameterSignal> SIGNALS_OFF, SIGNALS_ON;
 
     static {
         EMPTY = new TriggerParameterSignal(false, null);
-        SIGNALS_OFF = new EnumMap<>(EnumDyeColor.class);
-        SIGNALS_ON = new EnumMap<>(EnumDyeColor.class);
-        for (EnumDyeColor colour : ColourUtil.COLOURS) {
+        SIGNALS_OFF = new EnumMap<>(DyeColor.class);
+        SIGNALS_ON = new EnumMap<>(DyeColor.class);
+        for (DyeColor colour : ColourUtil.COLOURS) {
             SIGNALS_OFF.put(colour, new TriggerParameterSignal(false, colour));
             SIGNALS_ON.put(colour, new TriggerParameterSignal(true, colour));
         }
     }
 
-    public static TriggerParameterSignal get(boolean active, EnumDyeColor colour) {
+    public static TriggerParameterSignal get(boolean active, DyeColor colour) {
         if (colour == null) {
             return EMPTY;
         }
         return new TriggerParameterSignal(active, colour);
     }
 
-    public static TriggerParameterSignal readFromNbt(NBTTagCompound nbt) {
-        if (nbt.hasKey("color", Constants.NBT.TAG_ANY_NUMERIC)) {
-            EnumDyeColor colour = EnumDyeColor.byMetadata(nbt.getByte("color"));
+    public static TriggerParameterSignal readFromNbt(CompoundTag nbt) {
+        if (nbt.hasKey("color", Tag.TAG_ANY_NUMERIC)) {
+            DyeColor colour = DyeColor.byMetadata(nbt.getByte("color"));
             boolean active = nbt.getBoolean("active");
             return get(active, colour);
         } else {
@@ -72,16 +72,16 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound nbt) {
+    public void writeToNbt(CompoundTag nbt) {
         if (colour != null) {
             nbt.setByte("color", (byte) colour.getMetadata());
             nbt.setBoolean("active", active);
         }
     }
 
-    public static TriggerParameterSignal readFromBuf(PacketBuffer buffer) {
+    public static TriggerParameterSignal readFromBuf(FriendlyByteBuf buffer) {
         PacketBufferBC buf = PacketBufferBC.asPacketBufferBc(buffer);
-        EnumDyeColor colour = MessageUtil.readEnumOrNull(buf, EnumDyeColor.class);
+        DyeColor colour = MessageUtil.readEnumOrNull(buf, DyeColor.class);
         if (colour == null) {
             return EMPTY;
         } else {
@@ -90,7 +90,7 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    public void writeToBuf(PacketBuffer buffer) {
+    public void writeToBuf(FriendlyByteBuf buffer) {
         MessageUtil.writeEnumOrNull(buffer, colour);
         if (colour != null) {
             buffer.writeBoolean(active);
@@ -100,9 +100,9 @@ public class TriggerParameterSignal implements IStatementParameter {
     public final boolean active;
 
     @Nullable
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
 
-    private TriggerParameterSignal(boolean active, EnumDyeColor colour) {
+    private TriggerParameterSignal(boolean active, DyeColor colour) {
         this.active = active;
         this.colour = colour;
     }
@@ -114,7 +114,7 @@ public class TriggerParameterSignal implements IStatementParameter {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         if (colour == null) {
             return null;
@@ -154,7 +154,7 @@ public class TriggerParameterSignal implements IStatementParameter {
         IGate gate = (IGate) source;
         List<TriggerParameterSignal> poss = new ArrayList<>(ColourUtil.COLOURS.length * 2 + 1);
         poss.add(EMPTY);
-        for (EnumDyeColor c : ColourUtil.COLOURS) {
+        for (DyeColor c : ColourUtil.COLOURS) {
             if (TriggerPipeSignal.doesGateHaveColour(gate, c)) {
                 poss.add(get(true, c));
                 poss.add(get(false, c));

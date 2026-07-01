@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;

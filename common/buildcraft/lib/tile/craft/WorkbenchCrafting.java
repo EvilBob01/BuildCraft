@@ -11,17 +11,17 @@ import javax.annotation.Nullable;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import buildcraft.lib.inventory.filter.ArrayStackFilter;
 import buildcraft.lib.misc.CraftingUtil;
@@ -38,7 +38,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     public static final Container CONTAINER_EVENT_HANDLER = new ContainerNullEventHandler();
 
-    private final TileEntity tile;
+    private final BlockEntity tile;
     private final ItemHandlerSimple invBlueprint;
     private final ItemHandlerSimple invMaterials;
     private final ItemHandlerSimple invResult;
@@ -84,7 +84,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     /** @return True if anything changed, false otherwise */
     public boolean tick() {
-        if (tile.getWorld().isRemote) {
+        if (tile.getWorld().isClientSide) {
             throw new IllegalStateException("Never call this on the client side!");
         }
         if (isBlueprintDirty) {
@@ -276,7 +276,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     static class ContainerNullEventHandler extends Container {
         @Override
-        public boolean canInteractWith(EntityPlayer playerIn) {
+        public boolean canInteractWith(Player playerIn) {
             return false;
         }
 

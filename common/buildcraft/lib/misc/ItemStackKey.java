@@ -8,7 +8,7 @@ package buildcraft.lib.misc;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemStackKey {
     public static final ItemStackKey EMPTY = new ItemStackKey(StackUtil.EMPTY);

@@ -13,13 +13,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
@@ -75,7 +75,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
 
     @Override
     public void render(TileQuarry tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        Profiler profiler = Minecraft.getInstance().mcProfiler;
         profiler.startSection("bc");
         profiler.startSection("quarry");
         profiler.startSection("setup");
@@ -110,8 +110,8 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 if (tile.drillPos == null) {
                     if (taskBreakBlock.clientPower != 0) {
                         // Don't render a laser before we have any power
-                        Vec3d from = VecUtil.convertCenter(tile.getPos());
-                        Vec3d to = VecUtil.convertCenter(pos);
+                        Vec3 from = VecUtil.convertCenter(tile.getPos());
+                        Vec3 to = VecUtil.convertCenter(pos);
                         LaserData_BC8 laser = new LaserData_BC8(LASER, from, to, 1 / 16.0);
                         LaserRenderer_BC8.renderLaserStatic(laser);
                     }
@@ -120,7 +120,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                         taskBreakBlock.prevClientPower +
                             (taskBreakBlock.clientPower - taskBreakBlock.prevClientPower) * (double) partialTicks
                     );
-                    AxisAlignedBB aabb = tile.getWorld().getBlockState(pos).getBoundingBox(tile.getWorld(), pos);
+                    AABB aabb = tile.getWorld().getBlockState(pos).getBoundingBox(tile.getWorld(), pos);
                     double value = (double) power / taskBreakBlock.getTarget();
                     if (value < 0.9) {
                         value = 1 - value / 0.9;
@@ -135,31 +135,31 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
 
             profiler.endStartSection("frame");
             if (tile.clientDrillPos != null && tile.prevClientDrillPos != null) {
-                Vec3d interpolatedPos = tile.prevClientDrillPos.add(tile.clientDrillPos.subtract(tile.prevClientDrillPos).scale(partialTicks));
+                Vec3 interpolatedPos = tile.prevClientDrillPos.add(tile.clientDrillPos.subtract(tile.prevClientDrillPos).scale(partialTicks));
 
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(FRAME,//
-                        new Vec3d(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z),//
-                        new Vec3d(interpolatedPos.x + 0.5, max.getY() + 0.5, max.getZ() + 12 / 16D),//
+                        new Vec3(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z),//
+                        new Vec3(interpolatedPos.x + 0.5, max.getY() + 0.5, max.getZ() + 12 / 16D),//
                         1 / 16D, true, true, 0));
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(FRAME,//
-                        new Vec3d(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z),//
-                        new Vec3d(interpolatedPos.x + 0.5, max.getY() + 0.5, min.getZ() + 4 / 16D),//
+                        new Vec3(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z),//
+                        new Vec3(interpolatedPos.x + 0.5, max.getY() + 0.5, min.getZ() + 4 / 16D),//
                         1 / 16D, true, true, 0));
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(FRAME,//
-                        new Vec3d(interpolatedPos.x, max.getY() + 0.5, interpolatedPos.z + 0.5),//
-                        new Vec3d(max.getX() + 12 / 16D, max.getY() + 0.5, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x, max.getY() + 0.5, interpolatedPos.z + 0.5),//
+                        new Vec3(max.getX() + 12 / 16D, max.getY() + 0.5, interpolatedPos.z + 0.5),//
                         1 / 16D, true, true, 0));
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(FRAME,//
-                        new Vec3d(interpolatedPos.x, max.getY() + 0.5, interpolatedPos.z + 0.5),//
-                        new Vec3d(min.getX() + 4 / 16D, max.getY() + 0.5, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x, max.getY() + 0.5, interpolatedPos.z + 0.5),//
+                        new Vec3(min.getX() + 4 / 16D, max.getY() + 0.5, interpolatedPos.z + 0.5),//
                         1 / 16D, true, true, 0));
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(FRAME_BOTTOM,//
-                        new Vec3d(interpolatedPos.x + 0.5, interpolatedPos.y + 1 + 4 / 16D, interpolatedPos.z + 0.5),//
-                        new Vec3d(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x + 0.5, interpolatedPos.y + 1 + 4 / 16D, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x + 0.5, max.getY() + 0.5, interpolatedPos.z + 0.5),//
                         1 / 16D, true, true, 0));
                 LaserRenderer_BC8.renderLaserStatic(new LaserData_BC8(DRILL,//
-                        new Vec3d(interpolatedPos.x + 0.5, interpolatedPos.y + 1 + yOffset, interpolatedPos.z + 0.5),//
-                        new Vec3d(interpolatedPos.x + 0.5, interpolatedPos.y + yOffset, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x + 0.5, interpolatedPos.y + 1 + yOffset, interpolatedPos.z + 0.5),//
+                        new Vec3(interpolatedPos.x + 0.5, interpolatedPos.y + yOffset, interpolatedPos.z + 0.5),//
                         1 / 16D, true, true, 0));
             } else {
                 LaserBoxRenderer.renderLaserBoxStatic(tile.frameBox, BuildCraftLaserManager.STRIPES_WRITE, true);
@@ -183,7 +183,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                     : -1 /* not possible */;
                 double xProgress = -1;
                 double zProgress = -1;
-                EnumFacing side = tile.getWorld().getBlockState(tile.getPos()).getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
+                Direction side = tile.getWorld().getBlockState(tile.getPos()).getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
                 BlockPos firstPos = tile.getPos().offset(side);
                 switch (side) {
                     case SOUTH:
@@ -236,7 +236,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(xResult + 0.5, tile.getPos().getY(), zResult + 0.5);
                 GlStateManager.scale(3, 3, 3);
-                Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
+                Minecraft.getInstance().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
                 GlStateManager.popMatrix();
                 GlStateManager.popMatrix();
             }

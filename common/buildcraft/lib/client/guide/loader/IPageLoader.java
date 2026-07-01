@@ -9,8 +9,8 @@ package buildcraft.lib.client.guide.loader;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.guide.entry.PageEntry;
 import buildcraft.lib.client.guide.parts.GuidePageFactory;

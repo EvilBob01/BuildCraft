@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import buildcraft.api.core.BCDebugging;
@@ -89,7 +89,7 @@ public abstract class NetworkedObjectCache<T> {
      *         make sure that this really is the client thread. */
     public ClientView client() {
         if (DEBUG_LOG) {
-            if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
+            if (!Minecraft.getInstance().isCallingFromMinecraftThread()) {
                 throw new IllegalStateException("");
             }
         }

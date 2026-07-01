@@ -10,20 +10,20 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.ModelUtil;
 import buildcraft.lib.client.model.MutableQuad;
 import buildcraft.lib.client.render.DetachedRenderer.IDetachedRenderer;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum DebugRenderHelper implements IDetachedRenderer {
     INSTANCE;
 
@@ -34,7 +34,7 @@ public enum DebugRenderHelper implements IDetachedRenderer {
         Tuple3f center = new Point3f(0.5f, 0.5f, 0.5f);
         Tuple3f radius = new Point3f(0.25f, 0.25f, 0.25f);
 
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             MutableQuad quad = ModelUtil.createFace(face, center, radius, null);
             quad.lightf(1, 1);
             smallCuboid[face.ordinal()] = quad;
@@ -42,8 +42,8 @@ public enum DebugRenderHelper implements IDetachedRenderer {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void render(EntityPlayer player, float partialTicks) {
+    @OnlyIn(Dist.CLIENT)
+    public void render(Player player, float partialTicks) {
         IAdvDebugTarget target = BCAdvDebugging.INSTANCE.targetClient;
         if (target == null) {
             return;
@@ -57,9 +57,9 @@ public enum DebugRenderHelper implements IDetachedRenderer {
         }
     }
 
-    public static void renderAABB(BufferBuilder bb, AxisAlignedBB aabb, int colour) {
+    public static void renderAABB(BufferBuilder bb, AABB aabb, int colour) {
         bb.setTranslation(0, 0, 0);
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             MutableQuad quad = ModelUtil.createFace(
                 face,
                 new Point3f(

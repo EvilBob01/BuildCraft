@@ -27,10 +27,10 @@ import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.lib.misc.data.SingleCache;
 import buildcraft.lib.nbt.NbtSquisher;
@@ -73,8 +73,8 @@ public class GlobalSavedDataSnapshots {
         return INSTANCES.get(side);
     }
 
-    public static GlobalSavedDataSnapshots get(World world) {
-        return get(world.isRemote ? Side.CLIENT : Side.SERVER);
+    public static GlobalSavedDataSnapshots get(Level world) {
+        return get(world.isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER);
     }
 
     private Pair<Snapshot, File> readSnapshot(Snapshot.Key key) {
@@ -84,7 +84,7 @@ public class GlobalSavedDataSnapshots {
                 if (snapshotFile.getName().startsWith(key.toString()) &&
                     snapshotFile.getName().endsWith(SNAPSHOT_FILE_EXTENSION)) {
                     try (FileInputStream fileInputStream = new FileInputStream(snapshotFile)) {
-                        Snapshot snapshot = Snapshot.readFromNBT(NbtSquisher.expand(fileInputStream));
+                        Snapshot snapshot = Snapshot.loadAdditional(NbtSquisher.expand(fileInputStream));
                         if (Objects.equals(snapshot.key, key)) {
                             return Pair.of(snapshot, snapshotFile);
                         }
@@ -104,7 +104,7 @@ public class GlobalSavedDataSnapshots {
             for (File snapshotFile : files) {
                 if (snapshotFile.getName().endsWith(SNAPSHOT_FILE_EXTENSION)) {
                     try (FileInputStream fileInputStream = new FileInputStream(snapshotFile)) {
-                        Snapshot snapshot = Snapshot.readFromNBT(NbtSquisher.expand(fileInputStream));
+                        Snapshot snapshot = Snapshot.loadAdditional(NbtSquisher.expand(fileInputStream));
                         if (snapshotFile.getName().startsWith(snapshot.key.toString())) {
                             listBuilder.add(snapshot.key);
                         }
@@ -124,7 +124,7 @@ public class GlobalSavedDataSnapshots {
         );
         if (!snapshotFile.exists()) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(snapshotFile)) {
-                NbtSquisher.squishVanilla(Snapshot.writeToNBT(snapshot), fileOutputStream);
+                NbtSquisher.squishVanilla(Snapshot.saveAdditional(snapshot), fileOutputStream);
             } catch (IOException e) {
                 new IOException("Failed to write the snapshot file: " + snapshotFile, e).printStackTrace();
             }

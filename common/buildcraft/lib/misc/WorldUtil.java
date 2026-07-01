@@ -6,10 +6,10 @@
 
 package buildcraft.lib.misc;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public class WorldUtil {
-    public static boolean isWorldCreative(World world) {
+    public static boolean isWorldCreative(Level world) {
         return world.getWorldInfo().getGameType().isCreative();
     }
 }

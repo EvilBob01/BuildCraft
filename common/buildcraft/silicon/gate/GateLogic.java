@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.nbt.Tag;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.core.BCLog;
@@ -96,7 +96,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
     public int redstoneOutput, redstoneOutputSide;
 
-    private final EnumSet<EnumDyeColor> wireBroadcasts;
+    private final EnumSet<DyeColor> wireBroadcasts;
 
     /** Used on the client to determine if this gate should glow or not. */
     public boolean isOn;
@@ -113,20 +113,20 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
         triggerOn = new boolean[variant.numSlots];
         actionOn = new boolean[variant.numSlots];
 
-        wireBroadcasts = EnumSet.noneOf(EnumDyeColor.class);
+        wireBroadcasts = EnumSet.noneOf(DyeColor.class);
     }
 
     // Saving + Loading
 
-    public GateLogic(PluggableGate pluggable, NBTTagCompound nbt) {
+    public GateLogic(PluggableGate pluggable, CompoundTag nbt) {
         this(pluggable, new GateVariant(nbt.getCompoundTag("variant")));
 
         readConfigData(nbt);
 
-        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.getTag("wireBroadcasts"), EnumDyeColor.class));
+        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.getTag("wireBroadcasts"), DyeColor.class));
     }
 
-    public void readConfigData(NBTTagCompound nbt) {
+    public void readConfigData(CompoundTag nbt) {
         short c = nbt.getShort("connections");
         for (int i = 0; i < connections.length; i++) {
             connections[i] = ((c >>> i) & 1) == 1;
@@ -136,15 +136,15 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
             String tName = "trigger[" + i + "]";
             String aName = "action[" + i + "]";
             // Legacy
-            if (nbt.hasKey(tName, Constants.NBT.TAG_STRING)) {
-                NBTTagCompound nbt2 = new NBTTagCompound();
+            if (nbt.hasKey(tName, Tag.TAG_STRING)) {
+                CompoundTag nbt2 = new CompoundTag();
                 nbt2.setString("kind", nbt.getString(tName));
                 nbt2.setByte("side", nbt.getByte(tName + ".side"));
                 nbt.setTag(tName, nbt2);
             }
             // Legacy
-            if (nbt.hasKey(aName, Constants.NBT.TAG_STRING)) {
-                NBTTagCompound nbt2 = new NBTTagCompound();
+            if (nbt.hasKey(aName, Tag.TAG_STRING)) {
+                CompoundTag nbt2 = new CompoundTag();
                 nbt2.setString("kind", nbt.getString(aName));
                 nbt2.setByte("side", nbt.getByte(aName + ".side"));
                 nbt.setTag(aName, nbt2);
@@ -155,9 +155,9 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
         }
     }
 
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setTag("variant", variant.writeToNBT());
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = new CompoundTag();
+        nbt.setTag("variant", variant.saveAdditional());
 
         short c = 0;
         for (int i = 0; i < connections.length; i++) {
@@ -175,7 +175,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 nbt.setTag("action[" + s + "]", statements[s].action.writeToNbt());
             }
         }
-        nbt.setTag("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, EnumDyeColor.class));
+        nbt.setTag("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, DyeColor.class));
         return nbt;
     }
 
@@ -230,7 +230,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
             (isAction ? s.action : s.trigger).readFromBuffer(buffer);
             return;
         }
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_ID_RESOLVE) {
                 MessageUtil.readBooleanArray(buffer, triggerOn);
                 MessageUtil.readBooleanArray(buffer, actionOn);
@@ -275,17 +275,17 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     // IGate
 
     @Override
-    public EnumFacing getSide() {
+    public Direction getSide() {
         return pluggable.side;
     }
 
     @Override
-    public TileEntity getTile() {
+    public BlockEntity getTile() {
         return getPipeHolder().getPipeTile();
     }
 
     @Override
-    public TileEntity getNeighbourTile(EnumFacing side) {
+    public BlockEntity getNeighbourTile(Direction side) {
         return getPipeHolder().getNeighbourTile(side);
     }
 
@@ -330,20 +330,20 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     }
 
     @Override
-    public int getRedstoneInput(EnumFacing side) {
+    public int getRedstoneInput(Direction side) {
         return getPipeHolder().getRedstoneInput(side);
     }
 
     @Override
-    public boolean setRedstoneOutput(EnumFacing side, int value) {
+    public boolean setRedstoneOutput(Direction side, int value) {
         return getPipeHolder().setRedstoneOutput(side, value);
     }
 
     // Wire related
 
     @Override
-    public boolean isEmitting(EnumDyeColor colour) {
-        TileEntity tile = getPipeHolder().getPipeTile();
+    public boolean isEmitting(DyeColor colour) {
+        BlockEntity tile = getPipeHolder().getPipeTile();
         if (tile.isInvalid()) {
             throw new UnsupportedOperationException("Cannot check an invalid emitter!");
         }
@@ -351,7 +351,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     }
 
     @Override
-    public void emitWire(EnumDyeColor colour) {
+    public void emitWire(DyeColor colour) {
         wireBroadcasts.add(colour);
     }
 
@@ -377,7 +377,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
         activeActions.clear();
 
-        EnumSet<EnumDyeColor> previousBroadcasts = EnumSet.copyOf(wireBroadcasts);
+        EnumSet<DyeColor> previousBroadcasts = EnumSet.copyOf(wireBroadcasts);
         wireBroadcasts.clear();
 
         for (int triggerIndex = 0; triggerIndex < statements.length; triggerIndex++) {
@@ -448,15 +448,15 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
 
         if (!previousBroadcasts.equals(wireBroadcasts)) {
             IWireManager wires = getPipeHolder().getWireManager();
-            EnumSet<EnumDyeColor> turnedOff = EnumSet.copyOf(previousBroadcasts);
+            EnumSet<DyeColor> turnedOff = EnumSet.copyOf(previousBroadcasts);
             turnedOff.removeAll(wireBroadcasts);
             // FIXME: add call to "wires.stopEmittingColour(turnedOff)"
 
-            EnumSet<EnumDyeColor> turnedOn = EnumSet.copyOf(wireBroadcasts);
+            EnumSet<DyeColor> turnedOn = EnumSet.copyOf(wireBroadcasts);
             turnedOn.removeAll(previousBroadcasts);
             // FIXME: add call to "wires.emittingColour(turnedOff)"
 
-            if (BCModules.TRANSPORT.isLoaded() && !getPipeHolder().getPipeWorld().isRemote) {
+            if (BCModules.TRANSPORT.isLoaded() && !getPipeHolder().getPipeWorld().isClientSide) {
                 WorldSavedDataWireSystems.get(getPipeHolder().getPipeWorld()).gatesChanged = true;
             }
         }
@@ -471,7 +471,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     }
 
     public void onTick() {
-        if (getPipeHolder().getPipeWorld().isRemote) {
+        if (getPipeHolder().getPipeWorld().isClientSide) {
             return;
         }
         resolveActions();
@@ -484,13 +484,13 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 set.add(new TriggerWrapperInternal(trigger));
             }
         }
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             for (ITriggerInternalSided trigger : StatementManager.getInternalSidedTriggers(this, face)) {
                 if (isValidTrigger(trigger)) {
                     set.add(new TriggerWrapperInternalSided(trigger, face));
                 }
             }
-            TileEntity neighbour = getNeighbourTile(face);
+            BlockEntity neighbour = getNeighbourTile(face);
             if (neighbour != null) {
                 for (ITriggerExternal trigger : StatementManager.getExternalTriggers(face, neighbour)) {
                     if (isValidTrigger(trigger)) {
@@ -509,13 +509,13 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 set.add(new ActionWrapperInternal(trigger));
             }
         }
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             for (IActionInternalSided trigger : StatementManager.getInternalSidedActions(this, face)) {
                 if (isValidAction(trigger)) {
                     set.add(new ActionWrapperInternalSided(trigger, face));
                 }
             }
-            TileEntity neighbour = getNeighbourTile(face);
+            BlockEntity neighbour = getNeighbourTile(face);
             if (neighbour != null) {
                 for (IActionExternal trigger : StatementManager.getExternalActions(face, neighbour)) {
                     if (isValidAction(trigger)) {

@@ -12,16 +12,16 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.enums.EnumSnapshotType;
@@ -37,7 +37,7 @@ import buildcraft.lib.net.PacketBufferBC;
 public abstract class Snapshot {
     public Key key = new Key();
     public BlockPos size;
-    public EnumFacing facing;
+    public Direction facing;
     public BlockPos offset;
 
     public static Snapshot create(EnumSnapshotType type) {
@@ -114,14 +114,14 @@ public abstract class Snapshot {
         return getDataSize(size);
     }
 
-    public static NBTTagCompound writeToNBT(Snapshot snapshot) {
-        NBTTagCompound nbt = snapshot.serializeNBT();
+    public static CompoundTag writeToNBT(Snapshot snapshot) {
+        CompoundTag nbt = snapshot.serializeNBT();
         nbt.setTag("type", NBTUtilBC.writeEnum(snapshot.getType()));
         return nbt;
     }
 
-    public static Snapshot readFromNBT(NBTTagCompound nbt) throws InvalidInputDataException {
-        NBTBase tag = nbt.getTag("type");
+    public static Snapshot readFromNBT(CompoundTag nbt) throws InvalidInputDataException {
+        Tag tag = nbt.getTag("type");
         EnumSnapshotType type = NBTUtilBC.readEnum(tag, EnumSnapshotType.class);
         if (type == null) {
             throw new InvalidInputDataException("Unknown snapshot type " + tag);
@@ -131,8 +131,8 @@ public abstract class Snapshot {
         return snapshot;
     }
 
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.setTag("key", key.serializeNBT());
         nbt.setTag("size", NBTUtil.createPosTag(size));
         nbt.setTag("facing", NBTUtilBC.writeEnum(facing));
@@ -140,10 +140,10 @@ public abstract class Snapshot {
         return nbt;
     }
 
-    public void deserializeNBT(NBTTagCompound nbt) throws InvalidInputDataException {
+    public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         key = new Key(nbt.getCompoundTag("key"));
         size = NBTUtil.getPosFromTag(nbt.getCompoundTag("size"));
-        facing = NBTUtilBC.readEnum(nbt.getTag("facing"), EnumFacing.class);
+        facing = NBTUtilBC.readEnum(nbt.getTag("facing"), Direction.class);
         offset = NBTUtil.getPosFromTag(nbt.getCompoundTag("offset"));
     }
 
@@ -152,8 +152,8 @@ public abstract class Snapshot {
     abstract public EnumSnapshotType getType();
 
     public void computeKey() {
-        NBTTagCompound nbt = writeToNBT(this);
-        if (nbt.hasKey("key", Constants.NBT.TAG_COMPOUND)) {
+        CompoundTag nbt = writeToNBT(this);
+        if (nbt.hasKey("key", Tag.TAG_COMPOUND)) {
             nbt.removeTag("key");
         }
         key = new Key(key, HashUtil.computeHash(nbt));
@@ -193,7 +193,7 @@ public abstract class Snapshot {
         }
 
         @SuppressWarnings("WeakerAccess")
-        public Key(NBTTagCompound nbt) {
+        public Key(CompoundTag nbt) {
             hash = nbt.getByteArray("hash");
             header = nbt.hasKey("header") ? new Header(nbt.getCompoundTag("header")) : null;
         }
@@ -203,8 +203,8 @@ public abstract class Snapshot {
             header = buffer.readBoolean() ? new Header(buffer) : null;
         }
 
-        public NBTTagCompound serializeNBT() {
-            NBTTagCompound nbt = new NBTTagCompound();
+        public CompoundTag serializeNBT() {
+            CompoundTag nbt = new CompoundTag();
             nbt.setByteArray("hash", hash);
             if (header != null) {
                 nbt.setTag("header", header.serializeNBT());
@@ -255,7 +255,7 @@ public abstract class Snapshot {
         }
 
         @SuppressWarnings("WeakerAccess")
-        public Header(NBTTagCompound nbt) {
+        public Header(CompoundTag nbt) {
             key = new Key(nbt.getCompoundTag("key"));
             owner = nbt.getUniqueId("owner");
             created = new Date(nbt.getLong("created"));
@@ -270,8 +270,8 @@ public abstract class Snapshot {
             name = buffer.readString();
         }
 
-        public NBTTagCompound serializeNBT() {
-            NBTTagCompound nbt = new NBTTagCompound();
+        public CompoundTag serializeNBT() {
+            CompoundTag nbt = new CompoundTag();
             nbt.setTag("key", key.serializeNBT());
             nbt.setUniqueId("owner", owner);
             nbt.setLong("created", created.getTime());
@@ -286,7 +286,7 @@ public abstract class Snapshot {
             buffer.writeString(name);
         }
 
-        public EntityPlayer getOwnerPlayer(World world) {
+        public Player getOwnerPlayer(Level world) {
             return world.getPlayerEntityByUUID(owner);
         }
 

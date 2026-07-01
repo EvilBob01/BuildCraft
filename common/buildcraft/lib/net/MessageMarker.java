@@ -12,15 +12,12 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.core.BCLog;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.marker.MarkerCache;
 import buildcraft.lib.misc.MessageUtil;
 
@@ -73,7 +70,8 @@ public class MessageMarker implements IMessage {
     }
 
     public static final IMessageHandler<MessageMarker, IMessage> HANDLER = (message, ctx) -> {
-        World world = BCLibProxy.getProxy().getClientWorld();
+        Player player = ctx.getPayloadContext().player();
+        Level world = player == null ? null : player.level();
         if (world == null) {
             if (DEBUG) {
                 BCLog.logger.warn("[lib.messages][marker] The world was null for a message!");

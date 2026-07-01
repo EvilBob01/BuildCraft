@@ -17,23 +17,23 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.EnumPipePart;
 
 import buildcraft.lib.misc.CapUtil;
 import buildcraft.lib.misc.InventoryUtil;
 
-public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable<NBTTagCompound> {
+public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable<CompoundTag> {
     public enum EnumAccess {
         /** An {@link IItemHandler} that shouldn't be accessible by external sources. */
         NONE,
@@ -49,7 +49,7 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
     public final StackChangeCallback callback;
     private final List<IItemHandlerModifiable> handlersToDrop = new ArrayList<>();
     private final Map<EnumPipePart, Wrapper> wrappers = new EnumMap<>(EnumPipePart.class);
-    private final Map<String, INBTSerializable<NBTTagCompound>> handlers = new HashMap<>();
+    private final Map<String, INBTSerializable<CompoundTag>> handlers = new HashMap<>();
 
     public ItemHandlerManager(StackChangeCallback defaultCallback) {
         this.callback = defaultCallback;
@@ -58,7 +58,7 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
         }
     }
 
-    public <T extends INBTSerializable<NBTTagCompound> & IItemHandlerModifiable> T addInvHandler(String key, T handler,
+    public <T extends INBTSerializable<CompoundTag> & IItemHandlerModifiable> T addInvHandler(String key, T handler,
         EnumAccess access, EnumPipePart... parts) {
         if (parts == null) {
             parts = new EnumPipePart[0];
@@ -126,7 +126,7 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
         if (capability == CapUtil.CAP_ITEMS) {
             Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
             return wrapper.combined != null;
@@ -135,7 +135,7 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if (capability == CapUtil.CAP_ITEMS) {
             Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
             return CapUtil.CAP_ITEMS.cast(wrapper.combined);
@@ -144,9 +144,9 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        for (Entry<String, INBTSerializable<NBTTagCompound>> entry : handlers.entrySet()) {
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
+        for (Entry<String, INBTSerializable<CompoundTag>> entry : handlers.entrySet()) {
             String key = entry.getKey();
             nbt.setTag(key, entry.getValue().serializeNBT());
         }
@@ -154,8 +154,8 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        for (Entry<String, INBTSerializable<NBTTagCompound>> entry : handlers.entrySet()) {
+    public void deserializeNBT(CompoundTag nbt) {
+        for (Entry<String, INBTSerializable<CompoundTag>> entry : handlers.entrySet()) {
             String key = entry.getKey();
             entry.getValue().deserializeNBT(nbt.getCompoundTag(key));
         }

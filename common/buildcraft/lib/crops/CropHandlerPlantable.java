@@ -6,7 +6,7 @@
 
 package buildcraft.lib.crops;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
@@ -14,16 +14,16 @@ import net.minecraft.block.BlockMelon;
 import net.minecraft.block.BlockMushroom;
 import net.minecraft.block.BlockNetherWart;
 import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import net.minecraftforge.common.IPlantable;
 
@@ -40,8 +40,8 @@ public enum CropHandlerPlantable implements ICropHandler {
             return true;
         }
 
-        if (stack.getItem() instanceof ItemBlock) {
-            Block block = ((ItemBlock) stack.getItem()).getBlock();
+        if (stack.getItem() instanceof BlockItem) {
+            Block block = ((BlockItem) stack.getItem()).getBlock();
             if (block instanceof IPlantable && block != Blocks.REEDS) {
                 return true;
             }
@@ -51,25 +51,25 @@ public enum CropHandlerPlantable implements ICropHandler {
     }
 
     @Override
-    public boolean canSustainPlant(World world, ItemStack seed, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+    public boolean canSustainPlant(Level world, ItemStack seed, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
         if (seed.getItem() instanceof IPlantable) {
             Block block = state.getBlock();
-            return block.canSustainPlant(state, world, pos, EnumFacing.UP, (IPlantable) seed.getItem()) && world.isAirBlock(pos.up());
+            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isAirBlock(pos.up());
         } else {
             Block block = state.getBlock();
-            IPlantable plantable = (IPlantable) ((ItemBlock) seed.getItem()).getBlock();
-            return block.canSustainPlant(state, world, pos, EnumFacing.UP, plantable) && block != ((ItemBlock) seed.getItem()).getBlock() && world.isAirBlock(pos.up());
+            IPlantable plantable = (IPlantable) ((BlockItem) seed.getItem()).getBlock();
+            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isAirBlock(pos.up());
         }
     }
 
     @Override
-    public boolean plantCrop(World world, EntityPlayer player, ItemStack seed, BlockPos pos) {
-        return BlockUtil.useItemOnBlock(world, player, seed, pos, EnumFacing.UP);
+    public boolean plantCrop(Level world, Player player, ItemStack seed, BlockPos pos) {
+        return BlockUtil.useItemOnBlock(world, player, seed, pos, Direction.UP);
     }
 
     @Override
-    public boolean isMature(IBlockAccess blockAccess, IBlockState state, BlockPos pos) {
+    public boolean isMature(BlockGetter blockAccess, BlockState state, BlockPos pos) {
         Block block = state.getBlock();
         if (block instanceof BlockFlower || block instanceof BlockTallGrass || block instanceof BlockMelon || block instanceof BlockMushroom || block instanceof BlockDoublePlant
             || block == Blocks.PUMPKIN) {
@@ -87,10 +87,10 @@ public enum CropHandlerPlantable implements ICropHandler {
     }
 
     @Override
-    public boolean harvestCrop(World world, BlockPos pos, NonNullList<ItemStack> drops) {
-//        if (!world.isRemote) {
-//            IBlockState state = world.getBlockState(pos);
-//            if (BlockUtil.breakBlock((WorldServer) world, pos, drops, pos)) {
+    public boolean harvestCrop(Level world, BlockPos pos, NonNullList<ItemStack> drops) {
+//        if (!world.isClientSide) {
+//            BlockState state = world.getBlockState(pos);
+//            if (BlockUtil.breakBlock((ServerLevel) world, pos, drops, pos)) {
 //                SoundUtil.playBlockBreak(world, pos, state);
 //                return true;
 //            }

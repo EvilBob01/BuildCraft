@@ -6,7 +6,7 @@
 
 package buildcraft.lib.misc.data;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.IBox;
 

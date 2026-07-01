@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 public final class ListOreDictionaryCache {
     public static final ListOreDictionaryCache INSTANCE = new ListOreDictionaryCache();

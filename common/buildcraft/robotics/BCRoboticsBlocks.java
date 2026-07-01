@@ -6,7 +6,7 @@
 
 package buildcraft.robotics;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.lib.registry.RegistrationHelper;
 
@@ -19,7 +19,7 @@ public class BCRoboticsBlocks {
     public static BlockZonePlanner zonePlanner;
 
     public static void preInit() {
-        zonePlanner = HELPER.addBlockAndItem(new BlockZonePlanner(Material.IRON, "block.zone_planner"));
+        zonePlanner = HELPER.addBlockAndItem(new BlockZonePlanner(Block.Properties.of(), "block.zone_planner"));
 
         HELPER.registerTile(TileZonePlanner.class, "tile.zone_planner");
     }

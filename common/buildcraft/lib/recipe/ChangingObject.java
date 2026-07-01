@@ -9,7 +9,7 @@ package buildcraft.lib.recipe;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class ChangingObject<T> {
     protected final T[] options;

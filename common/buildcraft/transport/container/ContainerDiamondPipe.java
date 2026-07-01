@@ -6,7 +6,7 @@
 
 package buildcraft.transport.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.Slot;
 
 import buildcraft.lib.gui.ContainerPipe;
@@ -19,7 +19,7 @@ public class ContainerDiamondPipe extends ContainerPipe {
     private final PipeBehaviourDiamond behaviour;
     private final ItemHandlerSimple filterInv;
 
-    public ContainerDiamondPipe(EntityPlayer player, PipeBehaviourDiamond pipe) {
+    public ContainerDiamondPipe(Player player, PipeBehaviourDiamond pipe) {
         super(player, pipe.pipe.getHolder());
         this.behaviour = pipe;
         this.filterInv = pipe.filters;
@@ -43,7 +43,7 @@ public class ContainerDiamondPipe extends ContainerPipe {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(Player player) {
         super.onContainerClosed(player);
         behaviour.pipe.getHolder().onPlayerClose(player);
     }

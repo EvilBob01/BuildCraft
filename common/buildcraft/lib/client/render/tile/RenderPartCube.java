@@ -12,14 +12,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.MutableVertex;
 
 /** A variable sized element (like LED) that can render somewhere in a TESR. Passing a resolver instance will let you
  * modify the location, colour, lightmap, and size of the single element. This does not allow for different textures. */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RenderPartCube {
     /** The centre of this element. */
     public final MutableVertex center = new MutableVertex();

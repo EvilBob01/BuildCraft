@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import net.minecraft.util.JsonUtils;
 
 import buildcraft.lib.client.model.ModelUtil;
@@ -27,9 +27,9 @@ public class JsonQuad {
     public int tint = -1;
     public String texture;
     public final JsonVertex[] vertices = new JsonVertex[4];
-    public EnumFacing face;
+    public Direction face;
 
-    public JsonQuad(JsonObject obj, float[] from, float[] to, EnumFacing face) {
+    public JsonQuad(JsonObject obj, float[] from, float[] to, Direction face) {
         this.face = face;
         tint = JsonUtils.getInt(obj, "tintindex", -1);
         texture = JsonUtils.getString(obj, "texture");

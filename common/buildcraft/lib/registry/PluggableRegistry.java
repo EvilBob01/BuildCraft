@@ -9,7 +9,7 @@ package buildcraft.lib.registry;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.transport.pluggable.IPluggableRegistry;
 import buildcraft.api.transport.pluggable.PluggableDefinition;

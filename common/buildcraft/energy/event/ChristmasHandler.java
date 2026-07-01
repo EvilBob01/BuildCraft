@@ -55,7 +55,7 @@ public class ChristmasHandler {
     public static void fmlPreInitClient() {
         fmlPreInit();
         if (isEnabled()) {
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager())
+            ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager())
                 .registerReloadListener(m -> replaceLangEntries());
         }
     }

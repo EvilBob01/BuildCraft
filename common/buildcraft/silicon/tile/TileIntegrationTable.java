@@ -11,13 +11,13 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.recipes.IngredientStack;
@@ -90,7 +90,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     public void update() {
         super.update();
 
-        if (world.isRemote) {
+        if (world.isClientSide) {
             return;
         }
 
@@ -114,8 +114,8 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (recipe != null) {
             nbt.setString("recipe", recipe.name.toString());
         }
@@ -123,8 +123,8 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         if (nbt.hasKey("recipe")) {
             recipe = lookupRecipe(nbt.getString("recipe"));
         } else {
@@ -158,7 +158,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         super.getDebugInfo(left, right, side);
         left.add("recipe - " + recipe);
         left.add("target - " + getTarget());

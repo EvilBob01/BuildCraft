@@ -6,9 +6,9 @@
 
 package buildcraft.factory.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.Level;
 
 import buildcraft.lib.block.BlockBCTile_Neptune;
 import buildcraft.lib.tile.TileBC_Neptune;
@@ -21,7 +21,7 @@ public class BlockPump extends BlockBCTile_Neptune {
     }
 
     @Override
-    public TileBC_Neptune createTileEntity(World worldIn, IBlockState state) {
+    public TileBC_Neptune createTileEntity(Level worldIn, BlockState state) {
         return new TilePump();
     }
 }

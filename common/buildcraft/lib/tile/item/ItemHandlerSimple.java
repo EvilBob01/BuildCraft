@@ -10,15 +10,15 @@ import javax.annotation.Nullable;
 
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ReportedException;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import buildcraft.api.core.IStackFilter;
 
@@ -27,7 +27,7 @@ import buildcraft.lib.misc.StackUtil;
 import buildcraft.lib.tile.item.StackInsertionFunction.InsertionResult;
 
 public class ItemHandlerSimple extends AbstractInvItemTransactor
-    implements IItemHandlerModifiable, IItemHandlerAdv, INBTSerializable<NBTTagCompound> {
+    implements IItemHandlerModifiable, IItemHandlerAdv, INBTSerializable<CompoundTag> {
     // Function-called stuff (helpers etc)
     private StackInsertionChecker checker;
     private StackInsertionFunction inserter;
@@ -79,12 +79,12 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        NBTTagList list = new NBTTagList();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
+        ListTag list = new ListTag();
         for (ItemStack stack : stacks) {
-            NBTTagCompound itemNbt = new NBTTagCompound();
-            stack.writeToNBT(itemNbt);
+            CompoundTag itemNbt = new CompoundTag();
+            stack.saveAdditional(itemNbt);
             list.appendTag(itemNbt);
         }
         nbt.setTag("items", list);
@@ -92,8 +92,8 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        NBTTagList list = nbt.getTagList("items", Constants.NBT.TAG_COMPOUND);
+    public void deserializeNBT(CompoundTag nbt) {
+        ListTag list = nbt.getTagList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount() && i < getSlots(); i++) {
             setStackInternal(i, new ItemStack(list.getCompoundTagAt(i)));
         }

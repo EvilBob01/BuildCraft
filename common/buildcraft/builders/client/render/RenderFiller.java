@@ -10,39 +10,39 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 
 import net.minecraftforge.client.model.animation.FastTESR;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.render.laser.LaserBoxRenderer;
 
 import buildcraft.builders.tile.TileFiller;
 import buildcraft.core.client.BuildCraftLaserManager;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RenderFiller extends FastTESR<TileFiller> {
 
     @Override
     public void renderTileEntityFast(TileFiller tile, double x, double y, double z, float partialTicks,
         int destroyStage, float partial, BufferBuilder bb) {
-        Minecraft.getMinecraft().mcProfiler.startSection("bc");
-        Minecraft.getMinecraft().mcProfiler.startSection("filler");
+        Minecraft.getInstance().mcProfiler.startSection("bc");
+        Minecraft.getInstance().mcProfiler.startSection("filler");
 
-        Minecraft.getMinecraft().mcProfiler.startSection("main");
+        Minecraft.getInstance().mcProfiler.startSection("main");
         if (tile.getBuilder() != null) {
             RenderSnapshotBuilder.render(tile.getBuilder(), tile.getWorld(), tile.getPos(), x, y, z, partialTicks, bb);
         }
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
 
-        Minecraft.getMinecraft().mcProfiler.startSection("box");
+        Minecraft.getInstance().mcProfiler.startSection("box");
         if (tile.markerBox) {
             bb.setTranslation(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
             LaserBoxRenderer.renderLaserBoxDynamic(tile.box, BuildCraftLaserManager.STRIPES_WRITE, bb, true);
             bb.setTranslation(0, 0, 0);
         }
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
     }
 
     @Override

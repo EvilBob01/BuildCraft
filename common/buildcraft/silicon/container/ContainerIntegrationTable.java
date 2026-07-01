@@ -6,7 +6,7 @@
 
 package buildcraft.silicon.container;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import buildcraft.lib.gui.ContainerBCTile;
 import buildcraft.lib.gui.slot.SlotBase;
@@ -16,7 +16,7 @@ import buildcraft.lib.gui.slot.SlotOutput;
 import buildcraft.silicon.tile.TileIntegrationTable;
 
 public class ContainerIntegrationTable extends ContainerBCTile<TileIntegrationTable> {
-    public ContainerIntegrationTable(EntityPlayer player, TileIntegrationTable tile) {
+    public ContainerIntegrationTable(Player player, TileIntegrationTable tile) {
         super(player, tile);
         addFullPlayerInventory(109);
 

@@ -61,7 +61,7 @@ public class GuideFont implements IFontRenderer {
     @Override
     public int drawString(String text, int x, int y, int shade, boolean shadow, boolean centered, float scale) {
         text = ColourUtil.stripAllFormatCodes(text);
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         ScaledResolution res = new ScaledResolution(mc);
         double scaleFactor = mc.displayWidth / res.getScaledWidth_double();
 
@@ -133,7 +133,7 @@ public class GuideFont implements IFontRenderer {
 
         FontState(GuideFont font, float scale, boolean shadow) {
             this.defaultShadow = shadow;
-            Minecraft mc = Minecraft.getMinecraft();
+            Minecraft mc = Minecraft.getInstance();
             ScaledResolution res = new ScaledResolution(mc);
             double scaleFactor = mc.displayWidth / res.getScaledWidth_double();
 

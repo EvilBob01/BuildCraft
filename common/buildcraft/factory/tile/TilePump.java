@@ -22,20 +22,20 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Stopwatch;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.core.BCDebugging;
@@ -66,14 +66,14 @@ import buildcraft.factory.BCFactoryBlocks;
 public class TilePump extends TileMiner {
     public static final boolean DEBUG_PUMP = BCDebugging.shouldDebugComplex("factory.pump");
 
-    private static final EnumFacing[] SEARCH_NORMAL = new EnumFacing[] { //
-        EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, //
-        EnumFacing.WEST, EnumFacing.EAST //
+    private static final Direction[] SEARCH_NORMAL = new Direction[] { //
+        Direction.UP, Direction.NORTH, Direction.SOUTH, //
+        Direction.WEST, Direction.EAST //
     };
 
-    private static final EnumFacing[] SEARCH_GASEOUS = new EnumFacing[] { //
-        EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.SOUTH, //
-        EnumFacing.WEST, EnumFacing.EAST //
+    private static final Direction[] SEARCH_GASEOUS = new Direction[] { //
+        Direction.DOWN, Direction.NORTH, Direction.SOUTH, //
+        Direction.WEST, Direction.EAST //
     };
 
     static final class FluidPath {
@@ -170,7 +170,7 @@ public class TilePump extends TileMiner {
         ProfilerEntry prof, Fluid queueFluid, List<BlockPos> nextPosesToCheck, Set<BlockPos> checked
     ) {
         prof.startSection("build");
-        EnumFacing[] directions = queueFluid.isGaseous() ? SEARCH_GASEOUS : SEARCH_NORMAL;
+        Direction[] directions = queueFluid.isGaseous() ? SEARCH_GASEOUS : SEARCH_NORMAL;
         boolean isWater
             = !BCCoreConfig.pumpsConsumeWater && FluidUtilBC.areFluidsEqual(queueFluid, FluidRegistry.WATER);
         final int maxLengthSquared = BCCoreConfig.pumpMaxDistance * BCCoreConfig.pumpMaxDistance;
@@ -179,7 +179,7 @@ public class TilePump extends TileMiner {
             nextPosesToCheck.clear();
             for (BlockPos posToCheck : nextPosesToCheckCopy) {
                 int count = 0;
-                for (EnumFacing side : directions) {
+                for (Direction side : directions) {
                     prof.startSection("check");
                     BlockPos offsetPos = posToCheck.offset(side);
                     if (offsetPos.distanceSq(targetPos) > maxLengthSquared) {
@@ -221,7 +221,7 @@ public class TilePump extends TileMiner {
                 if (isWater) {
                     prof.startSection("water_check");
                     if (count >= 2) {
-                        IBlockState below = world.getBlockState(posToCheck.down());
+                        BlockState below = world.getBlockState(posToCheck.down());
                         // Same check as in BlockDynamicLiquid.updateTick:
                         // if that method changes how it checks for adjacent
                         // water sources then this also needs updating
@@ -244,7 +244,7 @@ public class TilePump extends TileMiner {
             BlockPos center = VecUtil.replaceValue(getPos(), Axis.Y, 0);
             for (BlockPos spring : BlockPos.getAllInBox(center.add(-10, 0, -10), center.add(10, 0, 10))) {
                 if (world.getBlockState(spring).getBlock() == BCCoreBlocks.spring) {
-                    TileEntity tile = world.getTileEntity(spring);
+                    BlockEntity tile = world.getBlockEntity(spring);
                     if (tile instanceof ITileOilSpring) {
                         springPositions.add(spring);
                     }
@@ -299,14 +299,14 @@ public class TilePump extends TileMiner {
 
     @Override
     public void update() {
-        if (!queueBuilt && !world.isRemote) {
+        if (!queueBuilt && !world.isClientSide) {
             buildQueue();
             queueBuilt = true;
         }
 
         super.update();
 
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             FluidUtilBC.pushFluidAround(world, pos, tank);
         }
     }
@@ -367,7 +367,7 @@ public class TilePump extends TileMiner {
                     if (isOil(drain.getFluid())) {
                         AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_DRAIN_OIL);
                         if (oilSpringPos != null) {
-                            TileEntity tile = world.getTileEntity(oilSpringPos);
+                            BlockEntity tile = world.getBlockEntity(oilSpringPos);
                             if (tile instanceof ITileOilSpring) {
                                 ((ITileOilSpring) tile).onPumpOil(getOwner(), currentPos);
                             }
@@ -417,14 +417,14 @@ public class TilePump extends TileMiner {
     // NBT
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         oilSpringPos = NBTUtilBC.readBlockPos(nbt.getTag("oilSpringPos"));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (oilSpringPos != null) {
             nbt.setTag("oilSpringPos", NBTUtilBC.writeBlockPos(oilSpringPos));
         }
@@ -436,7 +436,7 @@ public class TilePump extends TileMiner {
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_LED_STATUS, buffer, side);
             } else if (id == NET_LED_STATUS) {
@@ -448,7 +448,7 @@ public class TilePump extends TileMiner {
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_LED_STATUS, buffer, side, ctx);
             } else if (id == NET_LED_STATUS) {
@@ -458,7 +458,7 @@ public class TilePump extends TileMiner {
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         super.getDebugInfo(left, right, side);
         left.add("fluid = " + tank.getDebugString());
         left.add("queue size = " + queue.size());

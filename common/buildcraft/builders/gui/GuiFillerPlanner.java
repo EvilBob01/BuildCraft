@@ -1,6 +1,6 @@
 package buildcraft.builders.gui;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.gui.GuiBC8;

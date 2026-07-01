@@ -11,14 +11,14 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import buildcraft.api.lists.ListMatchHandler;
 
@@ -35,7 +35,7 @@ public class ListMatchHandlerFluid extends ListMatchHandler {
         isBuilt = true;
         for (Item item : Item.REGISTRY) {
             NonNullList<ItemStack> stacks = NonNullList.create();
-            item.getSubItems(CreativeTabs.SEARCH, stacks);
+            item.getSubItems(CreativeModeTab.SEARCH, stacks);
             for (ItemStack toTry : stacks) {
                 IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(toTry);
                 if (fluidHandler != null && fluidHandler.drain(1, false) == null) {

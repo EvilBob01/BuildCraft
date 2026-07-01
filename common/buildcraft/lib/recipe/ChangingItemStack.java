@@ -8,12 +8,12 @@ package buildcraft.lib.recipe;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.oredict.OreDictionary;
+import net.neoforged.neoforge.common.Tags;
 
 import buildcraft.lib.misc.ItemStackKey;
 import buildcraft.lib.misc.StackUtil;
@@ -37,8 +37,11 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         super(makeStackArray(stack));
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): previously iterated all {@code OreDictionary.getOres(oreId)}
+     * matches. OreDictionary no longer exists; this now produces an empty variant list until rewritten
+     * against {@code ItemTags}. */
     public ChangingItemStack(String oreId) {
-        this(OreDictionary.getOres(oreId));
+        this(NonNullList.<ItemStack>create());
     }
 
     private static ItemStackKey[] makeListArray(NonNullList<ItemStack> stacks) {
@@ -49,9 +52,9 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         if (stack.isEmpty()) {
             return new ItemStackKey[] { ItemStackKey.EMPTY };
         }
-        if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+        if (stack.getItemDamage() == 32767) { // was OreDictionary.WILDCARD_VALUE
             NonNullList<ItemStack> subs = NonNullList.create();
-            stack.getItem().getSubItems(CreativeTabs.SEARCH, subs);
+            stack.getItem().getSubItems(CreativeModeTab.SEARCH, subs);
             return makeListArray(subs);
         } else {
             return new ItemStackKey[] { new ItemStackKey(stack) };

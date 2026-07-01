@@ -4,12 +4,12 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory.block;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import buildcraft.api.properties.BuildCraftProperties;
@@ -18,7 +18,7 @@ import buildcraft.lib.block.BlockBCBase_Neptune;
 
 public class BlockPlastic extends BlockBCBase_Neptune {
     public BlockPlastic(String id) {
-        super(Material.IRON, id);
+        super(Block.Properties.of(), id);
         setDefaultState(getStateFromMeta(0));
     }
 
@@ -28,19 +28,19 @@ public class BlockPlastic extends BlockBCBase_Neptune {
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        EnumDyeColor colour = state.getValue(BuildCraftProperties.BLOCK_COLOR);
+    public int getMetaFromState(BlockState state) {
+        DyeColor colour = state.getValue(BuildCraftProperties.BLOCK_COLOR);
         return colour.getMetadata();
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_COLOR, EnumDyeColor.byMetadata(meta));
+    public BlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_COLOR, DyeColor.byMetadata(meta));
     }
 
     @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-        for (EnumDyeColor dye : EnumDyeColor.values()) {
+    public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
+        for (DyeColor dye : DyeColor.values()) {
             list.add(new ItemStack(this, 1, dye.getMetadata()));
         }
     }

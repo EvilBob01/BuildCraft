@@ -6,12 +6,12 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
@@ -26,24 +26,24 @@ public class PipeBehaviourWoodPower extends PipeBehaviour {
         super(pipe);
     }
 
-    public PipeBehaviourWoodPower(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourWoodPower(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 
     @Override
-    public boolean canConnect(EnumFacing face, PipeBehaviour other) {
+    public boolean canConnect(Direction face, PipeBehaviour other) {
         return !(other instanceof PipeBehaviourWoodPower);
     }
 
     @Override
-    public int getTextureIndex(EnumFacing face) {
+    public int getTextureIndex(Direction face) {
         if (face == null) {
             return 0;
         }
         if (pipe.getConnectedPipe(face) != null) {
             return 0;
         }
-        TileEntity tile = pipe.getConnectedTile(face);
+        BlockEntity tile = pipe.getConnectedTile(face);
         if (tile == null) {
             return 0;
         }

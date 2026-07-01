@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 
 public class ZonePlannerMapChunkKey {
     public static final int LEVEL_HEIGHT = 32;

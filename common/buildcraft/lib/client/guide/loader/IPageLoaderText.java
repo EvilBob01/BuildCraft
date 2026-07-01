@@ -13,8 +13,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-import net.minecraft.profiler.Profiler;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.guide.entry.PageEntry;
 import buildcraft.lib.client.guide.parts.GuidePageFactory;

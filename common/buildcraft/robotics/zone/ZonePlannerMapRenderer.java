@@ -20,14 +20,14 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.client.model.MutableVertex;
 
 import buildcraft.robotics.zone.ZonePlannerMapChunk.MapColourData;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public enum ZonePlannerMapRenderer {
     INSTANCE;
 
@@ -117,7 +117,7 @@ public enum ZonePlannerMapRenderer {
     }
 
     private void genChunk(ZonePlannerMapChunkKey key) {
-        ZonePlannerMapChunk zonePlannerMapChunk = ZonePlannerMapDataClient.INSTANCE.getChunk(Minecraft.getMinecraft().world, key);
+        ZonePlannerMapChunk zonePlannerMapChunk = ZonePlannerMapDataClient.INSTANCE.getChunk(Minecraft.getInstance().level, key);
         if (zonePlannerMapChunk == null) {
             return;
         }

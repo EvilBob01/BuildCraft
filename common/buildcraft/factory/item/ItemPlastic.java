@@ -9,10 +9,10 @@ import java.util.Locale;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.lib.item.ItemBlockBCMulti;
 import buildcraft.lib.misc.ColourUtil;
@@ -36,9 +36,9 @@ public class ItemPlastic extends ItemBlockBCMulti {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
-        for (EnumDyeColor colour : EnumDyeColor.values()) {
+        for (DyeColor colour : DyeColor.values()) {
             addVariant(variants, colour.getMetadata(), colour.getName());
         }
     }

@@ -27,19 +27,19 @@ import java.util.stream.Stream;
 import com.google.common.base.Predicates;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.transport.EnumWirePart;
 import buildcraft.api.transport.IWireEmitter;
@@ -59,7 +59,7 @@ public final class WireSystem {
     }
 
     public final ImmutableList<WireElement> elements;
-    public final EnumDyeColor color;
+    public final DyeColor color;
     public final int networkId;
 
     private transient final int cachedHashCode;
@@ -71,7 +71,7 @@ public final class WireSystem {
 
     /** Checks to see if the given holder could connect a wire across the specified side even if a matching wire wasn't
      * there. */
-    public static boolean canWireConnect(IPipeHolder holder, EnumFacing side) {
+    public static boolean canWireConnect(IPipeHolder holder, Direction side) {
         // TODO: Expand to pipeless wires (8.1.x)
         IPipe pipe = holder.getPipe();
         if (pipe == null) {
@@ -99,7 +99,7 @@ public final class WireSystem {
         WireNode node = new WireNode(element.blockPos, element.wirePart);
 
         List<WireElement> list = new ArrayList<>();
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (Direction face : Direction.VALUES) {
             WireNode oNode = node.offset(face);
             // equality check is fine here -- WireNode.offset returns the same blockpos (identity wise) if its the same
             if (oNode.pos == node.pos || canWireConnect(holder, face)) {
@@ -109,9 +109,9 @@ public final class WireSystem {
         return list;
     }
 
-    public static List<WireElement> getConnectedElementsOfElement(World world, WireElement element) {
+    public static List<WireElement> getConnectedElementsOfElement(Level world, WireElement element) {
         if (element.type == WireElement.Type.WIRE_PART) {
-            TileEntity tile = world.getTileEntity(element.blockPos);
+            BlockEntity tile = world.getBlockEntity(element.blockPos);
             if (tile instanceof IPipeHolder) {
                 IPipeHolder holder = (IPipeHolder) tile;
                 return getConnectedElementsOfElement(holder, element);
@@ -120,11 +120,11 @@ public final class WireSystem {
         return Collections.emptyList();
     }
 
-    public WireSystem(ImmutableList<WireElement> elements, EnumDyeColor color) {
+    public WireSystem(ImmutableList<WireElement> elements, DyeColor color) {
         this(nextServerNetworkId(), elements, color);
     }
 
-    public WireSystem(int netId, ImmutableList<WireElement> elements, EnumDyeColor color) {
+    public WireSystem(int netId, ImmutableList<WireElement> elements, DyeColor color) {
         this.networkId = netId;
         this.elements = Objects.requireNonNull(elements, "elements");
         this.color = color;
@@ -142,7 +142,7 @@ public final class WireSystem {
         Queue<WireElement> queue = new ArrayDeque<>();
         queue.add(startElement);
 
-        EnumDyeColor tempColor = null;
+        DyeColor tempColor = null;
         ImmutableList.Builder<WireElement> elementBuilder = ImmutableList.builder();
 
         while (!queue.isEmpty()) {
@@ -150,7 +150,7 @@ public final class WireSystem {
 
             if (!walked.contains(element)) {
                 if (!holdersCache.containsKey(element.blockPos)) {
-                    TileEntity tile = wireSystems.world.getTileEntity(element.blockPos);
+                    BlockEntity tile = wireSystems.world.getBlockEntity(element.blockPos);
                     IPipeHolder holder = null;
                     if (tile instanceof IPipeHolder) {
                         holder = (IPipeHolder) tile;
@@ -160,18 +160,18 @@ public final class WireSystem {
                 IPipeHolder holder = holdersCache.get(element.blockPos);
                 if (holder != null) {
                     if (element.type == WireElement.Type.WIRE_PART) {
-                        EnumDyeColor colorOfPart = holder.getWireManager().getColorOfPart(element.wirePart);
+                        DyeColor colorOfPart = holder.getWireManager().getColorOfPart(element.wirePart);
                         if (tempColor == null) {
                             if (colorOfPart != null) {
                                 tempColor = colorOfPart;
                             }
                         }
                         if (tempColor != null && colorOfPart == tempColor) {
-                            EnumDyeColor colorButFinal = tempColor; //damn you java
+                            DyeColor colorButFinal = tempColor; //damn you java
                             wireSystems.getWireSystemsWithElement(element).stream().filter(wireSystem -> wireSystem != this && wireSystem.color == colorButFinal).forEach(wireSystems::removeWireSystem);
                             elementBuilder.add(element);
                             queue.addAll(getConnectedElementsOfElement(wireSystems.world, element));
-                            Arrays.stream(EnumFacing.VALUES).forEach(side -> queue.add(new WireElement(element.blockPos, side)));
+                            Arrays.stream(Direction.VALUES).forEach(side -> queue.add(new WireElement(element.blockPos, side)));
                         }
                     } else if (element.type == WireElement.Type.EMITTER_SIDE) {
                         if (holder.getPluggable(element.emitterSide) instanceof IWireEmitter) {
@@ -207,9 +207,9 @@ public final class WireSystem {
         return elements.stream().map(element -> new ChunkPos(element.blockPos));
     }
 
-    public boolean isPlayerWatching(EntityPlayerMP player) {
-        if (player.world instanceof WorldServer) {
-            WorldServer world = (WorldServer) player.world;
+    public boolean isPlayerWatching(ServerPlayer player) {
+        if (player.world instanceof ServerLevel) {
+            ServerLevel world = (ServerLevel) player.world;
             return getChunkPosesAsStream().map(chunkPos -> world.getPlayerChunkMap().getEntry(chunkPos.x, chunkPos.z))
                     .anyMatch(playerChunkMapEntry -> playerChunkMapEntry != null && playerChunkMapEntry.containsPlayer(player));
         }
@@ -226,21 +226,21 @@ public final class WireSystem {
                 .mapToInt(WireElement::hashCode).reduce(1, (hashCode, elementHashCode) -> hashCode * 31 + elementHashCode);
     }
 
-    public NBTTagCompound writeToNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        NBTTagList elementsList = new NBTTagList();
+    public CompoundTag writeToNBT() {
+        CompoundTag nbt = new CompoundTag();
+        ListTag elementsList = new ListTag();
         elements.stream().map(WireElement::writeToNBT).forEach(elementsList::appendTag);
         nbt.setTag("elements", elementsList);
         nbt.setInteger("color", color.getMetadata());
         return nbt;
     }
 
-    public WireSystem(NBTTagCompound nbt) {
+    public WireSystem(CompoundTag nbt) {
         networkId = nextServerNetworkId();
-        NBTTagList elementsList = nbt.getTagList("elements", Constants.NBT.TAG_COMPOUND);
+        ListTag elementsList = nbt.getTagList("elements", Tag.TAG_COMPOUND);
         //noinspection UnstableApiUsage
         elements = IntStream.range(0, elementsList.tagCount()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
-        color = EnumDyeColor.byMetadata(nbt.getInteger("color"));
+        color = DyeColor.byMetadata(nbt.getInteger("color"));
 
         this.cachedHashCode = this.computeHashCode();
         this.cachedWiresHashCode = this.computeCachedWiresHashCode();
@@ -283,7 +283,7 @@ public final class WireSystem {
         public final Type type;
         public final BlockPos blockPos;
         public final EnumWirePart wirePart;
-        public final EnumFacing emitterSide;
+        public final Direction emitterSide;
 
         public WireElement(BlockPos blockPos, EnumWirePart wirePart) {
             this.type = Type.WIRE_PART;
@@ -292,14 +292,14 @@ public final class WireSystem {
             this.emitterSide = null;
         }
 
-        public WireElement(BlockPos blockPos, EnumFacing emitterSide) {
+        public WireElement(BlockPos blockPos, Direction emitterSide) {
             this.type = Type.EMITTER_SIDE;
             this.blockPos = blockPos;
             this.wirePart = null;
             this.emitterSide = emitterSide;
         }
 
-        public WireElement(PacketBuffer buf) {
+        public WireElement(FriendlyByteBuf buf) {
             type = Type.values()[buf.readInt()];
             blockPos = MessageUtil.readBlockPos(buf);
             if (type == Type.WIRE_PART) {
@@ -307,14 +307,14 @@ public final class WireSystem {
                 this.emitterSide = null;
             } else if (type == Type.EMITTER_SIDE) {
                 this.wirePart = null;
-                emitterSide = EnumFacing.getFront(buf.readInt());
+                emitterSide = Direction.from3DDataValue(buf.readInt());
             } else {
                 this.wirePart = null;
                 this.emitterSide = null;
             }
         }
 
-        public WireElement(NBTTagCompound nbt) {
+        public WireElement(CompoundTag nbt) {
             type = Type.values()[nbt.getInteger("type")];
             blockPos = NBTUtilBC.readBlockPos(nbt.getTag("blockPos"));
             if (blockPos == null) {
@@ -326,14 +326,14 @@ public final class WireSystem {
                 this.emitterSide = null;
             } else if (type == Type.EMITTER_SIDE) {
                 this.wirePart = null;
-                emitterSide = EnumFacing.getFront(nbt.getInteger("emitterSide"));
+                emitterSide = Direction.from3DDataValue(nbt.getInteger("emitterSide"));
             } else {
                 this.wirePart = null;
                 this.emitterSide = null;
             }
         }
 
-        public void toBytes(PacketBuffer buf) {
+        public void toBytes(FriendlyByteBuf buf) {
             buf.writeInt(type.ordinal());
             MessageUtil.writeBlockPos(buf, blockPos);
             if (type == Type.WIRE_PART) {
@@ -345,8 +345,8 @@ public final class WireSystem {
             }
         }
 
-        public NBTTagCompound writeToNBT() {
-            NBTTagCompound nbt = new NBTTagCompound();
+        public CompoundTag writeToNBT() {
+            CompoundTag nbt = new CompoundTag();
             nbt.setInteger("type", type.ordinal());
             nbt.setTag("blockPos", NBTUtilBC.writeBlockPos(blockPos));
             if (type == Type.WIRE_PART) {

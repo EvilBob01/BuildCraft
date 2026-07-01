@@ -14,17 +14,17 @@ import com.google.common.cache.RemovalNotification;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
@@ -56,8 +56,8 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
     @Override
     public final void render(TileZonePlanner tile, double x, double y, double z, float partialTicks, int destroyStage,
         float alpha) {
-        Minecraft.getMinecraft().mcProfiler.startSection("bc");
-        Minecraft.getMinecraft().mcProfiler.startSection("zone");
+        Minecraft.getInstance().mcProfiler.startSection("bc");
+        Minecraft.getInstance().mcProfiler.startSection("zone");
 
         double offset = 0.001;
         double minX = 3 / 16D - offset;
@@ -67,11 +67,11 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
         double minZ = -offset;
         double maxZ = 1 + offset;
 
-        IBlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getWorld().getBlockState(tile.getPos());
         if (state.getBlock() != BCRoboticsBlocks.zonePlanner) {
             return;
         }
-        EnumFacing side = state.getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
+        Direction side = state.getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
 
         DynamicTextureBC texture = getTexture(tile, side);
         if (texture == null) {
@@ -95,8 +95,8 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             buffer.setTranslation(x, y, z);
 
-            Vec3d min;
-            Vec3d max;
+            Vec3 min;
+            Vec3 max;
 
             float minU = 0;
             float maxU = texture.getMaxU();
@@ -105,21 +105,21 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
 
             switch (side) {
                 case NORTH:
-                    min = new Vec3d(minX, minY, maxZ);
-                    max = new Vec3d(maxX, maxY, maxZ);
+                    min = new Vec3(minX, minY, maxZ);
+                    max = new Vec3(maxX, maxY, maxZ);
                     break;
                 case EAST:
-                    min = new Vec3d(minZ, minY, minX);
-                    max = new Vec3d(minZ, maxY, maxX);
+                    min = new Vec3(minZ, minY, minX);
+                    max = new Vec3(minZ, maxY, maxX);
                     break;
                 case SOUTH:
-                    min = new Vec3d(minX, minY, minZ);
-                    max = new Vec3d(maxX, maxY, minZ);
+                    min = new Vec3(minX, minY, minZ);
+                    max = new Vec3(maxX, maxY, minZ);
                     break;
                 case WEST:
                 default:
-                    min = new Vec3d(maxZ, minY, minX);
-                    max = new Vec3d(maxZ, maxY, maxX);
+                    min = new Vec3(maxZ, minY, minX);
+                    max = new Vec3(maxZ, maxY, maxX);
                     break;
             }
 
@@ -138,11 +138,11 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
         }
         RenderHelper.enableStandardItemLighting();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.endSection();
     }
 
-    private static DynamicTextureBC getTexture(TileZonePlanner tile, EnumFacing side) {
+    private static DynamicTextureBC getTexture(TileZonePlanner tile, Direction side) {
         if (TEXTURES.getIfPresent(new WorldPos(tile)) == null) {
             DynamicTextureBC texture = createTexture(tile, side);
             if (texture != null) {
@@ -152,7 +152,7 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
         return TEXTURES.getIfPresent(new WorldPos(tile));
     }
 
-    private static DynamicTextureBC createTexture(TileZonePlanner tile, EnumFacing side) {
+    private static DynamicTextureBC createTexture(TileZonePlanner tile, Direction side) {
         DynamicTextureBC texture = new DynamicTextureBC(TEXTURE_WIDTH, TEXTURE_HEIGHT);
         for (int textureX = 0; textureX < TEXTURE_WIDTH; textureX++) {
             for (int textureY = 0; textureY < TEXTURE_HEIGHT; textureY++) {

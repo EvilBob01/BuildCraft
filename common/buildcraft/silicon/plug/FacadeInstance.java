@@ -5,12 +5,12 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Direction;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.facades.FacadeType;
 import buildcraft.api.facades.IFacade;
@@ -41,8 +41,8 @@ public class FacadeInstance implements IFacade {
         return new FacadeInstance(new FacadePhasedState[] { new FacadePhasedState(info, null) }, isHollow);
     }
 
-    public static FacadeInstance readFromNbt(NBTTagCompound nbt) {
-        NBTTagList list = nbt.getTagList("states", Constants.NBT.TAG_COMPOUND);
+    public static FacadeInstance readFromNbt(CompoundTag nbt) {
+        ListTag list = nbt.getTagList("states", Tag.TAG_COMPOUND);
         if (list.hasNoTags()) {
             return FacadeInstance.createSingle(FacadeStateManager.defaultState, false);
         }
@@ -54,9 +54,9 @@ public class FacadeInstance implements IFacade {
         return new FacadeInstance(states, hollow);
     }
 
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        NBTTagList list = new NBTTagList();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = new CompoundTag();
+        ListTag list = new ListTag();
         for (FacadePhasedState state : phasedStates) {
             list.appendTag(state.writeToNbt());
         }
@@ -83,7 +83,7 @@ public class FacadeInstance implements IFacade {
         }
     }
 
-    public boolean canAddColour(EnumDyeColor colour) {
+    public boolean canAddColour(DyeColor colour) {
         for (FacadePhasedState state : phasedStates) {
             if (state.activeColour == colour) {
                 return false;
@@ -117,7 +117,7 @@ public class FacadeInstance implements IFacade {
         return new FacadeInstance(phasedStates, !isHollow);
     }
 
-    public boolean areAllStatesSolid(EnumFacing side) {
+    public boolean areAllStatesSolid(Direction side) {
         for (FacadePhasedState state : phasedStates) {
             if (!state.isSideSolid(side)) {
                 return false;
@@ -126,7 +126,7 @@ public class FacadeInstance implements IFacade {
         return true;
     }
 
-    public BlockFaceShape getBlockFaceShape(EnumFacing side) {
+    public BlockFaceShape getBlockFaceShape(Direction side) {
         if (isHollow()) {
             return BlockFaceShape.UNDEFINED;
         }

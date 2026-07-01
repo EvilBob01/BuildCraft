@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.parts.GuidePartItem;

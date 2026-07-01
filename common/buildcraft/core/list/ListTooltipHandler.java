@@ -6,12 +6,12 @@
 
 package buildcraft.core.list;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.items.IList;
 
@@ -22,13 +22,13 @@ public enum ListTooltipHandler {
 
     @SubscribeEvent
     public void itemTooltipEvent(ItemTooltipEvent event) {
-        final EntityPlayer player = event.getEntityPlayer();
+        final Player player = event.getEntityPlayer();
         final ItemStack stack = event.getItemStack();
         if (!stack.isEmpty() && player != null && player.openContainer instanceof ContainerList) {
             ItemStack list = player.getHeldItemMainhand();
             if (!list.isEmpty() && list.getItem() instanceof IList) {
                 if (((IList) list.getItem()).matches(list, stack)) {
-                    event.getToolTip().add(TextFormatting.GREEN + LocaleUtil.localize("tip.list.matches"));
+                    event.getToolTip().add(ChatFormatting.GREEN + LocaleUtil.localize("tip.list.matches"));
                 }
             }
         }

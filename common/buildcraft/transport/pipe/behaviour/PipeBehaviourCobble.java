@@ -6,7 +6,7 @@
 
 package buildcraft.transport.pipe.behaviour;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.api.transport.pipe.IPipe;
 import buildcraft.api.transport.pipe.PipeEventHandler;
@@ -20,7 +20,7 @@ public class PipeBehaviourCobble extends PipeBehaviourSeparate {
         super(pipe);
     }
 
-    public PipeBehaviourCobble(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourCobble(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
     }
 

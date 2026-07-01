@@ -4,8 +4,8 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.transport;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 
 public enum BCTransportGuis {
     FILTERED_BUFFER,
@@ -20,15 +20,15 @@ public enum BCTransportGuis {
         return VALUES[id];
     }
 
-    public void openGui(EntityPlayer player) {
+    public void openGui(Player player) {
         openGui(player, 0, -1, 0);
     }
 
-    public void openGui(EntityPlayer player, BlockPos pos) {
+    public void openGui(Player player, BlockPos pos) {
         openGui(player, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public void openGui(EntityPlayer player, int x, int y, int z) {
+    public void openGui(Player player, int x, int y, int z) {
         player.openGui(BCTransport.INSTANCE, ordinal(), player.getEntityWorld(), x, y, z);
     }
 }

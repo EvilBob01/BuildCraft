@@ -6,7 +6,7 @@
 
 package buildcraft.lib.misc.data;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 public class AverageLong {
     private long[] data;
@@ -60,7 +60,7 @@ public class AverageLong {
         tickValue += value;
     }
 
-    public void writeToNbt(NBTTagCompound nbt, String subTag) {
+    public void writeToNbt(CompoundTag nbt, String subTag) {
         int[] ints = new int[precise * 2];
         for (int i = 0; i < precise; i++) {
             long val = data[i];
@@ -70,7 +70,7 @@ public class AverageLong {
         nbt.setIntArray(subTag, ints);
     }
 
-    public void readFromNbt(NBTTagCompound nbt, String subTag) {
+    public void readFromNbt(CompoundTag nbt, String subTag) {
         int[] ints = nbt.getIntArray(subTag);
         if (ints.length >= precise * 2) {
             averageRaw = 0;

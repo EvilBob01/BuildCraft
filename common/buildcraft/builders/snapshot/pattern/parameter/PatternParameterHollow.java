@@ -8,11 +8,11 @@ package buildcraft.builders.snapshot.pattern.parameter;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 import buildcraft.api.statements.IStatement;
@@ -38,7 +38,7 @@ public enum PatternParameterHollow implements IStatementParameter {
         this.outerFilled = outerFilled;
     }
 
-    public static PatternParameterHollow readFromNbt(NBTTagCompound nbt) {
+    public static PatternParameterHollow readFromNbt(CompoundTag nbt) {
         if (nbt.getBoolean("filled")) {
             if (nbt.getBoolean("outer")) {
                 return FILLED_OUTER;
@@ -50,7 +50,7 @@ public enum PatternParameterHollow implements IStatementParameter {
     }
 
     @Override
-    public void writeToNbt(NBTTagCompound compound) {
+    public void writeToNbt(CompoundTag compound) {
         compound.setBoolean("filled", filled);
         if (filled) {
             compound.setBoolean("outer", outerFilled);
@@ -63,7 +63,7 @@ public enum PatternParameterHollow implements IStatementParameter {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ISprite getSprite() {
         if (filled) {
             if (outerFilled) {

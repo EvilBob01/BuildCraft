@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.list.array.TIntArrayList;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import buildcraft.api.core.IStackFilter;

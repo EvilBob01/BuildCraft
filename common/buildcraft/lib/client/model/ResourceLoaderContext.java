@@ -18,7 +18,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ResourceLoaderContext {
     private final Set<ResourceLocation> loaded = new HashSet<>();
@@ -29,7 +29,7 @@ public class ResourceLoaderContext {
             throw new JsonSyntaxException("Already loaded " + location + " from " + loadingStack.peek());
         }
         loadingStack.push(location);
-        IResource res = Minecraft.getMinecraft().getResourceManager().getResource(location);
+        IResource res = Minecraft.getInstance().getResourceManager().getResource(location);
         return new InputStreamReader(res.getInputStream(), StandardCharsets.UTF_8);
     }
 

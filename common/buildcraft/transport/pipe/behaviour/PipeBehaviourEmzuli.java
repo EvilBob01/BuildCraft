@@ -13,16 +13,16 @@ import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.BlockHitResult;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.IStackFilter;
@@ -45,16 +45,16 @@ import buildcraft.transport.statements.ActionExtractionPreset;
 public class PipeBehaviourEmzuli extends PipeBehaviourWood {
 
     public enum SlotIndex {
-        SQUARE(EnumDyeColor.RED),
-        CIRCLE(EnumDyeColor.GREEN),
-        TRIANGLE(EnumDyeColor.BLUE),
-        CROSS(EnumDyeColor.YELLOW);
+        SQUARE(DyeColor.RED),
+        CIRCLE(DyeColor.GREEN),
+        TRIANGLE(DyeColor.BLUE),
+        CROSS(DyeColor.YELLOW);
 
         public static final SlotIndex[] VALUES = values();
 
-        public final EnumDyeColor colour;
+        public final DyeColor colour;
 
-        SlotIndex(EnumDyeColor colour) {
+        SlotIndex(DyeColor colour) {
             this.colour = colour;
         }
 
@@ -71,7 +71,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         }
     }
 
-    public final EnumMap<SlotIndex, EnumDyeColor> slotColours = new EnumMap<>(SlotIndex.class);
+    public final EnumMap<SlotIndex, DyeColor> slotColours = new EnumMap<>(SlotIndex.class);
     public final ItemHandlerSimple invFilters = new ItemHandlerSimple(4, null);
     private final EnumSet<SlotIndex> activeSlots;
     private final byte[] activatedTtl = new byte[SlotIndex.VALUES.length];
@@ -84,7 +84,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         activeSlots = EnumSet.noneOf(SlotIndex.class);
     }
 
-    public PipeBehaviourEmzuli(IPipe pipe, NBTTagCompound nbt) {
+    public PipeBehaviourEmzuli(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
         invFilters.deserializeNBT(nbt.getCompoundTag("Filters"));
         activeSlots = NBTUtilBC.readEnumSet(nbt.getTag("activeSlots"), SlotIndex.class);
@@ -92,30 +92,30 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
         for (SlotIndex index : SlotIndex.VALUES) {
             byte c = nbt.getByte("slotColors[" + index.ordinal() + "]");
             if (c > 0 && c <= 16) {
-                slotColours.put(index, EnumDyeColor.byMetadata(c - 1));
+                slotColours.put(index, DyeColor.byMetadata(c - 1));
             }
         }
     }
 
     @Override
-    public NBTTagCompound writeToNbt() {
-        NBTTagCompound nbt = super.writeToNbt();
+    public CompoundTag writeToNbt() {
+        CompoundTag nbt = super.writeToNbt();
         nbt.setTag("Filters", invFilters.serializeNBT());
         nbt.setTag("activeSlots", NBTUtilBC.writeEnumSet(activeSlots, SlotIndex.class));
         nbt.setTag("currentSlot", NBTUtilBC.writeEnum(currentSlot));
         for (SlotIndex index : SlotIndex.VALUES) {
-            EnumDyeColor c = slotColours.get(index);
+            DyeColor c = slotColours.get(index);
             nbt.setByte("slotColors[" + index.ordinal() + "]", (byte) (c == null ? 0 : c.getMetadata() + 1));
         }
         return nbt;
     }
 
     @Override
-    public void readPayload(PacketBuffer buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             for (SlotIndex index : SlotIndex.VALUES) {
-                EnumDyeColor colour = MessageUtil.readEnumOrNull(buffer, EnumDyeColor.class);
+                DyeColor colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
                 if (colour == null) {
                     slotColours.remove(index);
                 } else {
@@ -129,9 +129,9 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
     }
 
     @Override
-    public void writePayload(PacketBuffer buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Side side) {
         super.writePayload(buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             for (SlotIndex index : SlotIndex.VALUES) {
                 MessageUtil.writeEnumOrNull(buffer, slotColours.get(index));
             }
@@ -141,7 +141,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
     }
 
     @Override
-    protected int extractItems(IFlowItems flow, EnumFacing dir, int count, boolean simulate) {
+    protected int extractItems(IFlowItems flow, Direction dir, int count, boolean simulate) {
         if (currentSlot == null && activeSlots.size() > 0) {
             currentSlot = getNextSlot();
         }
@@ -166,7 +166,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
     @Override
     public void onTick() {
         super.onTick();
-        if (pipe.getHolder().getPipeWorld().isRemote) {
+        if (pipe.getHolder().getPipeWorld().isClientSide) {
             return;
         }
         for (SlotIndex index : SlotIndex.VALUES) {
@@ -206,7 +206,7 @@ public class PipeBehaviourEmzuli extends PipeBehaviourWood {
     }
 
     @Override
-    public boolean onPipeActivate(EntityPlayer player, RayTraceResult trace, float hitX, float hitY, float hitZ, EnumPipePart part) {
+    public boolean onPipeActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ, EnumPipePart part) {
         if (EntityUtil.getWrenchHand(player) != null) {
             return super.onPipeActivate(player, trace, hitX, hitY, hitZ, part);
         }

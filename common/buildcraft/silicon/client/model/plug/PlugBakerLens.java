@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.IPluggableStaticBaker;
 
@@ -67,6 +67,6 @@ public enum PlugBakerLens implements IPluggableStaticBaker<KeyPlugLens> {
     }
 
     interface IQuadGetter {
-        MutableQuad[] get(EnumFacing side, EnumDyeColor colour);
+        MutableQuad[] get(Direction side, DyeColor colour);
     }
 }

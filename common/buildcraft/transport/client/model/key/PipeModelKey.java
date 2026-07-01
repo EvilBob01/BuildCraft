@@ -9,16 +9,16 @@ package buildcraft.transport.client.model.key;
 import java.util.Arrays;
 import java.util.Objects;
 
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.world.item.DyeColor;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.pipe.EnumPipeColourType;
 import buildcraft.api.transport.pipe.PipeDefinition;
 import buildcraft.api.transport.pipe.PipeFaceTex;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class PipeModelKey {
     public static final PipeModelKey DEFAULT_KEY;
 
@@ -33,11 +33,11 @@ public final class PipeModelKey {
     public final PipeFaceTex center;
     public final PipeFaceTex[] sides;
     public final float[] connected;
-    public final EnumDyeColor colour;
+    public final DyeColor colour;
     private final int hash;
 
     public PipeModelKey(PipeDefinition definition, PipeFaceTex center, PipeFaceTex[] sides, float[] connected,
-        EnumDyeColor colour) {
+        DyeColor colour) {
         this.definition = definition;
         this.center = center;
         this.sides = sides;

@@ -16,10 +16,10 @@ import javax.annotation.Nonnull;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.lists.ListMatchHandler;
 
@@ -52,7 +52,7 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
     private final Map<Integer, Map<ListMatchHandler.Type, NonNullList<ItemStack>>> exampleCache = new HashMap<>();
     private GuiTextField textField;
 
-    public GuiList(EntityPlayer iPlayer) {
+    public GuiList(Player iPlayer) {
         super(new ContainerList(iPlayer));
         xSize = SIZE_X;
         ySize = SIZE_Y;

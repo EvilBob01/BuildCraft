@@ -26,11 +26,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 
 import buildcraft.lib.gui.GuiBC8;
 import buildcraft.lib.gui.GuiIcon;
@@ -456,7 +456,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                                 } else {
                                     continue;
                                 }
-                                int color = EnumDyeColor.byMetadata(i).getColorValue();
+                                int color = DyeColor.byMetadata(i).getColorValue();
                                 int r = (color >> 16) & 0xFF;
                                 int g = (color >> 8) & 0xFF;
                                 int b = (color >> 0) & 0xFF;

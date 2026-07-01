@@ -6,6 +6,10 @@
 
 package buildcraft.core.marker.volume;
 
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.IMessageHandler;
+import buildcraft.lib.net.MessageContext;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +21,8 @@ import io.netty.buffer.Unpooled;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraft.world.level.Level;
 
-import buildcraft.lib.BCLibProxy;
 import buildcraft.lib.net.PacketBufferBC;
 
 public class MessageVolumeBoxes implements IMessage {
@@ -64,11 +66,12 @@ public class MessageVolumeBoxes implements IMessage {
     }
 
     public static final IMessageHandler<MessageVolumeBoxes, IMessage> HANDLER = (message, ctx) -> {
+        Level clientLevel = ctx.getPayloadContext().player().level();
         Map<PacketBufferBC, VolumeBox> volumeBoxes = message.buffers.stream()
             .map(buffer -> {
                 VolumeBox volumeBox;
                 try {
-                    volumeBox = new VolumeBox(BCLibProxy.getProxy().getClientWorld(), buffer);
+                    volumeBox = new VolumeBox(clientLevel, buffer);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

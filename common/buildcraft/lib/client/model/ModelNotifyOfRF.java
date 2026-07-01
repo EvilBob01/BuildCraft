@@ -2,12 +2,12 @@ package buildcraft.lib.client.model;
 
 import java.util.List;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 // TODO: Implement this!
 // (Just a way to make sure people know that RF support is enabled, I'm not sure how detailed this will need to be)
@@ -20,7 +20,7 @@ public class ModelNotifyOfRF implements IBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(BlockState state, Direction side, long rand) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("// TODO: Implement this!");
     }

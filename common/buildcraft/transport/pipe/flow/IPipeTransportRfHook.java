@@ -6,15 +6,15 @@
 
 package buildcraft.transport.pipe.flow;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 public interface IPipeTransportRfHook {
 
     /** Override default behavior on receiving energy into the pipe.
      *
      * @return The amount of power used, or -1 for default behavior. */
-    int receivePower(EnumFacing from, int val);
+    int receivePower(Direction from, int val);
 
     /** Override default requested power. */
-    int requestPower(EnumFacing from, int amount);
+    int requestPower(Direction from, int amount);
 }

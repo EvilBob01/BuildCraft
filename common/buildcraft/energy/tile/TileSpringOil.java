@@ -6,15 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import buildcraft.api.tiles.IDebuggable;
 
@@ -23,7 +23,7 @@ import buildcraft.lib.misc.AdvancementUtil;
 import buildcraft.core.tile.ITileOilSpring;
 
 // We don't extend TileBC here because we have no need of any of its functions.
-public class TileSpringOil extends TileEntity implements IDebuggable, ITileOilSpring {
+public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilSpring {
 
     private static final ResourceLocation ADVANCEMENT_PUMP_LARGE_OIL_WELL = new ResourceLocation(
         "buildcraftfactory:black_gold"
@@ -58,9 +58,9 @@ public class TileSpringOil extends TileEntity implements IDebuggable, ITileOilSp
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        NBTTagList list = nbt.getTagList("pumpProgress", Constants.NBT.TAG_COMPOUND);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
+        ListTag list = nbt.getTagList("pumpProgress", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
             PlayerPumpInfo info = new PlayerPumpInfo(list.getCompoundTagAt(i));
             pumpProgress.put(info.profile, info);
@@ -68,10 +68,10 @@ public class TileSpringOil extends TileEntity implements IDebuggable, ITileOilSp
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setInteger("totalSources", totalSources);
-        NBTTagList list = new NBTTagList();
+        ListTag list = new ListTag();
         for (PlayerPumpInfo info : pumpProgress.values()) {
             list.appendTag(info.writeToNbt());
         }
@@ -80,7 +80,7 @@ public class TileSpringOil extends TileEntity implements IDebuggable, ITileOilSp
     }
 
     @Override
-    public void getDebugInfo(List<String> left, List<String> right, EnumFacing side) {
+    public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         left.add("totalSources = " + totalSources);
         boolean added = false;
         for (PlayerPumpInfo info : pumpProgress.values()) {
@@ -102,15 +102,15 @@ public class TileSpringOil extends TileEntity implements IDebuggable, ITileOilSp
             this.profile = profile;
         }
 
-        public PlayerPumpInfo(NBTTagCompound nbt) {
+        public PlayerPumpInfo(CompoundTag nbt) {
             profile = NBTUtil.readGameProfileFromNBT(nbt.getCompoundTag("profile"));
             lastPumpTick = nbt.getLong("lastPumpTick");
             sourcesPumped = nbt.getInteger("sourcesPumped");
         }
 
-        public NBTTagCompound writeToNbt() {
-            NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setTag("profile", NBTUtil.writeGameProfile(new NBTTagCompound(), profile));
+        public CompoundTag writeToNbt() {
+            CompoundTag nbt = new CompoundTag();
+            nbt.setTag("profile", NBTUtil.writeGameProfile(new CompoundTag(), profile));
             nbt.setLong("lastPumpTick", lastPumpTick);
             nbt.setInteger("sourcesPumped", sourcesPumped);
             return nbt;

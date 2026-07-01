@@ -6,8 +6,8 @@
 
 package buildcraft.transport.statements;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.statements.IActionInternal;
 import buildcraft.api.statements.IStatement;
@@ -49,7 +49,7 @@ public class ActionExtractionPreset extends BCStatement implements IActionIntern
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public SpriteHolder getSprite() {
         return BCTransportSprites.ACTION_EXTRACTION_PRESET.get(index);
     }

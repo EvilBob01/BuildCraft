@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.recipes.IRefineryRecipeManager;
 

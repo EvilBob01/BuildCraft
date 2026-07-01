@@ -2,7 +2,7 @@ package buildcraft.lib.client.guide.entry;
 
 import java.util.Objects;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.misc.ItemStackKey;
 

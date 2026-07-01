@@ -24,11 +24,11 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 
 import net.minecraft.init.Bootstrap;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import buildcraft.api.data.NbtSquishConstants;
 
@@ -73,7 +73,7 @@ class NbtSquishMapWriter {
         List<TByteArrayList> byteArrays = map.byteArrays;
         List<TIntArrayList> intArrays = map.intArrays;
         List<String> strings = map.strings;
-        List<NBTBase> complex = map.complex;
+        List<Tag> complex = map.complex;
 
         int flags = 0;
         if (!bytes.isEmpty()) flags |= NbtSquishConstants.FLAG_HAS_BYTES;
@@ -183,12 +183,12 @@ class NbtSquishMapWriter {
         if (!complex.isEmpty()) {
             if (debug) log("\nComplex dictionary size = " + complex.size());
             writeVarInt(to, complex.size());
-            for (NBTBase nbt : complex) {
-                if (nbt instanceof NBTTagList) {
-                    NBTTagList list = (NBTTagList) nbt;
+            for (Tag nbt : complex) {
+                if (nbt instanceof ListTag) {
+                    ListTag list = (ListTag) nbt;
                     writeList(type, list, to);
                 } else {
-                    NBTTagCompound compound = (NBTTagCompound) nbt;
+                    CompoundTag compound = (CompoundTag) nbt;
                     writeCompound(type, compound, to);
                 }
             }
@@ -197,7 +197,7 @@ class NbtSquishMapWriter {
         profiler.endSection();
     }
 
-    /** Similar to {@link PacketBuffer#writeVarInt(int)} */
+    /** Similar to {@link FriendlyByteBuf#writeVarInt(int)} */
     private static void writeVarInt(DataOutput to, int input) throws IOException {
         while ((input & -128) != 0) {
             to.writeByte((input & 0x7f) | 0x80);
@@ -206,7 +206,7 @@ class NbtSquishMapWriter {
         to.writeByte(input);
     }
 
-    private void writeList(WrittenType type, NBTTagList list, DataOutput to) throws IOException {
+    private void writeList(WrittenType type, ListTag list, DataOutput to) throws IOException {
         boolean pack = shouldPackList(list);
         if (debug) log("\n  List tag count = " + list.tagCount() + ", writing it " + (pack ? "PACKED" : "NORMAL"));
         if (pack) {
@@ -216,7 +216,7 @@ class NbtSquishMapWriter {
         }
     }
 
-    private boolean shouldPackList(NBTTagList list) {
+    private boolean shouldPackList(ListTag list) {
         if (packList != null) return packList;
         profiler.startSection("should_pack");
         TIntHashSet indexes = new TIntHashSet();
@@ -227,7 +227,7 @@ class NbtSquishMapWriter {
         return indexes.size() * 2 < list.tagCount();
     }
 
-    private void writeCompound(WrittenType type, NBTTagCompound compound, DataOutput to) throws IOException {
+    private void writeCompound(WrittenType type, CompoundTag compound, DataOutput to) throws IOException {
         profiler.startSection("compound");
         WrittenType stringType = WrittenType.getForSize(map.strings.size());
         if (debug) log("\n  Compound tag count = " + compound.getSize());
@@ -235,7 +235,7 @@ class NbtSquishMapWriter {
         writeVarInt(to, compound.getSize());
         for (String key : compound.getKeySet()) {
             profiler.startSection("entry");
-            NBTBase nbt = compound.getTag(key);
+            Tag nbt = compound.getTag(key);
             profiler.startSection("index_value");
             int index = map.indexOfTag(nbt);
             profiler.endSection();
@@ -249,7 +249,7 @@ class NbtSquishMapWriter {
         profiler.endSection();
     }
 
-    private void writeListNormal(WrittenType type, DataOutput to, NBTTagList list) throws IOException {
+    private void writeListNormal(WrittenType type, DataOutput to, ListTag list) throws IOException {
         profiler.startSection("list_normal");
         to.writeByte(NbtSquishConstants.COMPLEX_LIST);
         writeVarInt(to, list.tagCount());
@@ -267,7 +267,7 @@ class NbtSquishMapWriter {
         profiler.endSection();
     }
 
-    private void writeListPacked(WrittenType type, DataOutput to, NBTTagList list) throws IOException {
+    private void writeListPacked(WrittenType type, DataOutput to, ListTag list) throws IOException {
         profiler.startSection("list_packed");
         to.writeByte(NbtSquishConstants.COMPLEX_LIST_PACKED);
         profiler.startSection("header");
@@ -305,7 +305,7 @@ class NbtSquishMapWriter {
         for (IndexEntry entry : entries) {
             final int j = i;
 
-            NBTBase base = map.getTagForWriting(entry.index);
+            Tag base = map.getTagForWriting(entry.index);
             String n = safeToString(base);
             if (debug) log("\n List entry #" + j + " = " + entry.count + "x" + entry.index + " (" + n + ")");
 
@@ -357,7 +357,7 @@ class NbtSquishMapWriter {
         profiler.endSection();
     }
 
-    public static String safeToString(NBTBase base) {
+    public static String safeToString(Tag base) {
         String n = base.toString();
         if (n.length() > 100) {
             n = "[LARGE  " + n.substring(0, 100) + " ]";

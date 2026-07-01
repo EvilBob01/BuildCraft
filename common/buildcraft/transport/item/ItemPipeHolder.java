@@ -14,18 +14,18 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.transport.pipe.IItemPipe;
 import buildcraft.api.transport.pipe.PipeApi;
@@ -39,11 +39,11 @@ import buildcraft.lib.registry.TagManager;
 
 import buildcraft.transport.BCTransportBlocks;
 
-public class ItemPipeHolder extends ItemBlock implements IItemBuildCraft, IItemPipe {
+public class ItemPipeHolder extends BlockItem implements IItemBuildCraft, IItemPipe {
     public final PipeDefinition definition;
     private final String id;
     private String unlocalizedName;
-    private CreativeTabs creativeTab;
+    private CreativeModeTab creativeTab;
 
     protected ItemPipeHolder(PipeDefinition definition, String tagId) {
         super(BCTransportBlocks.pipeHolder);
@@ -74,7 +74,7 @@ public class ItemPipeHolder extends ItemBlock implements IItemBuildCraft, IItemP
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubItems(CreativeModeTab tab, NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(tab)) {
             items.add(new ItemStack(this));
         }
@@ -91,7 +91,7 @@ public class ItemPipeHolder extends ItemBlock implements IItemBuildCraft, IItemP
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (int i = 0; i <= 16; i++) {
             variants.put(i, new ModelResourceLocation("buildcrafttransport:pipe_item#inventory"));
@@ -103,22 +103,22 @@ public class ItemPipeHolder extends ItemBlock implements IItemBuildCraft, IItemP
         String colourComponent = "";
         int meta = stack.getMetadata();
         if (meta > 0 && meta <= 16) {
-            EnumDyeColor colour = EnumDyeColor.byMetadata(meta - 1);
+            DyeColor colour = DyeColor.byMetadata(meta - 1);
             colourComponent = ColourUtil.getTextFullTooltipSpecial(colour) + " ";
         }
         return colourComponent + super.getItemStackDisplayName(stack);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public FontRenderer getFontRenderer(ItemStack stack) {
         return SpecialColourFontRenderer.INSTANCE;
     }
 
-    // ItemBlock overrides these to point to the block
+    // BlockItem overrides these to point to the block
 
     @Override
-    public ItemBlock setUnlocalizedName(String unlocalizedName) {
+    public BlockItem setUnlocalizedName(String unlocalizedName) {
         this.unlocalizedName = "item." + unlocalizedName;
         return this;
     }
@@ -134,25 +134,25 @@ public class ItemPipeHolder extends ItemBlock implements IItemBuildCraft, IItemP
     }
 
     @Override
-    public Item setCreativeTab(CreativeTabs tab) {
+    public Item setCreativeTab(CreativeModeTab tab) {
         creativeTab = tab;
         return this;
     }
 
     @Override
-    public CreativeTabs getCreativeTab() {
+    public CreativeModeTab getCreativeTab() {
         return creativeTab;
     }
 
     // Misc usefulness
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag flag) {
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
         String tipName = "tip." + unlocalizedName.replace(".name", "").replace("item.", "");
         String localised = I18n.format(tipName);
         if (!localised.equals(tipName)) {
-            tooltip.add(TextFormatting.GRAY + localised);
+            tooltip.add(ChatFormatting.GRAY + localised);
         }
         if (definition.flowType == PipeApi.flowFluids) {
             PipeApi.FluidTransferInfo fti = PipeApi.getFluidTransferInfo(definition);

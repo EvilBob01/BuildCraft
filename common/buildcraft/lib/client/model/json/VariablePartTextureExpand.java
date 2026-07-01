@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.client.model.ItemLayerModel;
 
@@ -72,7 +72,7 @@ public class VariablePartTextureExpand extends JsonVariableModelPart {
                 mut.fromBakedItem(q);
                 mut.translated(0, 0, -(7.5 / 16.0));
                 mut.scaled(1, 1, 16);
-                mut.rotate(EnumFacing.SOUTH, evaluateFace(this.face), 0.5f, 0.5f, 0.5f);
+                mut.rotate(Direction.SOUTH, evaluateFace(this.face), 0.5f, 0.5f, 0.5f);
                 mut.scalef(size[0], size[1], size[2]);
                 mut.translated(f[0], f[1], f[2]);
                 mut.setCalculatedNormal();
@@ -85,14 +85,14 @@ public class VariablePartTextureExpand extends JsonVariableModelPart {
         }
     }
 
-    private EnumFacing evaluateFace(INodeObject<String> node) {
+    private Direction evaluateFace(INodeObject<String> node) {
         String s = node.evaluate();
-        EnumFacing side = EnumFacing.byName(s);
+        Direction side = Direction.byName(s);
         if (side == null) {
             if (invalidFaceStrings.add(s)) {
                 BCLog.logger.warn("Invalid facing '" + s + "' from expression '" + node + "'");
             }
-            return EnumFacing.UP;
+            return Direction.UP;
         } else {
             return side;
         }

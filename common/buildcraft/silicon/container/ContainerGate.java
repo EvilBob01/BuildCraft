@@ -14,10 +14,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.statements.StatementManager;
@@ -50,7 +50,7 @@ public class ContainerGate extends ContainerPipe {
     public final GateContext<TriggerWrapper> possibleTriggersContext;
     public final GateContext<ActionWrapper> possibleActionsContext;
 
-    public ContainerGate(EntityPlayer player, GateLogic logic) {
+    public ContainerGate(Player player, GateLogic logic) {
         super(player, logic.getPipeHolder());
         this.gate = logic;
         gate.getPipeHolder().onPlayerOpen(player);
@@ -62,7 +62,7 @@ public class ContainerGate extends ContainerPipe {
         }
         slotHeight = s;
 
-        if (gate.getPipeHolder().getPipeWorld().isRemote) {
+        if (gate.getPipeHolder().getPipeWorld().isClientSide) {
             possibleTriggers = new TreeSet<>();
             possibleActions = new TreeSet<>();
         } else {
@@ -84,7 +84,7 @@ public class ContainerGate extends ContainerPipe {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(Player player) {
         super.onContainerClosed(player);
         gate.getPipeHolder().onPlayerClose(player);
     }
@@ -118,7 +118,7 @@ public class ContainerGate extends ContainerPipe {
 
     @Override
     public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_CONNECTION) {
                 int index = buffer.readUnsignedByte();
                 boolean to = buffer.readBoolean();
@@ -129,7 +129,7 @@ public class ContainerGate extends ContainerPipe {
             } else if (id == ID_VALID_STATEMENTS) {
                 sendMessage(ID_VALID_STATEMENTS);
             }
-        } else if (side == Side.CLIENT) {
+        } else if (side == Dist.CLIENT) {
             if (id == ID_VALID_STATEMENTS) {
                 possibleTriggers.clear();
                 possibleActions.clear();
@@ -159,7 +159,7 @@ public class ContainerGate extends ContainerPipe {
     @Override
     public void writeMessage(int id, PacketBufferBC buffer, Side side) {
         super.writeMessage(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_VALID_STATEMENTS) {
                 buffer.writeInt(possibleTriggers.size());
                 buffer.writeInt(possibleActions.size());

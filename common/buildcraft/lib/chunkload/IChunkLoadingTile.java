@@ -11,16 +11,16 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 
 import buildcraft.lib.BCLibConfig;
 import buildcraft.lib.BCLibConfig.ChunkLoaderLevel;
 
-/** This should be implemented by {@link TileEntity}'s that wish to be chunkloaded by buildcraft lib. Note that tiles
- * should add themselves to the chunkloading list in {@link ChunkLoaderManager#loadChunksForTile(TileEntity)} */
+/** This should be implemented by {@link BlockEntity}'s that wish to be chunkloaded by buildcraft lib. Note that tiles
+ * should add themselves to the chunkloading list in {@link ChunkLoaderManager#loadChunksForTile(BlockEntity)} */
 public interface IChunkLoadingTile {
     /** @return The chunkloading type, or null if this tile doesn't want to be chunkloaded. */
     @Nullable
@@ -37,9 +37,9 @@ public interface IChunkLoadingTile {
      *         chunkloaded. */
     @Nullable
     default Set<ChunkPos> getChunksToLoad() {
-        BlockPos pos = ((TileEntity) this).getPos();
+        BlockPos pos = ((BlockEntity) this).getPos();
         Set<ChunkPos> chunkPoses = new HashSet<>(4);
-        for (EnumFacing face : EnumFacing.HORIZONTALS) {
+        for (Direction face : Direction.HORIZONTALS) {
             chunkPoses.add(new ChunkPos(pos.offset(face)));
         }
         return chunkPoses;

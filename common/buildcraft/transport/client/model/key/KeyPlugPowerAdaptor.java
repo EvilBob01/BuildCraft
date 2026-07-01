@@ -1,12 +1,12 @@
 package buildcraft.transport.client.model.key;
 
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
 
 public class KeyPlugPowerAdaptor extends PluggableModelKey {
-    public KeyPlugPowerAdaptor(EnumFacing side) {
+    public KeyPlugPowerAdaptor(Direction side) {
         super(BlockRenderLayer.CUTOUT, side);
     }
 }

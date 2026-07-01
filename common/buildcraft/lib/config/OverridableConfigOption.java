@@ -6,10 +6,10 @@
 
 package buildcraft.lib.config;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class OverridableConfigOption extends DetailedConfigOption {
     private final String assetName;
@@ -23,7 +23,7 @@ public class OverridableConfigOption extends DetailedConfigOption {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected boolean refresh() {
         if (manager.exists()) {
             return manager.refresh(this, assetName);

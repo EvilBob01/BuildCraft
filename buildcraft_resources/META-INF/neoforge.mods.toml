@@ -1,0 +1,201 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MPL-2.0"
+issueTrackerURL = "https://github.com/EvilBob01/BuildCraft/issues"
+
+[[mods]]
+    modId = "buildcraftlib"
+    version = "${mod_version}"
+    displayName = "BuildCraft Lib"
+    description = """
+        Library mod used by BuildCraft. Contains shared utilities, networking,
+        rendering helpers, and the base block/item registration framework.
+    """
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftcore"
+    version = "${mod_version}"
+    displayName = "BuildCraft"
+    description = """
+        Extending Minecraft with pipes, auto-crafting, quarries, engines and much more!
+    """
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftbuilders"
+    version = "${mod_version}"
+    displayName = "BuildCraft Builders"
+    description = "The builders module for BuildCraft — fillers, builders, architects and more."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftenergy"
+    version = "${mod_version}"
+    displayName = "BuildCraft Energy"
+    description = "The energy module for BuildCraft — combustion engines, oil generation and fuel refining."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftfactory"
+    version = "${mod_version}"
+    displayName = "BuildCraft Factory"
+    description = "The factory module for BuildCraft — quarries, miners, flood gates and tanks."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftsilicon"
+    version = "${mod_version}"
+    displayName = "BuildCraft Silicon"
+    description = "The silicon module for BuildCraft — assembly tables, integration tables and gates."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcrafttransport"
+    version = "${mod_version}"
+    displayName = "BuildCraft Transport"
+    description = "The transport module for BuildCraft — pipes, valves and waterproof pipes."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+[[mods]]
+    modId = "buildcraftrobotics"
+    version = "${mod_version}"
+    displayName = "BuildCraft Robotics"
+    description = "The robotics module for BuildCraft — robots, zones and boards."
+    logoFile = "assets/buildcraft/logo.png"
+    authors = "SpaceToad and the BuildCraft Team"
+    displayURL = "https://github.com/EvilBob01/BuildCraft"
+
+# NeoForge dependency shared by all mods
+[[dependencies.buildcraftlib]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[21.1,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.buildcraftlib]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "[1.21.1,1.22)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.buildcraftcore]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[21.1,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.buildcraftcore]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "[1.21.1,1.22)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.buildcraftcore]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftbuilders]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftbuilders]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftenergy]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftenergy]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftfactory]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftfactory]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftsilicon]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftsilicon]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcrafttransport]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcrafttransport]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftrobotics]]
+    modId = "buildcraftlib"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.buildcraftrobotics]]
+    modId = "buildcraftcore"
+    type = "required"
+    versionRange = "[${mod_version},)"
+    ordering = "AFTER"
+    side = "BOTH"

@@ -8,16 +8,16 @@ package buildcraft.silicon.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
@@ -33,19 +33,19 @@ public class AdvDebuggerLaser implements DetachedRenderer.IDetachedRenderer {
     private static final int COLOUR_NOT_VISIBLE = 0xFF_11_11_99;
 
     private final BlockPos pos;
-    private final EnumFacing face;
+    private final Direction face;
 
     public AdvDebuggerLaser(TileLaser tile) {
         pos = tile.getPos();
-        IBlockState state = tile.getWorld().getBlockState(pos);
+        BlockState state = tile.getWorld().getBlockState(pos);
         face = state.getBlock() == BCSiliconBlocks.laser
             ? state.getValue(BuildCraftProperties.BLOCK_FACING_6)
             : null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(EntityPlayer player, float partialTicks) {
+    public void render(Player player, float partialTicks) {
         if (pos == null || face == null) {
             return;
         }

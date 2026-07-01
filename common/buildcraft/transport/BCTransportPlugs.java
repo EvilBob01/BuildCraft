@@ -6,7 +6,7 @@
 
 package buildcraft.transport;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.transport.pipe.PipeApi;
 import buildcraft.api.transport.pluggable.PluggableDefinition;

@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.ForgeChunkManager;
+import net.neoforged.neoforge.common.world.ForceChunkSetupEventHandler;
 
 import buildcraft.api.core.BCLog;
 
@@ -31,10 +31,10 @@ public class ChunkLoaderManager {
     private static final Map<WorldPos, ForgeChunkManager.Ticket> TICKETS = new HashMap<>();
 
     /**
-     * This should be called in {@link TileEntity#validate()}, if a tile entity might be able to load. A check is
+     * This should be called in {@link BlockEntity#validate()}, if a tile entity might be able to load. A check is
      * performed to see if the config allows it
      */
-    public static <T extends TileEntity & IChunkLoadingTile> void loadChunksForTile(T tile) {
+    public static <T extends BlockEntity & IChunkLoadingTile> void loadChunksForTile(T tile) {
         if (!canLoadFor(tile)) {
             releaseChunksFor(tile);
             return;
@@ -42,11 +42,11 @@ public class ChunkLoaderManager {
         updateChunksFor(tile);
     }
 
-    public static <T extends TileEntity & IChunkLoadingTile> void releaseChunksFor(T tile) {
+    public static <T extends BlockEntity & IChunkLoadingTile> void releaseChunksFor(T tile) {
         ForgeChunkManager.releaseTicket(TICKETS.remove(new WorldPos(tile)));
     }
 
-    private static <T extends TileEntity & IChunkLoadingTile> void updateChunksFor(T tile) {
+    private static <T extends BlockEntity & IChunkLoadingTile> void updateChunksFor(T tile) {
         WorldPos wPos = new WorldPos(tile);
         ForgeChunkManager.Ticket ticket = TICKETS.get(wPos);
         if (ticket == null) {
@@ -75,14 +75,14 @@ public class ChunkLoaderManager {
         }
     }
 
-    public static <T extends TileEntity & IChunkLoadingTile> Set<ChunkPos> getChunksToLoad(T tile) {
+    public static <T extends BlockEntity & IChunkLoadingTile> Set<ChunkPos> getChunksToLoad(T tile) {
         Set<ChunkPos> chunksToLoad = tile.getChunksToLoad();
         Set<ChunkPos> chunkPoses = new HashSet<>(chunksToLoad != null ? chunksToLoad : Collections.emptyList());
         chunkPoses.add(new ChunkPos(tile.getPos()));
         return chunkPoses;
     }
 
-    public static void rebindTickets(List<ForgeChunkManager.Ticket> tickets, World world) {
+    public static void rebindTickets(List<ForgeChunkManager.Ticket> tickets, Level world) {
         TICKETS.clear();
         if (BCLibConfig.chunkLoadingLevel != BCLibConfig.ChunkLoaderLevel.NONE) {
             for (ForgeChunkManager.Ticket ticket : tickets) {
@@ -96,14 +96,14 @@ public class ChunkLoaderManager {
                     ForgeChunkManager.releaseTicket(ticket);
                     continue;
                 }
-                TileEntity tile = world.getTileEntity(pos);
+                BlockEntity tile = world.getBlockEntity(pos);
                 if (tile == null || !(tile instanceof IChunkLoadingTile) || !canLoadFor((IChunkLoadingTile) tile)) {
                     TICKETS.remove(wPos);
                     ForgeChunkManager.releaseTicket(ticket);
                     continue;
                 }
                 TICKETS.put(wPos, ticket);
-                for (ChunkPos chunkPos : getChunksToLoad((TileEntity & IChunkLoadingTile) tile)) {
+                for (ChunkPos chunkPos : getChunksToLoad((BlockEntity & IChunkLoadingTile) tile)) {
                     ForgeChunkManager.forceChunk(ticket, chunkPos);
                 }
             }

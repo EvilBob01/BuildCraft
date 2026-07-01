@@ -12,17 +12,17 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import buildcraft.lib.net.MessageContext;
+import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.IMjConnector;
@@ -61,25 +61,25 @@ public class TileEngineRF extends TileEngineBase_BC8 {
         invUpgrades = itemManager.addInvHandler("upgrades", 4, this::isValidUpgrade, StackInsertionFunction.getInsertionFunction(1), EnumAccess.NONE);
     }
 
-    // TileEntity overrides
+    // BlockEntity overrides
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundTag writeToNBT(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.setInteger("currentRF", currentRF);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void readFromNBT(CompoundTag nbt) {
+        super.loadAdditional(nbt);
         currentRF = nbt.getInteger("currentRF");
     }
 
     @Override
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
-        if (side == Side.CLIENT) {
+        if (side == Dist.CLIENT) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 currentRF = buffer.readInt();
             }
@@ -89,7 +89,7 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
-        if (side == Side.SERVER) {
+        if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 buffer.writeInt(currentRF);
             }
@@ -105,7 +105,7 @@ public class TileEngineRF extends TileEngineBase_BC8 {
 
     @Override
     public boolean onActivated(
-        EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ
+        Player player, InteractionHand hand, Direction side, float hitX, float hitY, float hitZ
     ) {
         ItemStack current = player.getHeldItem(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
@@ -119,7 +119,7 @@ public class TileEngineRF extends TileEngineBase_BC8 {
                 return false;
             }
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             BCEnergyGuis.ENGINE_RF.openGUI(player, getPos());
         }
         return true;

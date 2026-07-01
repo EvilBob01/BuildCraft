@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityArrow.PickupStatus;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.IStackFilter;
 import buildcraft.api.inventory.IItemTransactor.IItemExtractable;

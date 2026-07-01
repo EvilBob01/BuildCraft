@@ -13,13 +13,13 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModListState;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import buildcraft.api.core.BCLog;
 

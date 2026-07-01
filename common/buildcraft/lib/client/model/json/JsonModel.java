@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 
 import net.minecraft.client.renderer.block.model.ModelBlock;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.model.ResourceLoaderContext;
 import buildcraft.lib.misc.JsonUtil;

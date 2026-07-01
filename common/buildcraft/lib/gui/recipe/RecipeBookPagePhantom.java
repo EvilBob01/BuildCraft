@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.gui.recipebook.GuiButtonRecipe;
 import net.minecraft.client.gui.recipebook.RecipeBookPage;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 
 public class RecipeBookPagePhantom extends RecipeBookPage {
 

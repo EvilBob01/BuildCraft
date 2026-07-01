@@ -15,19 +15,19 @@ import javax.vecmath.Vector3f;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.world.World;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.level.Level;
 
 import buildcraft.api.transport.pipe.EnumPipeColourType;
 import buildcraft.api.transport.pipe.IItemPipe;
@@ -62,7 +62,7 @@ public enum ModelPipeItem implements IBakedModel {
             Tuple3f radius = new Vector3f(0.25f, 0.5f, 0.25f);
             UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
             UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 16);
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
                 QUADS_SAME[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
             }
@@ -79,8 +79,8 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.125f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 4);
-                 for (EnumFacing face : EnumFacing.VALUES) {
-                     if (face == EnumFacing.DOWN) {
+                 for (Direction face : Direction.VALUES) {
+                     if (face == Direction.DOWN) {
                          continue;
                      }
                      UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
@@ -97,7 +97,7 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.25f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 4, 12, 12);
-                 for (EnumFacing face : EnumFacing.VALUES) {
+                 for (Direction face : Direction.VALUES) {
                      if (face.getAxis() == Axis.Y) {
                          continue;
                      }
@@ -115,8 +115,8 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.125f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 12, 12, 16);
-                 for (EnumFacing face : EnumFacing.VALUES) {
-                     if (face == EnumFacing.UP) {
+                 for (Direction face : Direction.VALUES) {
+                     if (face == Direction.UP) {
                          continue;
                      }
                      UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
@@ -134,7 +134,7 @@ public enum ModelPipeItem implements IBakedModel {
             Tuple3f radius = new Vector3f(0.24f, 0.49f, 0.24f);
             UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
             UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 16);
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
                 QUADS_COLOUR[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
             }
@@ -142,7 +142,7 @@ public enum ModelPipeItem implements IBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(BlockState state, Direction side, long rand) {
         return ImmutableList.of();
     }
 
@@ -160,7 +160,7 @@ public enum ModelPipeItem implements IBakedModel {
         }
 
         if (colour > 0 && colour <= 16) {
-            EnumDyeColor rColour = EnumDyeColor.byMetadata(colour - 1);
+            DyeColor rColour = DyeColor.byMetadata(colour - 1);
             int rgb = 0xFF_00_00_00 | ColourUtil.swapArgbToAbgr(ColourUtil.getLightHex(rColour));
             if (colourType == EnumPipeColourType.TRANSLUCENT) {
                 TextureAtlasSprite sprite = BCTransportSprites.PIPE_COLOUR.getSprite();
@@ -257,8 +257,8 @@ public enum ModelPipeItem implements IBakedModel {
         }
 
         @Override
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world,
-            EntityLivingBase entity) {
+        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, Level world,
+            LivingEntity entity) {
             Item item = stack.getItem();
             PipeFaceTex center = PipeFaceTex.NO_SPRITE;
             PipeFaceTex top = center;

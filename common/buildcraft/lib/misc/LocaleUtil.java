@@ -14,8 +14,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.Direction;
 import net.minecraft.util.text.translation.I18n;
 
 import net.minecraftforge.fluids.IFluidTank;
@@ -109,15 +109,15 @@ public class LocaleUtil {
         return I18n.canTranslate(key);
     }
 
-    /** @param colour The {@link EnumDyeColor} to localize.
+    /** @param colour The {@link DyeColor} to localize.
      * @return a localised name for the given colour. */
-    public static String localizeColour(EnumDyeColor colour) {
+    public static String localizeColour(DyeColor colour) {
         return localize("item.fireworksCharge." + colour.getUnlocalizedName());
     }
 
-    /** @param face The {@link EnumFacing} to localize.
+    /** @param face The {@link Direction} to localize.
      * @return a localised name for the given face. */
-    public static String localizeFacing(@Nullable EnumFacing face) {
+    public static String localizeFacing(@Nullable Direction face) {
         return localize("direction." + (face == null ? "center" : face.getName()));
     }
 

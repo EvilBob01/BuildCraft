@@ -6,9 +6,9 @@
 
 package buildcraft.lib.misc.data;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public final class WorldPos {
     @SuppressWarnings("WeakerAccess")
@@ -21,11 +21,11 @@ public final class WorldPos {
         this.pos = pos.getClass() == BlockPos.class ? pos : new BlockPos(pos);
     }
 
-    public WorldPos(World world, BlockPos pos) {
+    public WorldPos(Level world, BlockPos pos) {
         this(world.provider.getDimension(), pos);
     }
 
-    public WorldPos(TileEntity tile) {
+    public WorldPos(BlockEntity tile) {
         this(tile.getWorld(), tile.getPos());
     }
 

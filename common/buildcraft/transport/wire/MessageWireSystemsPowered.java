@@ -6,6 +6,10 @@
 
 package buildcraft.transport.wire;
 
+import buildcraft.lib.net.IMessage;
+import buildcraft.lib.net.IMessageHandler;
+import buildcraft.lib.net.MessageContext;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,10 +18,8 @@ import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 import buildcraft.api.transport.IWireManager;
 import buildcraft.api.transport.pipe.IPipeHolder;
@@ -69,7 +71,7 @@ public class MessageWireSystemsPowered implements IMessage {
                     WireSystem.WireElement element = elementPowered.getLeft();
                     boolean powered = elementPowered.getRight();
                     if (element.type == WireSystem.WireElement.Type.WIRE_PART) {
-                        TileEntity tile = Minecraft.getMinecraft().world.getTileEntity(element.blockPos);
+                        BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(element.blockPos);
                         if (tile instanceof IPipeHolder) {
                             IPipeHolder holder = (IPipeHolder) tile;
                             IWireManager iWireManager = holder.getWireManager();

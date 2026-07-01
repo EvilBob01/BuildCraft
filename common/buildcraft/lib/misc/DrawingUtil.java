@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import javax.vecmath.Point2i;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class DrawingUtil {
     @SuppressWarnings("Duplicates")

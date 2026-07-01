@@ -7,12 +7,12 @@
 package buildcraft.silicon.client.model.key;
 
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
 
 public class KeyPlugLightSensor extends PluggableModelKey {
-    public KeyPlugLightSensor(EnumFacing side) {
+    public KeyPlugLightSensor(Direction side) {
         super(BlockRenderLayer.CUTOUT, side);
     }
 }

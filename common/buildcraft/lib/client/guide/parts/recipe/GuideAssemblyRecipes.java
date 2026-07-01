@@ -12,8 +12,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import buildcraft.api.BCBlocks;

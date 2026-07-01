@@ -7,17 +7,17 @@
 package buildcraft.transport.client.model.key;
 
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
 
 public final class KeyPlugBlocker extends PluggableModelKey {
-    public KeyPlugBlocker(EnumFacing side) {
+    public KeyPlugBlocker(Direction side) {
         super(BlockRenderLayer.CUTOUT, side);
     }
 
-    /** Factory for {@link #KeyPlugBlocker(EnumFacing)} that avoids class verification errors. */
-    public static PluggableModelKey create(EnumFacing side) {
+    /** Factory for {@link #KeyPlugBlocker(Direction)} that avoids class verification errors. */
+    public static PluggableModelKey create(Direction side) {
         return new KeyPlugBlocker(side);
     }
 }

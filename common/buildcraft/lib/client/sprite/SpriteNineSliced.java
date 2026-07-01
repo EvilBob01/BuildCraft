@@ -12,15 +12,15 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.core.render.ISprite;
 
 import buildcraft.lib.gui.pos.IGuiArea;
 
 /** Defines and draws a 9-sliced sprite. */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class SpriteNineSliced {
     public final ISprite sprite;
     public final double xMin, yMin, xMax, yMax;

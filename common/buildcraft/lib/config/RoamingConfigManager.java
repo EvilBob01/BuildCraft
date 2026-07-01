@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.BCLibProxy;
 

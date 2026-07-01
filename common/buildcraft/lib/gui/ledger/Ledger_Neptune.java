@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import buildcraft.api.core.render.ISprite;
 
@@ -179,7 +179,7 @@ public class Ledger_Neptune implements IInteractionElement, IContainingElement {
         }
 
         double maxDiff = Math.max(maxWidth - CLOSED_WIDTH, maxHeight - CLOSED_HEIGHT);
-        double ldgDiff = MathHelper.clamp(maxDiff / 5, 1, 15);
+        double ldgDiff = Mth.clamp(maxDiff / 5, 1, 15);
 
         // TODO: extract a method
         if (currentWidth < targetWidth) {
