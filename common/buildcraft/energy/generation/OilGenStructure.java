@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.generation;
+package buildcraft.energy.generation;
 
 import java.util.function.Predicate;
 

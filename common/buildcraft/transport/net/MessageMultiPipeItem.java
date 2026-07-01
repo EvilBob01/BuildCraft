@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.net;
+package buildcraft.transport.net;
 
 import java.util.ArrayList;
 import java.util.HashMap;

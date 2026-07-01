@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.tile.craft;
+package buildcraft.lib.tile.craft;
 
 import net.minecraft.world.item.ItemStack;
 

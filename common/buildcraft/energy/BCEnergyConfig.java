@@ -1,4 +1,4 @@
-﻿package buildcraft.energy;
+package buildcraft.energy;
 
 import java.time.LocalDateTime;
 import java.time.MonthDay;

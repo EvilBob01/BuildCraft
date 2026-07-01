@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.misc.data;
+package buildcraft.lib.misc.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.ProfilerFiller;

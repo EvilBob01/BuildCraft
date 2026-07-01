@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * The BuildCraft API is distributed under the terms of the MIT License. Please check the contents of the license, which

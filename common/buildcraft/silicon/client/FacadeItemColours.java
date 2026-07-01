@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon.client;
+package buildcraft.silicon.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;

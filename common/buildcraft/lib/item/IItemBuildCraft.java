@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -23,11 +23,13 @@ import buildcraft.lib.registry.TagManager.EnumTagType;
 public interface IItemBuildCraft {
     String id();
 
+    /** TODO (Phase 4 — see ROADMAP.md): in 1.12.2 this set the unlocalized name, registry name, and
+     * creative tab post-construction. In 1.21.1 the translation key and registry name are implicit from
+     * the {@code DeferredRegister} entry, and creative tab membership is declared via a
+     * {@code BuildCreativeModeTabContentsEvent} listener instead of a per-item setter. Left as a no-op
+     * until that listener is wired up. */
     default void init() {
-        Item thisItem = (Item) this;
-        thisItem/* setUnlocalizedName removed in 1.21 */, EnumTagType.UNLOCALIZED_NAME));
-        thisItem/* setRegistryName removed - use registry directly */, EnumTagType.REGISTRY_NAME));
-        thisItem/* setCreativeTab removed - use CreativeModeTab */, EnumTagType.CREATIVE_TAB)));
+        // no-op: see TODO above
     }
 
     /** Sets up all of the model information for this item. This is called multiple times, and you *must* make sure that

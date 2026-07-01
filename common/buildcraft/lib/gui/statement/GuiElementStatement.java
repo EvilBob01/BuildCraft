@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.statement;
+package buildcraft.lib.gui.statement;
 
 import java.util.ArrayList;
 import java.util.Collections;

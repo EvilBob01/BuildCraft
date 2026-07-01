@@ -1,4 +1,4 @@
-﻿package buildcraft.factory.tile;
+package buildcraft.factory.tile;
 
 import java.io.IOException;
 import java.util.ArrayDeque;

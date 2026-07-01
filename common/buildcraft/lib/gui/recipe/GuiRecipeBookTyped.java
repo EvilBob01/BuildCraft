@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.recipe;
+package buildcraft.lib.gui.recipe;
 
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.world.item.crafting.Recipe;

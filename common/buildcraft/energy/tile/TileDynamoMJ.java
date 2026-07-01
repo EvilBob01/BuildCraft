@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.tile;
+package buildcraft.energy.tile;
 
 import java.io.IOException;
 

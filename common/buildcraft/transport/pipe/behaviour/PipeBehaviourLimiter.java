@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.pipe.behaviour;
+package buildcraft.transport.pipe.behaviour;
 
 import java.io.IOException;
 

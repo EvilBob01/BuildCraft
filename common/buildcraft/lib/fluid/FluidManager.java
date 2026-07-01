@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,55 +6,18 @@
 
 package buildcraft.lib.fluid;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.client.renderer.block.statemap.StateMap;
-
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.fluids.BlockFluidBase;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModListState;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
-import buildcraft.lib.registry.RegistrationHelper;
-
+/** TODO (Phase 8 — see ROADMAP.md): the 1.12.2 fluid API ({@code BlockFluidBase}, {@code FluidRegistry},
+ * legacy {@code Material}, {@code StateMap}) was removed entirely in favor of NeoForge's {@code FluidType} +
+ * {@code FluidStack} system. This class is stubbed to a no-op that preserves the call signature used by
+ * {@code BCEnergyFluids} and friends until fluid registration is rewritten against the new API. */
 public class FluidManager {
 
-    private static final RegistrationHelper HELPER = new RegistrationHelper();
-    private static final List<BCFluidBlock> fluidBlocks = new ArrayList<>();
-
-    /** Should only ever be called during pre-init */
-    public static <F extends BCFluid> F register(F fluid) {
-
-        if (!Loader.instance().isInState(LoaderState.PREINITIALIZATION)) {
-            throw new IllegalStateException("Can only call this during pre-init!");
-        }
-
-        FluidRegistry.registerFluid(fluid);
-
-        Material material = new BCMaterialFluid(fluid.getMapColour(), fluid.isFlammable());
-        BCFluidBlock block = new BCFluidBlock(fluid, material);
-        block/* setRegistryName removed - use registry directly */.getModContainerById(BCLib.MODID).orElse(null).getModId(), "fluid_block_" + fluid.getBlockName());
-        block/* setUnlocalizedName removed in 1.21 */);
-        block.setLightOpacity(fluid.getLightOpacity());
-        HELPER.addForcedBlock(block);
-        fluid.setBlock(block);
-        FluidRegistry.addBucketForFluid(fluid);
-        fluidBlocks.add(block);
-        return fluid;
+    public static void init(net.neoforged.bus.api.IEventBus modEventBus) {
+        // no-op until the fluid system is ported (Phase 8)
     }
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public static void onModelBake(ModelBakeEvent event) {
-        for (BCFluidBlock fluid : fluidBlocks) {
-            event.getModelManager().getBlockModelShapes().registerBlockWithStateMapper(fluid,
-                new StateMap.Builder().ignore(BlockFluidBase.LEVEL).build());
-        }
+    /** Should only ever be called during common setup. Currently a no-op passthrough. */
+    public static <F extends BCFluid> F register(F fluid) {
+        return fluid;
     }
 }

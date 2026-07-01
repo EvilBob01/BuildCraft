@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon.item;
+package buildcraft.silicon.item;
 
 import java.util.List;
 

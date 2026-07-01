@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -43,7 +43,7 @@ public class FacadeAssemblyRecipes extends AssemblyRecipe implements IRecipeView
     public static final FacadeAssemblyRecipes INSTANCE = new FacadeAssemblyRecipes();
 
     static {
-        INSTANCE/* setRegistryName removed - use registry directly */);
+        INSTANCE.setRegistryName(new ResourceLocation("buildcraftsilicon", "facade"));
     }
 
     private static final int TIME_GAP = 500;

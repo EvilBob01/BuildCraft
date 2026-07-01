@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui;
+package buildcraft.lib.gui;
 
 import java.awt.Color;
 import java.util.ArrayList;

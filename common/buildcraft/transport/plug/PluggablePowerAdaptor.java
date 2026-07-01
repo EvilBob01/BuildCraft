@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.plug;
+package buildcraft.transport.plug;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

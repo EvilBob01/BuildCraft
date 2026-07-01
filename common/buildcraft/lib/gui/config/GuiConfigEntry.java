@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.config;
+package buildcraft.lib.gui.config;
 
 import java.util.Map;
 import java.util.Map.Entry;

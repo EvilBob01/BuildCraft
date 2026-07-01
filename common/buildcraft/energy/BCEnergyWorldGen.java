@@ -1,4 +1,4 @@
-﻿package buildcraft.energy;
+package buildcraft.energy;
 
 import net.minecraft.world.level.biome.Biome;
 

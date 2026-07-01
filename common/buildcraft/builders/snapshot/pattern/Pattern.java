@@ -1,4 +1,4 @@
-﻿package buildcraft.builders.snapshot.pattern;
+package buildcraft.builders.snapshot.pattern;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;

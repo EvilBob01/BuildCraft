@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.entry;
+package buildcraft.lib.client.guide.entry;
 
 import java.util.Collections;
 import java.util.List;

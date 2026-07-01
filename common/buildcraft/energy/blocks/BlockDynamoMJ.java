@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.blocks;
+package buildcraft.energy.blocks;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;

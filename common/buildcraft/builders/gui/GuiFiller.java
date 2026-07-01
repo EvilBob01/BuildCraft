@@ -1,4 +1,4 @@
-﻿package buildcraft.builders.gui;
+package buildcraft.builders.gui;
 
 import net.minecraft.resources.ResourceLocation;
 

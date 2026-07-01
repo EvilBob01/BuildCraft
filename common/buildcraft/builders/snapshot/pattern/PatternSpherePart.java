@@ -1,4 +1,4 @@
-﻿package buildcraft.builders.snapshot.pattern;
+package buildcraft.builders.snapshot.pattern;
 
 import java.util.BitSet;
 import java.util.EnumSet;

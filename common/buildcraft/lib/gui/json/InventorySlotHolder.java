@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.json;
+package buildcraft.lib.gui.json;
 
 import java.util.ArrayList;
 import java.util.List;

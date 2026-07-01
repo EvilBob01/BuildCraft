@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon.gate;
+package buildcraft.silicon.gate;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.ref;
+package buildcraft.lib.client.guide.ref;
 
 import java.util.ArrayList;
 import java.util.Collection;

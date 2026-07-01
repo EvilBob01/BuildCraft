@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.client;
+package buildcraft.transport.client;
 
 import javax.annotation.Nullable;
 

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.misc;
+package buildcraft.lib.misc;
 
 import java.util.HashSet;
 import java.util.Set;

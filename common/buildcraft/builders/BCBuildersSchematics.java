@@ -1,4 +1,4 @@
-﻿package buildcraft.builders;
+package buildcraft.builders;
 
 import java.util.Collections;
 import java.util.List;

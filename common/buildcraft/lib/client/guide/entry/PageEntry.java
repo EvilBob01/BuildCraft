@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.entry;
+package buildcraft.lib.client.guide.entry;
 
 import com.google.gson.JsonObject;
 

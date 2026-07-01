@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.recipe;
+package buildcraft.lib.recipe;
 
 import net.minecraft.world.item.ItemStack;
 

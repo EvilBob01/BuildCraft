@@ -1,4 +1,4 @@
-﻿package buildcraft.factory.client.render;
+package buildcraft.factory.client.render;
 
 import java.util.Arrays;
 import java.util.EnumMap;

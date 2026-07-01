@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon;
+package buildcraft.silicon;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;

@@ -1,4 +1,4 @@
-﻿package buildcraft.core.block;
+package buildcraft.core.block;
 
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;

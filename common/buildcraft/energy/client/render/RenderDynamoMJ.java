@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.client.render;
+package buildcraft.energy.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;

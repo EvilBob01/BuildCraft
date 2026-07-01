@@ -1,4 +1,4 @@
-﻿package buildcraft.builders.container;
+package buildcraft.builders.container;
 
 import java.io.IOException;
 import java.util.Optional;

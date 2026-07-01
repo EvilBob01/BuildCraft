@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.client.model.key;
+package buildcraft.transport.client.model.key;
 
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;

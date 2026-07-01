@@ -1,4 +1,4 @@
-﻿package buildcraft.factory.client.model;
+package buildcraft.factory.client.model;
 
 import java.util.ArrayList;
 import java.util.List;

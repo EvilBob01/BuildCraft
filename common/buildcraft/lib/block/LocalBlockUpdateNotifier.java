@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.block;
+package buildcraft.lib.block;
 
 import java.util.HashSet;
 import java.util.Map;

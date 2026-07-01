@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.statement;
+package buildcraft.lib.gui.statement;
 
 import java.util.EnumMap;
 import java.util.Map;

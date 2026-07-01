@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.misc;
+package buildcraft.lib.misc;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;

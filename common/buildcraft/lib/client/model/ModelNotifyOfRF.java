@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.model;
+package buildcraft.lib.client.model;
 
 import java.util.List;
 

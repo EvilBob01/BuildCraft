@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon.plug;
+package buildcraft.silicon.plug;
 
 import java.util.Objects;
 

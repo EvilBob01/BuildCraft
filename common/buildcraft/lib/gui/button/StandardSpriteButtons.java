@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.button;
+package buildcraft.lib.gui.button;
 
 import net.minecraft.resources.ResourceLocation;
 

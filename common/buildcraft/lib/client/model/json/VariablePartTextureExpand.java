@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.model.json;
+package buildcraft.lib.client.model.json;
 
 import java.util.HashSet;
 import java.util.List;

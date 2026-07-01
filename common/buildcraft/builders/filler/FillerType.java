@@ -1,4 +1,4 @@
-﻿package buildcraft.builders.filler;
+package buildcraft.builders.filler;
 
 import net.minecraft.nbt.CompoundTag;
 

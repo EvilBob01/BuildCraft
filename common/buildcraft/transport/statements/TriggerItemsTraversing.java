@@ -1,4 +1,4 @@
-﻿package buildcraft.transport.statements;
+package buildcraft.transport.statements;
 
 import net.minecraft.world.item.ItemStack;
 

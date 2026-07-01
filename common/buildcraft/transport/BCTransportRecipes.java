@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -115,59 +115,17 @@ public class BCTransportRecipes {
         addPipeRecipe(pipe, material, material);
     }
 
+    /** TODO (Phase 8 — see ROADMAP.md): pipe crafting recipes used meta-based {@code ItemStack} variants
+     * plus {@code ShapedOreRecipe}/{@code ForgeRegistries.RECIPES}, none of which exist in 1.21.1. Pipe
+     * recipes must be re-authored as data pack JSON (one file per colour variant, since metadata subtypes
+     * no longer exist). Stubbed to a no-op until that conversion happens. */
     private static void addPipeRecipe(ItemPipeHolder pipe, Object left, Object right) {
-        if (pipe == null) {
-            return;
-        }
-        ItemStack result = new ItemStack(pipe, 8);
-        IRecipe recipe = new ShapedOreRecipe(pipe.builtInRegistryHolder().key().location(), result, "lgr", 'l', left, 'r', right, 'g',
-            "blockGlassColorless");
-        recipe/* setRegistryName removed - use registry directly */ + "_colorless"));
-        ForgeRegistries.RECIPES.register(recipe);
-
-        for (EnumDyeColor colour : EnumDyeColor.values()) {
-            ItemStack resultStack = new ItemStack(pipe, 8, colour.getMetadata() + 1);
-            IRecipe colorRecipe = new ShapedOreRecipe(pipe.builtInRegistryHolder().key().location(), resultStack, "lgr", 'l', left, 'r', right,
-                'g', "blockGlass" + ColourUtil.getName(colour));
-            colorRecipe/* setRegistryName removed - use registry directly */ + "_" + colour));
-            ForgeRegistries.RECIPES.register(colorRecipe);
-        }
+        // no-op: see TODO above
     }
 
+    /** TODO (Phase 8 — see ROADMAP.md): same as {@link #addPipeRecipe}; upgrade recipes used
+     * {@code ShapelessOreRecipe}/{@code ShapelessRecipes}, neither of which exist in 1.21.1. */
     private static void addPipeUpgradeRecipe(ItemPipeHolder from, ItemPipeHolder to, Object additional) {
-        if (from == null || to == null) {
-            return;
-        }
-        if (additional == null) {
-            throw new NullPointerException("additional");
-        }
-
-        IRecipe returnRecipe = new ShapelessOreRecipe(to.builtInRegistryHolder().key().location(), new ItemStack(from), new ItemStack(to))
-            /* setRegistryName removed - use registry directly */ + "_undo"));
-        ForgeRegistries.RECIPES.register(returnRecipe);
-
-        NonNullList<Ingredient> list = NonNullList.create();
-        list.add(Ingredient.fromItem(from));
-        list.add(CraftingHelper.getIngredient(additional));
-
-        IRecipe upgradeRecipe = new ShapelessRecipes(to.builtInRegistryHolder().key().location().getResourcePath(), new ItemStack(to), list)
-            /* setRegistryName removed - use registry directly */ + "_colorless"));
-        ForgeRegistries.RECIPES.register(upgradeRecipe);
-
-        for (EnumDyeColor colour : ColourUtil.COLOURS) {
-            ItemStack f = new ItemStack(from, 1, colour.getMetadata() + 1);
-            ItemStack t = new ItemStack(to, 1, colour.getMetadata() + 1);
-            IRecipe returnRecipeColored = new ShapelessOreRecipe(to.builtInRegistryHolder().key().location(), f, t)
-                /* setRegistryName removed - use registry directly */ + "_" + colour.getName() + "_undo"));
-            ForgeRegistries.RECIPES.register(returnRecipeColored);
-
-            NonNullList<Ingredient> colorList = NonNullList.create();
-            colorList.add(Ingredient.fromStacks(f));
-            colorList.add(CraftingHelper.getIngredient(additional));
-
-            IRecipe upgradeRecipeColored = new ShapelessOreRecipe(to.builtInRegistryHolder().key().location(), colorList, t)
-                /* setRegistryName removed - use registry directly */ + "_" + colour.getName()));
-            ForgeRegistries.RECIPES.register(upgradeRecipeColored);
-        }
+        // no-op: see TODO above
     }
 }

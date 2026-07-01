@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui;
+package buildcraft.lib.gui;
 
 import net.minecraft.world.entity.player.Player;
 

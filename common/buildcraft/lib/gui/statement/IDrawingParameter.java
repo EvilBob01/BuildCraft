@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.statement;
+package buildcraft.lib.gui.statement;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

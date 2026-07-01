@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui;
+package buildcraft.lib.gui;
 
 import java.io.IOException;
 import java.util.function.Function;

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.statement;
+package buildcraft.lib.statement;
 
 import java.io.IOException;
 

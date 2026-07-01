@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.misc.search;
+package buildcraft.lib.misc.search;
 
 import java.util.ArrayList;
 import java.util.Collection;

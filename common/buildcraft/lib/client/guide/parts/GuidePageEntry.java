@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.parts;
+package buildcraft.lib.client.guide.parts;
 
 import java.util.List;
 

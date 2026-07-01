@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.command;
+package buildcraft.lib.command;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;

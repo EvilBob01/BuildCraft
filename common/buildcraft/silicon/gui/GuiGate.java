@@ -1,4 +1,4 @@
-﻿package buildcraft.silicon.gui;
+package buildcraft.silicon.gui;
 
 import net.minecraft.resources.ResourceLocation;
 

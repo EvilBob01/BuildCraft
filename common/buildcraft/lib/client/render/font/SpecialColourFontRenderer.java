@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.render.font;
+package buildcraft.lib.client.render.font;
 
 import java.util.List;
 

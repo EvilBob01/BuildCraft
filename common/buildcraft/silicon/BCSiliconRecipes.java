@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -124,11 +124,8 @@ public class BCSiliconRecipes {
                     GateVariant varOr = new GateVariant(EnumGateLogic.OR, material, modifier);
                     ItemStack resultOr = BCSiliconItems.plugGate.getStack(varOr);
 
-                    String regNamePrefix = resultOr.getItem().builtInRegistryHolder().key().location() + "_" + modifier + "_" + material;
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(resultOr.getItem().builtInRegistryHolder().key().location(),
-                        resultAnd, "i", 'i', new IngredientNBTBC(resultOr))/* setRegistryName removed - use registry directly */);
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(resultAnd.getItem().builtInRegistryHolder().key().location(),
-                        resultOr, "i", 'i', new IngredientNBTBC(resultAnd))/* setRegistryName removed - use registry directly */);
+                    // TODO (Phase 8 — see ROADMAP.md): ShapedOreRecipe / ForgeRegistries.RECIPES no longer
+                    // exist; gate-swap recipes must be re-authored as data pack JSON recipes.
                 }
             }
         }

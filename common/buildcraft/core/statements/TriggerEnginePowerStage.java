@@ -1,4 +1,4 @@
-﻿package buildcraft.core.statements;
+package buildcraft.core.statements;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;

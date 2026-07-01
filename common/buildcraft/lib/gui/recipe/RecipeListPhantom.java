@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.recipe;
+package buildcraft.lib.gui.recipe;
 
 import java.lang.reflect.Field;
 import java.util.BitSet;

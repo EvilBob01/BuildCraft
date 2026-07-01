@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.compat;
+package buildcraft.lib.compat;
 
 import javax.annotation.Nullable;
 

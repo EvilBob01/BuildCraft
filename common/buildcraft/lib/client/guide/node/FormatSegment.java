@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.node;
+package buildcraft.lib.client.guide.node;
 
 import java.util.Set;
 

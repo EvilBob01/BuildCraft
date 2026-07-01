@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.config;
+package buildcraft.lib.gui.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;

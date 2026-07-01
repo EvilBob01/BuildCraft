@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.compat;
+package buildcraft.lib.compat;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;

@@ -28,6 +28,35 @@ The foundational infrastructure needed to compile at all.
 - ✅ **neoforge.mods.toml** — Replaces `mcmod.info`; all 8 modules declared
 - ✅ **accesstransformer.cfg** — Stub AT file for future use
 - ✅ **expression subproject** — Updated to Java 21, removed deprecated Gradle APIs
+- ✅ **Gradle wrapper (2nd pass)** — 8.8 → 8.13 (NeoGradle 7.0.171 requires Gradle 8.10+)
+- ✅ **runs {} block ordering** — dependencies must be declared before `runs {}` or NeoGradle can't resolve `client()`/`server()` run types
+- ✅ **datagen run** — `data()`/`type=` run-type API in NeoGradle 7.0.171 didn't match docs; run removed for now (not needed for `compileJava`)
+- ✅ **expression subproject duplicate resources** — removed a redundant `resources { srcDir 'src/generator/resources' }` that duplicated Gradle's own sourceSet convention and broke `processGeneratorResources`
+- ✅ **`./gradlew compileJava` now reaches real Java compilation** — first successful run through NeoForge dependency resolution, MC decompile, and `javac` invocation
+
+### First real compile: what we learned
+
+Getting `compileJava` to actually invoke `javac` (rather than fail during Gradle configuration) was itself a milestone — it took 5 iterations to fix the build script. Once it did, two classes of bugs surfaced:
+
+1. **UTF-8 BOM corruption (self-inflicted, now fixed).** The PowerShell bulk-edit scripts used during the initial porting pass wrote files with `[System.Text.Encoding]::UTF8`, which in .NET prepends a byte-order-mark. `javac` treats a BOM as an illegal character, which cascaded into "class expected" errors for the *entire rest of the file* — inflating the apparent error count into the thousands. Stripped from all 968 affected files; this alone took the error count from 2,000+ (capped) down to 82.
+2. **Broken "commented-out removed method" artifacts.** Some of the earlier regex replacements (e.g. `.setRegistryName(...)` → a comment) used a `[^)]+` capture that stopped at the first `)`, leaving dangling `))` or `;` fragments in 10 files. All fixed by hand, mostly by stubbing now-impossible 1.12.2-era recipe registration (`ShapedOreRecipe`, `ForgeRegistries.RECIPES`, `OreDictionary`) with `// TODO (Phase 8)` markers rather than guessing at a JSON-recipe rewrite.
+
+With those fixed, `-Xmaxerrs 100000` surfaced the **real** error count: **~21,800 errors**. Unlike the BOM noise, these are genuine — the codebase leans on entire 1.12.2-era subsystems that no longer exist at all in 1.21.1, not just renamed classes. Frequency breakdown of unresolved imports (see `compile9.log` for full detail):
+
+| Broken import area | Approx. errors | Real cause |
+|---|---|---|
+| `net.minecraftforge.fml.common.network.simpleimpl.*` | 148+16+58 | Old networking (`IMessage`, `MessageContext`) — Phase 5 |
+| `net.minecraft.client.gui.*` / `GuiScreen` / `GuiButton` | 100+ | Old `Screen`/`Button` API — Phase 7 |
+| `net.minecraft.client.renderer.{GlStateManager,Tessellator,vertex.*}` | 150+ | Immediate-mode GL rendering, replaced by `PoseStack`/`BufferBuilder` — Phase 7 |
+| `net.minecraft.inventory.{Container,IInventory,InventoryCrafting}` | 94+20 | Old container system, replaced by `AbstractContainerMenu` — not yet in roadmap, added below |
+| `net.minecraft.block.Block*` (BlockDoor, BlockStairs, BlockChest, ...) | 98 | 1.12.2 required subclassing vanilla blocks per-type; modern MC constructs them directly — mostly dead imports to delete |
+| `net.minecraftforge.common.util.Constants`(`.NBT`) | 82+48 | NBT tag-type byte constants moved/removed — mechanical, low-risk fix |
+| `net.minecraftforge.common.config.*` | 34+9+5 | Old `Configuration`/`Property` — Phase 8 |
+| `net.minecraft.entity.*` stragglers | 56 | A few classes my bulk pass missed (`EntityHanging`, `EntityList`, minecart entities) |
+| `javax.vecmath.*`, `gnu.trove.*` | 118+84 | **Fixed for free** — these are plain Java libraries with no MC coupling; re-added as Maven dependencies (`javax.vecmath:vecmath:1.5.2`, `net.sf.trove4j:trove4j:3.0.3`) instead of rewriting every call site |
+| `EnumDyeColor`, `BiomeDictionary`, misc single-class stragglers | <40 each | Simple renames my first bulk pass missed (`EnumDyeColor` → `DyeColor` moved package, etc.) |
+
+**Takeaway:** the remaining work is exactly what Phases 4–10 below already describe — it is not new scope, but now has real numbers behind it instead of estimates. The GUI/rendering and container-menu rewrites are the single biggest chunks (250+ and 114+ errors respectively) and will need dedicated sessions, not bulk regex.
 
 ---
 
@@ -104,6 +133,20 @@ NeoForge 1.21.1 overhauled the capability API.
 - ⏳ **Fluid handler** — `IFluidHandler` capability (156 files)
 - ⏳ **Item handler** — `IItemHandler` capability (45 files)
 - ⏳ **MjCapabilityHelper** — BuildCraft's custom MJ power system capability bridge
+
+---
+
+## Phase 6.5 — Containers / Menus (GUI backend) ⏳
+
+Discovered via the Phase 1 compile census: 1.12.2's `Container`/`IInventory`/`InventoryCrafting`/`Slot`
+system was fully replaced by `AbstractContainerMenu` in modern MC — this is architecturally distinct
+from the client-side rendering rewrite in Phase 7, so it gets its own phase.
+
+- ⏳ **Container → AbstractContainerMenu** — every `Container*` class in `buildcraft/*/container/` (Architect Table, Builder, Filler, Assembly Table, Gate, pipes, etc.)
+- ⏳ **IInventory / InventoryBasic → Container / SimpleContainer** — internal inventory-holding classes
+- ⏳ **Slot** — largely compatible but constructor signatures changed; audit each subclass
+- ⏳ **MenuType registration** — containers must be registered via `DeferredRegister<MenuType<?>>` with a `MenuSupplier`
+- ⏳ **Networking for menu data** — `ContainerData` / `DataSlot` replaces manual `detectAndSendChanges` sync patterns in some cases
 
 ---
 

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.guide;
+package buildcraft.lib.guide;
 
 import javax.annotation.Nullable;
 

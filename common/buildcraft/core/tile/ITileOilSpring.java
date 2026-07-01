@@ -1,4 +1,4 @@
-﻿package buildcraft.core.tile;
+package buildcraft.core.tile;
 
 import com.mojang.authlib.GameProfile;
 

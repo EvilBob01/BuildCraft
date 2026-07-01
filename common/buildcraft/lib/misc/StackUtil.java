@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -153,8 +153,11 @@ public class StackUtil {
         return nbtTarget.equals(nbtWith);
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): previously used {@code OreDictionary.itemMatches()} (which also
+     * matched wildcard-metadata ore entries). OreDictionary no longer exists; this now falls back to a
+     * plain item-type match until rewritten against {@code ItemTags}. */
     public static boolean doesEitherStackMatch(@Nonnull ItemStack stackA, @Nonnull ItemStack stackB) {
-        return OreDictionary.itemMatches(stackA, stackB, false) || OreDictionary.itemMatches(stackB, stackA, false);
+        return ItemStack.isSameItem(stackA, stackB);
     }
 
     public static boolean canStacksOrListsMerge(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {
@@ -216,43 +219,17 @@ public class StackUtil {
      * @param comparison The stack to compare.
      * @param oreDictionary true to take the Forge OreDictionary into account.
      * @return true if comparison should be considered a crafting equivalent for base. */
+    /** TODO (Phase 11 — see ROADMAP.md): the {@code oreDictionary} parameter previously widened the match
+     * using {@code OreDictionary.getOres()}. OreDictionary no longer exists (replaced by item tags); the
+     * ore-based widening is dropped until this is rewritten against {@code ItemTags}. */
     public static boolean isCraftingEquivalent(@Nonnull ItemStack base, @Nonnull ItemStack comparison,
         boolean oreDictionary) {
-        if (isMatchingItem(base, comparison, true, false)) {
-            return true;
-        }
-
-        if (oreDictionary) {
-            int[] idBase = OreDictionary.getOreIDs(base);
-            if (idBase.length > 0) {
-                for (int id : idBase) {
-                    for (ItemStack itemstack : /* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(OreDictionary.getOreName(id))) {
-                        if (comparison.getItem() == itemstack.getItem()
-                            && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
-                                || comparison.getItemDamage() == itemstack.getItemDamage())) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
+        return isMatchingItem(base, comparison, true, false);
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): stubbed to false until rewritten against {@code ItemTags}; the
+     * int[] ore-ID based lookup this used to perform no longer has a direct equivalent. */
     public static boolean isCraftingEquivalent(int[] oreIDs, ItemStack comparison) {
-        if (oreIDs.length > 0) {
-            for (int id : oreIDs) {
-                for (ItemStack itemstack : /* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(OreDictionary.getOreName(id))) {
-                    if (comparison.getItem() == itemstack.getItem()
-                        && (itemstack.getItemDamage() == OreDictionary.WILDCARD_VALUE
-                            || comparison.getItemDamage() == itemstack.getItemDamage())) {
-                        return true;
-                    }
-                }
-            }
-        }
-
         return false;
     }
 
@@ -358,7 +335,8 @@ public class StackUtil {
      * @param damage The damage to check
      * @return True if the damage does specify a wildcard, false if not. */
     public static boolean isWildcard(int damage) {
-        return damage == -1 || damage == OreDictionary.WILDCARD_VALUE;
+        // 32767 was OreDictionary.WILDCARD_VALUE; kept as a literal since OreDictionary no longer exists.
+        return damage == -1 || damage == 32767;
     }
 
     /** @return An empty, nonnull list that cannot be modified (as it cannot be expanded and it has a size of 0) */

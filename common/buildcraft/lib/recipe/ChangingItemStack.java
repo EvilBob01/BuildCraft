@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -37,8 +37,11 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         super(makeStackArray(stack));
     }
 
+    /** TODO (Phase 11 — see ROADMAP.md): previously iterated all {@code OreDictionary.getOres(oreId)}
+     * matches. OreDictionary no longer exists; this now produces an empty variant list until rewritten
+     * against {@code ItemTags}. */
     public ChangingItemStack(String oreId) {
-        this(/* OreDictionary.getOres -> TagManager: */ // OreDictionary.getOres(oreId));
+        this(NonNullList.<ItemStack>create());
     }
 
     private static ItemStackKey[] makeListArray(NonNullList<ItemStack> stacks) {
@@ -49,7 +52,7 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         if (stack.isEmpty()) {
             return new ItemStackKey[] { ItemStackKey.EMPTY };
         }
-        if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+        if (stack.getItemDamage() == 32767) { // was OreDictionary.WILDCARD_VALUE
             NonNullList<ItemStack> subs = NonNullList.create();
             stack.getItem().getSubItems(CreativeModeTab.SEARCH, subs);
             return makeListArray(subs);

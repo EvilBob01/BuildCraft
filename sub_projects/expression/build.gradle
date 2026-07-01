@@ -33,7 +33,8 @@ sourceSets {
     }
     generator {
         java { srcDir 'src/generator/java' }
-        resources { srcDir 'src/generator/resources' }
+        // resources.srcDirs already defaults to 'src/generator/resources' by convention;
+        // declaring it again here causes duplicate-entry failures in processGeneratorResources.
     }
 }
 

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.sprite;
+package buildcraft.lib.client.sprite;
 
 import java.util.function.Supplier;
 

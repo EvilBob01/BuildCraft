@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.loader;
+package buildcraft.lib.client.guide.loader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

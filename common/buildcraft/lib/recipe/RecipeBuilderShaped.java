@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -16,11 +16,6 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import buildcraft.lib.misc.StackUtil;
 
 public class RecipeBuilderShaped {
@@ -128,22 +123,19 @@ public class RecipeBuilderShaped {
         }
     }
 
+    /** TODO (Phase 8 — see ROADMAP.md): recipe registration used {@code ShapedOreRecipe} and
+     * {@code ForgeRegistries.RECIPES}, both removed — recipes are now defined as data pack JSON and
+     * registered via {@code RecipeManager}, not an in-code {@code IForgeRegistry}. Stubbed to a no-op
+     * until callers are converted to JSON recipes (see {@code buildcraft_resources/data/<modid>/recipe/}). */
     public void register() {
         ensureValid();
-        ResourceLocation name = result.getItem().builtInRegistryHolder().key().location();
-        ShapedOreRecipe recipe = new ShapedOreRecipe(name, result, createRecipeObjectArray());
-        ForgeRegistries.RECIPES.register(recipe/* setRegistryName removed - use registry directly */);
     }
 
     public void registerNbtAware(String regName) {
         ensureValid();
-        ShapedOreRecipe recipe =
-            new ShapedOreRecipe(result.getItem().builtInRegistryHolder().key().location(), result, createRecipeObjectArrayNBT());
-        ForgeRegistries.RECIPES.register(recipe/* setRegistryName removed - use registry directly */);
     }
 
     public void registerRotated() {
         ensureValid();
-        ForgeRegistries.RECIPES.register(buildRotated()/* setRegistryName removed - use registry directly */.builtInRegistryHolder().key().location()));
     }
 }

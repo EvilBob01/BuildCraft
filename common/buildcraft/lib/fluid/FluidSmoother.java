@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.fluid;
+package buildcraft.lib.fluid;
 
 import java.util.List;
 

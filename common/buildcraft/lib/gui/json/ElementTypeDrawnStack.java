@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.gui.json;
+package buildcraft.lib.gui.json;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

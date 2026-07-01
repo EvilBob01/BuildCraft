@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.script;
+package buildcraft.lib.script;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.resource;
+package buildcraft.lib.client.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
