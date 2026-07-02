@@ -6,7 +6,9 @@
 
 package buildcraft.lib.config;
 
-import net.minecraftforge.common.config.Property;
+// TODO (Phase 8): net.minecraftforge.common.config.Property removed in NeoForge 1.21.1;
+// config now uses ModConfigSpec. setTo() needs to be rewritten against
+// ModConfigSpec.Builder/ConfigValue's worldRestart()/restart() equivalents.
 
 public enum EnumRestartRequirement {
     NONE(false, false),
@@ -18,11 +20,6 @@ public enum EnumRestartRequirement {
     EnumRestartRequirement(boolean restartWorld, boolean restartGame) {
         this.restartWorld = restartWorld;
         this.restartGame = restartGame;
-    }
-
-    public void setTo(Property prop) {
-        prop.setRequiresWorldRestart(restartWorld);
-        prop.setRequiresMcRestart(restartGame);
     }
 
     public boolean hasBeenRestarted(EnumRestartRequirement requirement) {

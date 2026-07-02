@@ -6,42 +6,20 @@
 
 package buildcraft.silicon;
 
-import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-
-import buildcraft.api.BCModules;
-
-import buildcraft.lib.config.EnumRestartRequirement;
-
-import buildcraft.core.BCCoreConfig;
+// TODO (Phase 8): net.minecraftforge.common.config.{Configuration,Property} and
+// net.minecraftforge.fml.client.event.ConfigChangedEvent removed in NeoForge 1.21.1. Config
+// now uses ModConfigSpec + the ModConfigEvent bus. This class needs a full rewrite; for now
+// the default value is hardcoded so dependent code still compiles.
 
 public class BCSiliconConfig {
 
     public static boolean renderLaserBeams = true;
 
-    private static Property propRenderLaserBeams;
-
     public static void preInit() {
-
-        Configuration config = BCCoreConfig.config;
-        propRenderLaserBeams = config.get("display", "renderLaserBeams", true,
-                "When false laser beams will not be visible while transmitting power without wearing Goggles");
-
-        reloadConfig(EnumRestartRequirement.NONE);
-        NeoForge.EVENT_BUS.register(BCSiliconConfig.class);
+        // TODO (Phase 8): rewrite against ModConfigSpec.
     }
 
-    public static void reloadConfig(EnumRestartRequirement restarted) {
-        renderLaserBeams = propRenderLaserBeams.getBoolean();
-    }
-
-    @SubscribeEvent
-    public static void onConfigChange(OnConfigChangedEvent cce) {
-        if (BCModules.isBcMod(cce.getModID())) {
-            reloadConfig(EnumRestartRequirement.NONE);
-        }
+    public static void reloadConfig(buildcraft.lib.config.EnumRestartRequirement restarted) {
+        // TODO (Phase 8): rewrite against ModConfigSpec.
     }
 }

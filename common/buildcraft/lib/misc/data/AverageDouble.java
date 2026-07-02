@@ -8,7 +8,7 @@ package buildcraft.lib.misc.data;
 
 import net.minecraft.nbt.CompoundTag;
 
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import buildcraft.lib.misc.MathUtil;
 import buildcraft.lib.misc.NBTUtilBC;

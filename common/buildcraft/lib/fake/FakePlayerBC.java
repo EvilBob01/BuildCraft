@@ -11,7 +11,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class FakePlayerBC extends FakePlayer {
     public FakePlayerBC(ServerLevel world, GameProfile name) {

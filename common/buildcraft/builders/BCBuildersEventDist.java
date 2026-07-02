@@ -22,7 +22,9 @@ import net.minecraft.world.level.Level;
 
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.event.level.GetCollisionBoxesEvent;
-import net.minecraftforge.fml.client.config.GuiUtils;
+// TODO (Phase 8): net.minecraftforge.fml.client.config.GuiUtils removed in NeoForge 1.21.1;
+// drawGradientRect now lives on GuiGraphics. Callers below need to be rewritten to use a
+// GuiGraphics instance instead of static GuiUtils calls.
 import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -117,26 +119,13 @@ public enum BCBuildersEventDist {
             int sY = 100;
 
             // Copy from GuiUtils#drawHoveringText
+            // TODO (Phase 8): GuiUtils removed in NeoForge 1.21.1; drawGradientRect now lives
+            // on GuiGraphics. This tooltip-style background box needs to be redrawn using a
+            // GuiGraphics instance obtained from the current screen/render context.
             int zLevel = 300;
             int backgroundColor = 0xF0100010;
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY - 4, pX + sX + 3, pY - 3, backgroundColor, backgroundColor);
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY + sY + 3, pX + sX + 3, pY + sY + 4, backgroundColor,
-                backgroundColor);
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY - 3, pX + sX + 3, pY + sY + 3, backgroundColor,
-                backgroundColor);
-            GuiUtils.drawGradientRect(zLevel, pX - 4, pY - 3, pX - 3, pY + sY + 3, backgroundColor, backgroundColor);
-            GuiUtils.drawGradientRect(zLevel, pX + sX + 3, pY - 3, pX + sX + 4, pY + sY + 3, backgroundColor,
-                backgroundColor);
             int borderColorStart = 0x505000FF;
             int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY - 3 + 1, pX - 3 + 1, pY + sY + 3 - 1, borderColorStart,
-                borderColorEnd);
-            GuiUtils.drawGradientRect(zLevel, pX + sX + 2, pY - 3 + 1, pX + sX + 3, pY + sY + 3 - 1, borderColorStart,
-                borderColorEnd);
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY - 3, pX + sX + 3, pY - 3 + 1, borderColorStart,
-                borderColorStart);
-            GuiUtils.drawGradientRect(zLevel, pX - 3, pY + sY + 2, pX + sX + 3, pY + sY + 3, borderColorEnd,
-                borderColorEnd);
 
             ClientSnapshots.INSTANCE.renderSnapshot(snapshot, pX, pY, sX, sY);
         }

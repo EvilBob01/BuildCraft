@@ -6,35 +6,9 @@
 
 package buildcraft.energy.generation;
 
-import java.util.Arrays;
-import java.util.List;
-
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.gen.layer.GenLayer;
-
-import net.minecraftforge.common.BiomeDictionary;
-
-public class GenLayerAddOilDesert extends GenLayerBiomeReplacer {
-    private static final double NOISE_FIELD_SCALE = 0.001;
-    private static final double NOISE_FIELD_THRESHOLD = 0.7;
-
-    private static final List<BiomeDictionary.Type> REQUIRED_TYPES =
-        Arrays.asList(BiomeDictionary.Type.HOT, BiomeDictionary.Type.DRY, BiomeDictionary.Type.SANDY);
-
-    public GenLayerAddOilDesert(long worldSeed, long seed, GenLayer parent) {
-        super(worldSeed, seed, parent, NOISE_FIELD_SCALE, NOISE_FIELD_THRESHOLD, getOilBiomeId());
-    }
-
-    public static int getOilBiomeId() {
-        return Biome.getIdForBiome(BiomeOilDesert.INSTANCE);
-    }
-
-    @Override
-    protected boolean canReplaceBiome(int biomeId) {
-        Biome biome = Biome.getBiomeForId(biomeId);
-        if (biome == null) {
-            return false;
-        }
-        return BiomeDictionary.getTypes(biome).containsAll(REQUIRED_TYPES);
-    }
+// TODO (Phase 8): The 1.12-era GenLayer biome-replacement pipeline and BiomeDictionary
+// do not exist in 1.21.1. Modern biome placement uses multi-noise biome sources / density
+// functions, and biome categorization uses BiomeTags (net.minecraft.tags.BiomeTags) or
+// custom TagKey<Biome>. This class needs a full rewrite against the new worldgen API.
+public class GenLayerAddOilDesert {
 }

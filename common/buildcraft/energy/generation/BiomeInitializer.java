@@ -6,30 +6,8 @@
 
 package buildcraft.energy.generation;
 
-import net.minecraft.world.gen.layer.GenLayer;
-
-import net.minecraftforge.event.terraingen.WorldTypeEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-
-import buildcraft.energy.BCEnergyConfig;
-
 public class BiomeInitializer {
-    @SubscribeEvent
-    public void initBiomeGens(WorldTypeEvent.InitBiomeGens event) {
-
-        boolean oilOcean = BCEnergyConfig.enableOilOceanBiome && GenLayerAddOilOcean.getOilBiomeId() >= 0;
-        boolean oilDesert = BCEnergyConfig.enableOilDesertBiome &&GenLayerAddOilDesert.getOilBiomeId() >= 0;
-
-        if (!oilOcean && !oilDesert) {
-            // The biomes aren't registered, so don't bother creating a new array.
-            return;
-        }
-
-        GenLayer[] newBiomeGens = event.getNewBiomeGens().clone();
-        for (int i = 0; i < newBiomeGens.length; i++) {
-            if (oilOcean) newBiomeGens[i] = new GenLayerAddOilOcean(event.getSeed(), 1500L, newBiomeGens[i]);
-            if (oilDesert) newBiomeGens[i] = new GenLayerAddOilDesert(event.getSeed(), 1500L, newBiomeGens[i]);
-        }
-        event.setNewBiomeGens(newBiomeGens);
-    }
+    // TODO (Phase 8): WorldTypeEvent.InitBiomeGens and the GenLayer biome-replacement
+    // pipeline do not exist in 1.21.1. Oil biome injection needs to be reimplemented
+    // against the modern multi-noise biome source / density function worldgen API.
 }
