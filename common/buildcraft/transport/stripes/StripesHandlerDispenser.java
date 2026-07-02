@@ -9,8 +9,11 @@ package buildcraft.transport.stripes;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.BlockDispenser;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
+// TODO (Phase 8): net.minecraft.dispenser.IBehaviorDispenseItem/IBlockSource were renamed to
+// DispenseItemBehavior/BlockSource (net.minecraft.core.dispenser package) with a different API
+// shape; this whole class needs a rework beyond the block import rename done here.
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +67,7 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
 
         @Override
         public BlockState getBlockState() {
-            return Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, side);
+            return Blocks.DISPENSER.getDefaultState().withProperty(DispenserBlock.FACING, side);
         }
 
         @SuppressWarnings("unchecked")
@@ -101,10 +104,10 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
                           ItemStack stack,
                           Player player,
                           IStripesActivator activator) {
-        if (!BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.containsKey(stack.getItem())) {
+        if (!DispenserBlock.DISPENSE_BEHAVIOR_REGISTRY.containsKey(stack.getItem())) {
             return false;
         }
-        IBehaviorDispenseItem behaviour = BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.getObject(stack.getItem());
+        IBehaviorDispenseItem behaviour = DispenserBlock.DISPENSE_BEHAVIOR_REGISTRY.getObject(stack.getItem());
         // Temp: for testing
         // if (!shouldHandle(stack)) {
         // return false;

@@ -4,6 +4,14 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.block;
 
+// TODO (Phase 8): This file's ~30 vanilla net.minecraft.block.Block* imports (BlockAnvil,
+// BlockDoor, BlockStairs, BlockChest, BlockHopper, BlockFurnace, etc.) all moved to
+// net.minecraft.world.level.block.<Name>Block in 1.21.1, but the rotation-handler logic below
+// also relies on old BlockState/property APIs (e.g. BlockLever.EnumOrientation, BlockDirectional,
+// BlockHorizontal, block.state.BlockFaceShape) that were restructured, not just renamed. This
+// needs a deliberate rewrite rather than a mechanical import fix; left untouched to avoid
+// introducing subtly-wrong rotation behavior under time pressure.
+
 import java.util.function.Function;
 import java.util.function.Predicate;
 

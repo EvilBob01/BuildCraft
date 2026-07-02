@@ -7,14 +7,16 @@
 package buildcraft.lib.crops;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
-import net.minecraft.block.BlockMelon;
-import net.minecraft.block.BlockMushroom;
-import net.minecraft.block.BlockNetherWart;
-import net.minecraft.block.BlockTallGrass;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.MelonBlock;
+import net.minecraft.world.level.block.MushroomBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.TallGrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
+// TODO (Phase 8): net.minecraftforge.common.IPlantable and old-API calls (isAirBlock,
+// canSustainPlant signature) below also need porting to NeoForge equivalents; not addressed here.
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.BlockItem;
@@ -71,13 +73,13 @@ public enum CropHandlerPlantable implements ICropHandler {
     @Override
     public boolean isMature(BlockGetter blockAccess, BlockState state, BlockPos pos) {
         Block block = state.getBlock();
-        if (block instanceof BlockFlower || block instanceof BlockTallGrass || block instanceof BlockMelon || block instanceof BlockMushroom || block instanceof BlockDoublePlant
+        if (block instanceof FlowerBlock || block instanceof TallGrassBlock || block instanceof MelonBlock || block instanceof MushroomBlock || block instanceof DoublePlantBlock
             || block == Blocks.PUMPKIN) {
             return true;
-        } else if (block instanceof BlockCrops) {
-            return ((BlockCrops) block).isMaxAge(state);
-        } else if (block instanceof BlockNetherWart) {
-            return state.getValue(BlockNetherWart.AGE) == 3;
+        } else if (block instanceof CropBlock) {
+            return ((CropBlock) block).isMaxAge(state);
+        } else if (block instanceof NetherWartBlock) {
+            return state.getValue(NetherWartBlock.AGE) == 3;
         } else if (block instanceof IPlantable) {
             if (blockAccess.getBlockState(pos.down()).getBlock() == block) {
                 return true;

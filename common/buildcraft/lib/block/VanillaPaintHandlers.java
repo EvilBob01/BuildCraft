@@ -7,9 +7,10 @@
 package buildcraft.lib.block;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.BlockColored;
-import net.minecraft.block.BlockStainedGlass;
-import net.minecraft.block.BlockStainedGlassPane;
+// TODO (Phase 8): verify modern equivalent - since 1.13 colored blocks (glass, terracotta) are
+// separate Block instances per color (e.g. Blocks.WHITE_STAINED_GLASS) rather than a single block
+// with a COLOR BlockState property. This class's double-typed-paint-handler approach likely needs
+// a full rework rather than a straight import rename.
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -22,9 +23,9 @@ import buildcraft.api.blocks.ICustomPaintHandler;
 public class VanillaPaintHandlers {
 
     public static void fmlInit() {
-        registerDoubleTypedHandler(Blocks.GLASS, Blocks.STAINED_GLASS, BlockStainedGlass.COLOR);
-        registerDoubleTypedHandler(Blocks.GLASS_PANE, Blocks.STAINED_GLASS_PANE, BlockStainedGlassPane.COLOR);
-        registerDoubleTypedHandler(Blocks.HARDENED_CLAY, Blocks.STAINED_HARDENED_CLAY, BlockColored.COLOR);
+        // TODO (Phase 8): since 1.13, colored glass/terracotta are separate Block instances per
+        // color rather than one block with a COLOR BlockState property, so this double-typed paint
+        // handler concept needs a full rework. Disabled for now to allow compilation.
     }
 
     private static void registerDoubleTypedHandler(Block clear, Block dyed, Property<DyeColor> colourProp) {

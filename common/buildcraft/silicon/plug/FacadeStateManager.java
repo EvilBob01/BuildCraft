@@ -27,9 +27,9 @@ import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.BlockGlass;
+import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.block.BlockStainedGlass;
+import net.minecraft.world.level.block.StainedGlassBlock;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -162,7 +162,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
         // if (block instanceof BlockSlime) {
         // return "it is a slime block";
         // }
-        if (block instanceof BlockGlass || block instanceof BlockStainedGlass) {
+        if (block instanceof GlassBlock || block instanceof StainedGlassBlock) {
             return new ActionResult<>(InteractionResult.SUCCESS, "");
         }
         return new ActionResult<>(InteractionResult.PASS, "");

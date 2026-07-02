@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.BlockFalling;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -89,7 +89,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .forEach(requiredBlockOffsets::add);
-        if (context.block instanceof BlockFalling) {
+        if (context.block instanceof FallingBlock) {
             requiredBlockOffsets.add(new BlockPos(0, -1, 0));
         }
     }
