@@ -12,6 +12,7 @@ import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import buildcraft.lib.net.IMessage;
 import buildcraft.lib.net.IPayloadReceiver;
 import buildcraft.lib.net.IPayloadWriter;
 import buildcraft.lib.net.PacketBufferBC;
@@ -25,7 +26,7 @@ public abstract class Widget_Neptune<C extends ContainerBC_Neptune> implements I
     }
 
     public boolean isRemote() {
-        return container.player.world.isClientSide;
+        return container.player.level().isClientSide;
     }
 
     // Net updating

@@ -11,18 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -42,7 +40,7 @@ import buildcraft.lib.net.MessageManager;
 import buildcraft.lib.net.PacketBufferBC;
 import buildcraft.lib.tile.item.IItemHandlerAdv;
 
-public abstract class ContainerBC_Neptune extends Container {
+public abstract class ContainerBC_Neptune extends AbstractContainerMenu {
     public static final boolean DEBUG = BCDebugging.shouldDebugLog("lib.container");
 
     protected static final IdAllocator IDS = new IdAllocator("container");
@@ -57,6 +55,8 @@ public abstract class ContainerBC_Neptune extends Container {
     private final List<Widget_Neptune<?>> widgets = new ArrayList<>();
 
     public ContainerBC_Neptune(Player player) {
+        // TODO: pass a registered MenuType<?> once container menu types are registered (separate future work)
+        super(null, 0);
         this.player = player;
     }
 
@@ -70,12 +70,12 @@ public abstract class ContainerBC_Neptune extends Container {
     protected void addFullPlayerInventory(int startX, int startY) {
         for (int sy = 0; sy < 3; sy++) {
             for (int sx = 0; sx < 9; sx++) {
-                addSlotToContainer(new Slot(player.inventory, sx + sy * 9 + 9, startX + sx * 18, startY + sy * 18));
+                addSlot(new Slot(player.getInventory(), sx + sy * 9 + 9, startX + sx * 18, startY + sy * 18));
             }
         }
 
         for (int sx = 0; sx < 9; sx++) {
-            addSlotToContainer(new Slot(player.inventory, sx, startX + sx * 18, startY + 58));
+            addSlot(new Slot(player.getInventory(), sx, startX + sx * 18, startY + 58));
         }
     }
 
@@ -93,76 +93,81 @@ public abstract class ContainerBC_Neptune extends Container {
         return ImmutableList.copyOf(widgets);
     }
 
-    @Nullable
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, Player player) {
-        Slot slot = slotId < 0 ? null : this.inventorySlots.get(slotId);
+    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
+        Slot slot = slotId < 0 ? null : this.slots.get(slotId);
         if (slot == null) {
-            return super.slotClick(slotId, dragType, clickType, player);
+            super.clicked(slotId, dragType, clickType, player);
+            return;
         }
 
-        ItemStack playerStack = player.inventory.getItemStack();
+        ItemStack playerStack = this.getCarried();
         if (slot instanceof IPhantomSlot) {
             IPhantomSlot phantom = (IPhantomSlot) slot;
             if (playerStack.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
-            } else if (!StackUtil.canMerge(playerStack, StackUtil.asNonNull(slot.getStack()))) {
+                slot.set(ItemStack.EMPTY);
+            } else if (!StackUtil.canMerge(playerStack, StackUtil.asNonNull(slot.getItem()))) {
                 ItemStack copy = playerStack.copy();
                 copy.setCount(1);
-                slot.putStack(copy);
+                slot.set(copy);
             } else if (phantom.canAdjustCount()) {
-                ItemStack stack = slot.getStack();
+                ItemStack stack = slot.getItem();
                 if (stack.getCount() < stack.getMaxStackSize()) {
                     stack.grow(1);
-                    slot.putStack(stack);
+                    slot.set(stack);
                 }
             }
-            return playerStack;
+            return;
         }
-        return super.slotClick(slotId, dragType, clickType, player);
+        super.clicked(slotId, dragType, clickType, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(Player playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        Slot firstSlot = this.inventorySlots.get(0);
+        Slot slot = this.slots.get(index);
+        Slot firstSlot = this.slots.get(0);
         int playerInventorySize = 36;
-        boolean playerInventoryFirst = firstSlot.inventory instanceof InventoryPlayer;
+        boolean playerInventoryFirst = firstSlot.container instanceof Inventory;
 
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
-            if (inventorySlots.size() == playerInventorySize) return ItemStack.EMPTY;
+            if (slots.size() == playerInventorySize) return ItemStack.EMPTY;
             if (playerInventoryFirst) {
                 if (index < playerInventorySize) {
-                    if (!this.mergeItemStack(itemstack1, playerInventorySize, this.inventorySlots.size(), false)) {
+                    if (!this.moveItemStackTo(itemstack1, playerInventorySize, this.slots.size(), false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.mergeItemStack(itemstack1, 0, playerInventorySize, true)) {
+                } else if (!this.moveItemStackTo(itemstack1, 0, playerInventorySize, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (index < this.inventorySlots.size() - playerInventorySize) {
-                    if (!this.mergeItemStack(itemstack1, this.inventorySlots.size() - playerInventorySize,
-                        this.inventorySlots.size(), false)) {
+                if (index < this.slots.size() - playerInventorySize) {
+                    if (!this.moveItemStackTo(itemstack1, this.slots.size() - playerInventorySize,
+                        this.slots.size(), false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.mergeItemStack(itemstack1, 0, this.inventorySlots.size() - playerInventorySize,
+                } else if (!this.moveItemStackTo(itemstack1, 0, this.slots.size() - playerInventorySize,
                     true)) {
                     return ItemStack.EMPTY;
                 }
             }
 
             if (itemstack1.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
 
         return itemstack;
+    }
+
+    @Override
+    public boolean stillValid(Player playerIn) {
+        return true;
     }
 
     public static ItemStack safeCopy(ItemStack in) {
@@ -193,23 +198,23 @@ public abstract class ContainerBC_Neptune extends Container {
     }
 
     public final void sendMessage(int id) {
-        Side side = player.world.isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+        Dist side = player.level().isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         sendMessage(id, (buffer) -> writeMessage(id, buffer, side));
     }
 
     public final void sendMessage(int id, IPayloadWriter writer) {
         PacketBufferBC payload = PacketBufferBC.write(writer);
-        MessageContainer message = new MessageContainer(windowId, id, payload);
-        if (player.world.isClientSide) {
+        MessageContainer message = new MessageContainer(containerId, id, payload);
+        if (player.level().isClientSide) {
             MessageManager.sendToServer(message);
         } else {
             MessageManager.sendTo(message, (ServerPlayer) player);
         }
     }
 
-    public void writeMessage(int id, PacketBufferBC buffer, Side side) {}
+    public void writeMessage(int id, PacketBufferBC buffer, Dist side) {}
 
-    public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readMessage(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (id == NET_WIDGET) {
             int widgetId = buffer.readUnsignedShort();
             if (widgetId < 0 || widgetId >= widgets.size()) {
@@ -243,8 +248,8 @@ public abstract class ContainerBC_Neptune extends Container {
     private void readSingleSetPhantom(PacketBufferBC buffer, MessageContext ctx) throws IOException {
         int idx = buffer.readVarInt();
         ItemStack stack = buffer.readItemStack();
-        if (idx >= 0 && idx < inventorySlots.size()) {
-            Slot s = inventorySlots.get(idx);
+        if (idx >= 0 && idx < slots.size()) {
+            Slot s = slots.get(idx);
             if (s instanceof SlotPhantom) {
                 SlotPhantom ph = (SlotPhantom) s;
                 IItemHandlerAdv handler = ph.itemHandler;
@@ -304,7 +309,7 @@ public abstract class ContainerBC_Neptune extends Container {
     /** @throws IllegalArgumentException if a phantom slot cannot be found */
     private int findPhantomSlot(IItemHandler handler, int index) {
         int i = 0;
-        for (Slot slot : inventorySlots) {
+        for (Slot slot : slots) {
             if (slot instanceof SlotPhantom) {
                 SlotPhantom ph = (SlotPhantom) slot;
                 if (ph.itemHandler == handler && ph.handlerIndex == index) {
@@ -317,7 +322,7 @@ public abstract class ContainerBC_Neptune extends Container {
     }
 
     public void sendSetPhantomSlot(SlotPhantom slot, ItemStack to) {
-        int index = inventorySlots.indexOf(slot);
+        int index = slots.indexOf(slot);
         if (index == -1) {
             throw new IllegalArgumentException("Couldn't find a slot for " + slot + " in " + getClass());
         }
