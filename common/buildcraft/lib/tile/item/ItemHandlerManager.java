@@ -15,16 +15,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
@@ -33,7 +32,19 @@ import buildcraft.api.core.EnumPipePart;
 import buildcraft.lib.misc.CapUtil;
 import buildcraft.lib.misc.InventoryUtil;
 
-public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+/** Owns the per-side {@link IItemHandler} wrappers for a block entity.
+ * <p>
+ * Under NeoForge this is no longer an {@code ICapabilityProvider}: instead of the block entity being polled for
+ * capabilities, the block entity type registers a lookup with
+ * {@code net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent#registerBlockEntity}, and that lookup calls
+ * into {@link #getItemHandler(Direction)} on this class. E.g.:
+ *
+ * <pre>{@code
+ * event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MyBlockEntityType.INSTANCE,
+ *     (be, side) -> be.itemManager.getItemHandler(side));
+ * }</pre>
+ */
+public class ItemHandlerManager implements INBTSerializable<CompoundTag> {
     public enum EnumAccess {
         /** An {@link IItemHandler} that shouldn't be accessible by external sources. */
         NONE,
@@ -125,39 +136,34 @@ public class ItemHandlerManager implements ICapabilityProvider, INBTSerializable
         }
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
-        if (capability == CapUtil.CAP_ITEMS) {
-            Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
-            return wrapper.combined != null;
-        }
-        return false;
+    public boolean hasItemHandler(@Nullable Direction facing) {
+        return getItemHandler(facing) != null;
+    }
+
+    /** @return The combined {@link IItemHandler} for the given side, or null if nothing is exposed on that side.
+     *         Intended to be called from the {@code RegisterCapabilitiesEvent} lookup registered for
+     *         {@code Capabilities.ItemHandler.BLOCK}. */
+    @Nullable
+    public IItemHandler getItemHandler(@Nullable Direction facing) {
+        Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
+        return wrapper.combined;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
-        if (capability == CapUtil.CAP_ITEMS) {
-            Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
-            return CapUtil.CAP_ITEMS.cast(wrapper.combined);
-        }
-        return null;
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
         for (Entry<String, INBTSerializable<CompoundTag>> entry : handlers.entrySet()) {
             String key = entry.getKey();
-            nbt.setTag(key, entry.getValue().serializeNBT());
+            nbt.put(key, entry.getValue().serializeNBT(provider));
         }
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         for (Entry<String, INBTSerializable<CompoundTag>> entry : handlers.entrySet()) {
             String key = entry.getKey();
-            entry.getValue().deserializeNBT(nbt.getCompoundTag(key));
+            entry.getValue().deserializeNBT(provider, nbt.getCompound(key));
         }
     }
 

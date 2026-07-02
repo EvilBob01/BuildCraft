@@ -14,20 +14,35 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.core.EnumPipePart;
 
-/** Provides a simple way of mapping {@link Capability}'s to instances. Also allows for additional providers */
-public class CapabilityHelper implements ICapabilityProvider {
-    private final Map<EnumPipePart, Map<Capability<?>, Supplier<?>>> caps = new EnumMap<>(EnumPipePart.class);
-    private final List<ICapabilityProvider> additional = new ArrayList<>();
+/** Provides a simple way of mapping {@link BlockCapability}'s to instances, keyed by the side of the block entity
+ * that is being queried.
+ * <p>
+ * Under NeoForge 1.21.1 capabilities are no longer polled through an {@code ICapabilityProvider} living on the block
+ * entity itself. Instead every capability is registered once via
+ * {@code net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent}, with a per-block-entity-type factory of the
+ * shape {@code (blockEntity, side) -> T}. This class is meant to be held as a field on a block entity (or other
+ * capability owner) and exposed to that factory, e.g.:
+ *
+ * <pre>{@code
+ * event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MyBlockEntityType.INSTANCE,
+ *     (be, side) -> be.caps.getCapability(Capabilities.ItemHandler.BLOCK, side));
+ * }</pre>
+ *
+ * Additional providers (other {@link CapabilityHelper} instances, e.g. from composed components) can be chained via
+ * {@link #addProvider(CapabilityHelper)}. */
+public class CapabilityHelper {
+    private final Map<EnumPipePart, Map<BlockCapability<?, Direction>, Supplier<?>>> caps = new EnumMap<>(
+        EnumPipePart.class
+    );
+    private final List<CapabilityHelper> additional = new ArrayList<>();
 
     public CapabilityHelper() {
         for (EnumPipePart face : EnumPipePart.VALUES) {
@@ -35,16 +50,16 @@ public class CapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    private Map<Capability<?>, Supplier<?>> getCapMap(Direction facing) {
+    private Map<BlockCapability<?, Direction>, Supplier<?>> getCapMap(@Nullable Direction facing) {
         return caps.get(EnumPipePart.fromFacing(facing));
     }
 
-    public <T> void addCapabilityInstance(@Nullable Capability<T> cap, T instance, EnumPipePart... parts) {
+    public <T> void addCapabilityInstance(@Nullable BlockCapability<T, Direction> cap, T instance, EnumPipePart... parts) {
         Supplier<T> supplier = () -> instance;
         addCapability(cap, supplier, parts);
     }
 
-    public <T> void addCapability(@Nullable Capability<T> cap, Supplier<T> getter, EnumPipePart... parts) {
+    public <T> void addCapability(@Nullable BlockCapability<T, Direction> cap, Supplier<T> getter, EnumPipePart... parts) {
         if (cap == null) {
             return;
         }
@@ -53,7 +68,9 @@ public class CapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    public <T> void addCapability(@Nullable Capability<T> cap, Function<Direction, T> getter, EnumPipePart... parts) {
+    public <T> void addCapability(
+        @Nullable BlockCapability<T, Direction> cap, Function<Direction, T> getter, EnumPipePart... parts
+    ) {
         if (cap == null) {
             return;
         }
@@ -62,29 +79,28 @@ public class CapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    public <T extends ICapabilityProvider> T addProvider(T provider) {
+    public CapabilityHelper addProvider(@Nullable CapabilityHelper provider) {
         if (provider != null) {
             additional.add(provider);
         }
         return provider;
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public <T> boolean hasCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
-        Map<Capability<?>, Supplier<?>> capMap = getCapMap(facing);
+    public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing) {
+        Map<BlockCapability<?, Direction>, Supplier<?>> capMap = getCapMap(facing);
         Supplier<?> supplier = capMap.get(capability);
         if (supplier != null) {
             return (T) supplier.get();
         }
-        for (ICapabilityProvider provider : additional) {
-            if (provider.hasCapability(capability, facing)) {
-                return provider.getCapability(capability, facing);
+        for (CapabilityHelper provider : additional) {
+            T value = provider.getCapability(capability, facing);
+            if (value != null) {
+                return value;
             }
         }
         return null;
