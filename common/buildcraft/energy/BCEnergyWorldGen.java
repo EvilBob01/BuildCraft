@@ -2,7 +2,6 @@ package buildcraft.energy;
 
 import net.minecraft.world.level.biome.Biome;
 
-import net.minecraftforge.common.BiomeDictionary;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.fml.common.Mod;
@@ -21,21 +20,17 @@ public class BCEnergyWorldGen {
     public static void init() {
         boolean log = OilGenerator.DEBUG_OILGEN_BASIC;
         if (BCEnergyConfig.enableOilOceanBiome) {
-            BiomeDictionary.addTypes(
-                BiomeOilOcean.INSTANCE,
-                BiomeDictionary.Type.OCEAN
-            );
+            // TODO (Phase 8): BiomeDictionary removed in NeoForge 1.21.1; biome tagging is
+            // now done via BiomeTags / a custom TagKey<Biome> in the biome's tag json, not
+            // registered programmatically here. Needs biome tag rewrite.
             BCLog.logger.info("[energy.oilgen] Registered the ocean oil biome.");
         } else {
             BCLog.logger.info("[energy.oilgen] Not registering the ocean oil biome, as it has been disabled by the config file.");
         }
         if (BCEnergyConfig.enableOilDesertBiome) {
-            BiomeDictionary.addTypes(
-                BiomeOilDesert.INSTANCE,
-                BiomeDictionary.Type.HOT,
-                BiomeDictionary.Type.DRY,
-                BiomeDictionary.Type.SANDY
-            );
+            // TODO (Phase 8): BiomeDictionary removed in NeoForge 1.21.1; biome tagging is
+            // now done via BiomeTags / a custom TagKey<Biome> in the biome's tag json, not
+            // registered programmatically here. Needs biome tag rewrite.
             BCLog.logger.info("[energy.oilgen] Registered the desert oil biome.");
         } else {
             BCLog.logger.info("[energy.oilgen] Not registering the desert oil biome, as it has been disabled by the config file.");

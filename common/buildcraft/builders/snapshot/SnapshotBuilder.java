@@ -33,7 +33,7 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import buildcraft.api.mj.MjAPI;
 

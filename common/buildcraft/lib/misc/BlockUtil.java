@@ -48,7 +48,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
