@@ -6,6 +6,64 @@ Format: `[Version] — Date — Description`
 
 ---
 
+## [8.0.1-1.21.1] — 2026-07-30 — Vendored BuildCraftAPI; recovered a broken repo state
+
+### The repo was un-clonable (now fixed)
+
+`8.0.x-1.21.1-neoforge` recorded submodule SHA `80125ab1` for `BuildCraftAPI`. That commit exists
+on **no remote and in no local object store** — verified against upstream `BuildCraft/BuildCraftAPI`
+and the working machine. `git clone --recurse-submodules` and `git submodule update --init` therefore
+failed for *everyone*, including the repo owner.
+
+Origin: an agent working in an isolated git worktree committed inside that worktree's copy of the
+submodule. The parent repo recorded the resulting gitlink SHA; the worktree was later deleted,
+orphaning the objects while the parent kept pointing at them.
+
+Compounding it, ~165 of the 251 API files held in-progress porting work that existed **only as
+uncommitted working-tree changes on one machine** — unpushed, and unrecoverable from any clone.
+
+**Fix:** `BuildCraftAPI` is no longer a submodule. It is now plain tracked files in this repo:
+gitlink removed from the index, `[submodule]` entry removed from `.gitmodules`,
+`.git/modules/BuildCraftAPI` and `BuildCraftAPI/.git` deleted, all 251 `api/` sources committed.
+
+This is transparent to the build — `build.gradle:26` already consumes it as `srcDir 'BuildCraftAPI/api'`,
+a plain source directory, never a Gradle subproject. No Java source bytes changed.
+
+Also removed the API's vendored standalone build scaffolding (`build.gradle`, `build.properties`,
+`gradlew`, `gradlew.bat`, `gradle/wrapper/`, `.travis.yml`) — a ForgeGradle 2.3 script pointing at
+dead jcenter and an insecure `http://` maven, unreferenced by `settings.gradle` but a live footgun.
+Kept `api/`, `README.md`, `resources/LICENSE.API`, `guidelines/`, `.gitignore`.
+
+`BuildCraft-Localization` and `BuildCraftGuide` remain submodules; their pinned SHAs are original
+upstream commits and resolve correctly.
+
+**Verified by fresh clone:** 251 `.java` files present, 0 gitlink entries for `BuildCraftAPI`,
+`git submodule update --init` exits 0.
+
+### ⚠️ Regression discovered during verification: MJ capability port is half-complete
+
+The same worktree/submodule failure destroyed the `BuildCraftAPI` half of the capability rewrite.
+`common/` side landed; API side did not. See the warning block at the top of Phase 6 in `ROADMAP.md`
+for the file-by-file state and what to do about it. **The capability system is currently incoherent
+at the `CapUtil` ↔ `MjAPI` seam.**
+
+### Scheduled cloud run (2026-07-30T05:41Z) — why it produced nothing
+
+It ran; it was not an outage. The sandbox's egress proxy returns **HTTP 403 (policy denial)** for
+`maven.neoforged.net` and `maven.minecraftforge.net`, so NeoGradle could not resolve its own Gradle
+plugin and `compileJava` never reached `javac`. The run's instructions contained an explicit hard gate
+— *no compiler ground truth ⇒ stop, push nothing* — and it correctly obeyed, leaving the branch
+untouched. **Anthropic cloud routines are not currently viable for build-verified work on this repo**
+unless that egress policy is widened.
+
+### Note for Windows contributors
+
+Cloning into a deep path can fail with `Filename too long` on this repo (long asset paths under
+`buildcraft_resources/`). Fix with `git config --global core.longpaths true`, or clone to a short
+path such as `C:\bc`.
+
+---
+
 ## [8.0.1-1.21.1] — 2026-06-30 — Core Networking Ported to NeoForge Payload API (WIP)
 
 Continued from the same-day "First Successful compileJava Invocation" session below, picking up Phase 5

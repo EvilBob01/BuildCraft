@@ -134,7 +134,30 @@ BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 
 ---
 
-## Phase 6 — Capability System 🔄
+## Phase 6 — Capability System 🔄 ⚠️ HALF-PORTED — READ THIS FIRST
+
+> ### ⚠️ Known inconsistency: the MJ capability port is split and INCOMPLETE
+>
+> An agent rewrote the capability plumbing across BOTH `common/` and `BuildCraftAPI/`.
+> Only the `common/` half survived. Current verified state:
+>
+> | File | State |
+> |---|---|
+> | `common/buildcraft/lib/misc/CapUtil.java` | ✅ ported (8 × `BlockCapability`) |
+> | `common/buildcraft/lib/cap/CapabilityHelper.java` | ✅ ported (10 × `BlockCapability`) |
+> | `BuildCraftAPI/api/buildcraft/api/mj/MjAPI.java` | ❌ **NOT ported** (0 × `BlockCapability`, still 5 × old `Capability<>`) |
+> | `BuildCraftAPI/api/buildcraft/api/mj/MjCapabilityHelper.java` | ❌ **NOT ported** |
+>
+> **Why:** `BuildCraftAPI` was a git submodule at the time. The agent worked in an isolated
+> worktree; its `common/` edits merged normally, but its `BuildCraftAPI/` edits were committed
+> *inside that worktree's submodule*, recorded in the parent only as gitlink SHA `80125ab1`, and
+> destroyed when the worktree was cleaned up. The submodule has since been vendored (see
+> CHANGELOG) so this failure mode cannot recur — but the lost API-side work was **not** recovered.
+>
+> **Consequence:** `CapUtil`/`CapabilityHelper` now reference an MJ capability model that `MjAPI`
+> does not provide. Expect compile errors at that seam. Do not assume the capability system is
+> coherent — it is not. Port `MjAPI`/`MjCapabilityHelper` to `BlockCapability` to close the gap,
+> reading `CapUtil.java` first to match the design already committed on the `common/` side.
 
 NeoForge 1.21.1 overhauled the capability API.
 
