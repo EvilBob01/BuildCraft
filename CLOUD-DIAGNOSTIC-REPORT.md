@@ -143,7 +143,23 @@ Succeeded — read access to github.com over HTTPS works fine.
 Switched to a new branch 'diag/cloud-probe'
 ```
 
-Commit and push results are appended below by the probe script itself (see the shell output accompanying this commit). Summarized: the branch was created, this report was committed, and `git push -u origin diag/cloud-probe` was run. **If you are reading this file on GitHub, the push succeeded** — that is direct proof this environment has git write access to `EvilBob01/BuildCraft` via the local git proxy credential (`origin` is rewritten to `http://local_proxy@127.0.0.1:41729/git/EvilBob01/BuildCraft`, i.e. credentials are injected by the session's local git proxy, separate from the general HTTPS_PROXY web proxy used for `curl`).
+```
+=== git commit ===
+[diag/cloud-probe a3ccf72] Cloud environment diagnostic probe
+ 1 file changed, 176 insertions(+)
+ create mode 100644 CLOUD-DIAGNOSTIC-REPORT.md
+=== PUSH ATTEMPT ===
+remote:
+remote: Create a pull request for 'diag/cloud-probe' on GitHub by visiting:
+remote:      https://github.com/EvilBob01/BuildCraft/pull/new/diag/cloud-probe
+remote:
+To http://127.0.0.1:41729/git/EvilBob01/BuildCraft
+ * [new branch]      diag/cloud-probe -> diag/cloud-probe
+branch 'diag/cloud-probe' set up to track 'origin/diag/cloud-probe'.
+exit=0
+```
+
+**The push succeeded.** This is direct, confirmed proof this environment has git write access to `EvilBob01/BuildCraft` via the local git proxy credential (`origin` is rewritten to `http://local_proxy@127.0.0.1:41729/git/EvilBob01/BuildCraft`, i.e. credentials are injected by the session's local git proxy, separate from the general HTTPS_PROXY web proxy used for `curl`).
 
 ---
 
