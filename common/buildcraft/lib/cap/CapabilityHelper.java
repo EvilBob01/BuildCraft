@@ -21,6 +21,7 @@ import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.core.EnumPipePart;
+import buildcraft.api.core.ICapabilityAccessor;
 
 /** Provides a simple way of mapping {@link BlockCapability}'s to instances, keyed by the side of the block entity
  * that is being queried.
@@ -38,11 +39,11 @@ import buildcraft.api.core.EnumPipePart;
  *
  * Additional providers (other {@link CapabilityHelper} instances, e.g. from composed components) can be chained via
  * {@link #addProvider(CapabilityHelper)}. */
-public class CapabilityHelper {
+public class CapabilityHelper implements ICapabilityAccessor {
     private final Map<EnumPipePart, Map<BlockCapability<?, Direction>, Supplier<?>>> caps = new EnumMap<>(
         EnumPipePart.class
     );
-    private final List<CapabilityHelper> additional = new ArrayList<>();
+    private final List<ICapabilityAccessor> additional = new ArrayList<>();
 
     public CapabilityHelper() {
         for (EnumPipePart face : EnumPipePart.VALUES) {
@@ -79,7 +80,7 @@ public class CapabilityHelper {
         }
     }
 
-    public CapabilityHelper addProvider(@Nullable CapabilityHelper provider) {
+    public <P extends ICapabilityAccessor> P addProvider(@Nullable P provider) {
         if (provider != null) {
             additional.add(provider);
         }
@@ -91,13 +92,14 @@ public class CapabilityHelper {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing) {
         Map<BlockCapability<?, Direction>, Supplier<?>> capMap = getCapMap(facing);
         Supplier<?> supplier = capMap.get(capability);
         if (supplier != null) {
             return (T) supplier.get();
         }
-        for (CapabilityHelper provider : additional) {
+        for (ICapabilityAccessor provider : additional) {
             T value = provider.getCapability(capability, facing);
             if (value != null) {
                 return value;

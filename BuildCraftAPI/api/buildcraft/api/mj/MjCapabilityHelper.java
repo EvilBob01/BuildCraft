@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
+
+import buildcraft.api.core.ICapabilityAccessor;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
@@ -23,7 +25,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
  * }</pre>
  *
  * This mirrors {@code buildcraft.lib.cap.CapabilityHelper} on the non-API side. */
-public class MjCapabilityHelper {
+public class MjCapabilityHelper implements ICapabilityAccessor {
 
     @Nonnull
     private final IMjConnector connector;
@@ -172,6 +174,7 @@ public class MjCapabilityHelper {
      * only be reached when {@code T} matches that capability's type. */
     @SuppressWarnings("unchecked")
     @Nullable
+    @Override
     public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, @Nullable Direction facing) {
         if (capability == MjAPI.CAP_CONNECTOR) {
             return (T) connector;

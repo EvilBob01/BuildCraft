@@ -497,7 +497,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         if (pipe.isConnected(side)) {
             BlockEntity neighbour = getNeighbourTile(side);
             if (neighbour != null) {
-                return neighbour.getCapability(capability, side.getOpposite());
+                return CapUtil.getCapability(neighbour, capability, side.getOpposite());
             }
         }
         return null;

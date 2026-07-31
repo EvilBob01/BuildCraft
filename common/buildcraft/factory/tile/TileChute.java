@@ -29,7 +29,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.MjAPI;
@@ -91,7 +91,7 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         List<Direction> sides = new ArrayList<>(Arrays.asList(Direction.VALUES));
         Collections.shuffle(sides, new Random());
         sides.removeIf(Predicate.isEqual(currentSide));
-        Stream.<Pair<Direction, ICapabilityProvider>>concat(
+        Stream.<Pair<Direction, BlockEntity>>concat(
             sides.stream()
                 .map(side -> Pair.of(side, world.getBlockEntity(pos.offset(side)))),
             sides.stream()

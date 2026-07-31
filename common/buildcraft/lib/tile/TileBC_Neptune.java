@@ -47,6 +47,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
+import buildcraft.api.core.ICapabilityAccessor;
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
 import buildcraft.api.core.IPlayerOwned;
@@ -80,7 +81,8 @@ import buildcraft.lib.net.MessageUpdateTile;
 import buildcraft.lib.net.PacketBufferBC;
 import buildcraft.lib.tile.item.ItemHandlerManager;
 
-public abstract class TileBC_Neptune extends BlockEntity implements IPayloadReceiver, IAdvDebugTarget, IPlayerOwned {
+public abstract class TileBC_Neptune extends BlockEntity
+    implements IPayloadReceiver, IAdvDebugTarget, IPlayerOwned, ICapabilityAccessor {
     public static final boolean DEBUG = BCDebugging.shouldDebugLog("lib.tile");
 
     protected static final IdAllocator IDS = new IdAllocator("tile");
@@ -344,18 +346,18 @@ public abstract class TileBC_Neptune extends BlockEntity implements IPayloadRece
         tileCache.invalidate();
     }
 
-    @Override
     public final boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
+    /** Returns the capability instance this tile exposes on the given side, or null.
+     * <p>
+     * Called from the {@code RegisterCapabilitiesEvent} lookup registered for this block entity type. There is no
+     * {@code super} call any more: the superclass is a plain {@link net.minecraft.world.level.block.entity.BlockEntity},
+     * which under NeoForge has no {@code getCapability} at all — capabilities live outside the block entity now. */
     @Override
     public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
-        T obj = caps.getCapability(capability, facing);
-        if (obj == null) {
-            obj = super.getCapability(capability, facing);
-        }
-        return obj;
+        return caps.getCapability(capability, facing);
     }
 
     // Item caps

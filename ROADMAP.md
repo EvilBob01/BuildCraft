@@ -159,7 +159,34 @@ BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 > deliberately kept, so all 13 call sites needed no edits — only field types changed from
 > `Capability<T>` to `BlockCapability<T, Direction>`.
 >
-> ### ⏳ Next: the ~15 leaf call sites
+> ### ✅ Leaf call sites also DONE — capability compile errors are now ZERO
+>
+> Follow-up passes cleared every remaining capability error: **18,858 → 18,502 total (−356), with zero
+> files regressing at any step.** Grepping the compile log for `getCapability|hasCapability|CAP_|
+> BlockCapability|ICapabilityProvider` now returns **0 errors**.
+>
+> Three things made this work:
+> 1. **`CapUtil.getCapability(BlockEntity, cap, side)`** — `PipeExtensionManager` was already calling a
+>    BlockEntity-first overload that didn't exist (the deleted agent's intent). Adding it turned the
+>    hardest pattern into a one-line swap, since `BlockEntity` has no `getCapability` under NeoForge.
+> 2. **Dropping `implements ICapabilityProvider`** from `IPipe`, `PipeBehaviour`, `PipeFlow`. NeoForge
+>    kept the *name* but it is now a generic `ICapabilityProvider<O,C,T>` describing a registration-time
+>    *factory*, not a poll-able interface — so ~22 concrete pipe classes were failing to implement an
+>    abstract method that no longer meant what it used to.
+> 3. **New `buildcraft.api.core.ICapabilityAccessor`** — BuildCraft genuinely needed the "composable
+>    capability holder" role that NeoForge's interface no longer fills. Implemented by
+>    `CapabilityHelper`, `MjCapabilityHelper`, `ItemHandlerManager` and `TileBC_Neptune`, so
+>    `CapabilityHelper#addProvider` still composes them.
+>
+> ### ⏳ Genuinely remaining for Phase 6
+>
+> **Nothing registers any of this with the game yet.** It compiles, but a `RegisterCapabilitiesEvent`
+> listener on the mod bus is still required before capabilities work at runtime — registering each
+> block entity type against `CapUtil.CAP_ITEMS` / `CAP_ITEM_TRANSACTOR` / the MJ caps, delegating to the
+> `getCapability(cap, side)` methods now present on those holders. Item caps likewise: see the TODO in
+> `ItemFragileFluidContainer` for the exact `event.registerItem(...)` call needed.
+>
+> <details><summary>Historic: the original leaf-call-site list (now cleared)</summary>
 >
 > Fixing the declaration layer *surfaced* 52 previously-hidden errors in capability consumers —
 > this is progress, not regression: javac previously could not resolve the capability types at all,
@@ -171,6 +198,7 @@ BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 >
 > Most need the same conversion: an old `provider.getCapability(cap, side)` call becomes a
 > `level.getCapability(cap, pos, side)` query (see the helper at the bottom of `CapUtil.java`).
+> </details>
 >
 > Still outstanding separately: `IPipeHolder`, `PipeBehaviour`, `PipeFlow` and `PipePluggable` in
 > the API still declare method signatures taking the old `Capability<T>`; these need the same

@@ -15,13 +15,12 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 
-public abstract class PipeBehaviour implements ICapabilityProvider {
+public abstract class PipeBehaviour {
     public final IPipe pipe;
 
     public PipeBehaviour(IPipe pipe) {

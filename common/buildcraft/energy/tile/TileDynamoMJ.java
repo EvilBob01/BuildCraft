@@ -502,7 +502,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing == currentDirection) {
             if (Capabilities.EnergyStorage.BLOCK == capability) {
-                return Capabilities.EnergyStorage.BLOCK .cast(rf);
+                return (T) rf;
             } else {
                 return super.getCapability(capability, facing);
             }

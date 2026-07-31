@@ -14,14 +14,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.transport.pipe.IPipeHolder.IWriter;
 import buildcraft.api.transport.pipe.IPipeHolder.PipeMessageReceiver;
 
-public abstract class PipeFlow implements ICapabilityProvider {
+public abstract class PipeFlow {
     /** The ID for completely refreshing the state of this flow. */
     public static final int NET_ID_FULL_STATE = 0;
     /** The ID for updating what has changed since the last NET_ID_FULL_STATE or NET_ID_UPDATE has been sent. */

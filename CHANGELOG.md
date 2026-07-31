@@ -6,6 +6,61 @@ Format: `[Version] — Date — Description`
 
 ---
 
+## [8.0.1-1.21.1] — 2026-07-30 — Capability system: ZERO compile errors (verified)
+
+Completes the capability port started in the previous entry. **Every capability-related compile error
+is gone.** Grepping the build log for `getCapability|hasCapability|CAP_|BlockCapability|
+ICapabilityProvider` now returns 0.
+
+| Pass | Total errors | Δ | Files regressed |
+|---|---|---|---|
+| session start | 18,858 | — | — |
+| declaration layer (`cd26031`) | 18,806 | −52 | 0 |
+| call sites (`1628a49`) | 18,618 | −188 | 0 |
+| structural + accessor iface | 18,520 | −98 | 0 |
+| final leftovers | **18,502** | −18 | 0 |
+| **net** | | **−356** | **0** |
+
+### Three insights did most of the work
+
+**1. A missing overload nobody had written.** `PipeExtensionManager` was calling
+`CapUtil.getCapability(tile, CAP, null)` — a BlockEntity-first overload that did not exist. That was the
+deleted agent's intended design, recoverable from the call site alone. Adding it converted the hardest
+pattern into a uniform one-line swap, because under NeoForge `BlockEntity` has **no** `getCapability`
+at all (capabilities are queried from the `Level`), so every site would otherwise have needed a level
+and position threaded through by hand.
+
+**2. `ICapabilityProvider` is a false friend.** `IPipe`, `PipeBehaviour` and `PipeFlow` still declared
+`implements ICapabilityProvider`. NeoForge kept the name but it is now a generic
+`ICapabilityProvider<O, C, T>` describing a *registration-time factory*, not something an object
+implements to be polled. So ~22 concrete pipe classes were failing to implement an abstract method that
+no longer meant what it used to. Dropping the clause cleared the whole cluster at once.
+
+**3. The removed role had to be replaced, not emulated.** BuildCraft genuinely needed "a composable
+holder of capability instances" — the thing `CapabilityHelper#addProvider` is built on. NeoForge's
+interface can't express that, so this adds `buildcraft.api.core.ICapabilityAccessor`, implemented by
+`CapabilityHelper`, `MjCapabilityHelper`, `ItemHandlerManager` and `TileBC_Neptune`. `addProvider`
+became generic (`<P extends ICapabilityAccessor> P`) so callers still get their concrete type back.
+
+### Other notable fixes
+
+- `TileBC_Neptune.getCapability` dropped its `super.getCapability(...)` fallback — the superclass is a
+  plain `BlockEntity`, which has no such method under NeoForge.
+- `ItemFragileFluidContainer`: `Item#initCapabilities` was removed from NeoForge entirely. The
+  `FragileFluidHandler` inner class is **left fully intact and working**; only the registration
+  mechanism changed, and a TODO records the exact `event.registerItem(Capabilities.FluidHandler.ITEM,
+  …)` call needed. Nothing was stubbed away.
+- `Direction.rotateYCCW()` → `getCounterClockWise()`; one `.cast(` the bulk regex missed due to spacing;
+  one variable-typed capability argument the regex could not match by design.
+
+### Still required before this works at runtime
+
+It **compiles**, but nothing registers any of it with the game yet. A `RegisterCapabilitiesEvent`
+listener on the mod bus is still needed, delegating to the `getCapability(cap, side)` methods now
+present on those holders. See ROADMAP Phase 6.
+
+---
+
 ## [8.0.1-1.21.1] — 2026-07-30 — Capability declaration layer ported (compiler-verified)
 
 Closes the half-ported capability seam recorded in the previous entry. **Verified locally with

@@ -20,7 +20,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import buildcraft.api.core.IStackFilter;
@@ -35,7 +35,7 @@ import buildcraft.lib.misc.StackUtil;
 
 public class ItemTransactorHelper {
     @Nonnull
-    public static IItemTransactor getTransactor(ICapabilityProvider provider, Direction face) {
+    public static IItemTransactor getTransactor(BlockEntity provider, Direction face) {
         if (provider == null) {
             return NoSpaceTransactor.INSTANCE;
         }
@@ -84,7 +84,7 @@ public class ItemTransactorHelper {
     }
 
     @Nonnull
-    public static IInjectable getInjectable(ICapabilityProvider provider, Direction face) {
+    public static IInjectable getInjectable(BlockEntity provider, Direction face) {
         if (provider == null) {
             return NoSpaceInjectable.INSTANCE;
         }

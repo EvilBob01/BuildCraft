@@ -23,7 +23,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+
+import buildcraft.api.core.ICapabilityAccessor;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
@@ -44,7 +47,7 @@ import buildcraft.lib.misc.InventoryUtil;
  *     (be, side) -> be.itemManager.getItemHandler(side));
  * }</pre>
  */
-public class ItemHandlerManager implements INBTSerializable<CompoundTag> {
+public class ItemHandlerManager implements INBTSerializable<CompoundTag>, ICapabilityAccessor {
     public enum EnumAccess {
         /** An {@link IItemHandler} that shouldn't be accessible by external sources. */
         NONE,
@@ -147,6 +150,18 @@ public class ItemHandlerManager implements INBTSerializable<CompoundTag> {
     public IItemHandler getItemHandler(@Nullable Direction facing) {
         Wrapper wrapper = wrappers.get(EnumPipePart.fromFacing(facing));
         return wrapper.combined;
+    }
+
+    /** Exposes this manager's per-side handler as {@link CapUtil#CAP_ITEMS} so it can be chained into a
+     * {@code CapabilityHelper} via {@code addProvider}. */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing) {
+        if (capability == CapUtil.CAP_ITEMS) {
+            return (T) getItemHandler(facing);
+        }
+        return null;
     }
 
     @Override

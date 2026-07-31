@@ -4,9 +4,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 
-public interface IPipe extends ICapabilityProvider {
+public interface IPipe {
     IPipeHolder getHolder();
 
     PipeDefinition getDefinition();

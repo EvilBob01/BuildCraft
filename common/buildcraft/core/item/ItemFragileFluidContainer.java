@@ -14,7 +14,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
@@ -41,10 +40,14 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         setMaxStackSize(1);
     }
 
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-        return new FragileFluidHandler(stack);
-    }
+    /* TODO (Phase 6 — see ROADMAP.md): NeoForge removed Item#initCapabilities. Item capabilities are now registered
+     * externally, once, from a RegisterCapabilitiesEvent listener on the mod bus:
+     *
+     *   event.registerItem(Capabilities.FluidHandler.ITEM,
+     *       (stack, ctx) -> new FragileFluidHandler(stack), BCCoreItems.fragileFluidShard);
+     *
+     * FragileFluidHandler below is unchanged and ready to be used as that factory's return value; only the
+     * registration call site still needs writing. */
 
     @Override
     protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> items) {
@@ -128,27 +131,13 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         return FluidStack.loadFluidStackFromNBT(fluidNbt);
     }
 
-    public class FragileFluidHandler implements IFluidHandlerItem, ICapabilityProvider {
+    public class FragileFluidHandler implements IFluidHandlerItem {
 
         @Nonnull
         private ItemStack container;
 
         public FragileFluidHandler(@Nonnull ItemStack container) {
             this.container = container;
-        }
-
-        @Override
-        public boolean hasCapability(BlockCapability<?, Direction> capability, Direction facing) {
-            return getCapability(capability, facing) != null;
-        }
-
-        @Override
-        public <T> T getCapability(BlockCapability<T, Direction> capability, Direction facing) {
-            if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY
-                || capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-                return (T) this;
-            }
-            return null;
         }
 
         @Override

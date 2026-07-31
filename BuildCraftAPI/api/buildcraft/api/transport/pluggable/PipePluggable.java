@@ -23,7 +23,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -77,7 +76,7 @@ public abstract class PipePluggable {
     }
 
     /** Gets the value of a specified capability key, or null if the given capability is not supported at the call time.
-     * This is effectively {@link ICapabilityProvider}, but where
+     * This is effectively {@code ICapabilityProvider}, but where
      * {@link ICapabilityProvider#hasCapability(Capability, Direction)} will return true when this returns a non-null
      * value. */
     public <T> T getCapability(@Nonnull BlockCapability<T, Direction> cap) {

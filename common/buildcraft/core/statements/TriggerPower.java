@@ -11,7 +11,7 @@ import buildcraft.lib.misc.CapUtil;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.IMjReadable;
@@ -72,7 +72,7 @@ public class TriggerPower extends BCStatement implements ITriggerInternal, ITrig
         return CapUtil.getCapability(tile, MjAPI.CAP_READABLE, face) != null;
     }
 
-    protected boolean isActive(ICapabilityProvider tile, EnumPipePart side) {
+    protected boolean isActive(BlockEntity tile, EnumPipePart side) {
         return isTriggeredMjConnector(CapUtil.getCapability(tile, MjAPI.CAP_READABLE, side.face));
     }
 
