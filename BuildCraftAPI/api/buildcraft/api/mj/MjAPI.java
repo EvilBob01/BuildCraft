@@ -8,7 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.core.CapabilitiesHelper;
 
@@ -78,20 +78,25 @@ public class MjAPI {
     //
     // ###############
 
-    @Nonnull
-    public static final Capability<IMjConnector> CAP_CONNECTOR;
+    /* Under NeoForge 1.21.1 these are {@link BlockCapability} values rather than the old Forge {@code Capability}
+     * instances: each is created once with a unique ResourceLocation (see CapabilitiesHelper) and then queried
+     * externally via {@code level.getCapability(cap, pos, side)}. Providers are attached per block-entity-type from a
+     * RegisterCapabilitiesEvent listener on the mod bus, not by implementing a provider interface on the tile. */
 
     @Nonnull
-    public static final Capability<IMjReceiver> CAP_RECEIVER;
+    public static final BlockCapability<IMjConnector, Direction> CAP_CONNECTOR;
 
     @Nonnull
-    public static final Capability<IMjRedstoneReceiver> CAP_REDSTONE_RECEIVER;
+    public static final BlockCapability<IMjReceiver, Direction> CAP_RECEIVER;
 
     @Nonnull
-    public static final Capability<IMjReadable> CAP_READABLE;
+    public static final BlockCapability<IMjRedstoneReceiver, Direction> CAP_REDSTONE_RECEIVER;
 
     @Nonnull
-    public static final Capability<IMjPassiveProvider> CAP_PASSIVE_PROVIDER;
+    public static final BlockCapability<IMjReadable, Direction> CAP_READABLE;
+
+    @Nonnull
+    public static final BlockCapability<IMjPassiveProvider, Direction> CAP_PASSIVE_PROVIDER;
 
     static {
         CAP_CONNECTOR = CapabilitiesHelper.registerCapability(IMjConnector.class);

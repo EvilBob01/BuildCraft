@@ -5,7 +5,9 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.minecraft.core.Direction;
+
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.core.CapabilitiesHelper;
 import buildcraft.api.mj.MjAPI;
@@ -43,16 +45,16 @@ public final class PipeApi {
     public static final Map<PipeDefinition, RedstoneFluxTransferInfo> rfTransferData = new IdentityHashMap<>();
 
     @Nonnull
-    public static final Capability<IPipeHolder> CAP_PIPE_HOLDER;
+    public static final BlockCapability<IPipeHolder, Direction> CAP_PIPE_HOLDER;
 
     @Nonnull
-    public static final Capability<IPipe> CAP_PIPE;
+    public static final BlockCapability<IPipe, Direction> CAP_PIPE;
 
     @Nonnull
-    public static final Capability<PipePluggable> CAP_PLUG;
+    public static final BlockCapability<PipePluggable, Direction> CAP_PLUG;
 
     @Nonnull
-    public static final Capability<IInjectable> CAP_INJECTABLE;
+    public static final BlockCapability<IInjectable, Direction> CAP_INJECTABLE;
 
     public static FluidTransferInfo getFluidTransferInfo(PipeDefinition def) {
         FluidTransferInfo info = fluidTransferData.get(def);

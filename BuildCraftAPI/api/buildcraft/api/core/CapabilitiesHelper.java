@@ -1,171 +1,82 @@
 package buildcraft.api.core;
 
-import java.lang.reflect.Field;
-import java.util.IdentityHashMap;
-import java.util.concurrent.Callable;
-
 import javax.annotation.Nonnull;
 
-import net.minecraft.nbt.Tag;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.Capability.IStorage;
-import net.neoforged.neoforge.capabilities.CapabilityInject;
-import net.neoforged.neoforge.capabilities.CapabilityManager;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
-/** Forge has a wonderful system for capabilities, which provides a better way of managing mod compat even if the target
- * mod isn't loaded. Said system uses ASM data to inject capabilities into every mod, which makes it a matter of
- * checking a (generic) field at runtime.
+/** Creates the {@link BlockCapability} instances used by the BuildCraft API.
  * <p>
- * Unfortunately this doesn't even slightly work when using a test framework like JUnit, as
- * {@link CapabilityManager#register(Class, IStorage, Callable)} doesn't return the registered {@link Capability}
- * instances, and we don't load classes with forge's class loaders in JUnit. This class provides two useful methods to
- * compensate: {@link #registerCapability(Class)} and {@link #registerCapability(CheckedStorage, Callable)}, both of
- * which returns the registered capability.
+ * <b>This class previously did something very different.</b> Under old Forge, capabilities were registered by class
+ * with {@code CapabilityManager}, which did not hand back the registered {@code Capability} instance — so this class
+ * reflected into {@code CapabilityManager}'s private {@code providers} map to retrieve it. All of that machinery
+ * ({@code Capability}, {@code CapabilityManager}, {@code IStorage}, {@code CapabilityInject}, and the NBT
+ * read/write storage classes) was removed in NeoForge 1.21.1 and no longer exists.
  * <p>
- * This is NOT designed for mods wishing to add compatibility for buildcraft capability instances: those should still go
- * via the forge-recommended {@link CapabilityInject} route, or refer to the various fields in buildcraft api classes
- * containing the capability instances. */
+ * NeoForge's replacement is far simpler: a capability is just a {@link BlockCapability} value that you create once
+ * with a unique {@link ResourceLocation} and then look up externally via
+ * {@code level.getCapability(capability, pos, state, blockEntity, side)}. Providers are attached per
+ * block-entity-type inside a {@code net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent} listener on the
+ * mod bus, rather than by the block entity implementing a provider interface.
+ * <p>
+ * The {@link #registerCapability(Class)} signature is deliberately unchanged so that existing API call sites
+ * ({@code MjAPI}, {@code TilesAPI}, {@code PipeApi}) did not need to be rewritten — only the declared field types
+ * changed from {@code Capability<T>} to {@code BlockCapability<T, Direction>}.
+ * <p>
+ * See {@code buildcraft.lib.misc.CapUtil} for the equivalent on the non-API side. */
 public class CapabilitiesHelper {
 
-    // ################
-    //
-    // Public API
-    //
-    // ################
+    /** Namespace used for all API-owned capability identifiers. */
+    public static final String NAMESPACE = "buildcraftapi";
 
-    /** Registers a given type with {@link #registerCapability(CheckedStorage, Callable)}, but with a
-     * {@link ThrowingStorage} and a factory that throws an {@link UnsupportedOperationException} instead of creating a
-     * new capability instance.
-     * 
+    private CapabilitiesHelper() {}
+
+    /** Creates a sided {@link BlockCapability} for the given type.
+     * <p>
+     * The capability's {@link ResourceLocation} is derived deterministically from the class's simple name, so the
+     * identifier is stable across runs without every call site having to spell one out: a leading {@code I}
+     * interface prefix is dropped and the remaining camelCase is converted to snake_case. For example
+     * {@code IMjConnector} becomes {@code buildcraftapi:mj_connector} and {@code PipePluggable} becomes
+     * {@code buildcraftapi:pipe_pluggable}.
+     * <p>
+     * Note this keys off the <i>simple</i> name, so two capability types with the same simple name in different
+     * packages would collide. That is not the case for any current BuildCraft capability.
+     *
      * @param clazz The type that all instances must derive from.
-     * @return The registered {@link Capability} */
+     * @return The created {@link BlockCapability}. */
     @Nonnull
-    public static <T> Capability<T> registerCapability(Class<T> clazz) {
-        return registerCapability(new ThrowingStorage<>(clazz), () -> {
-            throw new UnsupportedOperationException("You must create your own instances!");
-        });
+    public static <T> BlockCapability<T, Direction> registerCapability(Class<T> clazz) {
+        return BlockCapability.createSided(
+            ResourceLocation.fromNamespaceAndPath(NAMESPACE, toCapabilityPath(clazz)),
+            clazz
+        );
     }
 
-    /** Registers a given type with the {@link CapabilityManager}, but also returns the capability instance.
-     * 
-     * @param storage The storage for the capability. This must extend {@link CheckedStorage} in order to allow the
-     *            internal mechanisms to ensure that nothing went wrong during our meddling into forge.
-     * @param factory The factory for the capability.
-     * @return The registered {@link Capability} */
-    @Nonnull
-    public static <T> Capability<T> registerCapability(CheckedStorage<T> storage, Callable<T> factory) {
-        return registerCapInternal(storage, factory);
-    }
+    /** Converts a class's simple name into a {@link ResourceLocation}-safe snake_case path. Package-private so it can
+     * be unit tested. */
+    static String toCapabilityPath(Class<?> clazz) {
+        String name = clazz.getSimpleName();
 
-    /** A type of {@link IStorage} that contains the class that it would store. Used by the internal mechanisms of
-     * {@link CapabilitiesHelper} to ensure that everything registers properly. A default always-throwing implementation
-     * is {@link ThrowingStorage}.
-     * 
-     * @param <T> The type of this storage */
-    public static abstract class CheckedStorage<T> implements IStorage<T> {
-
-        public final Class<T> clazz;
-
-        public CheckedStorage(Class<T> clazz) {
-            this.clazz = clazz;
-        }
-    }
-
-    /** A type of {@link CheckedStorage} that throws an {@link UnsupportedOperationException} from both the read and
-     * write methods. It is designed for {@link Capability Capability's} that must be written and read separately. */
-    public static final class ThrowingStorage<T> extends CheckedStorage<T> {
-
-        public ThrowingStorage(Class<T> clazz) {
-            super(clazz);
+        // Drop a leading interface-style "I", but only when it actually prefixes another word, so that a type
+        // legitimately starting with a lowercase letter after "I" (e.g. "Item") is left alone.
+        if (name.length() > 1 && name.charAt(0) == 'I' && Character.isUpperCase(name.charAt(1))) {
+            name = name.substring(1);
         }
 
-        @Override
-        public Tag writeNBT(Capability<T> capability, T instance, Direction side) {
-            throw new UnsupportedOperationException("You must create your own instances!");
-        }
-
-        @Override
-        public void readNBT(Capability<T> capability, T instance, Direction side, Tag nbt) {
-            throw new UnsupportedOperationException("You must create your own instances!");
-        }
-    }
-
-    // ################
-    //
-    // Internals
-    //
-    // ################
-
-    private static final IdentityHashMap<?, ?> __FIELD_CAP_MANAGER_PROVIDERS;
-
-    static {
-        try {
-            Field fld = CapabilityManager.class.getDeclaredField("providers");
-            fld.setAccessible(true);
-            Object obj = fld.get(CapabilityManager.INSTANCE);
-            __FIELD_CAP_MANAGER_PROVIDERS = (IdentityHashMap<?, ?>) obj;
-            if (__FIELD_CAP_MANAGER_PROVIDERS == null) {
-                throw new Error("Couldn't find providers!");
+        StringBuilder path = new StringBuilder(name.length() + 4);
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (Character.isUpperCase(c)) {
+                if (i > 0) {
+                    path.append('_');
+                }
+                path.append(Character.toLowerCase(c));
+            } else {
+                path.append(c);
             }
-        } catch (ReflectiveOperationException | ClassCastException e) {
-            throw new Error(e);
         }
-    }
-
-    @Nonnull
-    private static <T> Capability<T> registerCapInternal(CheckedStorage<T> storage, Callable<T> factory) {
-        Class<T> clazz = storage.clazz;
-
-        CapabilityManager.INSTANCE.register(clazz, storage, factory);
-
-        String fullName = clazz.getName().intern();
-        Object obj = __FIELD_CAP_MANAGER_PROVIDERS.get(fullName);
-        if (obj == null) {
-            throw new IllegalStateException("Apparently we didn't register the capability? How?");
-        }
-        if (!(obj instanceof Capability)) {
-            throw new Error("We must have the wrong map! providers.get(key) returned " + obj.getClass()
-                + " rather than " + Capability.class);
-        }
-        Capability<?> cap = (Capability<?>) obj;
-        // Ensure that the given cap is actually *our* capability
-        // compare the given class with the VoidStorage class, as
-        // Capability<T> doesn't have a way of doing that directly.
-        IStorage<?> cStorage = cap.getStorage();
-        if (!(cStorage instanceof CheckedStorage)) {
-            throw new IllegalStateException(
-                "Returned capability storage has a different storage class than expected! " + cStorage.getClass());
-        }
-        CheckedStorage<?> vStorage = (CheckedStorage<?>) cStorage;
-        if (vStorage.clazz != clazz) {
-            throw new IllegalStateException(
-                "Returned capability storage has a different class than expected! " + vStorage.clazz + " vs " + clazz);
-        }
-        return (Capability<T>) cap;
-    }
-
-    /** Prefer {@link #registerCapability(Class)} or other methods over this one: this will be removed at some point in
-     * the future. Most likely before beta. */
-    @Nonnull
-    @Deprecated
-    public static <T> Capability<T> ensureRegistration(Capability<T> cap, Class<T> clazz) {
-        if (cap == null) {
-            throw new Error("Capability registration failed for " + clazz);
-        }
-        return cap;
-    }
-
-    public static class VoidStorage<T> implements Capability.IStorage<T> {
-        @Override
-        public Tag writeNBT(Capability<T> capability, T instance, Direction side) {
-            throw new IllegalStateException("You must create your own instances!");
-        }
-
-        @Override
-        public void readNBT(Capability<T> capability, T instance, Direction side, Tag nbt) {
-            throw new IllegalStateException("You must create your own instances!");
-        }
+        return path.toString();
     }
 }

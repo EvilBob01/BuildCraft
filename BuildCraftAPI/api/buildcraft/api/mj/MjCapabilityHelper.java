@@ -5,13 +5,25 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-/** Provides a quick way to return all types of a single {@link IMjConnector} for all the different capabilities. */
-public class MjCapabilityHelper implements ICapabilityProvider {
+/** Provides a quick way to return all types of a single {@link IMjConnector} for all the different capabilities.
+ * <p>
+ * Under NeoForge 1.21.1 this is no longer an {@code ICapabilityProvider} that the game polls on the block entity.
+ * That interface, and the whole poll-the-tile model, was removed. Instead this is a plain holder: register the
+ * owning block entity type against each MJ capability in a
+ * {@code net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent} listener on the mod bus, and have the
+ * factory delegate to {@link #getCapability(BlockCapability, Direction)}. For example:
+ *
+ * <pre>{@code
+ * event.registerBlockEntity(MjAPI.CAP_RECEIVER, MyBlockEntityType.INSTANCE,
+ *     (be, side) -> be.mjCaps.getCapability(MjAPI.CAP_RECEIVER, side));
+ * }</pre>
+ *
+ * This mirrors {@code buildcraft.lib.cap.CapabilityHelper} on the non-API side. */
+public class MjCapabilityHelper {
 
     @Nonnull
     private final IMjConnector connector;
@@ -149,30 +161,35 @@ public class MjCapabilityHelper implements ICapabilityProvider {
         }
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, @Nullable Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    /** Returns this holder's instance for the given capability, or null if it doesn't provide one.
+     * <p>
+     * The old Forge {@code Capability#cast(Object)} helper does not exist on {@link BlockCapability}, so the
+     * reference comparison against the known MJ capabilities is what establishes type safety here — each branch can
+     * only be reached when {@code T} matches that capability's type. */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, @Nullable Direction facing) {
         if (capability == MjAPI.CAP_CONNECTOR) {
-            return MjAPI.CAP_CONNECTOR.cast(connector);
+            return (T) connector;
         }
         if (capability == MjAPI.CAP_RECEIVER) {
-            return MjAPI.CAP_RECEIVER.cast(receiver);
+            return (T) receiver;
         }
         if (capability == MjAPI.CAP_REDSTONE_RECEIVER) {
-            return MjAPI.CAP_REDSTONE_RECEIVER.cast(rsReceiver);
+            return (T) rsReceiver;
         }
         if (capability == MjAPI.CAP_READABLE) {
-            return MjAPI.CAP_READABLE.cast(readable);
+            return (T) readable;
         }
         if (capability == MjAPI.CAP_PASSIVE_PROVIDER) {
-            return MjAPI.CAP_PASSIVE_PROVIDER.cast(provider);
+            return (T) provider;
         }
-        if (capability == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.cast(rfAutoConvert);
+        if (capability == Capabilities.EnergyStorage.BLOCK) {
+            return (T) rfAutoConvert;
         }
         return null;
     }

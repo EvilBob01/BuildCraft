@@ -134,30 +134,51 @@ BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 
 ---
 
-## Phase 6 — Capability System 🔄 ⚠️ HALF-PORTED — READ THIS FIRST
+## Phase 6 — Capability System 🔄 (core ✅ compiler-verified, leaf call sites ⏳)
 
-> ### ⚠️ Known inconsistency: the MJ capability port is split and INCOMPLETE
+> ### ✅ The API/common split is RESOLVED (2026-07-30, verified by `./gradlew compileJava`)
 >
-> An agent rewrote the capability plumbing across BOTH `common/` and `BuildCraftAPI/`.
-> Only the `common/` half survived. Current verified state:
+> The capability *declaration* layer is now coherent across both `common/` and `BuildCraftAPI/`,
+> and every file in it compiles with **zero errors**:
 >
-> | File | State |
+> | File | Errors before → after |
 > |---|---|
-> | `common/buildcraft/lib/misc/CapUtil.java` | ✅ ported (8 × `BlockCapability`) |
-> | `common/buildcraft/lib/cap/CapabilityHelper.java` | ✅ ported (10 × `BlockCapability`) |
-> | `BuildCraftAPI/api/buildcraft/api/mj/MjAPI.java` | ❌ **NOT ported** (0 × `BlockCapability`, still 5 × old `Capability<>`) |
-> | `BuildCraftAPI/api/buildcraft/api/mj/MjCapabilityHelper.java` | ❌ **NOT ported** |
+> | `BuildCraftAPI/api/buildcraft/api/core/CapabilitiesHelper.java` | 56 → **0** |
+> | `BuildCraftAPI/api/buildcraft/api/mj/MjCapabilityHelper.java` | 16 → **0** |
+> | `BuildCraftAPI/api/buildcraft/api/mj/MjAPI.java` | 12 → **0** |
+> | `BuildCraftAPI/api/buildcraft/api/tiles/TilesAPI.java` | 10 → **0** |
+> | `BuildCraftAPI/api/buildcraft/api/transport/pipe/PipeApi.java` | 10 → **0** |
+> | `common/buildcraft/lib/misc/CapUtil.java` | already 0 |
+> | `common/buildcraft/lib/cap/CapabilityHelper.java` | already 0 |
 >
-> **Why:** `BuildCraftAPI` was a git submodule at the time. The agent worked in an isolated
-> worktree; its `common/` edits merged normally, but its `BuildCraftAPI/` edits were committed
-> *inside that worktree's submodule*, recorded in the parent only as gitlink SHA `80125ab1`, and
-> destroyed when the worktree was cleaned up. The submodule has since been vendored (see
-> CHANGELOG) so this failure mode cannot recur — but the lost API-side work was **not** recovered.
+> **The key change:** `CapabilitiesHelper` was the linchpin, not `MjAPI`. It was shared by `MjAPI`
+> (5 caps), `TilesAPI` (4) and `PipeApi` (4), and was a Forge-specific reflection hack that read
+> `CapabilityManager`'s private `providers` map. It now simply creates `BlockCapability` values via
+> `BlockCapability.createSided(...)`, deriving a stable `ResourceLocation` from the class name
+> (`IMjConnector` → `buildcraftapi:mj_connector`). Its `registerCapability(Class<T>)` signature was
+> deliberately kept, so all 13 call sites needed no edits — only field types changed from
+> `Capability<T>` to `BlockCapability<T, Direction>`.
 >
-> **Consequence:** `CapUtil`/`CapabilityHelper` now reference an MJ capability model that `MjAPI`
-> does not provide. Expect compile errors at that seam. Do not assume the capability system is
-> coherent — it is not. Port `MjAPI`/`MjCapabilityHelper` to `BlockCapability` to close the gap,
-> reading `CapUtil.java` first to match the design already committed on the `common/` side.
+> ### ⏳ Next: the ~15 leaf call sites
+>
+> Fixing the declaration layer *surfaced* 52 previously-hidden errors in capability consumers —
+> this is progress, not regression: javac previously could not resolve the capability types at all,
+> so it failed earlier and reported less. Those files now produce actionable errors. Affected
+> (errors surfaced): `PipeFlowPower` (10), `PipeExtensionManager` (8), `PipeBehaviourStripes` (6),
+> `TriggerPower` (4), `StripesHandlerPipeWires` (4), then `Pipe`, `TileEngineBase_BC8`,
+> `CoreActionProvider`, `PipeBehaviourWoodPower`, `TriggerMachine`, `PipeFlowItems`,
+> `TilePipeHolder`, `CoreTriggerProvider`, `ItemTransactorHelper`, `ActionMachineControl` (2 each).
+>
+> Most need the same conversion: an old `provider.getCapability(cap, side)` call becomes a
+> `level.getCapability(cap, pos, side)` query (see the helper at the bottom of `CapUtil.java`).
+>
+> Still outstanding separately: `IPipeHolder`, `PipeBehaviour`, `PipeFlow` and `PipePluggable` in
+> the API still declare method signatures taking the old `Capability<T>`; these need the same
+> `BlockCapability<T, Direction>` swap.
+>
+> Also still true: **nothing registers these capabilities against block-entity types yet.** A
+> `RegisterCapabilitiesEvent` listener on the mod bus is still required before any of this works at
+> runtime, even once it all compiles.
 
 NeoForge 1.21.1 overhauled the capability API.
 

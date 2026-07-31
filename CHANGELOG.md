@@ -6,6 +6,70 @@ Format: `[Version] — Date — Description`
 
 ---
 
+## [8.0.1-1.21.1] — 2026-07-30 — Capability declaration layer ported (compiler-verified)
+
+Closes the half-ported capability seam recorded in the previous entry. **Verified locally with
+`./gradlew compileJava`**, not asserted.
+
+### What actually needed fixing
+
+The regression was reported as "`MjAPI` wasn't ported", but the real linchpin was
+`BuildCraftAPI/api/buildcraft/api/core/CapabilitiesHelper.java` (56 errors — the worst single file
+of the five). It was shared by `MjAPI` (5 capabilities), `TilesAPI` (4) and `PipeApi` (4), and was a
+Forge-specific reflection hack: it called `CapabilityManager.INSTANCE.register(...)`, then reached
+into that manager's **private `providers` field** to retrieve the registered instance, because old
+Forge's register call didn't return one. `Capability`, `CapabilityManager`, `IStorage`,
+`CapabilityInject` and the NBT storage classes were all removed in NeoForge 1.21.1.
+
+### The change
+
+`CapabilitiesHelper` now creates `BlockCapability` values directly:
+
+```java
+BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath("buildcraftapi", path), clazz)
+```
+
+with `path` derived deterministically from the class's simple name — leading interface `I` dropped,
+camelCase → snake_case, so `IMjConnector` → `buildcraftapi:mj_connector` and `PipePluggable` →
+`buildcraftapi:pipe_pluggable`. All the reflection, `IStorage`, `CheckedStorage`, `ThrowingStorage`
+and `VoidStorage` machinery is gone.
+
+**`registerCapability(Class<T>)`'s signature was deliberately preserved**, so none of the 13 call
+sites across the three API classes changed — only their declared field types went from
+`Capability<T>` to `BlockCapability<T, Direction>`. That let one fix close three seams (MJ, Tiles,
+Pipe) instead of leaving two more inconsistent.
+
+`MjCapabilityHelper` no longer implements the removed `ICapabilityProvider`; it is now a plain
+holder whose `getCapability(BlockCapability<T, Direction>, Direction)` is meant to be called from a
+`RegisterCapabilitiesEvent` factory, mirroring `common/buildcraft/lib/cap/CapabilityHelper.java`.
+`CapabilityEnergy.ENERGY` → `Capabilities.EnergyStorage.BLOCK`. Note `BlockCapability` has no
+`.cast()` method, so type safety there now rests on reference comparison against the known
+capability constants plus a documented `@SuppressWarnings("unchecked")`.
+
+### Measured result
+
+| | Before | After |
+|---|---|---|
+| `CapabilitiesHelper.java` | 56 | **0** |
+| `MjCapabilityHelper.java` | 16 | **0** |
+| `MjAPI.java` | 12 | **0** |
+| `TilesAPI.java` | 10 | **0** |
+| `PipeApi.java` | 10 | **0** |
+| **Project total** | 18,858 | 18,806 |
+
+The project total fell only 52 despite 104 errors being removed, because fixing the declaration
+layer **surfaced 52 previously-hidden errors** in 15 capability *consumers* (`PipeFlowPower`,
+`PipeExtensionManager`, `PipeBehaviourStripes`, `TriggerPower`, …). This is forward progress, not
+regression: javac previously could not resolve the capability types at all and failed earlier;
+those files now report actionable call-site mismatches. See ROADMAP Phase 6 for the list and the
+conversion pattern.
+
+Ground truth for the API shape came from `CapUtil.java` and `common/.../CapabilityHelper.java`,
+both confirmed compiling at **0 errors** before any edits were made — so `BlockCapability.createSided`
+is verified real, not recalled.
+
+---
+
 ## [8.0.1-1.21.1] — 2026-07-30 — Vendored BuildCraftAPI; recovered a broken repo state
 
 ### The repo was un-clonable (now fixed)
