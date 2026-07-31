@@ -40,12 +40,12 @@ public class ItemTransactorHelper {
             return NoSpaceTransactor.INSTANCE;
         }
 
-        IItemTransactor trans = provider.getCapability(CapUtil.CAP_ITEM_TRANSACTOR, face);
+        IItemTransactor trans = CapUtil.getCapability(provider, CapUtil.CAP_ITEM_TRANSACTOR, face);
         if (trans != null) {
             return trans;
         }
 
-        IItemHandler handler = provider.getCapability(CapUtil.CAP_ITEMS, face);
+        IItemHandler handler = CapUtil.getCapability(provider, CapUtil.CAP_ITEMS, face);
         if (handler == null) {
             if (provider instanceof ISidedInventory) {
                 return new SidedInventoryWrapper((ISidedInventory) provider, face);
@@ -88,7 +88,7 @@ public class ItemTransactorHelper {
         if (provider == null) {
             return NoSpaceInjectable.INSTANCE;
         }
-        IInjectable injectable = provider.getCapability(PipeApi.CAP_INJECTABLE, face);
+        IInjectable injectable = CapUtil.getCapability(provider, PipeApi.CAP_INJECTABLE, face);
         if (injectable == null) {
             return NoSpaceInjectable.INSTANCE;
         }

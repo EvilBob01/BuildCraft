@@ -6,6 +6,8 @@
 
 package buildcraft.transport.pipe.behaviour;
 
+import buildcraft.lib.misc.CapUtil;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
@@ -48,10 +50,10 @@ public class PipeBehaviourWoodPower extends PipeBehaviour {
             return 0;
         }
         if (pipe.getFlow() instanceof PipeFlowRedstoneFlux) {
-            IEnergyStorage recv = tile.getCapability(CapabilityEnergy.ENERGY, face.getOpposite());
+            IEnergyStorage recv = CapUtil.getCapability(tile, Capabilities.EnergyStorage.BLOCK, face.getOpposite());
             return recv == null ? 1 : recv.canReceive() ? 0 : 1;
         } else {
-            IMjReceiver recv = tile.getCapability(MjAPI.CAP_RECEIVER, face.getOpposite());
+            IMjReceiver recv = CapUtil.getCapability(tile, MjAPI.CAP_RECEIVER, face.getOpposite());
             return recv == null ? 1 : recv.canReceive() ? 0 : 1;
         }
     }

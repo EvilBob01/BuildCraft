@@ -13,7 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -138,12 +138,12 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         }
 
         @Override
-        public boolean hasCapability(Capability<?> capability, Direction facing) {
+        public boolean hasCapability(BlockCapability<?, Direction> capability, Direction facing) {
             return getCapability(capability, facing) != null;
         }
 
         @Override
-        public <T> T getCapability(Capability<T> capability, Direction facing) {
+        public <T> T getCapability(BlockCapability<T, Direction> capability, Direction facing) {
             if (capability == CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY
                 || capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
                 return (T) this;

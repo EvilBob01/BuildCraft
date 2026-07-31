@@ -49,7 +49,7 @@ public class FluidUtilBC {
             if (target == null) {
                 continue;
             }
-            IFluidHandler handler = target.getCapability(CapUtil.CAP_FLUIDS, side.getOpposite());
+            IFluidHandler handler = CapUtil.getCapability(target, CapUtil.CAP_FLUIDS, side.getOpposite());
             if (handler != null) {
                 int used = handler.fill(potential.copy(), true);
 

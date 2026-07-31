@@ -25,7 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -287,7 +287,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (section != null) {
             return section.caps.getCapability(capability, facing);
         }
@@ -813,7 +813,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             if (neighbour == null) {
                 return null;
             }
-            return neighbour.getCapability(CapUtil.CAP_FLUIDS, facing.rotateYCCW());
+            return CapUtil.getCapability(neighbour, CapUtil.CAP_FLUIDS, facing.rotateYCCW());
         }
 
         @Override
@@ -868,7 +868,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             if (neighbour == null) {
                 return null;
             }
-            return neighbour.getCapability(CapUtil.CAP_FLUIDS, Direction.DOWN);
+            return CapUtil.getCapability(neighbour, CapUtil.CAP_FLUIDS, Direction.DOWN);
         }
     }
 

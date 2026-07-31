@@ -6,6 +6,8 @@
 
 package buildcraft.lib.engine;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import buildcraft.lib.net.MessageContext;
@@ -524,11 +526,11 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
     @Deprecated
     public IMjReceiver getReceiverToPower(BlockEntity tile, Direction side) {
         if (tile == null) return null;
-        IMjReceiver rec = tile.getCapability(MjAPI.CAP_RECEIVER, side.getOpposite());
+        IMjReceiver rec = CapUtil.getCapability(tile, MjAPI.CAP_RECEIVER, side.getOpposite());
         if (rec != null && rec.canConnect(mjConnector) && mjConnector.canConnect(rec)) {
             return rec;
         } else if (couldPowerRf()) {
-            IEnergyStorage rf = tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
+            IEnergyStorage rf = CapUtil.getCapability(tile, Capabilities.EnergyStorage.BLOCK, side.getOpposite());
             return MjToRfAutoConvertor.createReceiver(rf);
         } else {
             return null;
@@ -576,7 +578,7 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing == currentDirection) {
             return mjCaps.getCapability(capability, facing);
         } else {

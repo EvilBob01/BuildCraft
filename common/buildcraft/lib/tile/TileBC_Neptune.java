@@ -40,7 +40,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.minecraft.nbt.Tag;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -345,12 +345,12 @@ public abstract class TileBC_Neptune extends BlockEntity implements IPayloadRece
     }
 
     @Override
-    public final boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public final boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         T obj = caps.getCapability(capability, facing);
         if (obj == null) {
             obj = super.getCapability(capability, facing);

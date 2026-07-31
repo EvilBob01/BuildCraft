@@ -29,7 +29,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -259,11 +259,11 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     // PipeFlow
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (capability == PipeApi.CAP_INJECTABLE) {
-            return PipeApi.CAP_INJECTABLE.cast(this);
+            return (T) (this);
         } else if (capability == CapUtil.CAP_ITEM_TRANSACTOR) {
-            return CapUtil.CAP_ITEM_TRANSACTOR.cast(ItemTransactorHelper.wrapInjectable(this, facing));
+            return (T) (ItemTransactorHelper.wrapInjectable(this, facing));
         } else {
             return super.getCapability(capability, facing);
         }

@@ -6,6 +6,8 @@
 
 package buildcraft.core.statements;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
@@ -39,7 +41,7 @@ public enum CoreActionProvider implements IActionProvider {
 
     @Override
     public void addExternalActions(Collection<IActionExternal> res, @Nonnull Direction side, BlockEntity tile) {
-        IControllable controllable = tile.getCapability(TilesAPI.CAP_CONTROLLABLE, side.getOpposite());
+        IControllable controllable = CapUtil.getCapability(tile, TilesAPI.CAP_CONTROLLABLE, side.getOpposite());
         if (controllable != null) {
             for (ActionMachineControl action : BCCoreStatements.ACTION_MACHINE_CONTROL) {
                 if (controllable.acceptsControlMode(action.mode)) {

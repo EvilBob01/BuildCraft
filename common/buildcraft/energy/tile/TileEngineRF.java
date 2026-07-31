@@ -57,7 +57,7 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     public final ItemHandlerSimple invUpgrades;
 
     public TileEngineRF() {
-        caps.addCapabilityInstance(CapabilityEnergy.ENERGY, new Rf(), EnumPipePart.VALUES);
+        caps.addCapabilityInstance(Capabilities.EnergyStorage.BLOCK, new Rf(), EnumPipePart.VALUES);
         invUpgrades = itemManager.addInvHandler("upgrades", 4, this::isValidUpgrade, StackInsertionFunction.getInsertionFunction(1), EnumAccess.NONE);
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
@@ -88,16 +88,16 @@ public class PluggablePowerAdaptor extends PipePluggable {
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> cap) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> cap) {
         if (cap == MjAPI.CAP_CONNECTOR || cap == MjAPI.CAP_RECEIVER || cap == MjAPI.CAP_REDSTONE_RECEIVER) {
             return holder.getPipe().getBehaviour().getCapability(cap, side);
         }
-        if (MjAPI.isRfAutoConversionEnabled() && cap == CapabilityEnergy.ENERGY) {
+        if (MjAPI.isRfAutoConversionEnabled() && cap == Capabilities.EnergyStorage.BLOCK) {
             IMjReceiver receiver = holder.getPipe().getBehaviour().getCapability(MjAPI.CAP_RECEIVER, side);
             if (receiver == null) {
                 return null;
             }
-            return CapabilityEnergy.ENERGY.cast(new IEnergyStorage() {
+            return (T) (new IEnergyStorage() {
 
                 @Override
                 public boolean canReceive() {

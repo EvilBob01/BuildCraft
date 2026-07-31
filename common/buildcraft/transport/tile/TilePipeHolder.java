@@ -6,6 +6,8 @@
 
 package buildcraft.transport.tile;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
@@ -477,11 +479,11 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         if (neighbour == null) {
             return null;
         }
-        return neighbour.getCapability(PipeApi.CAP_PIPE, side.getOpposite());
+        return CapUtil.getCapability(neighbour, PipeApi.CAP_PIPE, side.getOpposite());
     }
 
     @Override
-    public <T> T getCapabilityFromPipe(Direction side, @Nonnull Capability<T> capability) {
+    public <T> T getCapabilityFromPipe(Direction side, @Nonnull BlockCapability<T, Direction> capability) {
         PipePluggable plug = getPluggable(side);
         if (plug != null) {
             T t = plug.getInternalCapability(capability);
@@ -564,7 +566,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     // Caps
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing != null) {
             PipePluggable plug = getPluggable(facing);
             if (plug != null) {

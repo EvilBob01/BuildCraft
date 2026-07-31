@@ -57,7 +57,7 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
                 side.getHorizontalIndex() + 2 + state.getValue(getFacingProperty()).getHorizontalIndex());
         }
         BlockEntity tile = world.getBlockEntity(pos.offset(facing));
-        return tile != null && tile.hasCapability(CapUtil.CAP_ITEMS, facing.getOpposite());
+        return tile != null && CapUtil.hasCapability(tile, CapUtil.CAP_ITEMS, facing.getOpposite());
     }
 
     @Override

@@ -23,7 +23,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
  * <p>
  * The {@link #registerCapability(Class)} signature is deliberately unchanged so that existing API call sites
  * ({@code MjAPI}, {@code TilesAPI}, {@code PipeApi}) did not need to be rewritten — only the declared field types
- * changed from {@code Capability<T>} to {@code BlockCapability<T, Direction>}.
+ * changed from the old Forge {@code Capability} type to {@code BlockCapability<T, Direction>}.
  * <p>
  * See {@code buildcraft.lib.misc.CapUtil} for the equivalent on the non-API side. */
 public class CapabilitiesHelper {

@@ -22,7 +22,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -80,7 +80,7 @@ public abstract class PipePluggable {
      * This is effectively {@link ICapabilityProvider}, but where
      * {@link ICapabilityProvider#hasCapability(Capability, Direction)} will return true when this returns a non-null
      * value. */
-    public <T> T getCapability(@Nonnull Capability<T> cap) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> cap) {
         return null;
     }
 
@@ -88,7 +88,7 @@ public abstract class PipePluggable {
      * 
      * @param cap
      * @return */
-    public <T> T getInternalCapability(@Nonnull Capability<T> cap) {
+    public <T> T getInternalCapability(@Nonnull BlockCapability<T, Direction> cap) {
         return null;
     }
 

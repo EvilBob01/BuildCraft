@@ -6,6 +6,8 @@
 
 package buildcraft.transport.pipe.flow;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -25,7 +27,7 @@ import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.api.distmarker.Dist;
 
@@ -127,12 +129,12 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     @Override
     public boolean canConnect(Direction face, BlockEntity oTile) {
         if (isReceiver) {
-            IMjPassiveProvider provider = oTile.getCapability(MjAPI.CAP_PASSIVE_PROVIDER, face.getOpposite());
+            IMjPassiveProvider provider = CapUtil.getCapability(oTile, MjAPI.CAP_PASSIVE_PROVIDER, face.getOpposite());
             if (provider != null) {
                 return true;
             }
         }
-        IMjConnector receiver = oTile.getCapability(MjAPI.CAP_CONNECTOR, face.getOpposite());
+        IMjConnector receiver = CapUtil.getCapability(oTile, MjAPI.CAP_CONNECTOR, face.getOpposite());
         return receiver != null && receiver.canConnect(sections.get(face));
     }
 
@@ -174,7 +176,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
         if (tile == null) {
             return 0;
         }
-        IMjPassiveProvider receiver = tile.getCapability(MjAPI.CAP_PASSIVE_PROVIDER, from.getOpposite());
+        IMjPassiveProvider receiver = CapUtil.getCapability(tile, MjAPI.CAP_PASSIVE_PROVIDER, from.getOpposite());
         if (receiver == null) {
             return 0;
         }
@@ -194,13 +196,13 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing == null) {
             return null;
         } else if (capability == MjAPI.CAP_RECEIVER) {
-            return isReceiver ? MjAPI.CAP_RECEIVER.cast(sections.get(facing)) : null;
+            return isReceiver ? (T) (sections.get(facing)) : null;
         } else if (capability == MjAPI.CAP_CONNECTOR) {
-            return MjAPI.CAP_CONNECTOR.cast(sections.get(facing));
+            return (T) (sections.get(facing));
         } else {
             return null;
         }
@@ -396,7 +398,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
         IMjReceiver receiver = pipe.getHolder().getCapabilityFromPipe(side, MjAPI.CAP_RECEIVER);
         if (receiver == null && MjAPI.isRfAutoConversionEnabled()) {
             receiver = MjToRfAutoConvertor
-                .createReceiver(pipe.getHolder().getCapabilityFromPipe(side, CapabilityEnergy.ENERGY));
+                .createReceiver(pipe.getHolder().getCapabilityFromPipe(side, Capabilities.EnergyStorage.BLOCK));
         }
         return receiver;
     }

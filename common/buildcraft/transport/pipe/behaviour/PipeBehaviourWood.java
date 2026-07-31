@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.mj.IMjConnector;
@@ -125,7 +125,7 @@ public class PipeBehaviourWood extends PipeBehaviourDirectional implements IMjRe
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, Direction facing) {
+    public <T> T getCapability(BlockCapability<T, Direction> capability, Direction facing) {
         return mjCaps.getCapability(capability, facing);
     }
 

@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.inventory.IItemTransactor;
 import buildcraft.api.mj.IMjConnector;
@@ -221,7 +221,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, Direction facing) {
+    public <T> T getCapability(BlockCapability<T, Direction> capability, Direction facing) {
         T cap = mjCaps.getCapability(capability, facing);
         if (cap != null) {
             return cap;

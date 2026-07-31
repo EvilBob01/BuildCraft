@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -69,5 +70,42 @@ public class CapUtil {
             return null;
         }
         return level.getCapability(capability, pos, side);
+    }
+
+    /** Fetches a capability from a {@link BlockEntity}, or null if it doesn't provide one.
+     * <p>
+     * This is the primary replacement for the old {@code tileEntity.getCapability(cap, side)} call. Under NeoForge
+     * {@link BlockEntity} has no {@code getCapability} method at all — capabilities are queried from the
+     * {@link net.minecraft.world.level.Level} — so this overload exists so that call sites which only hold a block
+     * entity reference can be converted mechanically, without having to thread a level and position through by hand.
+     * <p>
+     * Returns null (rather than throwing) when the block entity is null or not yet attached to a level, which matches
+     * the null-tolerant behaviour the old call sites relied on. */
+    @Nullable
+    public static <T> T getCapability(
+        @Nullable BlockEntity blockEntity,
+        @Nonnull BlockCapability<T, Direction> capability,
+        @Nullable Direction side
+    ) {
+        if (blockEntity == null) {
+            return null;
+        }
+        return getCapability(blockEntity.getLevel(), capability, blockEntity.getBlockPos(), side);
+    }
+
+    /** Convenience presence check, equivalent to the old {@code tileEntity.hasCapability(cap, side)}. */
+    public static boolean hasCapability(
+        @Nullable BlockEntity blockEntity,
+        @Nonnull BlockCapability<?, Direction> capability,
+        @Nullable Direction side
+    ) {
+        if (blockEntity == null) {
+            return false;
+        }
+        net.minecraft.world.level.Level level = blockEntity.getLevel();
+        if (level == null) {
+            return false;
+        }
+        return level.getCapability(capability, blockEntity.getBlockPos(), side) != null;
     }
 }

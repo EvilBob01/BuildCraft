@@ -6,6 +6,8 @@
 
 package buildcraft.core.statements;
 
+import buildcraft.lib.misc.CapUtil;
+
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
@@ -47,7 +49,7 @@ public class TriggerMachine extends BCStatement implements ITriggerExternal {
 
     @Override
     public boolean isTriggerActive(BlockEntity tile, Direction side, IStatementContainer container, IStatementParameter[] parameters) {
-        IHasWork hasWork = tile.getCapability(TilesAPI.CAP_HAS_WORK, side.getOpposite());
+        IHasWork hasWork = CapUtil.getCapability(tile, TilesAPI.CAP_HAS_WORK, side.getOpposite());
         if (hasWork == null) {
             return false;
         }

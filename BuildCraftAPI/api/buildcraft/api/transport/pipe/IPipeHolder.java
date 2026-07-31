@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import buildcraft.api.statements.containers.IRedstoneStatementContainer;
 import buildcraft.api.transport.IWireManager;
@@ -44,7 +44,7 @@ public interface IPipeHolder extends IRedstoneStatementContainer {
     /** Gets the given capability going outwards from the pipe. This will test the
      * {@link PipePluggable#getInternalCapability(Capability)} first, and the look at the neighbouring tile. */
     @Nullable
-    <T> T getCapabilityFromPipe(Direction side, @Nonnull Capability<T> capability);
+    <T> T getCapabilityFromPipe(Direction side, @Nonnull BlockCapability<T, Direction> capability);
 
     IWireManager getWireManager();
 

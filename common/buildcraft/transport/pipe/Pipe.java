@@ -6,6 +6,8 @@
 
 package buildcraft.transport.pipe;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
@@ -22,7 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.core.BlockPos;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -224,12 +226,12 @@ public final class Pipe implements IPipe, IDebuggable {
     // Caps
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         T val = behaviour.getCapability(capability, facing);
         if (val != null) return val;
         return flow.getCapability(capability, facing);
@@ -284,7 +286,7 @@ public final class Pipe implements IPipe, IDebuggable {
                 if (oBehaviour == null) {
                     continue;
                 }
-                PipePluggable oPlug = oTile.getCapability(PipeApi.CAP_PLUG, facing.getOpposite());
+                PipePluggable oPlug = CapUtil.getCapability(oTile, PipeApi.CAP_PLUG, facing.getOpposite());
                 if (oPlug == null || !oPlug.isBlocking()) {
                     if (canPipesConnect(facing, this, oPipe)) {
                         connected.put(facing, DEFAULT_CONNECTION_DISTANCE);

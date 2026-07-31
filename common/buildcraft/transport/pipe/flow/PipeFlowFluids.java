@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -162,13 +162,13 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
 
     @Override
     public boolean canConnect(Direction face, BlockEntity oTile) {
-        return oTile.hasCapability(CapUtil.CAP_FLUIDS, face.getOpposite());
+        return CapUtil.hasCapability(oTile, CapUtil.CAP_FLUIDS, face.getOpposite());
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (capability == CapUtil.CAP_FLUIDS) {
-            return CapUtil.CAP_FLUIDS.cast(sections.get(EnumPipePart.fromFacing(facing)));
+            return (T) (sections.get(EnumPipePart.fromFacing(facing)));
         }
         return super.getCapability(capability, facing);
     }

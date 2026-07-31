@@ -1,5 +1,7 @@
 package buildcraft.energy.tile;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
@@ -18,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import buildcraft.lib.net.MessageContext;
@@ -449,7 +451,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     @Deprecated
     public IEnergyStorage getReceiverToPower(BlockEntity tile, Direction side) {
         if (tile == null) return null;
-        IEnergyStorage rec = tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
+        IEnergyStorage rec = CapUtil.getCapability(tile, Capabilities.EnergyStorage.BLOCK, side.getOpposite());
         if (rec != null && rec.canReceive()) {
             return rec;
         } else {
@@ -488,7 +490,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
             return null;
         }
 
-        IEnergyStorage recv = next.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
+        IEnergyStorage recv = CapUtil.getCapability(next, Capabilities.EnergyStorage.BLOCK, side.getOpposite());
         if (recv != null && recv.canReceive()) {
             return recv;
         } else {
@@ -497,10 +499,10 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing == currentDirection) {
-            if (CapabilityEnergy.ENERGY == capability) {
-                return CapabilityEnergy.ENERGY .cast(rf);
+            if (Capabilities.EnergyStorage.BLOCK == capability) {
+                return Capabilities.EnergyStorage.BLOCK .cast(rf);
             } else {
                 return super.getCapability(capability, facing);
             }

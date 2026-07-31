@@ -6,6 +6,8 @@
 
 package buildcraft.core.statements;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.util.Locale;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -46,7 +48,7 @@ public class ActionMachineControl extends BCStatement implements IActionExternal
 
     @Override
     public void actionActivate(BlockEntity target, Direction side, IStatementContainer source, IStatementParameter[] parameters) {
-        IControllable controllable = target.getCapability(TilesAPI.CAP_CONTROLLABLE, side.getOpposite());
+        IControllable controllable = CapUtil.getCapability(target, TilesAPI.CAP_CONTROLLABLE, side.getOpposite());
         if (controllable != null && controllable.acceptsControlMode(mode)) {
             controllable.setControlMode(mode);
         }

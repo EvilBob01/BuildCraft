@@ -13,7 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.api.distmarker.Dist;
 
@@ -83,12 +83,12 @@ public abstract class PipeFlow implements ICapabilityProvider {
     }
 
     @Override
-    public final boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public final boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         return null;
     }
 }

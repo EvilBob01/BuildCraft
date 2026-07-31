@@ -6,6 +6,8 @@
 
 package buildcraft.core.statements;
 
+import buildcraft.lib.misc.CapUtil;
+
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
@@ -67,11 +69,11 @@ public class TriggerPower extends BCStatement implements ITriggerInternal, ITrig
     }
 
     public static boolean isTriggeringTile(BlockEntity tile, Direction face) {
-        return tile.getCapability(MjAPI.CAP_READABLE, face) != null;
+        return CapUtil.getCapability(tile, MjAPI.CAP_READABLE, face) != null;
     }
 
     protected boolean isActive(ICapabilityProvider tile, EnumPipePart side) {
-        return isTriggeredMjConnector(tile.getCapability(MjAPI.CAP_READABLE, side.face));
+        return isTriggeredMjConnector(CapUtil.getCapability(tile, MjAPI.CAP_READABLE, side.face));
     }
 
     @Override

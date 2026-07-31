@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -82,12 +82,12 @@ public abstract class PipeBehaviour implements ICapabilityProvider {
     public void onTick() {}
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, Direction facing) {
+    public boolean hasCapability(@Nonnull BlockCapability<?, Direction> capability, Direction facing) {
         return getCapability(capability, facing) != null;
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         return null;
     }
 

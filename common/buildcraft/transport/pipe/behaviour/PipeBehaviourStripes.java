@@ -20,7 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -235,15 +235,15 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (capability == MjAPI.CAP_REDSTONE_RECEIVER) {
-            return MjAPI.CAP_REDSTONE_RECEIVER.cast(this);
+            return (T) (this);
         }
         if (capability == MjAPI.CAP_RECEIVER) {
-            return MjAPI.CAP_RECEIVER.cast(this);
+            return (T) (this);
         }
         if (capability == MjAPI.CAP_CONNECTOR) {
-            return MjAPI.CAP_CONNECTOR.cast(this);
+            return (T) (this);
         }
         return super.getCapability(capability, facing);
     }

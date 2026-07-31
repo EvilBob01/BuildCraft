@@ -6,6 +6,8 @@
 
 package buildcraft.transport.pipe.flow;
 
+import buildcraft.lib.misc.CapUtil;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -24,7 +26,7 @@ import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.api.distmarker.Dist;
@@ -118,7 +120,7 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
 
     @Override
     public boolean canConnect(Direction face, BlockEntity oTile) {
-        return oTile.hasCapability(CapabilityEnergy.ENERGY, face.getOpposite());
+        return CapUtil.hasCapability(oTile, Capabilities.EnergyStorage.BLOCK, face.getOpposite());
     }
 
     @Override
@@ -145,7 +147,7 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
         if (tile == null) {
             return 0;
         }
-        IEnergyStorage storage = tile.getCapability(CapabilityEnergy.ENERGY, from.getOpposite());
+        IEnergyStorage storage = CapUtil.getCapability(tile, Capabilities.EnergyStorage.BLOCK, from.getOpposite());
         if (storage == null) {
             return 0;
         }
@@ -165,11 +167,11 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
     }
 
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, Direction facing) {
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, Direction facing) {
         if (facing == null) {
             return null;
-        } else if (capability == CapabilityEnergy.ENERGY) {
-            return isReceiver ? CapabilityEnergy.ENERGY.cast(sections.get(facing)) : null;
+        } else if (capability == Capabilities.EnergyStorage.BLOCK) {
+            return isReceiver ? (T) (sections.get(facing)) : null;
         } else {
             return null;
         }
@@ -269,7 +271,7 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
                                 leftover = oFlow.sections.get(face2.getOpposite()).receivePowerInternal(watts);
                             } else {
                                 IEnergyStorage receiver = pipe.getHolder().getCapabilityFromPipe(
-                                    face2, CapabilityEnergy.ENERGY
+                                    face2, Capabilities.EnergyStorage.BLOCK
                                 );
                                 if (receiver != null && receiver.canReceive()) {
                                     int accepted = receiver.receiveEnergy(watts, false);
@@ -303,7 +305,7 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
             if (pipe.getConnectedType(face) != ConnectedType.TILE) {
                 continue;
             }
-            IEnergyStorage recv = pipe.getHolder().getCapabilityFromPipe(face, CapabilityEnergy.ENERGY);
+            IEnergyStorage recv = pipe.getHolder().getCapabilityFromPipe(face, Capabilities.EnergyStorage.BLOCK);
             if (recv != null && recv.canReceive()) {
                 int requested = recv.getMaxEnergyStored() - recv.getEnergyStored();
                 if (requested > 0) {
