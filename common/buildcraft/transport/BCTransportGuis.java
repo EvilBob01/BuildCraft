@@ -29,6 +29,6 @@ public enum BCTransportGuis {
     }
 
     public void openGui(Player player, int x, int y, int z) {
-        player.openGui(BCTransport.INSTANCE, ordinal(), player.getEntityWorld(), x, y, z);
+        // TODO (Phase 6 — GUI): player.openGui removed; use ServerPlayer.openMenu or NetworkHooks.openScreen
     }
 }

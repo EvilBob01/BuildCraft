@@ -210,7 +210,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         scheduleRenderUpdate();
 
         if (!level.isClientSide && hasOwner()) {
-            AdvancementUtil.unlockAdvancement(getOwner().getDamageValue(), ADVANCEMENT_PLACE_PIPE);
+            AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_PLACE_PIPE);
         }
     }
 

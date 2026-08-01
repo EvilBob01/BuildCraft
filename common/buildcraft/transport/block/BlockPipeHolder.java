@@ -413,8 +413,9 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 PipeDefinition def = pipe.getDefinition();
                 Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(def);
                 if (item != null) {
-                    int meta = pipe.getColour() == null ? 0 : pipe.getColour().getDamageValue() + 1;
-                    return new ItemStack(item, 1, meta);
+                    // TODO (Phase 10 — Registry): pipe colour was encoded as item metadata in 1.12;
+                    // 1.21 items use NBT/DataComponents for subtypes. Colour encoding dropped for now.
+                    return new ItemStack(item);
                 }
             }
         } else if (target.subHit <= 12) {

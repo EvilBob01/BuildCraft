@@ -38,7 +38,7 @@ public class ItemGuide extends ItemBC_Neptune {
     @Override
     public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         AdvancementUtil.unlockAdvancement(player, ADVANCEMENT);
-        player.openGui(BCLib.INSTANCE, 0, world, hand == InteractionHand.MAIN_HAND ? 0 : 1, 0, 0);
+        // TODO (Phase 6 — GUI): player.openGui removed; open guide screen via MenuProvider/NetworkHooks.openScreen
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 

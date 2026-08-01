@@ -16,10 +16,10 @@ public enum BCBuildersGuis {
     FILLER_PLANNER;
 
     public void openGUI(Player player) {
-        player.openGui(BCBuilders.INSTANCE, ordinal(), player.getEntityWorld(), 0, 0, 0);
+        // TODO (Phase 6 — GUI): player.openGui removed; // BCBuilders.INSTANCE, ordinal(), 0, 0, 0);
     }
 
     public void openGUI(Player player, BlockPos pos) {
-        player.openGui(BCBuilders.INSTANCE, ordinal(), player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
+        // TODO (Phase 6 — GUI): player.openGui removed; // BCBuilders.INSTANCE, ordinal(), pos.getX(), pos.getY(), pos.getZ());
     }
 }

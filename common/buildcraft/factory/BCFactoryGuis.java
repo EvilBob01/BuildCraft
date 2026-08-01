@@ -1,5 +1,5 @@
 /* Copyright (c) 2016 SpaceToad and the BuildCraft team
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory;
@@ -14,11 +14,8 @@ public enum BCFactoryGuis {
     TANK,
     DISTILLER;
 
-    public void openGUI(Player player) {
-        player.openGui(BCFactory.INSTANCE, ordinal(), player.getEntityWorld(), 0, 0, 0);
-    }
+    // TODO (Phase 6 — GUI): player.openGui removed; use ServerPlayer.openMenu or NetworkHooks.openScreen
+    public void openGUI(Player player) {}
 
-    public void openGUI(Player player, BlockPos pos) {
-        player.openGui(BCFactory.INSTANCE, ordinal(), player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
-    }
+    public void openGUI(Player player, BlockPos pos) {}
 }

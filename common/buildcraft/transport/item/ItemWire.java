@@ -39,7 +39,7 @@ public class ItemWire extends ItemBC_Neptune {
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (DyeColor color : DyeColor.values()) {
-            addVariant(variants, color.getDamageValue(), color.getName());
+            addVariant(variants, color.getId(), color.getName());
         }
     }
 

@@ -23,11 +23,11 @@ public enum BCEnergyGuis {
     }
 
     public void openGUI(Player player) {
-        player.openGui(BCEnergy.INSTANCE, ordinal(), player.getEntityWorld(), 0, 0, 0);
+        // TODO (Phase 6 — GUI): player.openGui removed; use ServerPlayer.openMenu or NetworkHooks.openScreen
     }
 
     public void openGUI(Player player, BlockPos pos) {
-        player.openGui(BCEnergy.INSTANCE, ordinal(), player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
+        // TODO (Phase 6 — GUI): player.openGui removed; use ServerPlayer.openMenu or NetworkHooks.openScreen
     }
 
 }

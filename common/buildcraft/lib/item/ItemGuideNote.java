@@ -28,7 +28,7 @@ public class ItemGuideNote extends ItemBC_Neptune {
 
     @Override
     public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
-        player.openGui(BCLib.INSTANCE, 1, world, 0, 0, 0);
+        // TODO (Phase 6 — GUI): player.openGui removed; open guide note screen via MenuProvider
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 }
