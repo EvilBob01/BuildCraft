@@ -5,8 +5,8 @@
 package buildcraft.core.block;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import java.util.Random;
-
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,12 +33,12 @@ public class BlockMarkerVolume extends BlockMarkerBase {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         checkSignalState(world, pos);
     }
 
     @Override
-    public void updateTick(Level world, BlockPos pos, BlockState state, Random rand) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
         checkSignalState(world, pos);
     }
 

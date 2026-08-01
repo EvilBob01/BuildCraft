@@ -82,8 +82,8 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos) {
-        super.neighborChanged(state, world, pos, block, fromPos);
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
         if (world.isClientSide) return;
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {

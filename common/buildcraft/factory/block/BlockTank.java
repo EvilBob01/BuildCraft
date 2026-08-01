@@ -13,16 +13,16 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.level.LevelAccessor;
 
 import buildcraft.api.properties.BuildCraftProperties;
 import buildcraft.api.transport.pipe.ICustomPipeConnection;
@@ -35,6 +35,7 @@ import buildcraft.factory.tile.TileTank;
 public class BlockTank extends BlockBCTile_Neptune implements ICustomPipeConnection, ITankBlockConnector {
     private static final Property<Boolean> JOINED_BELOW = BuildCraftProperties.JOINED_BELOW;
     private static final AABB BOUNDING_BOX = new AABB(2 / 16D, 0 / 16D, 2 / 16D, 14 / 16D, 16 / 16D, 14 / 16D);
+    private static final VoxelShape SHAPE = Shapes.box(2 / 16D, 0 / 16D, 2 / 16D, 14 / 16D, 16 / 16D, 14 / 16D);
 
     public BlockTank(BlockBehaviour.Properties props, String id) {
         super(props, id);
@@ -51,37 +52,22 @@ public class BlockTank extends BlockBCTile_Neptune implements ICustomPipeConnect
         properties.add(JOINED_BELOW);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE;
     }
 
     @Override
-    public boolean isFullCube(BlockState state) {
-        return false;
+    public boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
+        return direction.getAxis() == Axis.Y && adjacentState.getBlock() instanceof ITankBlockConnector;
     }
 
     @Override
-    public boolean isOpaqueCube(BlockState state) {
-        return false;
-    }
-
-    @Override
-    public AABB getBoundingBox(BlockState state, BlockGetter world, BlockPos pos) {
-        return BOUNDING_BOX;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public boolean shouldSideBeRendered(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
-        return side.getAxis() != Axis.Y || !(world.getBlockState(pos.relative(side)).getBlock() instanceof ITankBlockConnector);
-    }
-
-    @Override
-    public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        boolean isTankBelow = world.getBlockState(pos.below()).getBlock() instanceof ITankBlockConnector;
-        return state.setValue(JOINED_BELOW, isTankBelow);
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.DOWN) {
+            return state.setValue(JOINED_BELOW, neighborState.getBlock() instanceof ITankBlockConnector);
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override

@@ -44,19 +44,6 @@ public class BlockBuilder extends BlockBCTile_Neptune implements IBlockWithFacin
         properties.add(SNAPSHOT_TYPE);
     }
 
-    @Override
-    public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof TileBuilder) {
-            return state
-                    .setValue(
-                            SNAPSHOT_TYPE,
-                            EnumOptionalSnapshotType.fromNullable(((TileBuilder) tile).snapshotType)
-                    );
-        }
-        return state;
-    }
-
     // Others
 
     @Override

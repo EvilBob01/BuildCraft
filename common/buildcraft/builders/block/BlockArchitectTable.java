@@ -28,8 +28,6 @@ import buildcraft.builders.tile.TileArchitectTable;
 public class BlockArchitectTable extends BlockBCTile_Neptune implements IBlockWithFacing {
     public static final Property<Boolean> PROP_VALID = BuildCraftProperties.VALID;
 
-    private static final int META_VALID_INDEX = 4;
-
     public BlockArchitectTable(BlockBehaviour.Properties props, String id) {
         super(props, id);
         setDefaultState(getDefaultState().setValue(PROP_VALID, Boolean.TRUE));
@@ -39,18 +37,6 @@ public class BlockArchitectTable extends BlockBCTile_Neptune implements IBlockWi
     protected void addProperties(List<Property<?>> properties) {
         super.addProperties(properties);
         properties.add(PROP_VALID);
-    }
-
-    @Override
-    public BlockState getStateFromMeta(int meta) {
-        BlockState state = super.getStateFromMeta(meta);
-        state = state.setValue(PROP_VALID, (meta & META_VALID_INDEX) == 0);
-        return state;
-    }
-
-    @Override
-    public int getMetaFromState(BlockState state) {
-        return super.getMetaFromState(state) | (state.getValue(PROP_VALID) ? 0 : META_VALID_INDEX);
     }
 
     @Override

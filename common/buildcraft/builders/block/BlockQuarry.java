@@ -26,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
@@ -62,12 +63,12 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
     }
 
     @Override
-    public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        for (Direction face : Direction.values()) {
-            state =
-                state.setValue(BuildCraftProperties.CONNECTED_MAP.get(face), isConnected(world, pos, state, face));
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        Property<Boolean> prop = BuildCraftProperties.CONNECTED_MAP.get(direction);
+        if (prop != null) {
+            return state.setValue(prop, isConnected(level, pos, state, direction));
         }
-        return state;
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override

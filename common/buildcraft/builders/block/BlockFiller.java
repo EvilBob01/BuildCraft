@@ -43,16 +43,6 @@ public class BlockFiller extends BlockBCTile_Neptune implements IBlockWithFacing
         // properties.add(PATTERN);
     }
 
-    @Override
-    public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof TileFiller) {
-            TileFiller filler = (TileFiller) tile;
-            // return state.setValue(PATTERN, EnumFillerPattern.NONE); // FIXME
-        }
-        return state;
-    }
-
     // Others
 
     @Override

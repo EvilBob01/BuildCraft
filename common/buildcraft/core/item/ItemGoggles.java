@@ -6,25 +6,19 @@
 
 package buildcraft.core.item;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.EntityEquipmentSlot;
-import net.minecraft.world.item.ItemArmor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.DamageSource;
-
-import net.minecraftforge.common.ISpecialArmor;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.Item;
 
 import buildcraft.lib.item.IItemBuildCraft;
 
-public class ItemGoggles extends ItemArmor implements IItemBuildCraft, ISpecialArmor {
-    private static final ArmorProperties HELMET_PROPERTIES = new ArmorProperties(0, 0, 0);
+// ISpecialArmor and ArmorProperties were removed from NeoForge 1.21.
+// Custom armor defense behavior must be implemented via attributes or data-driven armor materials.
+public class ItemGoggles extends ArmorItem implements IItemBuildCraft {
     private final String id;
 
     public ItemGoggles(String id) {
-        super(ArmorMaterial.CHAIN, 0, EntityEquipmentSlot.HEAD);
+        super(ArmorMaterials.CHAIN, Type.HELMET, new Item.Properties().stacksTo(1));
         this.id = id;
         init();
     }
@@ -32,20 +26,5 @@ public class ItemGoggles extends ItemArmor implements IItemBuildCraft, ISpecialA
     @Override
     public String id() {
         return id;
-    }
-
-    @Override
-    public ArmorProperties getProperties(LivingEntity player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
-        return HELMET_PROPERTIES;
-    }
-
-    @Override
-    public int getArmorDisplay(Player player, @Nonnull ItemStack armor, int slot) {
-        return 0;
-    }
-
-    @Override
-    public void damageArmor(LivingEntity entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
-        // Invulnerable goggles
     }
 }

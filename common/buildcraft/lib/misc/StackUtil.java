@@ -56,27 +56,17 @@ public class StackUtil {
      * todo with stack size, so if you pass in two stacks of 64 cobblestone this will return true. If you pass in null
      * (at all) then this will only return true if both are null. */
     public static boolean canMerge(@Nonnull ItemStack a, @Nonnull ItemStack b) {
-        // Checks item, damage
-        if (!ItemStack.areItemsEqual(a, b)) {
-            return false;
-        }
-        // checks tags and caps
-        return ItemStack.areItemStackTagsEqual(a, b);
+        return ItemStack.isSameItemSameTags(a, b);
     }
 
     /** Attempts to get an item stack that might place down the given blockstate. Obviously this isn't perfect, and so
      * cannot be relied on for anything more than simple blocks. */
     @Nonnull
     public static ItemStack getItemStackForState(BlockState state) {
+        // Metadata-based item subtypes removed in 1.21; return the plain item stack
         Block b = state.getBlock();
         ItemStack stack = new ItemStack(b);
-        if (stack.isEmpty()) {
-            return StackUtil.EMPTY;
-        }
-        if (stack.getHasSubtypes()) {
-            stack = new ItemStack(stack.getItem(), 1, b.getMetaFromState(state));
-        }
-        return stack;
+        return stack.isEmpty() ? StackUtil.EMPTY : stack;
     }
 
     /** Checks to see if the given required stack is contained fully in the given container stack. */
@@ -139,10 +129,10 @@ public class StackUtil {
 
     public static CompoundTag stripNonFunctionNbt(@Nonnull ItemStack from) {
         CompoundTag nbt = NBTUtilBC.getItemData(from).copy();
-        if (nbt.getSize() == 0) {
+        if (nbt.size() == 0) {
             return nbt;
         }
-        nbt.removeTag("_data");
+        nbt.remove("_data");
         // TODO: Remove all of the non functional stuff (name, desc, etc)
         return nbt;
     }
@@ -173,7 +163,7 @@ public class StackUtil {
             return list.matches(stack2, stack1);
         }
 
-        return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+        return ItemStack.isSameItemSameTags(stack1, stack2);
     }
 
     /** This doesn't take into account stack sizes.
@@ -259,13 +249,9 @@ public class StackUtil {
         return isMatchingItem(base, comparison, true, true);
     }
 
-    /** This variant also checks damage for damaged items. */
+    /** This variant also checks damage for damaged items. Metadata removed in 1.21; falls back to item+tag match. */
     public static boolean isEqualItem(final @Nonnull ItemStack base, final @Nonnull ItemStack comparison) {
-        if (isMatchingItem(base, comparison, false, true)) {
-            return isWildcard(base) || isWildcard(comparison) || base.getItemDamage() == comparison.getItemDamage();
-        } else {
-            return false;
-        }
+        return isMatchingItem(base, comparison, false, true);
     }
 
     /** Compares item id, and optionally damage and NBT. Accepts wildcard damage. Ignores damage entirely if the item
@@ -285,13 +271,7 @@ public class StackUtil {
         if (base.getItem() != comparison.getItem()) {
             return false;
         }
-        if (matchDamage && base.getHasSubtypes()) {
-            if (!isWildcard(base) && !isWildcard(comparison)) {
-                if (base.getItemDamage() != comparison.getItemDamage()) {
-                    return false;
-                }
-            }
-        }
+        // Metadata/subtypes removed in 1.21; damage-based variant matching is no longer applicable.
         if (matchNBT) {
             CompoundTag baseTag = NBTUtilBC.getTag(base);
             if (baseTag != null && !baseTag.equals(NBTUtilBC.getTag(comparison))) {
@@ -326,7 +306,7 @@ public class StackUtil {
      * @param stack The stack to check
      * @return True if the stack is a wildcard, false if not. */
     public static boolean isWildcard(@Nonnull ItemStack stack) {
-        return isWildcard(stack.getItemDamage());
+        return false; // metadata/wildcard concept removed in 1.21
     }
 
     /** Checks to see if the given {@link ItemStack} is considered to be a wildcard stack - that is any damage value on
@@ -406,9 +386,9 @@ public class StackUtil {
             return 0;
         }
         if (!NBTUtilBC.hasTag(stack)) {
-            return Objects.hash(stack.getItem(), stack.getId());
+            return Objects.hash(stack.getItem());
         }
-        return stack.serializeNBT().hashCode();
+        return Objects.hash(stack.getItem(), NBTUtilBC.getTag(stack));
     }
 
     public static NonNullList<ItemStack> mergeSameItems(List<ItemStack> items) {
