@@ -165,7 +165,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         FluidStack serverFluid = getFluid();
         if (serverFluid != null && serverFluid.getAmount() > 0) {
             toolTip.add(ChatFormatting.RED + "BUG: Server-side fluid on client!");
-            toolTip.add(serverFluid.getLocalizedName());
+            toolTip.add(serverFluid.getHoverName().getString());
             toolTip.add(LocaleUtil.localizeFluidStaticAmount(serverFluid.getAmount(), getCapacity()));
         }
     }

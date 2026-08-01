@@ -12,11 +12,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import buildcraft.api.tiles.IDebuggable;
 
@@ -27,30 +29,30 @@ public class ClientDebuggables {
     public static final List<String> SERVER_RIGHT = new ArrayList<>();
 
     @Nullable
-    public static IDebuggable getDebuggableObject(BlockHitResult mouseOver) {
+    public static IDebuggable getDebuggableObject(HitResult mouseOver) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.gameSettings.reducedDebugInfo ||
+        if (mc.options.reducedDebugInfo ||
             mc.player.hasReducedDebug() ||
-            !mc.gameSettings.showDebugInfo ||
+            !mc.options.renderDebug ||
             !ItemDebugger.isShowDebugInfo(mc.player)) {
             return null;
         }
         if (mouseOver == null) {
             return null;
         }
-        BlockHitResult.Type type = mouseOver.typeOfHit;
-        WorldClient world = mc.world;
+        HitResult.Type type = mouseOver.getType();
+        ClientLevel world = mc.level;
         if (world == null) {
             return null;
         }
-        if (type == BlockHitResult.Type.BLOCK) {
-            BlockPos pos = mouseOver.getBlockPos();
+        if (type == HitResult.Type.BLOCK) {
+            BlockPos pos = ((BlockHitResult) mouseOver).getBlockPos();
             BlockEntity tile = world.getBlockEntity(pos);
             if (tile instanceof IDebuggable) {
                 return (IDebuggable) tile;
             }
-        } else if (type == BlockHitResult.Type.ENTITY) {
-            Entity entity = mouseOver.entityHit;
+        } else if (type == HitResult.Type.ENTITY) {
+            Entity entity = ((EntityHitResult) mouseOver).getEntity();
             if (entity instanceof IDebuggable) {
                 return (IDebuggable) entity;
             }

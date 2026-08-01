@@ -1,13 +1,7 @@
 package buildcraft.energy.event;
 
-import java.lang.reflect.Field;
 import java.time.Month;
 import java.time.MonthDay;
-import java.util.Map;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.util.text.translation.LanguageMap;
 
 import buildcraft.api.core.BCLog;
 
@@ -47,16 +41,16 @@ public class ChristmasHandler {
 
     public static void fmlPreInitDedicatedServer() {
         fmlPreInit();
-        if (isEnabled()) {
-            replaceLangEntries();
-        }
+        // TODO (Phase 7): Christmas lang-entry replacement disabled — LanguageMap removed in 1.21
+        // In 1.21 add christmas translations as a bundled resource pack instead.
     }
 
     public static void fmlPreInitClient() {
         fmlPreInit();
+        // TODO (Phase 7): IReloadableResourceManager removed in 1.21; use RegisterClientReloadListenersEvent instead.
+        // Christmas lang-entry override is disabled until Phase 7 render/resource overhaul.
         if (isEnabled()) {
-            ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager())
-                .registerReloadListener(m -> replaceLangEntries());
+            BCLog.logger.info("[energy.christmas] Christmas colours applied; lang overrides require Phase 7 port.");
         }
     }
 
@@ -70,64 +64,6 @@ public class ChristmasHandler {
                 if (fluid.getDensity() < 0) {
                     fluid.setDensity(-fluid.getDensity());
                 }
-            }
-        }
-    }
-
-    private static void replaceLangEntries() {
-        try {
-            replaceLangEntries0();
-        } catch (ReflectiveOperationException e) {
-            BCLog.logger.warn("[energy.christmas] Unable to replace language entries! Did something change?", e);
-        }
-    }
-
-    private static void replaceLangEntries0() throws ReflectiveOperationException {
-        Class<?> cls = LanguageMap.class;
-        Field fldInstance = null, fldLangMap = null;
-        for (Field fld : cls.getDeclaredFields()) {
-            if (fld.getType() == cls) {
-                if (fldInstance == null) {
-                    fldInstance = fld;
-                } else {
-                    throw new ReflectiveOperationException(
-                        "Found duplicate fields for instance! (" + fldInstance + " and " + fld + ")");
-                }
-            } else if (fld.getType() == Map.class) {
-                if (fldLangMap == null) {
-                    fldLangMap = fld;
-                } else {
-                    throw new ReflectiveOperationException(
-                        "Found duplicate fields for langMap! (" + fldLangMap + " and " + fld + ")");
-                }
-            }
-        }
-        if (fldInstance == null) {
-            throw new ReflectiveOperationException("Couln't find the instance field!");
-        }
-        if (fldLangMap == null) {
-            throw new ReflectiveOperationException("Couln't find the map field!");
-        }
-        fldInstance.setAccessible(true);
-        fldLangMap.setAccessible(true);
-
-        LanguageMap instance = (LanguageMap) fldInstance.get(null);
-        // never cast to a Map<String, String> as a mod
-        // might change it with bytecode manipulation
-        // Fortunately we can just replace the entry ourselves,
-        // As Map.get() takes an object, not a generic value.
-        checkAndReplaceEntries((Map<?, ?>) fldLangMap.get(instance));
-
-        fldInstance.setAccessible(false);
-        fldLangMap.setAccessible(false);
-    }
-
-    private static <K, V> void checkAndReplaceEntries(Map<K, V> map) {
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            K key = entry.getKey();
-            V altValue = map.get("buildcraft.christmas." + key);
-            if (altValue != null) {
-                entry.setValue(altValue);
             }
         }
     }

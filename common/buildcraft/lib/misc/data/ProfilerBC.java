@@ -6,23 +6,23 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-/** An extension for minecraft's {@link Profiler} class that returns {@link AutoCloseable} profiler sections. */
+/** An extension for minecraft's {@link ProfilerFiller} that returns {@link AutoCloseable} profiler sections. */
 public class ProfilerBC {
 
     @OnlyIn(Dist.CLIENT)
     public static ProfilerBC getClient() {
-        return new ProfilerBC(Minecraft.getInstance().mcProfiler);
+        return new ProfilerBC(Minecraft.getInstance().getProfiler());
     }
 
-    private final Profiler profiler;
+    private final ProfilerFiller profiler;
 
-    public ProfilerBC(Profiler profiler) {
-        this.getProfiler() = profiler;
+    public ProfilerBC(ProfilerFiller profiler) {
+        this.profiler = profiler;
     }
 
     public IProfilerSection start(String name) {
         profiler.push(name);
-        return profiler::endSection;
+        return profiler::pop;
     }
 
     public IProfilerSection start(String... names) {

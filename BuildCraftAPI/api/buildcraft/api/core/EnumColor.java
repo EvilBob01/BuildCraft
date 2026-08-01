@@ -10,7 +10,7 @@ import java.util.Random;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.locale.Language;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -117,7 +117,7 @@ public enum EnumColor implements StringRepresentable {
     }
 
     public String getLocalizedName() {
-        return I18n.translateToLocal(getTag());
+        return Language.getInstance().getOrDefault(getTag());
     }
 
     public String getDye() {

@@ -17,7 +17,9 @@ import javax.vecmath.Point3f;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,9 +29,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import buildcraft.api.core.IBox;
 import buildcraft.api.items.IMapLocation.MapLocationType;
@@ -86,21 +87,9 @@ public class RenderTickListener {
         DIFF_HEADER_FORMATTING = ChatFormatting.AQUA + "" + ChatFormatting.BOLD;
     }
 
-    @SubscribeEvent
-    public static void renderOverlay(RenderGameOverlayEvent.Text event) {
-        Minecraft mc = Minecraft.getInstance();
-        IDebuggable debuggable = ClientDebuggables.getDebuggableObject(mc.objectMouseOver);
-        if (debuggable != null) {
-            List<String> clientLeft = new ArrayList<>();
-            List<String> clientRight = new ArrayList<>();
-            debuggable.getDebugInfo(clientLeft, clientRight, mc.objectMouseOver.sideHit);
-            String headerFirst = DIFF_HEADER_FORMATTING + "SERVER:";
-            String headerSecond = DIFF_HEADER_FORMATTING + "CLIENT:";
-            appendDiff(event.getLeft(), ClientDebuggables.SERVER_LEFT, clientLeft, headerFirst, headerSecond);
-            appendDiff(event.getRight(), ClientDebuggables.SERVER_RIGHT, clientRight, headerFirst, headerSecond);
-            debuggable.getClientDebugInfo(event.getLeft(), event.getRight(), mc.objectMouseOver.sideHit);
-        }
-    }
+    // TODO (Phase 7): RenderGameOverlayEvent.Text removed in 1.21; port to CustomizeGuiOverlayEvent or similar
+    // @SubscribeEvent
+    // public static void renderOverlay(...) { ... }
 
     private static void appendDiff(List<String> dest, List<String> first, List<String> second, String headerFirst,
         String headerSecond) {
@@ -130,8 +119,8 @@ public class RenderTickListener {
     }
 
     @SubscribeEvent
-    public static void renderLast(RenderWorldLastEvent event) {
-        float partialTicks = event.getPartialTicks();
+    public static void renderLast(RenderLevelStageEvent event) {
+        float partialTicks = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         renderHeldItemInWorld(partialTicks);
     }
 
@@ -143,10 +132,10 @@ public class RenderTickListener {
         }
         ItemStack mainHand = StackUtil.asNonNull(player.getMainHandItem());
         ItemStack offHand = StackUtil.asNonNull(player.getOffhandItem());
-        WorldClient world = mc.world;
+        ClientLevel world = mc.level;
 
-        mc.mcProfiler.push("bc");
-        mc.mcProfiler.push("renderWorld");
+        mc.getProfiler().push("bc");
+        mc.getProfiler().push("renderWorld");
 
         DetachedRenderer.fromWorldOriginPre(player, partialTicks);
 
@@ -161,8 +150,8 @@ public class RenderTickListener {
 
         DetachedRenderer.fromWorldOriginPost();
 
-        mc.mcProfiler.pop();
-        mc.mcProfiler.pop();
+        mc.getProfiler().pop();
+        mc.getProfiler().pop();
     }
 
     private static void renderMapLocation(@Nonnull ItemStack stack) {
@@ -204,8 +193,8 @@ public class RenderTickListener {
         }
     }
 
-    private static void renderMarkerConnector(WorldClient world, Player player) {
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+    private static void renderMarkerConnector(ClientLevel world, Player player) {
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("marker");
         for (MarkerCache<?> cache : MarkerCache.CACHES) {
             profiler.push(cache.name);
@@ -216,7 +205,7 @@ public class RenderTickListener {
     }
 
     private static void renderMarkerCache(Player player, MarkerSubCache<?> cache) {
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("compute");
         Set<LaserData_BC8> toRender = new HashSet<>();
         for (final BlockPos a : cache.getAllMarkers()) {
@@ -243,7 +232,7 @@ public class RenderTickListener {
                 toRender.add(data);
             }
         }
-        profiler.endStartSection("render");
+        profiler.popPush("render");
         for (LaserData_BC8 laser : toRender) {
             LaserRenderer_BC8.renderLaserStatic(laser);
         }
