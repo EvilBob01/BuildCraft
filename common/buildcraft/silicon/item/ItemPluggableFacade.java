@@ -11,8 +11,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -24,8 +25,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.NonNullList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.world.level.Level;
-
 import net.minecraft.nbt.Tag;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.api.distmarker.Dist;
@@ -156,7 +155,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         FacadeInstance states = getStates(stack);
         if (states.type == FacadeType.Phased) {
             String stateString = LocaleUtil.localize("item.FacadePhased.state");
@@ -166,19 +165,18 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
                     defaultState = state;
                     continue;
                 }
-                tooltip.add(StringUtilBC.formatSafe(stateString, LocaleUtil.localizeColour(state.activeColour), getFacadeStateDisplayName(state)));
+                tooltip.add(Component.literal(StringUtilBC.formatSafe(stateString, LocaleUtil.localizeColour(state.activeColour), getFacadeStateDisplayName(state))));
             }
             if (defaultState != null) {
-                tooltip.add(1, StringUtilBC.formatSafe(LocaleUtil.localize("item.FacadePhased.state_default"), getFacadeStateDisplayName(defaultState)));
+                tooltip.add(1, Component.literal(StringUtilBC.formatSafe(LocaleUtil.localize("item.FacadePhased.state_default"), getFacadeStateDisplayName(defaultState))));
             }
         } else {
             if (flag.isAdvanced()) {
-                tooltip.add(states.phasedStates[0].stateInfo.state.getBlock().builtInRegistryHolder().key().location().toString());
+                tooltip.add(Component.literal(states.phasedStates[0].stateInfo.state.getBlock().builtInRegistryHolder().key().location().toString()));
             }
-            String propertiesStart = ChatFormatting.GRAY + "" + ChatFormatting.ITALIC;
             FacadeBlockStateInfo info = states.phasedStates[0].stateInfo;
             BlockUtil.getPropertiesStringMap(info.state, info.varyingProperties)
-                .forEach((name, value) -> tooltip.add(propertiesStart + name + " = " + value));
+                .forEach((name, value) -> tooltip.add(Component.literal(name + " = " + value).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC)));
         }
     }
 

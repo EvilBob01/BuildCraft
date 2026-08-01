@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
 
+import buildcraft.lib.misc.NBTUtilBC;
+
 /**
  * Predicate that compares values of specified NBT keys subset.
  */
@@ -26,8 +28,8 @@ public class StackNbtMatcher implements StackMatchingPredicate {
 
     @Override
     public boolean isMatching(@Nonnull ItemStack base, @Nonnull ItemStack comparison) {
-        CompoundTag baseNBT = base.getTag();
-        CompoundTag comparisonNBT = comparison.getTag();
+        CompoundTag baseNBT = NBTUtilBC.getTag(base);
+        CompoundTag comparisonNBT = NBTUtilBC.getTag(comparison);
 
         for (String key : keys) {
             Tag baseValue = baseNBT != null ? baseNBT.get(key) : null;

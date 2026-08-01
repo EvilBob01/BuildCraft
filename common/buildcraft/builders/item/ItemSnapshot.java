@@ -12,15 +12,15 @@ import java.util.Locale;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.level.Level;
-
 import net.minecraft.nbt.Tag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -96,20 +96,20 @@ public class ItemSnapshot extends ItemBC_Neptune {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         Snapshot.Header header = getHeader(stack);
         if (header == null) {
-            tooltip.add(LocaleUtil.localize("item.blueprint.blank"));
+            tooltip.add(Component.literal(LocaleUtil.localize("item.blueprint.blank")));
         } else {
-            tooltip.add(header.name);
-            Player owner = header.getOwnerPlayer(world);
+            tooltip.add(Component.literal(header.name));
+            Player owner = header.getOwnerPlayer(context.level());
             if (owner != null) {
-                tooltip.add(LocaleUtil.localize("item.blueprint.author") + " " + owner.getName());
+                tooltip.add(Component.literal(LocaleUtil.localize("item.blueprint.author") + " ").append(owner.getName()));
             }
             if (flag.isAdvanced()) {
-                tooltip.add("Hash: " + HashUtil.convertHashToString(header.key.hash));
-                tooltip.add("Date: " + header.created);
-                tooltip.add("Owner UUID: " + header.owner);
+                tooltip.add(Component.literal("Hash: " + HashUtil.convertHashToString(header.key.hash)));
+                tooltip.add(Component.literal("Date: " + header.created));
+                tooltip.add(Component.literal("Owner UUID: " + header.owner));
             }
         }
     }

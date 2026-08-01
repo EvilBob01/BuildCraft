@@ -6,11 +6,12 @@ package buildcraft.lib.item;
 
 import java.util.List;
 
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.ChatFormatting;
-import net.minecraft.world.level.Level;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 import buildcraft.lib.misc.LocaleUtil;
@@ -30,13 +31,13 @@ public class ItemBlockBC_Neptune extends BlockItem implements IItemBuildCraft {
     }
 
     @Override
-    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flags) {
-        super.addInformation(stack, world, tooltip, flags);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flags) {
+        super.appendHoverText(stack, context, tooltip, flags);
         String tipId = getDescriptionId(stack) + ".tip";
         if (LocaleUtil.canLocalize(tipId)) {
-            tooltip.add(ChatFormatting.GRAY + LocaleUtil.localize(tipId));
+            tooltip.add(Component.literal(LocaleUtil.localize(tipId)).withStyle(ChatFormatting.GRAY));
         } else if (flags.isAdvanced()) {
-            tooltip.add(ChatFormatting.GRAY + tipId);
+            tooltip.add(Component.literal(tipId).withStyle(ChatFormatting.GRAY));
         }
     }
 }

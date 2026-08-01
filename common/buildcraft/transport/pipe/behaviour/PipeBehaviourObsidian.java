@@ -161,7 +161,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
                 max = Integer.MAX_VALUE;
                 powerReqPerItem = 0;
             } else {
-                double distance = Math.sqrt(entity.getDistanceSqToCenter(pipe.getHolder().getPipePos()));
+                double distance = Math.sqrt(entity.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pipe.getHolder().getPipePos())));
                 powerReqPerItem = (long) (Math.max(1, distance) * POWER_PER_METRE + POWER_PER_ITEM);
                 max = (int) (power / powerReqPerItem);
             }

@@ -7,9 +7,11 @@ import javax.annotation.Nonnull;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
@@ -41,10 +43,10 @@ public class ItemGateCopier extends ItemBC_Neptune {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
         if (getMetadata(stack) != 0) {
-            tooltip.add(LocaleUtil.localize("buildcraft.item.nonclean.usage"));
+            tooltip.add(Component.literal(LocaleUtil.localize("buildcraft.item.nonclean.usage")));
         }
     }
 

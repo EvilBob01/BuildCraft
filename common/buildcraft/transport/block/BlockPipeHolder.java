@@ -15,8 +15,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import io.netty.handler.codec.http2.Http2FrameLogger.Direction;
-
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.SupportType;
@@ -24,7 +22,8 @@ import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.world.level.block.Shapes;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.client.particle.ParticleBlockDust;
 import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.client.particle.ParticleManager;
@@ -209,13 +208,12 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         double reachDistance = 5;
         if (player instanceof ServerPlayer) {
-            reachDistance = ((ServerPlayer) player).interactionManager.getBlockReachDistance();
+            reachDistance = ((ServerPlayer) player).blockInteractionRange();
         }
         Vec3 end = start.add(player.getLookAngle().normalize().scale(reachDistance));
         return rayTrace(world, pos, start, end);
     }
 
-    @Override
     @Nullable
     public BlockHitResult collisionRayTrace(BlockState state, Level world, BlockPos pos, Vec3 start, Vec3 end) {
         return rayTrace(world, pos, start, end);
@@ -278,13 +276,13 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         EnumWirePart best = null;
         double dist = 1000;
         for (EnumWirePart part : EnumWirePart.VALUES) {
-            BlockHitResult trace = part.boundingBoxPossible.calculateIntercept(realStart, realEnd);
-            if (trace != null) {
+            java.util.Optional<Vec3> hitOpt = part.boundingBoxPossible.clip(realStart, realEnd);
+            if (hitOpt.isPresent()) {
                 if (best == null) {
                     best = part;
-                    dist = trace.hitVec.squareDistanceTo(realStart);
+                    dist = hitOpt.get().distanceToSqr(realStart);
                 } else {
-                    double nextDist = trace.hitVec.squareDistanceTo(realStart);
+                    double nextDist = hitOpt.get().distanceToSqr(realStart);
                     if (dist > nextDist) {
                         best = part;
                         dist = nextDist;
@@ -298,39 +296,45 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     private BlockHitResult computeTrace(
         BlockHitResult lastBest, BlockPos pos, Vec3 start, Vec3 end, AABB aabb, int part
     ) {
-        BlockHitResult next = super.rayTrace(pos, start, end, aabb);
+        BlockHitResult next = Shapes.create(aabb).clip(start, end, pos);
         if (next == null) {
             return lastBest;
         }
-        next.subHit = part;
+        PipeHitResult pipeNext = new PipeHitResult(next, part);
         if (lastBest == null) {
-            return next;
+            return pipeNext;
         }
-        double distLast = lastBest.hitVec.squareDistanceTo(start);
-        double distNext = next.hitVec.squareDistanceTo(start);
-        return distLast > distNext ? next : lastBest;
+        double distLast = lastBest.getLocation().distanceToSqr(start);
+        double distNext = pipeNext.getLocation().distanceToSqr(start);
+        return distLast > distNext ? pipeNext : lastBest;
+    }
+
+    private static int getSubHit(@Nullable BlockHitResult trace) {
+        return trace instanceof PipeHitResult ? ((PipeHitResult) trace).subHit : -1;
     }
 
     @Nullable
     public static Direction getPartSideHit(BlockHitResult trace) {
-        if (trace.subHit <= 0) {
-            return trace.sideHit;
+        int subHit = getSubHit(trace);
+        if (subHit <= 0) {
+            return trace.getDirection();
         }
-        if (trace.subHit <= 6) {
-            return Direction.values()[trace.subHit - 1];
+        if (subHit <= 6) {
+            return Direction.values()[subHit - 1];
         }
-        if (trace.subHit <= 6 + 6) {
-            return Direction.values()[trace.subHit - 1 - 6];
+        if (subHit <= 6 + 6) {
+            return Direction.values()[subHit - 1 - 6];
         }
         return null;
     }
 
     @Nullable
     public static EnumWirePart getWirePartHit(BlockHitResult trace) {
-        if (trace.subHit <= 6 + 6) {
+        int subHit = getSubHit(trace);
+        if (subHit <= 6 + 6) {
             return null;
-        } else if (trace.subHit <= 6 + 6 + 8) {
-            return EnumWirePart.VALUES[trace.subHit - 1 - 6 - 6];
+        } else if (subHit <= 6 + 6 + 8) {
+            return EnumWirePart.VALUES[subHit - 1 - 6 - 6];
         } else {
             return null;
         }
@@ -338,10 +342,11 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
     @Nullable
     public static EnumWireBetween getWireBetweenHit(BlockHitResult trace) {
-        if (trace.subHit <= 6 + 6 + 8) {
+        int subHit = getSubHit(trace);
+        if (subHit <= 6 + 6 + 8) {
             return null;
-        } else if (trace.subHit <= 6 + 6 + 8 + EnumWireBetween.VALUES.length) {
-            return EnumWireBetween.VALUES[trace.subHit - 1 - 6 - 6 - 8];
+        } else if (subHit <= 6 + 6 + 8 + EnumWireBetween.VALUES.length) {
+            return EnumWireBetween.VALUES[subHit - 1 - 6 - 6 - 8];
         } else {
             return null;
         }
@@ -354,12 +359,13 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (tile == null) {
             return FULL_BLOCK_AABB;
         }
-        BlockHitResult trace = Minecraft.getInstance().objectMouseOver;
-        if (trace == null || trace.subHit < 0 || !pos.equals(trace.getBlockPos())) {
+        HitResult currentHit = Minecraft.getInstance().hitResult;
+        BlockHitResult trace = currentHit instanceof BlockHitResult ? (BlockHitResult) currentHit : null;
+        if (trace == null || getSubHit(trace) < 0 || !pos.equals(trace.getBlockPos())) {
             // Perhaps we aren't the object the mouse is over
             return FULL_BLOCK_AABB;
         }
-        int part = trace.subHit;
+        int part = getSubHit(trace);
         AABB aabb = FULL_BLOCK_AABB;
         if (part == 0) {
             aabb = BOX_CENTER;
@@ -406,7 +412,8 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (tile == null || target == null) {
             return ItemStack.EMPTY;
         }
-        if (target.subHit <= 6) {
+        int targetSubHit = getSubHit(target);
+        if (targetSubHit <= 6) {
             Pipe pipe = tile.getPipe();
             if (pipe != null) {
                 PipeDefinition def = pipe.getDefinition();
@@ -417,8 +424,8 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                     return new ItemStack(item);
                 }
             }
-        } else if (target.subHit <= 12) {
-            int pluggableHit = target.subHit - 7;
+        } else if (targetSubHit <= 12) {
+            int pluggableHit = targetSubHit - 7;
             Direction face = Direction.values()[pluggableHit];
             PipePluggable plug = tile.getPluggable(face);
             if (plug != null) {
@@ -428,7 +435,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             EnumWirePart part = null;
             EnumWireBetween between = null;
 
-            if (target.subHit > 6) {
+            if (targetSubHit > 6) {
                 part = getWirePartHit(target);
                 between = getWireBetweenHit(target);
             }
@@ -459,14 +466,15 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (realSide == null) {
             realSide = side;
         }
-        if (trace.subHit > 6 && trace.subHit <= 12) {
+        int traceSubHit = getSubHit(trace);
+        if (traceSubHit > 6 && traceSubHit <= 12) {
             PipePluggable existing = tile.getPluggable(realSide);
             if (existing != null) {
                 return existing.onPluggableActivate(player, trace, hitX, hitY, hitZ);
             }
         }
 
-        EnumPipePart part = trace.subHit == 0 ? EnumPipePart.CENTER : EnumPipePart.fromFacing(realSide);
+        EnumPipePart part = traceSubHit == 0 ? EnumPipePart.CENTER : EnumPipePart.fromFacing(realSide);
 
         ItemStack held = player.getItemInHand(hand);
         Item item = held.isEmpty() ? null : held.getItem();
@@ -847,7 +855,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     }
 
     private static HitSpriteInfo getHitSpriteInfo(BlockHitResult target, TilePipeHolder pipeHolder) {
-        return getHitSpriteInfo(target.subHit, pipeHolder);
+        return getHitSpriteInfo(getSubHit(target), pipeHolder);
     }
 
     private static HitSpriteInfo getHitSpriteInfo(int subHit, TilePipeHolder pipeHolder) {
@@ -969,7 +977,8 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean addDestroyEffects(Level world, BlockPos pos, ParticleManager manager) {
-        BlockHitResult hitResult = Minecraft.getInstance().objectMouseOver;
+        HitResult currentHitResult = Minecraft.getInstance().hitResult;
+        BlockHitResult hitResult = currentHitResult instanceof BlockHitResult ? (BlockHitResult) currentHitResult : null;
         if (hitResult == null || !pos.equals(hitResult.getBlockPos())) {
             return false;
         }

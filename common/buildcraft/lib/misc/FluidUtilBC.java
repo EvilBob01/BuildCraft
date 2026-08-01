@@ -188,13 +188,13 @@ public class FluidUtilBC {
         if (changed && replace) {
             if (single) {
                 // if it was the single item, replace with changed one
-                player.setHeldItem(hand, flItem.getContainer());
+                player.setItemInHand(hand, flItem.getContainer());
             } else {
                 // if it was part of stack, shrink stack and give / drop the new one
                 held.shrink(1);
                 ItemHandlerHelper.giveItemToPlayer(player, flItem.getContainer());
             }
-            player.inventoryContainer.detectAndSendChanges();
+            player.inventoryMenu.broadcastChanges();
         }
         return true;
     }

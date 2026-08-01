@@ -84,7 +84,7 @@ public abstract class OilGenStructure {
 
         @Override
         protected void generateWithin(Level world, Box intersect) {
-            for (BlockPos pos : BlockPos.getAllInBox(intersect.min(), intersect.max())) {
+            for (BlockPos pos : BlockPos.betweenClosed(intersect.min(), intersect.max())) {
                 if (predicate.test(pos)) {
                     setOilIfCanReplace(world, pos);
                 }
@@ -94,7 +94,7 @@ public abstract class OilGenStructure {
         @Override
         protected int countOilBlocks() {
             int count = 0;
-            for (BlockPos pos : BlockPos.getAllInBox(box.min(), box.max())) {
+            for (BlockPos pos : BlockPos.betweenClosed(box.min(), box.max())) {
                 if (predicate.test(pos)) {
                     count++;
                 }
@@ -123,7 +123,7 @@ public abstract class OilGenStructure {
         @Override
         protected void generateWithin(Level world, Box intersect) {
             BlockPos start = box.min();
-            for (BlockPos pos : BlockPos.getAllInBox(intersect.min(), intersect.max())) {
+            for (BlockPos pos : BlockPos.betweenClosed(intersect.min(), intersect.max())) {
                 int x = pos.getX() - start.getX();
                 int z = pos.getZ() - start.getZ();
                 if (pattern[x][z]) {

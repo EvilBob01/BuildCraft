@@ -9,13 +9,13 @@ package buildcraft.core.marker.volume;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public enum EnumAddonSlot {
@@ -65,9 +65,9 @@ public enum EnumAddonSlot {
 
         for (VolumeBox volumeBox : volumeBoxes) {
             for (EnumAddonSlot slot : values()) {
-                BlockHitResult ray = slot.getBoundingBox(volumeBox).calculateIntercept(start, end);
-                if (ray != null) {
-                    double dist = ray.hitVec.distanceTo(start);
+                Optional<Vec3> rayOpt = slot.getBoundingBox(volumeBox).clip(start, end);
+                if (rayOpt.isPresent()) {
+                    double dist = rayOpt.get().distanceTo(start);
                     if (bestDist > dist) {
                         bestDist = dist;
                         bestVolumeBox = volumeBox;

@@ -245,7 +245,7 @@ public class TilePump extends TileMiner {
         if (isOil(queueFluid)) {
             List<BlockPos> springPositions = new ArrayList<>();
             BlockPos center = VecUtil.replaceValue(getBlockPos(), Axis.Y, 0);
-            for (BlockPos spring : BlockPos.getAllInBox(center.offset(-10, 0, -10), center.offset(10, 0, 10))) {
+            for (BlockPos spring : BlockPos.betweenClosed(center.offset(-10, 0, -10), center.offset(10, 0, 10))) {
                 if (level.getBlockState(spring).getBlock() == BCCoreBlocks.spring) {
                     BlockEntity tile = level.getBlockEntity(spring);
                     if (tile instanceof ITileOilSpring) {

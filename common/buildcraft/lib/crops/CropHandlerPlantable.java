@@ -57,11 +57,11 @@ public enum CropHandlerPlantable implements ICropHandler {
         BlockState state = world.getBlockState(pos);
         if (seed.getItem() instanceof IPlantable) {
             Block block = state.getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isEmptyBlock(pos.above());
+            return state.canSustainPlant(world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isEmptyBlock(pos.above());
         } else {
             Block block = state.getBlock();
             IPlantable plantable = (IPlantable) ((BlockItem) seed.getItem()).getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isEmptyBlock(pos.above());
+            return state.canSustainPlant(world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isEmptyBlock(pos.above());
         }
     }
 

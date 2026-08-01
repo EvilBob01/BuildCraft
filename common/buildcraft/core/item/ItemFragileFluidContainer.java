@@ -5,7 +5,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -80,14 +81,14 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, @Nullable Level worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        CompoundTag stackTag = stack.getTag();
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
+        CompoundTag stackTag = NBTUtilBC.getTag(stack);
         CompoundTag fluidTag = (stackTag != null && stackTag.contains("fluid")) ? stackTag.getCompound("fluid") : null;
         if (fluidTag != null) {
             FluidStack fluid = null; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
             if (fluid != null && fluid.getAmount() > 0) {
-                tooltip.add(LocaleUtil.localizeFluidStaticAmount(fluid.getAmount(), MAX_FLUID_HELD));
+                tooltip.add(Component.literal(LocaleUtil.localizeFluidStaticAmount(fluid.getAmount(), MAX_FLUID_HELD)));
             }
         }
     }
@@ -125,7 +126,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         if (container.isEmpty()) {
             return null;
         }
-        CompoundTag containerTag = container.getTag();
+        CompoundTag containerTag = NBTUtilBC.getTag(container);
         CompoundTag fluidNbt = (containerTag != null && containerTag.contains("fluid")) ? containerTag.getCompound("fluid") : null;
         if (fluidNbt == null) {
             return null;

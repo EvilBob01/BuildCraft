@@ -9,9 +9,7 @@ package buildcraft.lib.net.cache;
 import java.io.IOException;
 import java.util.Objects;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 
 import buildcraft.lib.misc.StackUtil;
 import buildcraft.lib.net.PacketBufferBC;
@@ -55,31 +53,12 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
 
     @Override
     protected void writeObject(ItemStack obj, PacketBufferBC buffer) {
-        if (obj == null || obj.isEmpty()) {
-            buffer.writeBoolean(false);
-        } else {
-            buffer.writeBoolean(true);
-            buffer.writeShort(Item.getIdFromItem(obj.getItem()));
-            buffer.writeShort(obj.getDamageValue());
-            CompoundTag tag = null;
-            if (obj.getItem().isDamageable() || obj.getItem().getShareTag()) {
-                tag = obj.getItem().getNBTShareTag(obj);
-            }
-            buffer.writeCompoundTag(tag);
-        }
+        buffer.writeItemStack(obj == null ? ItemStack.EMPTY : obj);
     }
 
     @Override
     protected ItemStack readObject(PacketBufferBC buffer) throws IOException {
-        if (buffer.readBoolean()) {
-            Item item = Item.getItemById(buffer.readUnsignedShort());
-            int meta = buffer.readShort();
-            ItemStack stack = new ItemStack(item, 1);
-            NBTUtilBC.setTag(stack, buffer.readCompoundTag());
-            return stack;
-        } else {
-            return ItemStack.EMPTY;
-        }
+        return buffer.readItemStack();
     }
 
     @Override

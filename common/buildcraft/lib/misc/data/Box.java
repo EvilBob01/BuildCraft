@@ -136,7 +136,7 @@ public class Box implements IBox {
     public List<BlockPos> getBlocksInArea() {
         List<BlockPos> blocks = new ArrayList<>();
 
-        for (BlockPos pos : BlockPos.getAllInBox(min, max)) {
+        for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
             blocks.add(pos);
         }
 

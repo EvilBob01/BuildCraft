@@ -9,6 +9,7 @@ package buildcraft.core.list;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,13 +23,13 @@ public enum ListTooltipHandler {
 
     @SubscribeEvent
     public void itemTooltipEvent(ItemTooltipEvent event) {
-        final Player player = event.getEntityPlayer();
+        final Player player = event.getEntity();
         final ItemStack stack = event.getItemStack();
-        if (!stack.isEmpty() && player != null && player.openContainer instanceof ContainerList) {
+        if (!stack.isEmpty() && player != null && player.containerMenu instanceof ContainerList) {
             ItemStack list = player.getMainHandItem();
             if (!list.isEmpty() && list.getItem() instanceof IList) {
                 if (((IList) list.getItem()).matches(list, stack)) {
-                    event.getToolTip().add(ChatFormatting.GREEN + LocaleUtil.localize("tip.list.matches"));
+                    event.getToolTip().add(Component.literal(LocaleUtil.localize("tip.list.matches")).withStyle(ChatFormatting.GREEN));
                 }
             }
         }

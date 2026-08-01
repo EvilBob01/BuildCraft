@@ -251,8 +251,8 @@ public class PositionUtil {
             Vec3 b = line.interpolate(ib);
             va = closestPointOnLineToPoint(a, start, direction);
             vb = closestPointOnLineToPoint(b, start, direction);
-            da = a.squareDistanceTo(va);
-            db = b.squareDistanceTo(vb);
+            da = a.distanceToSqr(va);
+            db = b.distanceToSqr(vb);
             if (da < db) {
                 // We work out the square root at the end to get the actual distance
                 best = a;

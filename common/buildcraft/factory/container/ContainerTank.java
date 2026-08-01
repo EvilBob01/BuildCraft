@@ -38,7 +38,7 @@ public class ContainerTank extends ContainerBCTile<TileTank> {
             tile.balanceTankFluids();
             if (!ItemStack.isSameItemSameTags(stack, original)) {
                 slot.putStack(stack);
-                detectAndSendChanges();
+                broadcastChanges();
                 return ItemStack.EMPTY;
             }
         }

@@ -141,7 +141,7 @@ public class InventoryUtil {
      * room. */
     public static void addToPlayer(Player player, ItemStack stack) {
         if (player.getInventory().add(stack)) {
-            player.inventoryContainer.detectAndSendChanges();
+            player.inventoryMenu.broadcastChanges();
         } else {
             player.dropItem(stack, false, false);
         }

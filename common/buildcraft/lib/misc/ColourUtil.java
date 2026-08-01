@@ -90,7 +90,7 @@ public class ColourUtil {
 
         COLOUR_TO_FORMAT[DyeColor.BLACK.ordinal()] = ChatFormatting.BLACK;
         COLOUR_TO_FORMAT[DyeColor.GRAY.ordinal()] = ChatFormatting.DARK_GRAY;
-        COLOUR_TO_FORMAT[DyeColor.SILVER.ordinal()] = ChatFormatting.GRAY;
+        COLOUR_TO_FORMAT[DyeColor.LIGHT_GRAY.ordinal()] = ChatFormatting.GRAY;
         COLOUR_TO_FORMAT[DyeColor.WHITE.ordinal()] = ChatFormatting.WHITE;
 
         COLOUR_TO_FORMAT[DyeColor.RED.ordinal()] = ChatFormatting.DARK_RED;

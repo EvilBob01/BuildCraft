@@ -9,7 +9,9 @@ package buildcraft.lib.inventory.filter;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.TileEntityFurnace;
+import net.minecraft.world.item.crafting.RecipeType;
+
+import net.neoforged.neoforge.common.CommonHooks;
 
 import buildcraft.api.core.IStackFilter;
 
@@ -26,7 +28,7 @@ public enum StackFilter implements IStackFilter {
     FUEL {
         @Override
         public boolean matches(@Nonnull ItemStack stack) {
-            return TileEntityFurnace.getItemBurnTime(stack) > 0;
+            return CommonHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;
         }
     };
 

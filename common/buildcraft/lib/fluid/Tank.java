@@ -159,7 +159,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         int amount = clientAmount;
         FluidStack fluidStack = clientFluid == null ? null : clientFluid.get().copy();
         if (fluidStack != null && amount > 0) {
-            toolTip.add(fluidStack.getLocalizedName());
+            toolTip.add(fluidStack.getHoverName().getString());
         }
         toolTip.add(ChatFormatting.GRAY + LocaleUtil.localizeFluidStaticAmount(amount, getCapacity()));
         FluidStack serverFluid = getFluid();
@@ -215,7 +215,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     public String getContentsString() {
         if (fluid != null) {
-            return fluid.getLocalizedName() + LocaleUtil.localizeFluidStaticAmount(this);
+            return fluid.getHoverName().getString() + LocaleUtil.localizeFluidStaticAmount(this);
         }
         return LocaleUtil.localizeFluidStaticAmount(0, getCapacity());
     }
@@ -268,9 +268,9 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         ItemStack stack = transferStackToTank(container, held);
         player.containerMenu.setCarried(stack);
         ((ServerPlayer) player).updateHeldItem();
-        player.inventoryContainer.detectAndSendChanges();
-        if (player.openContainer != null) {
-            player.openContainer.detectAndSendChanges();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
         }
     }
 

@@ -15,9 +15,11 @@ import javax.annotation.Nonnull;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,14 +71,14 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, Level world, List<String> strings, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> strings, TooltipFlag flag) {
         stack = StackUtil.asNonNull(stack);
         CompoundTag cpt = NBTUtilBC.getItemData(stack);
 
         if (cpt.contains("name")) {
             String name = cpt.getString("name");
             if (name.length() > 0) {
-                strings.add(name);
+                strings.add(Component.literal(name));
             }
         }
 
@@ -89,7 +91,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                     int z = cpt.getInt("z");
                     Direction side = Direction.values()[cpt.getByte("side")];
 
-                    strings.add(LocaleUtil.localize("{" + x + ", " + y + ", " + z + ", " + side + "}"));
+                    strings.add(Component.literal(LocaleUtil.localize("{" + x + ", " + y + ", " + z + ", " + side + "}")));
                 }
                 break;
             }
@@ -103,8 +105,8 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                     int yLength = cpt.getInt("yMax") - y + 1;
                     int zLength = cpt.getInt("zMax") - z + 1;
 
-                    strings.add(LocaleUtil.localize(
-                        "{" + x + ", " + y + ", " + z + "} + {" + xLength + " x " + yLength + " x " + zLength + "}"));
+                    strings.add(Component.literal(LocaleUtil.localize(
+                        "{" + x + ", " + y + ", " + z + "} + {" + xLength + " x " + yLength + " x " + zLength + "}")));
                 }
                 break;
             }
@@ -116,8 +118,8 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                     if (pathNBT.size() > 0) {
                         BlockPos first = NBTUtilBC.readBlockPos(pathNBT.get(0));
                         if (first != null) {
-                            strings.add("{"+
-                                StringUtilBC.blockPosToString(first) + "}, (+" + (pathNBT.size() - 1) + " elements)");
+                            strings.add(Component.literal("{" +
+                                StringUtilBC.blockPosToString(first) + "}, (+" + (pathNBT.size() - 1) + " elements)"));
                         }
                     }
                 }
@@ -128,7 +130,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             }
         }
         if (type != MapLocationType.CLEAN) {
-            strings.add(LocaleUtil.localize("buildcraft.item.nonclean.usage"));
+            strings.add(Component.literal(LocaleUtil.localize("buildcraft.item.nonclean.usage")));
         }
     }
 
@@ -361,8 +363,8 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
     }
 
     @Override
-    public String getName(@Nonnull ItemStack item) {
-        return NBTUtilBC.getItemData(item).getString("name");
+    public Component getName(@Nonnull ItemStack item) {
+        return Component.literal(NBTUtilBC.getItemData(item).getString("name"));
     }
 
     @Override

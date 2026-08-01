@@ -609,7 +609,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
                 if (boxIterator.hasNext()) {
                     boolean found = false;
 
-                    if (drillPos.squareDistanceTo(new Vec3(boxIterator.getCurrent().getX(), boxIterator.getCurrent().getY(), boxIterator.getCurrent().getZ())) >= 1) {
+                    if (drillPos.distanceToSqr(new Vec3(boxIterator.getCurrent().getX(), boxIterator.getCurrent().getY(), boxIterator.getCurrent().getZ())) >= 1) {
                         currentTask = new TaskMoveDrill(drillPos, new Vec3(boxIterator.getCurrent().getX(), boxIterator.getCurrent().getY(), boxIterator.getCurrent().getZ()));
                         found = true;
                     } else if (canMine(boxIterator.getCurrent())) {
@@ -696,7 +696,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
         }
         drillPos = NBTUtilBC.readVec3d(nbt.get("drillPos"));
         firstChecked = nbt.getBoolean("firstChecked");
-        if (drillPos != null && drillPos.squareDistanceTo(new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ())) > 1024 * 1024) {
+        if (drillPos != null && drillPos.distanceToSqr(new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ())) > 1024 * 1024) {
             drillPos = null;
         }
 

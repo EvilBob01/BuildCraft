@@ -7,6 +7,7 @@
 package buildcraft.core.item;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
@@ -22,7 +23,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
@@ -138,7 +138,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
             if (currentEditing == null) {
                 for (Iterator<VolumeBox> iterator = volumeBoxes.volumeBoxes.iterator(); iterator.hasNext();) {
                     VolumeBox volumeBox = iterator.next();
-                    if (volumeBox.box.getBoundingBox().calculateIntercept(start, end) != null) {
+                    if (volumeBox.box.getBoundingBox().clip(start, end).isPresent()) {
                         if (volumeBox.getLockTargetsStream().noneMatch(Lock.Target.TargetResize.class::isInstance)) {
                             volumeBox.addons.values().forEach(Addon::onRemoved);
                             iterator.remove();
@@ -169,9 +169,9 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                         .collect(Collectors.toList())
                     ) {
                     for (BlockPos p : PositionUtil.getCorners(volumeBox.box.min(), volumeBox.box.max())) {
-                        BlockHitResult ray = new AABB(p).calculateIntercept(start, end);
-                        if (ray != null) {
-                            double dist = ray.hitVec.distanceTo(start);
+                        Optional<Vec3> ray = new AABB(p).clip(start, end);
+                        if (ray.isPresent()) {
+                            double dist = ray.get().distanceTo(start);
                             if (bestDist > dist) {
                                 bestDist = dist;
                                 bestVolumeBox = volumeBox;

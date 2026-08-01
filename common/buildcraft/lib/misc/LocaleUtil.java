@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.locale.Language;
 
 import net.neoforged.neoforge.fluids.IFluidTank;
 
@@ -70,7 +70,7 @@ public class LocaleUtil {
      * @param key The key to localize
      * @return The localized key, or the input key if no localization was found. */
     public static String localize(String key) {
-        String localized = I18n.translateToLocal(key);
+        String localized = Language.getInstance().getOrDefault(key);
         if (localized == key) {
             if (DEBUG && failedStrings.add(localized)) {
                 BCLog.logger.warn("[lib.locale] Attempted to localize '" + key + "' but no localization existed!");
@@ -87,7 +87,7 @@ public class LocaleUtil {
      * @param args The arguments to put into the localized key
      * @return The localized string. */
     public static String localize(String key, Object... args) {
-        String localized = I18n.translateToLocal(key);
+        String localized = Language.getInstance().getOrDefault(key);
         if (localized == key) {
             if (DEBUG && failedStrings.add(localized)) {
                 BCLog.logger.warn("[lib.locale] Attempted to localize '" + key + "' but no localization existed!");
@@ -106,7 +106,7 @@ public class LocaleUtil {
      * @param key The key to check
      * @return True if the key could be localized, false if not. */
     public static boolean canLocalize(String key) {
-        return I18n.canTranslate(key);
+        return Language.getInstance().has(key);
     }
 
     /** @param colour The {@link DyeColor} to localize.

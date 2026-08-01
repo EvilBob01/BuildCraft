@@ -41,7 +41,7 @@ public class ContainerDistiller extends ContainerBCTile<TileDistiller_BC8> {
             stack = tile.tankIn.transferStackToTank(this, stack);
             if (!ItemStack.isSameItemSameTags(stack, original)) {
                 slot.putStack(stack);
-                detectAndSendChanges();
+                broadcastChanges();
                 return ItemStack.EMPTY;
             }
         }

@@ -11,7 +11,9 @@ import javax.annotation.Nonnull;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
@@ -63,17 +65,17 @@ public class ItemList_BC8 extends ItemBC_Neptune implements IList {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, Level world, List<String> tooltip, ITooltipFlag flag) {
-        String name = getName(StackUtil.asNonNull(stack));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        String name = NBTUtilBC.getItemData(StackUtil.asNonNull(stack)).getString("label");
         if (StringUtils.isNullOrEmpty(name)) return;
-        tooltip.add(ChatFormatting.ITALIC + name);
+        tooltip.add(Component.literal(name).withStyle(ChatFormatting.ITALIC));
     }
 
     // IList
 
     @Override
-    public String getName(@Nonnull ItemStack stack) {
-        return NBTUtilBC.getItemData(stack).getString("label");
+    public Component getName(@Nonnull ItemStack stack) {
+        return Component.literal(NBTUtilBC.getItemData(stack).getString("label"));
     }
 
     @Override

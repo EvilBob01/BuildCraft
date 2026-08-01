@@ -41,19 +41,19 @@ public class ContainerEngineIron_BC8 extends ContainerBCTile<TileEngineIron_BC8>
             stack = tile.tankFuel.transferStackToTank(this, stack);
             if (!ItemStack.isSameItemSameTags(stack, original)) {
                 slot.putStack(stack);
-                detectAndSendChanges();
+                broadcastChanges();
                 return ItemStack.EMPTY;
             }
             stack = tile.tankCoolant.transferStackToTank(this, stack);
             if (!ItemStack.isSameItemSameTags(stack, original)) {
                 slot.putStack(stack);
-                detectAndSendChanges();
+                broadcastChanges();
                 return ItemStack.EMPTY;
             }
             stack = tile.tankResidue.transferStackToTank(this, stack);
             if (!ItemStack.isSameItemSameTags(stack, original)) {
                 slot.putStack(stack);
-                detectAndSendChanges();
+                broadcastChanges();
                 return ItemStack.EMPTY;
             }
         }

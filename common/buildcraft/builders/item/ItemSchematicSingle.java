@@ -154,7 +154,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
                                     Component.literal(
                                         "Not enough items. Total needed: " +
                                             StackUtil.mergeSameItems(requiredItems).stream()
-                                                .map(s -> s.getDisplayName().getString() + " x " + s.getCount())
+                                                .map(s -> s.getHoverName().getString() + " x " + s.getCount())
                                                 .collect(Collectors.joining(", "))
                                     ),
                                     true

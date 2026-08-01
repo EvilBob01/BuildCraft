@@ -23,8 +23,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Mth;
@@ -440,21 +439,12 @@ public class GuiUtil {
     }
 
     public static String getStackDisplayName(ItemStack stack) {
-        String name = stack.getDisplayName();
-        if (name == null) {
-            // Temp workaround for headcrumbs
-            // TODO: Remove this after https://github.com/BuildCraft/BuildCraft/issues/4268 is fixed from their side! */
-            Item item = stack.getItem();
-            String info = item.builtInRegistryHolder().key().location() + " " + item.getClass() + " (count=" + stack.getCount() + ")";
-            BCLog.logger.warn("[lib.guide] Found null display name! " + info);
-            name = "!!NULL stack.getDisplayName(): " + info;
-        }
-        return name;
+        return stack.getHoverName().getString();
     }
 
-    private static ITooltipFlag getTooltipFlags() {
-        boolean adv = Minecraft.getInstance().gameSettings.advancedItemTooltips;
-        return adv ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL;
+    private static TooltipFlag getTooltipFlags() {
+        boolean adv = Minecraft.getInstance().options.advancedItemTooltips.get();
+        return adv ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
     }
 
     public static WrappedTextData getWrappedTextData(String text, IFontRenderer fontRenderer, int maxWidth,

@@ -65,7 +65,7 @@ public class ItemGuide extends ItemBC_Neptune {
     }
 
     public static String getBookName(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
+        CompoundTag nbt = NBTUtilBC.getTag(stack);
         if (nbt == null || !nbt.contains(TAG_BOOK_NAME, Tag.TAG_STRING)) {
             // So that existing guide books continue to work
             return ItemGuide.DEFAULT_BOOK;

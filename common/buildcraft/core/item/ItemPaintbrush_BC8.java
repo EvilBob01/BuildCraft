@@ -72,10 +72,10 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         if (brush.useOnBlock(world, pos, world.getBlockState(pos), hitPos, facing, player)) {
             ItemStack newStack = brush.save(stack);
             if (!newStack.isEmpty()) {
-                player.setHeldItem(hand, newStack);
+                player.setItemInHand(hand, newStack);
             }
             // We just changed the damage NBT value
-            player.inventoryContainer.detectAndSendChanges();
+            player.inventoryMenu.broadcastChanges();
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.FAIL;

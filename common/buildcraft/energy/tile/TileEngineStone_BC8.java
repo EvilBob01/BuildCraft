@@ -12,7 +12,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.TileEntityFurnace;
+import net.minecraft.world.item.crafting.RecipeType;
+
+import net.neoforged.neoforge.common.CommonHooks;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 
@@ -157,7 +159,7 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
     }
 
     private static int getItemBurnTime(ItemStack itemstack) {
-        return TileEntityFurnace.getItemBurnTime(itemstack);
+        return CommonHooks.getBurnTime(itemstack, RecipeType.SMELTING);
     }
 
     @Override
