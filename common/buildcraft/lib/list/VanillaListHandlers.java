@@ -6,10 +6,6 @@
 
 package buildcraft.lib.list;
 
-import net.minecraft.world.item.ItemFood;
-
-import net.neoforged.neoforge.common.Tags;
-
 import buildcraft.api.lists.ListRegistry;
 
 public class VanillaListHandlers {
@@ -18,13 +14,11 @@ public class VanillaListHandlers {
         ListRegistry.registerHandler(new ListMatchHandlerFluid());
         ListRegistry.registerHandler(new ListMatchHandlerTools());
         ListRegistry.registerHandler(new ListMatchHandlerArmor());
-        ListRegistry.itemClassAsType.add(ItemFood.class);
+        // ItemFood class removed in 1.21; food matching via item class is stubbed
     }
 
     public static void fmlPostInit() {
-        for (String s : OreDictionary.getOreNames()) {
-            ListOreDictionaryCache.INSTANCE.registerName(s);
-        }
+        // OreDictionary removed in 1.21; tag-based matching is stubbed in ListMatchHandlerOreDictionary
         ListRegistry.registerHandler(new ListMatchHandlerOreDictionary());
     }
 }

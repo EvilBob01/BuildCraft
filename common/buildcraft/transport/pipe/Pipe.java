@@ -136,7 +136,7 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     public void writeCreationPayload(PacketBufferBC buffer) {
-        buffer.writeString(definition.identifier.toString());
+        buffer.writeUtf(definition.identifier.toString());
         writePayload(buffer, Dist.DEDICATED_SERVER);
         flow.writePayload(PipeFlow.NET_ID_FULL_STATE, buffer, Dist.DEDICATED_SERVER);
     }

@@ -87,15 +87,6 @@ public final class ListOreDictionaryCache {
     }
 
     public void registerName(String name) {
-        if (registeredNames.contains(name)) {
-            return;
-        }
-
-        int oreID = OreDictionary.getOreID(name);
-
-        addToNamingCache(getType(name), oreID);
-        addToNamingCache(getMaterial(name), oreID);
-
-        registeredNames.add(name);
+        // OreDictionary removed in 1.21; name-based matching is no-op until tag rewrite
     }
 }

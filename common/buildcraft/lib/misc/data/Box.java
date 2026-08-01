@@ -186,7 +186,7 @@ public class Box implements IBox {
 
     @Override
     public BlockPos size() {
-        if (!isInitialized()) return BlockPos.ORIGIN;
+        if (!isInitialized()) return BlockPos.ZERO;
         return max.subtract(min).add(VecUtil.POS_ONE);
     }
 

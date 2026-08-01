@@ -41,12 +41,12 @@ public enum FakePlayerProvider implements IFakePlayerProvider {
     @Override
     @Deprecated
     public FakePlayerBC getBuildCraftPlayer(ServerLevel world) {
-        return getFakePlayer(world, NULL_PROFILE, BlockPos.ORIGIN);
+        return getFakePlayer(world, NULL_PROFILE, BlockPos.ZERO);
     }
 
     @Override
     public FakePlayerBC getFakePlayer(ServerLevel world, GameProfile profile) {
-        return getFakePlayer(world, profile, BlockPos.ORIGIN);
+        return getFakePlayer(world, profile, BlockPos.ZERO);
     }
 
     @Override

@@ -59,7 +59,7 @@ public class NetworkedFluidStackCache extends NetworkedObjectCache<FluidStack> {
     @Override
     protected void writeObject(FluidStack obj, PacketBufferBC buffer) {
         Fluid f = obj.getFluid();
-        buffer.writeString(FluidRegistry.getFluidName(f));
+        buffer.writeUtf(FluidRegistry.getFluidName(f));
         if (obj.tag == null) {
             buffer.writeBoolean(false);
         } else {

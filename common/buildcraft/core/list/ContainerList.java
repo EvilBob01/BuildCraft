@@ -128,7 +128,7 @@ public class ContainerList extends ContainerBC_Neptune {
         BCCoreItems.list.setName(getListItemStack(), text);
 
         if (player.level().isClientSide) {
-            sendMessage(ID_LABEL, (buffer) -> buffer.writeString(text));
+            sendMessage(ID_LABEL, (buffer) -> buffer.writeUtf(text));
         }
     }
 

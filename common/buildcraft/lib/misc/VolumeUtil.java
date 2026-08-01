@@ -49,7 +49,7 @@ public class VolumeUtil {
         public final List<BlockPos> required;
 
         public VisiblePos(BlockPos pos, BlockPos to) {
-            this.worldPosition = pos;
+            this.pos = pos;
             this.required = PositionUtil.getAllOnPath(pos, to);
         }
     }
@@ -87,8 +87,8 @@ public class VolumeUtil {
                     axisJ = Axis.Y;
                     break;
             }
-            Direction faceI = Direction.getFacingFromAxis(AxisDirection.POSITIVE, axisI);
-            Direction faceJ = Direction.getFacingFromAxis(AxisDirection.POSITIVE, axisJ);
+            Direction faceI = Direction.get(AxisDirection.POSITIVE, axisI);
+            Direction faceJ = Direction.get(AxisDirection.POSITIVE, axisJ);
 
             BlockPos coneCenter = start;
             for (int d = 0; d < distance; d++) {

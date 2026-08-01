@@ -41,7 +41,7 @@ public class ContainerArchitectTable extends ContainerBCTile<TileArchitectTable>
     }
 
     public void sendNameToServer(String name) {
-        sendMessage(ID_NAME, buffer -> buffer.writeString(name));
+        sendMessage(ID_NAME, buffer -> buffer.writeUtf(name));
     }
 
     @Override

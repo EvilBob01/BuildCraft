@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import buildcraft.api.core.IPlayerOwned;
 
@@ -43,7 +44,7 @@ public class PermissionUtil {
 
     public static boolean hasPermission(Object type, Player attempting, PermissionBlock target) {
         // TODO: fire a forge block-break event if its a break event
-        if (attempting.distanceToSqr(target.pos) > MAX_INTERACT_DISTANCE_SQ) {
+        if (attempting.distanceToSqr(Vec3.atCenterOf(target.pos)) > MAX_INTERACT_DISTANCE_SQ) {
             return false;
         }
 

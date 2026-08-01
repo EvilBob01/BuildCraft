@@ -283,7 +283,7 @@ public abstract class Snapshot {
             key.writeToByteBuf(buffer);
             buffer.writeUniqueId(owner);
             buffer.writeLong(created.getTime());
-            buffer.writeString(name);
+            buffer.writeUtf(name);
         }
 
         public Player getOwnerPlayer(Level world) {
@@ -327,7 +327,7 @@ public abstract class Snapshot {
             this.basePos = basePos;
             this.offsetPos = basePos.add(offset.rotate(rotation));
             this.rotation = rotation;
-            this.box.extendToEncompass(toWorld(BlockPos.ORIGIN));
+            this.box.extendToEncompass(toWorld(BlockPos.ZERO));
             this.box.extendToEncompass(toWorld(size.subtract(VecUtil.POS_ONE)));
         }
 

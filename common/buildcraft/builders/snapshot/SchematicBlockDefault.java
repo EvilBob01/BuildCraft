@@ -149,7 +149,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
                 .map(Direction::getNormal)
                 .map(BlockPos::new)
                 .forEach(updateBlockOffsets::add);
-            updateBlockOffsets.add(BlockPos.ORIGIN);
+            updateBlockOffsets.add(BlockPos.ZERO);
         }
     }
 
@@ -279,7 +279,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
             world.getProfiler().push("notify");
             updateBlockOffsets.stream()
                 .map(blockPos::offset)
-                .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, placeBlock, false));
+                .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, placeBlock));
             world.getProfiler().pop();
             if (tileNbt != null && blockState.hasBlockEntity()) {
                 world.getProfiler().push("prepare tile");

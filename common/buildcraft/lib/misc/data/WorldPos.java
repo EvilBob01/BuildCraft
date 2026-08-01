@@ -6,23 +6,22 @@
 
 package buildcraft.lib.misc.data;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 public final class WorldPos {
-    @SuppressWarnings("WeakerAccess")
-    public final int dimension;
+    public final ResourceLocation dimension;
     public final BlockPos pos;
 
-    @SuppressWarnings("WeakerAccess")
-    public WorldPos(int dimension, BlockPos pos) {
+    public WorldPos(ResourceLocation dimension, BlockPos pos) {
         this.dimension = dimension;
         this.pos = pos.getClass() == BlockPos.class ? pos : new BlockPos(pos);
     }
 
     public WorldPos(Level world, BlockPos pos) {
-        this(world.provider.getDimension(), pos);
+        this(world.dimension().location(), pos);
     }
 
     public WorldPos(BlockEntity tile) {
@@ -34,13 +33,12 @@ public final class WorldPos {
         return this == o ||
             o != null &&
                 getClass() == o.getClass() &&
-                dimension == ((WorldPos) o).dimension &&
+                dimension.equals(((WorldPos) o).dimension) &&
                 pos.equals(((WorldPos) o).pos);
-
     }
 
     @Override
     public int hashCode() {
-        return 31 * dimension + pos.hashCode();
+        return 31 * dimension.hashCode() + pos.hashCode();
     }
 }

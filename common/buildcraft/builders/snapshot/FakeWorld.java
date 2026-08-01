@@ -165,7 +165,7 @@ public class FakeWorld extends Level {
             @Nullable
             @Override
             public BlockPos findBiomePosition(int x, int z, int range, List<Biome> biomes, Random random) {
-                return BlockPos.ORIGIN;
+                return BlockPos.ZERO;
             }
 
             @Override

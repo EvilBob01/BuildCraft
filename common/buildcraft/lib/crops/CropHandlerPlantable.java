@@ -81,7 +81,7 @@ public enum CropHandlerPlantable implements ICropHandler {
         } else if (block instanceof NetherWartBlock) {
             return state.getValue(NetherWartBlock.AGE) == 3;
         } else if (block instanceof IPlantable) {
-            if (blockAccess.getBlockState(pos.down()).getBlock() == block) {
+            if (blockAccess.getBlockState(pos.below()).getBlock() == block) {
                 return true;
             }
         }

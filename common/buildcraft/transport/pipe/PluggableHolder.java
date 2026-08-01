@@ -57,7 +57,7 @@ public final class PluggableHolder {
     }
 
     public void readFromNbt(CompoundTag nbt) {
-        if (nbt.hasNoTags()) {
+        if (nbt.isEmpty()) {
             pluggable = null;
             return;
         }
@@ -87,7 +87,7 @@ public final class PluggableHolder {
             buffer.writeByte(ID_REMOVE_PLUG);
         } else {
             buffer.writeByte(ID_CREATE_PLUG);
-            buffer.writeString(pluggable.definition.identifier.toString());
+            buffer.writeUtf(pluggable.definition.identifier.toString());
             pluggable.writeCreationPayload(buffer);
         }
     }

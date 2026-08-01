@@ -6,10 +6,13 @@
 
 package buildcraft.lib.misc;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 
 public class WorldUtil {
     public static boolean isWorldCreative(Level world) {
-        return world.getLevelData().getGameType().isCreative();
+        MinecraftServer server = world.getServer();
+        return server != null && server.getDefaultGameType() == GameType.CREATIVE;
     }
 }

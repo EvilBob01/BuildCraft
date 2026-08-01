@@ -285,7 +285,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
                         .noneMatch(distance -> distance < MAX_ENTITY_DISTANCE) &&
                     SchematicEntityManager.getSchematicEntity(new SchematicEntityContext(
                         tile.getWorldBC(),
-                        BlockPos.ORIGIN,
+                        BlockPos.ZERO,
                         entity
                     )) != null
             )

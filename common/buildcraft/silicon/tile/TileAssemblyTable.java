@@ -245,7 +245,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
         if (id == NET_GUI_DATA) {
             buffer.writeInt(recipesStates.size());
             recipesStates.forEach((instruction, state) -> {
-                buffer.writeString(instruction.recipe.builtInRegistryHolder().key().location().toString());
+                buffer.writeUtf(instruction.recipe.builtInRegistryHolder().key().location().toString());
                 buffer.writeItemStack(instruction.output);
                 buffer.writeInt(state.ordinal());
             });
@@ -277,7 +277,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
 
     public void sendRecipeStateToServer(AssemblyInstruction instruction, EnumAssemblyRecipeState state) {
         IMessage message = createMessage(NET_RECIPE_STATE, (buffer) -> {
-            buffer.writeString(instruction.recipe.builtInRegistryHolder().key().location().toString());
+            buffer.writeUtf(instruction.recipe.builtInRegistryHolder().key().location().toString());
             buffer.writeItemStack(instruction.output);
             buffer.writeInt(state.ordinal());
         });

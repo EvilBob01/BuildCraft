@@ -215,7 +215,7 @@ public class VolumeBox {
         buf.writeInt(addons.size());
         addons.forEach((slot, addon) -> {
             buf.writeEnumValue(slot);
-            buf.writeString(AddonsRegistry.INSTANCE.getNameByClass(addon.getClass()).toString());
+            buf.writeUtf(AddonsRegistry.INSTANCE.getNameByClass(addon.getClass()).toString());
             addon.toBytes(buf);
         });
         buf.writeInt(locks.size());

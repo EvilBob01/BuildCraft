@@ -80,7 +80,7 @@ public class BlockTank extends BlockBCTile_Neptune implements ICustomPipeConnect
 
     @Override
     public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        boolean isTankBelow = world.getBlockState(pos.down()).getBlock() instanceof ITankBlockConnector;
+        boolean isTankBelow = world.getBlockState(pos.below()).getBlock() instanceof ITankBlockConnector;
         return state.setValue(JOINED_BELOW, isTankBelow);
     }
 

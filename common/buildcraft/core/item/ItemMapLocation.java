@@ -152,7 +152,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         for (String key : STORAGE_TAGS) {
             nbt.removeTag(key);
         }
-        if (nbt.hasNoTags()) {
+        if (nbt.isEmpty()) {
             stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
         }
         MapLocationType.CLEAN.setToStack(stack);

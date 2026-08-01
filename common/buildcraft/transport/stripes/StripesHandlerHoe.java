@@ -50,7 +50,7 @@ public enum StripesHandlerHoe implements IStripesHandlerItem {
         if (direction != Direction.UP && stack.onItemUse(
                 player,
                 world,
-                pos.down(),
+                pos.below(),
                 InteractionHand.MAIN_HAND,
                 Direction.UP,
                 0.0f,

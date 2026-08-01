@@ -101,7 +101,7 @@ public class TileMiningWell extends TileMiner {
     private void nextPos() {
         currentPos = worldPosition;
         while (true) {
-            currentPos = currentPos.down();
+            currentPos = currentPos.below();
             if (level.isOutsideBuildHeight(currentPos)) {
                 break;
             }

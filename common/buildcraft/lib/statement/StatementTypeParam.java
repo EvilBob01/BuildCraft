@@ -65,7 +65,7 @@ public class StatementTypeParam extends StatementType<IStatementParameter> {
             buffer.writeBoolean(false);
         } else {
             buffer.writeBoolean(true);
-            buffer.writeString(slot.getUniqueTag());
+            buffer.writeUtf(slot.getUniqueTag());
             slot.writeToBuf(buffer);
         }
     }

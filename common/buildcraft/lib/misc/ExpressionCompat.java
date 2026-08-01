@@ -95,7 +95,7 @@ public class ExpressionCompat {
         GUI_AREA.put_oooo_t("area", INodeDouble.class, INodeDouble.class, INodeDouble.class, INodeDouble.class,
             IGuiArea::create);
         GUI_AREA.put_to_t("+", IGuiPosition.class, IGuiArea::offset);
-        GUI_AREA.put_ot_t("+", IGuiPosition.class, (b, a) -> a.relative(b));
+        GUI_AREA.put_ot_t("+", IGuiPosition.class, (b, a) -> a.offset(b));
         GUI_AREA.put_to_t("offset", IGuiPosition.class, IGuiArea::offset);
         GUI_AREA.put_too_t("offset", INodeDouble.class, INodeDouble.class, IGuiArea::offset);
         GUI_AREA.put_to_t("expand", INodeDouble.class, IGuiArea::expand);

@@ -133,7 +133,7 @@ public class TilePump extends TileMiner {
         isInfiniteWaterSource = false;
         Set<BlockPos> checked = new HashSet<>();
         List<BlockPos> nextPosesToCheck = new ArrayList<>();
-        for (targetPos = worldPosition.down(); !level.isOutsideBuildHeight(targetPos); targetPos = targetPos.down()) {
+        for (targetPos = worldPosition.below(); !level.isOutsideBuildHeight(targetPos); targetPos = targetPos.below()) {
             if (worldPosition.getY() - targetPos.getY() > BCCoreConfig.miningMaxDepth) {
                 break;
             }
@@ -224,7 +224,7 @@ public class TilePump extends TileMiner {
                 if (isWater) {
                     prof.push("water_check");
                     if (count >= 2) {
-                        BlockState below = level.getBlockState(posToCheck.down());
+                        BlockState below = level.getBlockState(posToCheck.below());
                         // Same check as in BlockDynamicLiquid.updateTick:
                         // if that method changes how it checks for adjacent
                         // water sources then this also needs updating

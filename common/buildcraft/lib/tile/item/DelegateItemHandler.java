@@ -53,6 +53,11 @@ public class DelegateItemHandler implements IItemHandlerModifiable, IItemHandler
     }
 
     @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return delegate.isItemValid(slot, stack);
+    }
+
+    @Override
     public ItemStack getFilter(int slot) {
         if (delegate instanceof IItemHandlerFiltered) {
             return ((IItemHandlerFiltered) delegate).getFilter(slot);

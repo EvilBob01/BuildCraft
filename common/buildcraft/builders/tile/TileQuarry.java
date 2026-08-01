@@ -930,7 +930,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
     }
 
     public class TaskBreakBlock extends Task {
-        public BlockPos breakPos = BlockPos.ORIGIN;
+        public BlockPos breakPos = BlockPos.ZERO;
 
         TaskBreakBlock() {}
 
@@ -1031,7 +1031,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
     }
 
     public class TaskAddFrame extends Task {
-        public BlockPos framePos = BlockPos.ORIGIN;
+        public BlockPos framePos = BlockPos.ZERO;
 
         TaskAddFrame() {}
 

@@ -76,7 +76,7 @@ public class BoxIterator implements Iterator<BlockPos> {
     }
 
     private BlockPos getStart() {
-        BlockPos pos = BlockPos.ORIGIN;
+        BlockPos pos = BlockPos.ZERO;
         pos = replace(pos, order.first);
         pos = replace(pos, order.second);
         return replace(pos, order.third);

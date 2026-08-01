@@ -66,7 +66,7 @@ public class ItemGateCopier extends ItemBC_Neptune {
         }
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
         nbt.removeTag(NBT_DATA);
-        if (nbt.hasNoTags()) {
+        if (nbt.isEmpty()) {
             stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);

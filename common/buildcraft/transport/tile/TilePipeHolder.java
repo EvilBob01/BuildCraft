@@ -145,11 +145,11 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         CompoundTag plugs = new CompoundTag();
         for (Direction face : Direction.values()) {
             CompoundTag plugTag = pluggables.get(face).writeToNbt();
-            if (!plugTag.hasNoTags()) {
+            if (!plugTag.isEmpty()) {
                 plugs.put(face.getName(), plugTag);
             }
         }
-        if (!plugs.hasNoTags()) {
+        if (!plugs.isEmpty()) {
             nbt.put("plugs", plugs);
         }
         nbt.put("wireManager", wireManager.writeToNbt());
@@ -300,11 +300,11 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
 
         if (!Arrays.equals(redstoneValues, oldRedstoneValues)) {
             Block block = level.getBlockState(worldPosition).getBlock();
-            level.notifyNeighborsOfStateChange(worldPosition, block, true);
+            level.notifyNeighborsOfStateChange(worldPosition, block);
             for (int i = 0; i < 6; i++) {
                 Direction face = Direction.values()[i];
                 if (oldRedstoneValues[i] != redstoneValues[i]) {
-                    level.notifyNeighborsOfStateChange(worldPosition.relative(face), block, true);
+                    level.notifyNeighborsOfStateChange(worldPosition.relative(face), block);
                 }
             }
             oldRedstoneValues = redstoneValues;

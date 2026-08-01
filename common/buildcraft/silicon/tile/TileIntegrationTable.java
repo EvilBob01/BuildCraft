@@ -147,7 +147,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
         if (id == NET_GUI_DATA) {
             buffer.writeBoolean(recipe != null);
             if (recipe != null) {
-                buffer.writeString(recipe.name.toString());
+                buffer.writeUtf(recipe.name.toString());
             }
         }
     }

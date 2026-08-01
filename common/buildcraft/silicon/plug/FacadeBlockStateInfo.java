@@ -39,8 +39,8 @@ public class FacadeBlockStateInfo implements IFacadeState {
         this.isVisible = !requiredStack.isEmpty();
         BlockGetter access = new SingleBlockAccess(state);
         for (Direction side : Direction.values()) {
-            isSideSolid[side.ordinal()] = state.isSideSolid(access, BlockPos.ORIGIN, side);
-            blockFaceShape[side.ordinal()] = state.isFaceSturdy(access, BlockPos.ORIGIN, side, SupportType.FULL) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+            isSideSolid[side.ordinal()] = state.isSideSolid(access, BlockPos.ZERO, side);
+            blockFaceShape[side.ordinal()] = state.isFaceSturdy(access, BlockPos.ZERO, side, SupportType.FULL) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
         }
     }
 

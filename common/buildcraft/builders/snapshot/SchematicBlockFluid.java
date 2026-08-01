@@ -94,10 +94,10 @@ public class SchematicBlockFluid implements ISchematicBlock {
                 Stream.of(Direction.values())
                     .map(Direction::getNormal)
                     .map(BlockPos::new),
-                Stream.of(BlockPos.ORIGIN)
+                Stream.of(BlockPos.ZERO)
             )
                 .map(blockPos::offset)
-                .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, blockState.getBlock(), false));
+                .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, blockState.getBlock()));
             return true;
         }
         return false;

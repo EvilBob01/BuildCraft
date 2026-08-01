@@ -126,7 +126,7 @@ public class FluidSmoother implements IDebuggable {
 
         public FluidStackInterp(FluidStack fluid, double amount) {
             this.fluid = fluid;
-            this.getAmount() = amount;
+            this.amount = amount;
         }
     }
 

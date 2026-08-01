@@ -208,8 +208,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                         if (FluidUtil.tryPlaceFluid(fakePlayer, world, currentPos, tank, fluid)) {
                             AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_FLOOD_SINGLE);
                             for (Direction side : Direction.values()) {
-                                level.notifyNeighborsOfStateChange(currentPos.relative(side), BCFactoryBlocks.floodGate,
-                                    false);
+                                level.notifyNeighborsOfStateChange(currentPos.relative(side), BCFactoryBlocks.floodGate);
                             }
                             delayIndex = 0;
                             tick = 0;

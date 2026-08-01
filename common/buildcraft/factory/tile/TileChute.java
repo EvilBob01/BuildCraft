@@ -24,15 +24,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.util.EntitySelectors;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.mj.MjAPI;
@@ -75,14 +71,14 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     }
 
     public static boolean hasInventoryAtPosition(BlockGetter world, BlockPos pos, Direction side) {
-        BlockEntity tile = level.getBlockEntity(worldPosition);
+        BlockEntity tile = world.getBlockEntity(pos);
         return ItemTransactorHelper.getTransactor(tile, side.getOpposite()) != NoSpaceTransactor.INSTANCE;
     }
 
     private void pickupItems(Direction currentSide) {
         AABB aabb = BoundingBoxUtil.extrudeFace(getBlockPos(), currentSide, 0.25);
         int count = PICKUP_MAX;
-        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, aabb, Entity::isAlive)) {
             int moved = ItemTransactorHelper.move(new TransactorEntityItem(entity), inv, count);
             count -= moved;
             if (count <= 0) {
@@ -96,7 +92,7 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         List<Direction> sides = new ArrayList<>(Arrays.asList(Direction.values()));
         Collections.shuffle(sides, new Random());
         sides.removeIf(Predicate.isEqual(currentSide));
-        Stream.<Pair<Direction, BlockEntity>>concat(
+        Stream.<Pair<Direction, Object>>concat(
             sides.stream()
                 .map(side -> Pair.of(side, level.getBlockEntity(worldPosition.relative(side)))),
             sides.stream()

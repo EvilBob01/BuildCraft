@@ -145,7 +145,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
                         progressStart = p1 - length * progress;
                         progressEnd = p1;
                     }
-                    BlockPos diff = BlockPos.ORIGIN;
+                    BlockPos diff = BlockPos.ZERO;
                     if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
                         diff = diff.relative(face, middles + 1);
                     }

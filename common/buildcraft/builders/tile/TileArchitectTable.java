@@ -324,7 +324,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_BOX, buffer, side);
-                buffer.writeString(name);
+                buffer.writeUtf(name);
             } else if (id == NET_BOX) {
                 box.writeData(buffer);
                 buffer.writeBoolean(markerBox);

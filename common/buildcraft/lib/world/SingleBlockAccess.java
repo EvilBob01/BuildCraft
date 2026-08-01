@@ -19,7 +19,7 @@ import net.minecraft.world.level.biome.Biome;
 /** An {@link BlockGetter} for getting the properties of a single {@link BlockState}
  * at the {@link SingleBlockAccess#POS} */
 public class SingleBlockAccess implements BlockGetter {
-    public static final BlockPos POS = BlockPos.ORIGIN;
+    public static final BlockPos POS = BlockPos.ZERO;
     public final BlockState state;
 
     public SingleBlockAccess(BlockState state) {

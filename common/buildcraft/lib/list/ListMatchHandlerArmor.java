@@ -10,42 +10,37 @@ import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.EntityEquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.common.DimensionManager;
-
-import buildcraft.api.core.BuildCraftAPI;
 import buildcraft.api.lists.ListMatchHandler;
 
 import buildcraft.lib.BCLibProxy;
 
 public class ListMatchHandlerArmor extends ListMatchHandler {
-    private static EnumSet<EntityEquipmentSlot> getArmorTypes(ItemStack stack) {
-        Player player = BCLibProxy.getProxy().getClientPlayer();
-        if (player == null) {
-            player = BuildCraftAPI.fakePlayerProvider.getBuildCraftPlayer(DimensionManager.getWorld(0));
-        }
-        EnumSet<EntityEquipmentSlot> types = EnumSet.noneOf(EntityEquipmentSlot.class);
-
-        for (EntityEquipmentSlot e : EntityEquipmentSlot.values()) {
-            if (e.getSlotType() == EntityEquipmentSlot.Type.ARMOR) {
-                if (stack.getItem().isValidArmor(stack, e, player)) {
-                    types.add(e);
+    private static EnumSet<EquipmentSlot> getArmorTypes(ItemStack stack) {
+        EnumSet<EquipmentSlot> types = EnumSet.noneOf(EquipmentSlot.class);
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR
+                || slot.getType() == EquipmentSlot.Type.ANIMAL_ARMOR) {
+                if (stack.getItem() instanceof ArmorItem armorItem) {
+                    if (armorItem.getEquipmentSlot() == slot) {
+                        types.add(slot);
+                    }
                 }
             }
         }
-
         return types;
     }
 
     @Override
     public boolean matches(Type type, @Nonnull ItemStack stack, @Nonnull ItemStack target, boolean precise) {
         if (type == Type.TYPE) {
-            EnumSet<EntityEquipmentSlot> armorTypeIDSource = getArmorTypes(stack);
+            EnumSet<EquipmentSlot> armorTypeIDSource = getArmorTypes(stack);
             if (armorTypeIDSource.size() > 0) {
-                EnumSet<EntityEquipmentSlot> armorTypeIDTarget = getArmorTypes(target);
+                EnumSet<EquipmentSlot> armorTypeIDTarget = getArmorTypes(target);
                 if (precise) {
                     return armorTypeIDSource.equals(armorTypeIDTarget);
                 } else {

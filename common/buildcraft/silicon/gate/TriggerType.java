@@ -84,7 +84,7 @@ public class TriggerType extends StatementType<TriggerWrapper> {
             buffer.writeBoolean(false);
         } else {
             buffer.writeBoolean(true);
-            buffer.writeString(slot.getUniqueTag());
+            buffer.writeUtf(slot.getUniqueTag());
             buffer.writeEnumValue(slot.sourcePart);
         }
     }

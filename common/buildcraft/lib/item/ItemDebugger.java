@@ -9,8 +9,9 @@ package buildcraft.lib.item;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -23,10 +24,12 @@ public class ItemDebugger extends ItemBC_Neptune {
     }
 
     @Override
-    public InteractionResult onItemUseFirst(Player player, Level world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, InteractionHand hand) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Level world = context.getLevel();
         if (world.isClientSide) {
             return InteractionResult.PASS;
         }
+        BlockPos pos = context.getClickedPos();
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile == null) {
             return InteractionResult.FAIL;

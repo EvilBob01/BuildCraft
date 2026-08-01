@@ -173,7 +173,7 @@ public abstract class OilGenStructure {
                     int pz = z - box.min().getZ();
 
                     if (pattern[px][pz]) {
-                        BlockPos upper = world.getHeight(new BlockPos(x, 0, z)).down();
+                        BlockPos upper = world.getHeight(new BlockPos(x, 0, z)).below();
                         if (canReplaceForOil(world, upper)) {
                             for (int y = 0; y < 5; y++) {
                                 world.removeBlock(upper.up(y, false));
@@ -229,7 +229,7 @@ public abstract class OilGenStructure {
             int segment = world.getChunkFromBlockCoords(start).getTopFilledSegment();
             BlockPos worldTop = new BlockPos(start.getX(), segment + 16, start.getZ());
             for (int y = segment; y >= start.getY(); y--) {
-                worldTop = worldTop.down();
+                worldTop = worldTop.below();
                 BlockState state = world.getBlockState(worldTop);
                 if (state.getBlock().isAir(state)) {
                     continue;

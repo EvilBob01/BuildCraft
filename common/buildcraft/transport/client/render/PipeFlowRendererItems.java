@@ -68,7 +68,7 @@ public enum PipeFlowRendererItems implements IPipeFlowRenderer<PipeFlowItems> {
         List<TravellingItem> toRender = flow.getAllItemsForRender();
 
         for (TravellingItem item : toRender) {
-            Vec3 pos = item.getRenderPosition(BlockPos.ORIGIN, now, partialTicks, flow);
+            Vec3 pos = item.getRenderPosition(BlockPos.ZERO, now, partialTicks, flow);
 
             ItemStack stack = item.clientItemLink.get();
             if (stack != null && !stack.isEmpty()) {
