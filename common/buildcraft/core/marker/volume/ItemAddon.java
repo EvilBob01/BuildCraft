@@ -10,7 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
@@ -26,9 +26,9 @@ public abstract class ItemAddon extends ItemBC_Neptune {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         if (world.isClientSide) {
-            return new ActionResult<>(InteractionResult.PASS, player.getItemInHand(hand));
+            return new InteractionResultHolder<>(InteractionResult.PASS, player.getItemInHand(hand));
         }
 
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
@@ -46,11 +46,11 @@ public abstract class ItemAddon extends ItemBC_Neptune {
                     volumeBox.addons.put(slot, addon);
                     volumeBox.addons.get(slot).onAdded();
                     volumeBoxes.setChanged();
-                    return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
+                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
                 }
             }
         }
 
-        return new ActionResult<>(InteractionResult.PASS, player.getItemInHand(hand));
+        return new InteractionResultHolder<>(InteractionResult.PASS, player.getItemInHand(hand));
     }
 }

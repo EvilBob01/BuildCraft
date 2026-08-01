@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,13 +6,14 @@
 
 package buildcraft.factory.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -71,7 +72,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             lastLength = currentLength;
             if (Math.abs(wantedLength - currentLength) <= 0.01) {
                 currentLength = wantedLength;
@@ -81,9 +82,9 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
             return;
         }
 
-        battery.tick(getWorld(), getPos());
+        battery.tick(getLevel(), getBlockPos());
 
-        if (world.getTotalWorldTime() % 10 == offset) {
+        if (level.getGameTime() % 10 == offset) {
             sendNetworkUpdate(NET_LED_STATUS);
         }
 
@@ -93,16 +94,16 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     @Override
     public void onLoad() {
         super.onLoad();
-        offset = world.rand.nextInt(10);
+        offset = level.rand.nextInt(10);
     }
 
     @Override
     public void onRemove() {
         super.onRemove();
-        for (int y = pos.getY() - 1; y > pos.getY() - BCCoreConfig.miningMaxDepth; y--) {
-            BlockPos blockPos = new BlockPos(pos.getX(), y, pos.getZ());
-            if (world.getBlockState(blockPos).getBlock() == BCFactoryBlocks.tube) {
-                world.setBlockToAir(blockPos);
+        for (int y = worldPosition.getY() - 1; y > worldPosition.getY() - BCCoreConfig.miningMaxDepth; y--) {
+            BlockPos blockPos = new BlockPos(worldPosition.getX(), y, worldPosition.getZ());
+            if (level.getBlockState(blockPos).getBlock() == BCFactoryBlocks.tube) {
+                level.removeBlock(blockPos, false);
             } else {
                 break;
             }
@@ -110,20 +111,20 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     protected void updateLength() {
-        int newY = getTargetPos() != null ? getTargetPos().getY() : pos.getY();
-        int newLength = pos.getY() - newY;
+        int newY = getTargetPos() != null ? getTargetPos().getY() : worldPosition.getY();
+        int newLength = worldPosition.getY() - newY;
         if (newLength != wantedLength) {
-            for (int y = pos.getY() - 1; y > pos.getY() - BCCoreConfig.miningMaxDepth; y--) {
-                BlockPos blockPos = new BlockPos(pos.getX(), y, pos.getZ());
-                if (world.getBlockState(blockPos).getBlock() == BCFactoryBlocks.tube) {
-                    world.setBlockToAir(blockPos);
+            for (int y = worldPosition.getY() - 1; y > worldPosition.getY() - BCCoreConfig.miningMaxDepth; y--) {
+                BlockPos blockPos = new BlockPos(worldPosition.getX(), y, worldPosition.getZ());
+                if (level.getBlockState(blockPos).getBlock() == BCFactoryBlocks.tube) {
+                    level.removeBlock(blockPos, false);
                 } else {
                     break;
                 }
             }
-            for (int y = pos.getY() - 1; y > newY; y--) {
-                BlockPos blockPos = new BlockPos(pos.getX(), y, pos.getZ());
-                world.setBlock(blockPos, BCFactoryBlocks.tube.defaultBlockState());
+            for (int y = worldPosition.getY() - 1; y > newY; y--) {
+                BlockPos blockPos = new BlockPos(worldPosition.getX(), y, worldPosition.getZ());
+                level.setBlock(blockPos, BCFactoryBlocks.tube.defaultBlockState());
             }
             currentLength = wantedLength = newLength;
             sendNetworkUpdate(NET_WANTED_Y);
@@ -145,7 +146,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     public boolean isComplete() {
-        return world.isClientSide ? isComplete : currentPos == null;
+        return level.isClientSide ? isComplete : currentPos == null;
     }
 
     @Override
@@ -160,10 +161,10 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         if (currentPos != null) {
-            nbt.put("currentPos", NBTUtil.createPosTag(currentPos));
+            nbt.put("currentPos", NbtUtils.createPosTag(currentPos));
         }
         nbt.putInt("wantedLength", wantedLength);
         nbt.putInt("progress", progress);
@@ -172,10 +173,10 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         if (nbt.contains("currentPos")) {
-            currentPos = NBTUtil.getPosFromTag(nbt.getCompound("currentPos"));
+            currentPos = NbtUtils.getPosFromTag(nbt.getCompound("currentPos"));
         }
         wantedLength = nbt.getInt("wantedLength");
         progress = nbt.getInt("progress");
@@ -189,7 +190,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     // Networking
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -205,7 +206,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {

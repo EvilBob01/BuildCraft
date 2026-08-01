@@ -6,6 +6,7 @@
 
 package buildcraft.energy.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
@@ -94,8 +95,8 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     // BlockEntity overrides
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putInt("penaltyCooling", penaltyCooling);
         nbt.putDouble("burnTime", burnTime);
         nbt.putDouble("residueAmount", residueAmount);
@@ -103,15 +104,15 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         penaltyCooling = nbt.getInt("penaltyCooling");
         burnTime = nbt.getDouble("burnTime");
         residueAmount = Math.max(0, nbt.getDouble("residueAmount"));
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
@@ -121,7 +122,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
@@ -147,8 +148,8 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                 return false;
             }
         }
-        if (!world.isClientSide) {
-            BCEnergyGuis.ENGINE_IRON.openGUI(player, getPos());
+        if (!level.isClientSide) {
+            BCEnergyGuis.ENGINE_IRON.openGUI(player, getBlockPos());
         }
         return true;
     }
@@ -350,7 +351,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
 
     private boolean isResidue(FluidStack fluid) {
         // If this is the client then we don't have a current fuel- just trust the server that its correct
-        if (world != null && world.isClientSide) {
+        if (world != null && level.isClientSide) {
             return true;
         }
         if (currentFuel instanceof IDirtyFuel) {

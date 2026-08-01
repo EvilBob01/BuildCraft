@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -141,7 +141,7 @@ public final class Pipe implements IPipe, IDebuggable {
         flow.writePayload(PipeFlow.NET_ID_FULL_STATE, buffer, Dist.DEDICATED_SERVER);
     }
 
-    public void writePayload(PacketBufferBC buffer, Side side) {
+    public void writePayload(PacketBufferBC buffer, Dist side) {
         if (side == Dist.DEDICATED_SERVER) {
             buffer.writeByte(colour == null ? 0 : colour.getMetadata() + 1);
             for (Direction face : Direction.VALUES) {
@@ -159,7 +159,7 @@ public final class Pipe implements IPipe, IDebuggable {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void readPayload(PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (side == Dist.CLIENT) {
             connected.clear();
             types.clear();

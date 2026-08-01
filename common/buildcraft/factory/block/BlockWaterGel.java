@@ -162,18 +162,18 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
             if (changeable.size() == 3 || world.rand.nextDouble() < 0.5) {
                 for (BlockPos p : changeable) {
                     world.setBlock(p, nextState);
-                    world.scheduleUpdate(p, this, rand.nextInt(150) + time);
+                    world.scheduleTick(p, this, rand.nextInt(150) + time);
                 }
                 world.setBlock(pos, nextState);
                 SoundUtil.playBlockPlace(world, pos);
             }
-            world.scheduleUpdate(pos, this, rand.nextInt(150) + time);
+            world.scheduleTick(pos, this, rand.nextInt(150) + time);
         } else if (stage != next) {
             if (notTouchingWater(world, pos)) {
                 world.setBlock(pos, nextState);
-                world.scheduleUpdate(pos, this, rand.nextInt(150) + 400);
+                world.scheduleTick(pos, this, rand.nextInt(150) + 400);
             } else {
-                world.scheduleUpdate(pos, this, rand.nextInt(150) + 600);
+                world.scheduleTick(pos, this, rand.nextInt(150) + 600);
             }
         }
     }

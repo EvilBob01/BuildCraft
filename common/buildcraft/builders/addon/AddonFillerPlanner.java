@@ -6,6 +6,7 @@
 
 package buildcraft.builders.addon;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
@@ -86,14 +87,14 @@ public class AddonFillerPlanner extends Addon implements ISingleAddon, IFillerSt
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         nbt.put("patternStatement", patternStatement.writeToNbt());
         nbt.putBoolean("inverted", inverted);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         patternStatement.readFromNbt(nbt.getCompound("patternStatement"));
         inverted = nbt.getBoolean("inverted");
     }

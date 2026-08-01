@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.generation;
+package buildcraft.energy.generation;
 
 import java.util.function.Predicate;
 
@@ -176,7 +176,7 @@ public abstract class OilGenStructure {
                         BlockPos upper = world.getHeight(new BlockPos(x, 0, z)).down();
                         if (canReplaceForOil(world, upper)) {
                             for (int y = 0; y < 5; y++) {
-                                world.setBlockToAir(upper.up(y));
+                                world.removeBlock(upper.up(y, false));
                             }
                             for (int y = 0; y < depth; y++) {
                                 setOilIfCanReplace(world, upper.down(y));
@@ -249,7 +249,7 @@ public abstract class OilGenStructure {
                 // BCLog.logger.info(" - " + base + " = " + r);
                 OilGenStructure struct = OilGenerator.createTube(base, height, r, Axis.Y);
                 struct.generate(world, struct.box);
-                base = base.add(0, height, 0);
+                base = base.offset(0, height, 0);
                 count += struct.countOilBlocks();
             }
         }
@@ -292,7 +292,7 @@ public abstract class OilGenStructure {
             } else {
                 BCLog.logger.warn("[energy.gen.oil] Setting the blockstate didn't also set the tile at " + pos);
                 spring = new TileSpringOil();
-                spring.setWorld(world);
+                spring.setLevel(world);
                 spring.setPos(pos);
                 world.setBlockEntity(pos, spring);
             }

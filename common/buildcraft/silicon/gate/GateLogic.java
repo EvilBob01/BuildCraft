@@ -217,7 +217,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
         }
     }
 
-    public void readPayload(PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         int id = buffer.readUnsignedByte();
         if (id == NET_ID_CHANGE) {
             boolean isAction = buffer.readBoolean();

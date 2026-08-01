@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -55,7 +55,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
@@ -86,14 +86,14 @@ public class JsonUtil {
             }
         } else if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
-            String id = JsonUtils.getString(obj, "id");
+            String id = GsonHelper.getString(obj, "id");
             Fluid fluid = FluidRegistry.getFluid(id);
             if (fluid == null) {
                 throw failAndListFluids(id);
             }
             int amount = 1;
             if (obj.has("amount")) {
-                amount = JsonUtils.getInt(obj, "amount");
+                amount = GsonHelper.getInt(obj, "amount");
             }
             // TODO: NBT
             return new FluidStack(fluid, amount);
@@ -123,7 +123,7 @@ public class JsonUtil {
             }
         } else if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
-            String id = JsonUtils.getString(obj, "id");
+            String id = GsonHelper.getString(obj, "id");
             ResourceLocation loc = new ResourceLocation(id);
             if (!ForgeRegistries.ITEMS.containsKey(loc)) {
                 throw new JsonSyntaxException("Unknown item '" + id + "'");
@@ -245,7 +245,7 @@ public class JsonUtil {
      * for a {@link TextComponentTranslation}, or the prefix plus "_raw" for a raw {@link TextComponentString}. */
     public static Component getTextComponent(JsonObject json, String subPrefix, String localePrefix) {
         if (json.has(subPrefix)) {
-            String str = JsonUtils.getString(json, subPrefix);
+            String str = GsonHelper.getString(json, subPrefix);
             Object[] args;
             if (json.has(subPrefix + "_args")) {
                 args = getSubAsStringArray(json, subPrefix + "_args");
@@ -254,7 +254,7 @@ public class JsonUtil {
             }
             return new TextComponentTranslation(localePrefix + str, args);
         } else if (json.has(subPrefix + "_raw")) {
-            return new TextComponentString(JsonUtils.getString(json, subPrefix + "_raw"));
+            return new TextComponentString(GsonHelper.getString(json, subPrefix + "_raw"));
         } else {
             throw new JsonSyntaxException(
                 "Expected to find either '" + subPrefix + "' or '" + subPrefix + "_raw', but got neither for " + json);
@@ -273,7 +273,7 @@ public class JsonUtil {
         if (!obj.has(sub)) {
             return _default;
         }
-        String str = JsonUtils.getString(obj, sub).toLowerCase(Locale.ROOT);
+        String str = GsonHelper.getString(obj, sub).toLowerCase(Locale.ROOT);
         int index = str.indexOf(':');
         if (index < 0) {
             throw new JsonSyntaxException("Expected 'domain:path', but didn't find a colon!");

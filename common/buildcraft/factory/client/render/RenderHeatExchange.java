@@ -1,4 +1,4 @@
-﻿package buildcraft.factory.client.render;
+package buildcraft.factory.client.render;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -187,7 +187,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
 
     private static void renderFlow(Vec3 diff, Direction face, BufferBuilder bb, double s, double e, FluidStack fluid,
         int point, float partialTicks) {
-        double tickTime = Minecraft.getInstance().level.getTotalWorldTime();
+        double tickTime = Minecraft.getInstance().level.getGameTime();
         double offset = (tickTime + partialTicks) % 31 / 31.0;
         if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
             offset = -offset;

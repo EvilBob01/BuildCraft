@@ -62,7 +62,7 @@ public enum PipeFlowRendererItems implements IPipeFlowRenderer<PipeFlowItems> {
     @Override
     public void render(PipeFlowItems flow, double x, double y, double z, float partialTicks, BufferBuilder bb) {
         Level world = flow.pipe.getHolder().getPipeWorld();
-        long now = world.getTotalWorldTime();
+        long now = world.getGameTime();
         int lightc = world.getCombinedLight(flow.pipe.getHolder().getPipePos(), 0);
 
         List<TravellingItem> toRender = flow.getAllItemsForRender();

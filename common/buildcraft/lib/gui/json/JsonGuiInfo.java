@@ -13,7 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.model.ResourceLoaderContext;
@@ -30,11 +30,11 @@ public class JsonGuiInfo extends JsonVariableObject {
 
     public JsonGuiInfo(JsonObject json, FunctionContext fnCtx, ResourceLoaderContext loadHistory) {
         if (json.has("values")) {
-            putVariables(JsonUtils.getJsonObject(json, "values"), fnCtx);
+            putVariables(GsonHelper.getJsonObject(json, "values"), fnCtx);
         }
 
         if (json.has("elements_below")) {
-            JsonObject jElems = JsonUtils.getJsonObject(json, "elements_below");
+            JsonObject jElems = GsonHelper.getJsonObject(json, "elements_below");
             for (Entry<String, JsonElement> entry : jElems.entrySet()) {
                 String name = entry.getKey();
                 JsonObject obj = (JsonObject) entry.getValue();
@@ -44,7 +44,7 @@ public class JsonGuiInfo extends JsonVariableObject {
         }
 
         if (json.has("parent")) {
-            String parent = JsonUtils.getString(json, "parent");
+            String parent = GsonHelper.getString(json, "parent");
             ResourceLocation location = new ResourceLocation(parent + ".json");
             try (InputStreamReader reader = loadHistory.startLoading(location)) {
                 JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
@@ -60,7 +60,7 @@ public class JsonGuiInfo extends JsonVariableObject {
         }
 
         if (json.has("variables")) {
-            putVariables(JsonUtils.getJsonObject(json, "variables"), fnCtx);
+            putVariables(GsonHelper.getJsonObject(json, "variables"), fnCtx);
         }
 
         if (json.has("size")) {
@@ -72,7 +72,7 @@ public class JsonGuiInfo extends JsonVariableObject {
         }
         defaultTexture = JsonUtil.getAsString(json.get("texture"));
         if (json.has("types")) {
-            JsonObject jTypes = JsonUtils.getJsonObject(json, "types");
+            JsonObject jTypes = GsonHelper.getJsonObject(json, "types");
             for (Entry<String, JsonElement> entry : jTypes.entrySet()) {
                 String name = entry.getKey();
                 JsonObject obj = (JsonObject) entry.getValue();
@@ -80,7 +80,7 @@ public class JsonGuiInfo extends JsonVariableObject {
             }
         }
         if (json.has("elements")) {
-            JsonObject jElems = JsonUtils.getJsonObject(json, "elements");
+            JsonObject jElems = GsonHelper.getJsonObject(json, "elements");
             for (Entry<String, JsonElement> entry : jElems.entrySet()) {
                 String name = entry.getKey();
                 JsonObject obj = (JsonObject) entry.getValue();

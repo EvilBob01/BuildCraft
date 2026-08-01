@@ -95,7 +95,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
                 Vec3 offset = offsets[face.getIndex()];
                 if (offset == null) offset = Vec3.ZERO;
-                center = center.add(offset);
+                center = center.offset(offset);
                 fluidBuffer.setTranslation(x - offset.x, y - offset.y, z - offset.z);
 
                 Vec3 min = center.subtract(radius);
@@ -121,8 +121,8 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
                 Vec3 min = new Vec3(0.26, 0.26, 0.26);
                 Vec3 max = new Vec3(0.74, 0.74, 0.74);
 
-                min = min.add(offset);
-                max = max.add(offset);
+                min = min.offset(offset);
+                max = max.offset(offset);
 
                 FluidRenderer.renderFluid(FluidSpriteType.FROZEN, forRender, amount, flow.capacity, min, max,
                     fluidBuffer, sides);
@@ -140,8 +140,8 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
                 Vec3 min = new Vec3(minXZ, yMin, minXZ);
                 Vec3 max = new Vec3(maxXZ, yMax, maxXZ);
-                min = min.add(offset);
-                max = max.add(offset);
+                min = min.offset(offset);
+                max = max.offset(offset);
 
                 FluidRenderer.renderFluid(FluidSpriteType.FROZEN, forRender, 1, 1, min, max, fluidBuffer, sides);
             }

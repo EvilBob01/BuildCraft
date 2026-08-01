@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -49,7 +49,7 @@ public class RenderLaser extends FastTESR<TileLaser> {
                     if (index > MAX_POWER) {
                         index = MAX_POWER;
                     }
-                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3(tile.getBlockPos()).add(offset), tile.laserPos, 1 / 16D);
+                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3(tile.getBlockPos()).offset(offset), tile.laserPos, 1 / 16D);
                     LaserRenderer_BC8.renderLaserDynamic(laser, buffer);
                 }
             }

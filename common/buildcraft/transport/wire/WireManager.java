@@ -224,7 +224,7 @@ public class WireManager implements IWireManager {
         }
     }
 
-    public void writePayload(PacketBufferBC buffer, Side side) {
+    public void writePayload(PacketBufferBC buffer, Dist side) {
         if (side == Dist.DEDICATED_SERVER) {
             buffer.writeInt(parts.size());
             for (Entry<EnumWirePart, DyeColor> entry : parts.entrySet()) {
@@ -235,7 +235,7 @@ public class WireManager implements IWireManager {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void readPayload(PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (side == Dist.CLIENT) {
             parts.clear();
             int count = buffer.readInt();

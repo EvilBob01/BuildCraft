@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
@@ -43,10 +43,10 @@ public class ItemList_BC8 extends ItemBC_Neptune implements IList {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         AdvancementUtil.unlockAdvancement(player, ADVANCEMENT);
         BCCoreGuis.LIST.openGUI(player);
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 
     @Override

@@ -6,6 +6,7 @@
 
 package buildcraft.robotics.zone;
 
+import net.minecraft.core.HolderLookup;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +127,7 @@ public class ZonePlan implements IZone {
         );
     }
 
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         NBTUtilBC.readCompoundList(nbt.get("chunkMapping"))
                 .forEach(zoneChunkTag -> {
                     ZoneChunk chunk = new ZoneChunk();

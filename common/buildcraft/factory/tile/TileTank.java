@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -96,13 +96,13 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
 
     @Override
     public void update() {
-        smoothedTank.tick(world);
+        smoothedTank.tick(level);
 
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             int compLevel = getComparatorLevel();
             if (compLevel != lastComparatorLevel) {
                 lastComparatorLevel = compLevel;
-                markDirty();
+                setChanged();
             }
         }
     }
@@ -161,8 +161,8 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
             AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_STORE_FLUIDS);
         }
         if (!didChange) {
-            if (!world.isClientSide) {
-                BCFactoryGuis.TANK.openGUI(player, pos);
+            if (!level.isClientSide) {
+                BCFactoryGuis.TANK.openGUI(player, worldPosition);
             }
         }
         return true;
@@ -171,7 +171,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     // Networking
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -185,14 +185,14 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_FLUID_DELTA, buffer, side, ctx);
-                smoothedTank.resetSmoothing(getWorld());
+                smoothedTank.resetSmoothing(getLevel());
             } else if (id == NET_FLUID_DELTA) {
-                smoothedTank.handleMessage(getWorld(), buffer);
+                smoothedTank.handleMessage(getLevel(), buffer);
             } else if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 tankManager.readData(buffer);
             }
@@ -233,8 +233,8 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
      * @param from
      * @param to
      * @param direction The direction from the "from" tank, to the "to" tank, such that
-     *            {@link Objects#equals(Object, Object) Objects.equals(}{@link TileTank#getPos()
-     *            from.getBlockPos()}.{@link BlockPos#offset(Direction) offset(direction)}, {@link TileTank#getPos()
+     *            {@link Objects#equals(Object, Object) Objects.equals(}{@link TileTank#getBlockPos()
+     *            from.getBlockPos()}.{@link BlockPos#offset(Direction) offset(direction)}, {@link TileTank#getBlockPos()
      *            to.getBlockPos()}) returns true.
      * @return True if both could connect, false otherwise. */
     public static boolean canTanksConnect(TileTank from, TileTank to, Direction direction) {

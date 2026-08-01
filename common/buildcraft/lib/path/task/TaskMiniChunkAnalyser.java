@@ -58,7 +58,7 @@ public class TaskMiniChunkAnalyser implements Callable<AnalysedChunk> {
                     BlockPos offset = toTest.offset(face);
                     if (!isValid(offset)) continue;
                     if (closedSet.contains(offset)) continue;
-                    openSet.add(offset);
+                    openSet.offset(offset);
                 }
                 openSet.remove(toTest);
                 closedSet.add(toTest);

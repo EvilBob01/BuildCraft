@@ -6,6 +6,7 @@
 
 package buildcraft.factory.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -87,29 +88,29 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     }
 
     private void buildQueue() {
-        world.profiler.startSection("prepare");
+        level.getProfiler().push("prepare");
         queue.clear();
         paths.clear();
         FluidStack fluid = tank.getFluid();
         if (fluid == null || fluid.getAmount() <= 0) {
-            world.profiler.endSection();
+            level.getProfiler().pop();
             return;
         }
         Set<BlockPos> checked = new HashSet<>();
-        checked.add(pos);
+        checked.add(worldPosition);
         List<BlockPos> nextPosesToCheck = new ArrayList<>();
         for (Direction face : openSides) {
-            BlockPos offset = pos.offset(face);
-            nextPosesToCheck.add(offset);
+            BlockPos offset = worldPosition.offset(face);
+            nextPosesToCheck.offset(offset);
             paths.put(offset, ImmutableList.of(offset));
         }
         Direction[] directions = fluid.getFluid().isGaseous(fluid) ? SEARCH_GASEOUS : SEARCH_NORMAL;
-        world.profiler.endStartSection("build");
+        level.profiler.endStartSection("build");
         outer: while (!nextPosesToCheck.isEmpty()) {
             List<BlockPos> nextPosesToCheckCopy = new ArrayList<>(nextPosesToCheck);
             nextPosesToCheck.clear();
             for (BlockPos toCheck : nextPosesToCheckCopy) {
-                if (toCheck.distanceSq(pos) > 64 * 64) {
+                if (toCheck.distanceSq(worldPosition) > 64 * 64) {
                     continue;
                 }
                 if (checked.add(toCheck)) {
@@ -136,14 +137,14 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                 }
             }
         }
-        world.profiler.endSection();
+        level.getProfiler().pop();
     }
 
     private boolean canFill(BlockPos offsetPos) {
-        if (world.isAirBlock(offsetPos)) {
+        if (level.isEmptyBlock(offsetPos)) {
             return true;
         }
-        Fluid fluid = BlockUtil.getFluidWithFlowing(world, offsetPos);
+        Fluid fluid = BlockUtil.getFluidWithFlowing(level, offsetPos);
         return fluid != null && FluidUtilBC.areFluidsEqual(fluid, tank.getFluidType())
             && BlockUtil.getFluidWithoutFlowing(getLocalState(offsetPos)) == null;
     }
@@ -152,15 +153,15 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
         if (canFill(offsetPos)) {
             return true;
         }
-        Fluid fluid = BlockUtil.getFluid(world, offsetPos);
+        Fluid fluid = BlockUtil.getFluid(level, offsetPos);
         return FluidUtilBC.areFluidsEqual(fluid, tank.getFluidType());
     }
 
     private boolean canFillThrough(BlockPos pos) {
-        if (world.isAirBlock(pos)) {
+        if (level.isEmptyBlock(worldPosition)) {
             return false;
         }
-        Fluid fluid = BlockUtil.getFluidWithFlowing(world, pos);
+        Fluid fluid = BlockUtil.getFluidWithFlowing(level, worldPosition);
         return FluidUtilBC.areFluidsEqual(fluid, tank.getFluidType());
     }
 
@@ -168,7 +169,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -201,7 +202,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                         if (FluidUtil.tryPlaceFluid(fakePlayer, world, currentPos, tank, fluid)) {
                             AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_FLOOD_SINGLE);
                             for (Direction side : Direction.VALUES) {
-                                world.notifyNeighborsOfStateChange(currentPos.offset(side), BCFactoryBlocks.floodGate,
+                                level.notifyNeighborsOfStateChange(currentPos.offset(side), BCFactoryBlocks.floodGate,
                                     false);
                             }
                             delayIndex = 0;
@@ -224,8 +225,8 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     // NBT
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         byte b = 0;
         for (Direction face : Direction.VALUES) {
             if (openSides.contains(face)) {
@@ -237,8 +238,8 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         Tag open = nbt.get("openSides");
         if (open instanceof NBTPrimitive) {
             byte sides = ((NBTPrimitive) open).getByte();
@@ -266,7 +267,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     // Networking
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -277,7 +278,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {

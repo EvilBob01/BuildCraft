@@ -6,6 +6,7 @@
 
 package buildcraft.robotics.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -109,7 +110,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -121,7 +122,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -134,15 +135,15 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
             if (id == NET_PLAN_CHANGE) {
                 int index = buffer.readUnsignedShort();
                 layers[index].readFromByteBuf(buffer);
-                markDirty();
+                setChanged();
                 sendNetworkUpdate(NET_RENDER_DATA);
             }
         }
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         for (int i = 0; i < layers.length; i++) {
             ZonePlan layer = layers[i];
             CompoundTag layerCompound = new CompoundTag();
@@ -153,8 +154,8 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         for (int i = 0; i < layers.length; i++) {
             ZonePlan layer = layers[i];
             layer.loadAdditional(nbt.getCompound("layer_" + i));
@@ -178,7 +179,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
     @Override
     public void update() {
         deltaManager.tick();
-        if (getWorld().isClientSide) {
+        if (getLevel().isClientSide) {
             return;
         }
 
@@ -199,7 +200,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
 
                 ZonePlan zonePlan = new ZonePlan();
                 zonePlan.loadAdditional(invInputMapLocation.getStackInSlot(0).getTag());
-                layers[BCCoreItems.paintbrush.getBrushFromStack(invInputPaintbrush.getStackInSlot(0)).colour.getMetadata()] = zonePlan.getWithOffset(-pos.getX(), -pos.getZ());
+                layers[BCCoreItems.paintbrush.getBrushFromStack(invInputPaintbrush.getStackInSlot(0)).colour.getMetadata()] = zonePlan.getWithOffset(-worldPosition.getX(), -worldPosition.getZ());
                 invInputMapLocation.setStackInSlot(0, StackUtil.EMPTY);
                 invInputResult.setStackInSlot(0, new ItemStack(BCCoreItems.mapLocation));
                 this.setChanged();
@@ -224,7 +225,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
                 }
 
                 ItemMapLocation.setZone(invOutputMapLocation.getStackInSlot(0), layers[BCCoreItems.paintbrush.getBrushFromStack(invOutputPaintbrush.getStackInSlot(0)).colour.getMetadata()]
-                    .getWithOffset(pos.getX(), pos.getZ()));
+                    .getWithOffset(worldPosition.getX(), worldPosition.getZ()));
                 invOutputResult.setStackInSlot(0, invOutputMapLocation.getStackInSlot(0));
                 invOutputMapLocation.setStackInSlot(0, StackUtil.EMPTY);
                 progressOutput = 0;

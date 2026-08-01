@@ -28,7 +28,7 @@ import com.google.gson.JsonSyntaxException;
 
 import org.apache.commons.io.IOUtils;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.fml.ModList;
@@ -336,7 +336,7 @@ public class ScriptableRegistry<E> extends SimpleReloadableRegistry<E> implement
     private void loadReloadable(ResourceLocation name, Gson gson, JsonObject json) throws JsonSyntaxException {
         String type = "";
         if (json.has("type")) {
-            type = JsonUtils.getString(json, "type");
+            type = GsonHelper.getString(json, "type");
         }
         IEntryDeserializer<? extends E> deserializer = getCustomDeserializers().get(type);
         if (deserializer != null) {

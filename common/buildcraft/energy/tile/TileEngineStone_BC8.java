@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.energy.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -61,16 +62,16 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
     // BlockEntity overrides
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         burnTime = nbt.getInt("burnTime");
         totalBurnTime = nbt.getInt("totalBurnTime");
         esum = nbt.getLong("esum");
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putInt("burnTime", burnTime);
         nbt.putInt("totalBurnTime", totalBurnTime);
         nbt.putLong("esum", esum);
@@ -92,8 +93,8 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
     @Override
     public boolean onActivated(Player player, InteractionHand hand, Direction side, float hitX, float hitY,
         float hitZ) {
-        if (!world.isClientSide) {
-            BCEnergyGuis.ENGINE_STONE.openGUI(player, getPos());
+        if (!level.isClientSide) {
+            BCEnergyGuis.ENGINE_STONE.openGUI(player, getBlockPos());
         }
         return true;
     }
@@ -144,7 +145,7 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
                         }
                     } else {
                         // Not good!
-                        InventoryUtil.addToBestAcceptor(getWorld(), getPos(), null, container);
+                        InventoryUtil.addToBestAcceptor(getLevel(), getBlockPos(), null, container);
                     }
                 }
             }

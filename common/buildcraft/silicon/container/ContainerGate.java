@@ -117,7 +117,7 @@ public class ContainerGate extends ContainerPipe {
     }
 
     @Override
-    public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readMessage(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_CONNECTION) {
                 int index = buffer.readUnsignedByte();
@@ -157,7 +157,7 @@ public class ContainerGate extends ContainerPipe {
     }
 
     @Override
-    public void writeMessage(int id, PacketBufferBC buffer, Side side) {
+    public void writeMessage(int id, PacketBufferBC buffer, Dist side) {
         super.writeMessage(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_VALID_STATEMENTS) {

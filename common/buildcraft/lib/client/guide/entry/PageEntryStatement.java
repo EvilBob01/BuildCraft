@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.registry.IScriptableRegistry.OptionallyDisabled;
@@ -61,7 +61,7 @@ public class PageEntryStatement extends PageValueType<IStatement> {
     @Override
     public OptionallyDisabled<PageEntry<IStatement>> deserialize(ResourceLocation name, JsonObject json,
         JsonDeserializationContext ctx) {
-        String stmntName = JsonUtils.getString(json, "statement");
+        String stmntName = GsonHelper.getString(json, "statement");
         IStatement stmnt = StatementManager.statements.get(stmntName);
         if (stmnt == null) {
             throw new JsonSyntaxException("Unknown statement '" + stmntName + "'");

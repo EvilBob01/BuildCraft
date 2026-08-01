@@ -42,9 +42,9 @@ public class TileMiningWell extends TileMiner {
                                       @Nonnull BlockState oldState,
                                       @Nonnull BlockState newState,
                                       int flags) {
-            if (pos.getX() == TileMiningWell.this.pos.getX() &&
-                pos.getY() <= TileMiningWell.this.pos.getY() &&
-                pos.getZ() == TileMiningWell.this.pos.getZ()) {
+            if (worldPosition.getX() == TileMiningWell.this.worldPosition.getX() &&
+                worldPosition.getY() <= TileMiningWell.this.worldPosition.getY() &&
+                worldPosition.getZ() == TileMiningWell.this.worldPosition.getZ()) {
                 shouldCheck = true;
             }
         }
@@ -59,26 +59,26 @@ public class TileMiningWell extends TileMiner {
     protected void mine() {
         if (currentPos != null && canBreak()) {
             shouldCheck = true;
-            long target = BlockUtil.computeBlockBreakPower(world, currentPos);
+            long target = BlockUtil.computeBlockBreakPower(level, currentPos);
             progress += battery.extractPower(0, target - progress);
             if (progress >= target) {
                 progress = 0;
-                world.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
+                level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
                 BlockUtil.breakBlockAndGetDrops(
                     (ServerLevel) world,
                     currentPos,
                     new ItemStack(Items.DIAMOND_PICKAXE),
                     getOwner()
                 ).ifPresent(stacks ->
-                    stacks.forEach(stack -> InventoryUtil.addToBestAcceptor(world, pos, null, stack))
+                    stacks.forEach(stack -> InventoryUtil.addToBestAcceptor(level, pos, null, stack))
                 );
                 nextPos();
             } else {
-                if (!world.isAirBlock(currentPos)) {
-                    world.sendBlockBreakProgress(currentPos.hashCode(), currentPos, (int) ((progress * 9) / target));
+                if (!level.isEmptyBlock(currentPos)) {
+                    level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, (int) ((progress * 9) / target));
                 }
             }
-        } else if (shouldCheck || tracker.markTimeIfDelay(world)) {
+        } else if (shouldCheck || tracker.markTimeIfDelay(level)) {
             nextPos();
             if (currentPos == null) {
                 shouldCheck = false;
@@ -87,28 +87,28 @@ public class TileMiningWell extends TileMiner {
     }
 
     private boolean canBreak() {
-        if (world.isAirBlock(currentPos) || BlockUtil.isUnbreakableBlock(world, currentPos, getOwner())) {
+        if (level.isEmptyBlock(currentPos) || BlockUtil.isUnbreakableBlock(level, currentPos, getOwner())) {
             return false;
         }
 
-        Fluid fluid = BlockUtil.getFluidWithFlowing(world, currentPos);
+        Fluid fluid = BlockUtil.getFluidWithFlowing(level, currentPos);
         return fluid == null || fluid.getViscosity() <= 1000;
     }
 
     private void nextPos() {
-        currentPos = pos;
+        currentPos = worldPosition;
         while (true) {
             currentPos = currentPos.down();
-            if (world.isOutsideBuildHeight(currentPos)) {
+            if (level.isOutsideBuildHeight(currentPos)) {
                 break;
             }
-            if (pos.getY() - currentPos.getY() > BCCoreConfig.miningMaxDepth) {
+            if (worldPosition.getY() - currentPos.getY() > BCCoreConfig.miningMaxDepth) {
                 break;
             }
             if (canBreak()) {
                 updateLength();
                 return;
-            } else if (!world.isAirBlock(currentPos) && world.getBlockState(currentPos).getBlock() != BCFactoryBlocks.tube) {
+            } else if (!level.isEmptyBlock(currentPos) && level.getBlockState(currentPos).getBlock() != BCFactoryBlocks.tube) {
                 break;
             }
         }
@@ -119,18 +119,18 @@ public class TileMiningWell extends TileMiner {
     @Override
     public void validate() {
         super.validate();
-        if (!world.isClientSide) {
-            world.addEventListener(worldEventListener);
+        if (!level.isClientSide) {
+            level.addEventListener(worldEventListener);
         }
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        if (!world.isClientSide) {
-            world.removeEventListener(worldEventListener);
+        if (!level.isClientSide) {
+            level.removeEventListener(worldEventListener);
             if (currentPos != null) {
-                world.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
+                level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -40,8 +40,8 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
         private final Direction side;
 
         public Source(Level world, BlockPos pos, Direction side) {
-            this.world = world;
-            this.pos = pos;
+            this.level = world;
+            this.worldPosition = pos;
             this.side = side;
         }
 
@@ -77,7 +77,7 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
         }
 
         @Override
-        public Level getWorld() {
+        public Level getLevel() {
             return world;
         }
     }

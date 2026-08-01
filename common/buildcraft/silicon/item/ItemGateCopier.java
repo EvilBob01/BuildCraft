@@ -11,7 +11,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
@@ -49,27 +49,27 @@ public class ItemGateCopier extends ItemBC_Neptune {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (world.isClientSide) {
-            return new ActionResult<>(InteractionResult.PASS, stack);
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
         if (player.isSneaking()) {
             return clearData(StackUtil.asNonNull(stack));
         }
-        return new ActionResult<>(InteractionResult.PASS, stack);
+        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
-    private ActionResult<ItemStack> clearData(@Nonnull ItemStack stack) {
+    private InteractionResultHolder<ItemStack> clearData(@Nonnull ItemStack stack) {
         if (getMetadata(stack) == 0) {
-            return new ActionResult<>(InteractionResult.PASS, stack);
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
         nbt.removeTag(NBT_DATA);
         if (nbt.hasNoTags()) {
             stack.setTagCompound(null);
         }
-        return new ActionResult<>(InteractionResult.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
     @Override

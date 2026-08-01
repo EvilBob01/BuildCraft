@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -105,16 +105,16 @@ public class BlockSpring extends BlockBCBase_Neptune {
     @Override
     public void onBlockAdded(Level world, BlockPos pos, BlockState state) {
         super.onBlockAdded(world, pos, state);
-        world.scheduleUpdate(pos, this, state.getValue(SPRING_TYPE).tickRate);
+        world.scheduleTick(pos, this, state.getValue(SPRING_TYPE).tickRate);
     }
 
     private void generateSpringBlock(Level world, BlockPos pos, BlockState state) {
         EnumSpring spring = state.getValue(SPRING_TYPE);
-        world.scheduleUpdate(pos, this, spring.tickRate);
+        world.scheduleTick(pos, this, spring.tickRate);
         if (!spring.canGen || spring.liquidBlock == null) {
             return;
         }
-        if (!world.isAirBlock(pos.up())) {
+        if (!world.isEmptyBlock(pos.up())) {
             return;
         }
         if (spring.chance != -1 && rand.nextInt(spring.chance) != 0) {

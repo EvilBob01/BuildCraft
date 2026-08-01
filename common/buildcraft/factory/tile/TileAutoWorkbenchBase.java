@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -93,7 +93,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
 
     @Override
     public void update() {
-        if (getWorld().isClientSide) {
+        if (getLevel().isClientSide) {
             return;
         }
         boolean didChange = crafting.tick();
@@ -120,7 +120,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_TICK) {
@@ -132,7 +132,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_GUI_TICK) {

@@ -149,7 +149,7 @@ public class DrawingUtil {
                     drawPixel.accept(center.add(x, -y, -z));
                     drawPixel.accept(center.add(x, -y, z));
                     drawPixel.accept(center.add(x, y, -z));
-                    drawPixel.accept(center.add(x, y, z));
+                    drawPixel.accept(center.offset(x, y, z));
                 }
             }
         }

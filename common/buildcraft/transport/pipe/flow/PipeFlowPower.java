@@ -94,7 +94,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     }
 
     @Override
-    public void writePayload(int id, FriendlyByteBuf buffer, Side side) {
+    public void writePayload(int id, FriendlyByteBuf buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_POWER_AMOUNTS || id == NET_ID_FULL_STATE) {
@@ -108,7 +108,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     }
 
     @Override
-    public void readPayload(int id, FriendlyByteBuf buffer, Side side) throws IOException {
+    public void readPayload(int id, FriendlyByteBuf buffer, Dist side) throws IOException {
         super.readPayload(id, buffer, side);
         if (side == Dist.CLIENT) {
             if (id == NET_POWER_AMOUNTS || id == NET_ID_FULL_STATE) {
@@ -404,7 +404,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     }
 
     private void step() {
-        long now = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+        long now = pipe.getHolder().getPipeWorld().getGameTime();
         if (currentWorldTime != now) {
             currentWorldTime = now;
             sections.values().forEach(Section::step);

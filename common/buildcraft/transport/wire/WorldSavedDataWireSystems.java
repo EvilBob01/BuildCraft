@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -127,7 +127,7 @@ public class WorldSavedDataWireSystems extends SavedData {
     public IWireEmitter getEmitter(WireSystem.WireElement element) {
         if (element.type == WireSystem.WireElement.Type.EMITTER_SIDE) {
             if (!emittersCache.containsKey(element)) {
-                if (!world.isBlockLoaded(element.blockPos)) {
+                if (!world.isLoaded(element.blockPos)) {
                     BCLog.logger.warn("[transport.wire] Ghost loading " + element.blockPos + " to look for an emitter!");
                 }
                 BlockEntity tile = world.getBlockEntity(element.blockPos);
@@ -148,7 +148,7 @@ public class WorldSavedDataWireSystems extends SavedData {
     }
 
     public boolean isEmitterEmitting(WireSystem.WireElement element, DyeColor color) {
-        if (!world.isBlockLoaded(element.blockPos)) {
+        if (!world.isLoaded(element.blockPos)) {
             BCLog.logger.warn("[transport.wire] Ghost loading " + element.blockPos + " to look for an emitter!");
         }
         BlockEntity tile = world.getBlockEntity(element.blockPos);

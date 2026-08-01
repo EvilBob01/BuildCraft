@@ -15,7 +15,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.client.model.ModelUtil;
 import buildcraft.lib.client.model.ModelUtil.UvFaceData;
@@ -31,9 +31,9 @@ public class JsonQuad {
 
     public JsonQuad(JsonObject obj, float[] from, float[] to, Direction face) {
         this.face = face;
-        tint = JsonUtils.getInt(obj, "tintindex", -1);
-        texture = JsonUtils.getString(obj, "texture");
-        int rotation = JsonUtils.getInt(obj, "rotation", 0);
+        tint = GsonHelper.getInt(obj, "tintindex", -1);
+        texture = GsonHelper.getString(obj, "texture");
+        int rotation = GsonHelper.getInt(obj, "rotation", 0);
         float[] uv = JsonUtil.getSubAsFloatArray(obj, "uv");
         if (uv.length != 4) {
             throw new JsonSyntaxException("Expected exactly 4 floats, but got " + Arrays.toString(uv));

@@ -1,5 +1,6 @@
-﻿package buildcraft.factory.tile;
+package buildcraft.factory.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -83,8 +84,8 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     private boolean checkNeighbours;
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
 
         CompoundTag nbtSection = nbt.getCompound("section");
         if (!nbtSection.hasNoTags()) {
@@ -98,8 +99,8 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         if (section != null) {
             nbt.put("section", section.writeToNbt());
         }
@@ -111,7 +112,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         if (checkNeighbours) {
             checkNeighbours = false;
             Deque<TileHeatExchange> exchangers = findAdjacentExchangers();
-            if (world.isClientSide) {
+            if (level.isClientSide) {
                 // Find the start + end sections and link them up
                 if (exchangers.size() > 2) {
                     TileHeatExchange start = exchangers.getFirst();
@@ -183,7 +184,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         BCLog.logger.info("[] removing section...");
         NonNullList<ItemStack> list = NonNullList.create();
         section.tankManager.addDrops(list);
-        InventoryUtil.dropAll(getWorld(), getPos(), list);
+        InventoryUtil.dropAll(getLevel(), getBlockPos(), list);
         section = null;
         sendNetworkUpdate(NET_ID_CHANGE_SECTION);
     }
@@ -199,7 +200,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         Deque<TileHeatExchange> exchangers = new ArrayDeque<>();
         exchangers.add(this);
         for (int i = 1; i < 6; i++) {
-            BlockEntity neighbour = getLocalTile(pos.offset(dirToStart, i));
+            BlockEntity neighbour = getLocalTile(worldPosition.offset(dirToStart, i));
             if (neighbour instanceof TileHeatExchange) {
                 TileHeatExchange other = (TileHeatExchange) neighbour;
                 if (other.getFacing() != thisFacing) {
@@ -211,7 +212,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             }
         }
         for (int i = 1; i < 6; i++) {
-            BlockEntity neighbour = getLocalTile(pos.offset(dirToEnd, i));
+            BlockEntity neighbour = getLocalTile(worldPosition.offset(dirToEnd, i));
             if (neighbour instanceof TileHeatExchange) {
                 TileHeatExchange other = (TileHeatExchange) neighbour;
                 if (other.getFacing() != thisFacing) {
@@ -234,7 +235,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
                 readPayload(NET_ID_CHANGE_SECTION, buffer, side, ctx);
@@ -258,7 +259,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
                 writePayload(NET_ID_CHANGE_SECTION, buffer, side);
@@ -281,7 +282,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     public AABB getRenderBoundingBox() {
         if (section instanceof ExchangeSectionStart) {
             // Temp
-            return BoundingBoxUtil.makeAround(VecUtil.convertCenter(getPos()), 10);
+            return BoundingBoxUtil.makeAround(VecUtil.convertCenter(getBlockPos()), 10);
         }
         return super.getRenderBoundingBox();
     }
@@ -320,7 +321,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
     @Override
     public void onNeighbourBlockChanged(Block block, BlockPos nehighbour) {
-        if (nehighbour.getY() != pos.getY()) {
+        if (nehighbour.getY() != worldPosition.getY()) {
             // Heat exchange tiles can only be horizontally adjacent
             return;
         }
@@ -350,8 +351,8 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         Deque<TileHeatExchange> exchangers = findAdjacentExchangers();
         if (exchangers.size() == 1) {
             // Just this one tile, so rotate this by 90 degrees
-            world.setBlock(
-                getPos(),
+            level.setBlock(
+                getBlockPos(),
                 getCurrentState().withProperty(
                     BlockHeatExchange.PROP_FACING, VanillaRotationHandlers.ROTATE_HORIZONTAL.next(thisFacing)
                 )
@@ -367,7 +368,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
                     end = (ExchangeSectionEnd) exchange.section;
                 }
                 exchange.section = null;
-                world.setBlock(
+                level.setBlock(
                     exchange.getBlockPos(),
                     exchange.getCurrentState().withProperty(BlockHeatExchange.PROP_FACING, thisFacing.getOpposite())
                 );
@@ -391,7 +392,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             }
         }
 
-        SoundUtil.playSlideSound(getWorld(), getPos());
+        SoundUtil.playSlideSound(getLevel(), getBlockPos());
         return true;
     }
 
@@ -462,11 +463,11 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
         void tick() {
             Level world = getTile().world;
-            smoothedTankInput.tick(world);
-            smoothedTankOutput.tick(world);
+            smoothedTankInput.tick(level);
+            smoothedTankOutput.tick(level);
         }
 
-        void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+        void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
             if (side == Dist.CLIENT) {
                 if (id == NET_ID_CHANGE_SECTION) {
                     readPayload(NET_ID_TANK_IN, buffer, side, ctx);
@@ -483,7 +484,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             }
         }
 
-        void writePayload(int id, PacketBufferBC buffer, Side side) {
+        void writePayload(int id, PacketBufferBC buffer, Dist side) {
             if (side == Dist.DEDICATED_SERVER) {
                 if (id == NET_ID_CHANGE_SECTION) {
                     writePayload(NET_ID_TANK_IN, buffer, side);
@@ -555,7 +556,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         }
 
         @Override
-        void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+        void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
             super.readPayload(id, buffer, side, ctx);
             if (side == Dist.CLIENT) {
                 if (id == NET_ID_CHANGE_SECTION) {
@@ -567,7 +568,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         }
 
         @Override
-        void writePayload(int id, PacketBufferBC buffer, Side side) {
+        void writePayload(int id, PacketBufferBC buffer, Dist side) {
             super.writePayload(id, buffer, side);
             if (side == Dist.DEDICATED_SERVER) {
                 if (id == NET_ID_CHANGE_SECTION) {
@@ -607,7 +608,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
             super.tick();
 
             updateProgress();
-            if (getTile().world.isClientSide) {
+            if (getTile().level.isClientSide) {
                 spawnParticles();
                 return;
             }

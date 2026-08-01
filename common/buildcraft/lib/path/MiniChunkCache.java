@@ -69,7 +69,7 @@ public class MiniChunkCache {
         if (existing != null) {
             return Futures.immediateCheckedFuture(existing);
         }
-        if (!world.isBlockLoaded(pos)) return Futures.immediateFailedFuture(new Throwable("The block " + pos + " is not loaded!"));
+        if (!world.isLoaded(pos)) return Futures.immediateFailedFuture(new Throwable("The block " + pos + " is not loaded!"));
         synchronized (this) {
             if (tempData.containsKey(pos)) {
                 return tempData.get(pos);

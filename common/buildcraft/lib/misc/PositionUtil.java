@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team This Source Code Form is subject to the terms of the Mozilla
  * Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at
  * https://mozilla.org/MPL/2.0/
@@ -473,17 +473,17 @@ public class PositionUtil {
             if (dx >= count) {
                 changed = true;
                 dx -= count;
-                current = current.add(ddx, 0, 0);
+                current = current.offset(ddx, 0, 0);
             }
             if (dy >= count) {
                 changed = true;
                 dy -= count;
-                current = current.add(0, ddy, 0);
+                current = current.offset(0, ddy, 0);
             }
             if (dz >= count) {
                 changed = true;
                 dz -= count;
-                current = current.add(0, 0, ddz);
+                current = current.offset(0, 0, ddz);
             }
 
             if (changed) {

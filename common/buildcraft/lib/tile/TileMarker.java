@@ -20,7 +20,7 @@ public abstract class TileMarker<C extends MarkerConnection<C>> extends TileBC_N
     public abstract MarkerCache<? extends MarkerSubCache<C>> getCache();
 
     public MarkerSubCache<C> getLocalCache() {
-        return getCache().getSubCache(world);
+        return getCache().getSubCache(level);
     }
 
     /** @return True if this has lasers being emitted, or any other reason you want. Activates the surrounding "glow"
@@ -28,37 +28,37 @@ public abstract class TileMarker<C extends MarkerConnection<C>> extends TileBC_N
     public abstract boolean isActiveForRender();
 
     public C getCurrentConnection() {
-        return getLocalCache().getConnection(getPos());
+        return getLocalCache().getConnection(getBlockPos());
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        getLocalCache().loadMarker(getPos(), this);
+        getLocalCache().loadMarker(getBlockPos(), this);
     }
 
     @Override
     public void onChunkUnload() {
         super.onChunkUnload();
-        getLocalCache().unloadMarker(getPos());
+        getLocalCache().unloadMarker(getBlockPos());
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        // getLocalCache().removeMarker(getPos());
+        // getLocalCache().removeMarker(getBlockPos());
     }
 
     @Override
     public void onRemove() {
         super.onRemove();
-        getLocalCache().removeMarker(getPos());
+        getLocalCache().removeMarker(getBlockPos());
     }
 
     protected void disconnectFromOthers() {
         C currentConnection = getCurrentConnection();
         if (currentConnection != null) {
-            currentConnection.removeMarker(getPos());
+            currentConnection.removeMarker(getBlockPos());
         }
     }
 
@@ -66,12 +66,12 @@ public abstract class TileMarker<C extends MarkerConnection<C>> extends TileBC_N
     public void getDebugInfo(List<String> left, List<String> right, Direction side) {
         C current = getCurrentConnection();
         MarkerSubCache<C> cache = getLocalCache();
-        left.add("Exists = " + (cache.getMarker(getPos()) == this));
+        left.add("Exists = " + (cache.getMarker(getBlockPos()) == this));
         if (current == null) {
             left.add("Connection = null");
         } else {
             left.add("Connection:");
-            current.getDebugInfo(getPos(), left);
+            current.getDebugInfo(getBlockPos(), left);
         }
     }
 }

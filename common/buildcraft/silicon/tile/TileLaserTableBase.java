@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +66,7 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     @Override
     public void update() {
         avgPower.tick();
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -76,20 +77,20 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putLong("power", power);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         power = nbt.getLong("power");
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_TICK) {
@@ -105,7 +106,7 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_GUI_TICK) {

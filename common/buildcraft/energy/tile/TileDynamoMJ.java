@@ -1,5 +1,6 @@
 package buildcraft.energy.tile;
 
+import net.minecraft.core.HolderLookup;
 import buildcraft.lib.misc.CapUtil;
 
 import java.io.IOException;
@@ -95,8 +96,8 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     // TileEngineBase_BC8
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.put("currentDirection", NBTUtilBC.writeEnum(currentDirection));
         nbt.putBoolean("isRedstonePowered", isRedstonePowered);
         nbt.putDouble("heat", heat);
@@ -108,8 +109,8 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         currentDirection = NBTUtilBC.readEnum(nbt.get("currentDirection"), Direction.class);
         if (currentDirection == null) {
             currentDirection = Direction.UP;
@@ -123,7 +124,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -141,7 +142,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -169,7 +170,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
                     // makeTileCache();
                     sendNetworkUpdate(NET_RENDER_DATA);
                     redrawBlock();
-                    world.notifyNeighborsRespectDebug(getPos(), getBlockType(), true);
+                    level.notifyNeighborsRespectDebug(getBlockPos(), getBlockType(), true);
                     return InteractionResult.SUCCESS;
                 }
                 return InteractionResult.FAIL;
@@ -210,13 +211,13 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
     protected Biome getBiome() {
         // TODO: Cache this!
-        return world.getBiome(getPos());
+        return level.getBiome(getBlockPos());
     }
 
     /** @return The heat of the current biome, in celsius. */
     protected float getBiomeHeat() {
         Biome biome = getBiome();
-        float temp = biome.getTemperature(getPos());
+        float temp = biome.getTemperature(getBlockPos());
         return Math.max(0, Math.min(30, temp * 15f));
     }
 
@@ -235,7 +236,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
     @Override
     public final EnumPowerStage getPowerStage() {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             EnumPowerStage newStage = computePowerStage();
 
             if (powerStage != newStage) {
@@ -278,7 +279,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     @Override
     public void onNeighbourBlockChanged(Block block, BlockPos nehighbour) {
         super.onNeighbourBlockChanged(block, nehighbour);
-        isRedstonePowered = world.isBlockIndirectlyGettingPowered(getPos()) > 0;
+        isRedstonePowered = level.isBlockIndirectlyGettingPowered(getBlockPos()) > 0;
     }
 
     @Override
@@ -288,7 +289,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
 
         boolean overheat = getPowerStage() == EnumPowerStage.OVERHEAT;
 
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             lastProgress = progress;
 
             if (isPumping) {
@@ -394,7 +395,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         if (getPowerStage() == EnumPowerStage.OVERHEAT) {
             // TODO: turn engine off
             // worldObj.createExplosion(null, xCoord, yCoord, zCoord, explosionRange(), true);
-            // worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+            // worldObj.removeBlock(xCoord, yCoord, zCoord, false);
         }
 
         if (currentRF > MAX_RF) {
@@ -562,8 +563,8 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
                 return false;
             }
         }
-        if (!world.isClientSide) {
-            BCEnergyGuis.DYNAMO_MJ.openGUI(player, getPos());
+        if (!level.isClientSide) {
+            BCEnergyGuis.DYNAMO_MJ.openGUI(player, getBlockPos());
         }
         return true;
     }

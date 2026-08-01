@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.delta;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -90,7 +91,7 @@ public class DeltaManager {
         }
     }
 
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         for (List<DeltaInt> innerList : deltas.values()) {
             for (DeltaInt delta : innerList) {
                 delta.loadAdditional(nbt.getCompound(delta.name));

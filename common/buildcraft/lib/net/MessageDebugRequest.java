@@ -29,7 +29,7 @@ public class MessageDebugRequest implements IMessage {
     public MessageDebugRequest() {}
 
     public MessageDebugRequest(BlockPos pos, Direction side) {
-        this.pos = pos;
+        this.worldPosition = pos;
         this.side = side;
     }
 

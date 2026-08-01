@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -74,8 +74,8 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     private static final int COOLDOWN_INPUT = -DIRECTION_COOLDOWN;
     private static final int COOLDOWN_OUTPUT = DIRECTION_COOLDOWN;
 
-    private static final ActionResult<FluidStack> FAILED_EXTRACT = new ActionResult<>(InteractionResult.FAIL, null);
-    private static final ActionResult<FluidStack> PASSED_EXTRACT = new ActionResult<>(InteractionResult.PASS, null);
+    private static final InteractionResultHolder<FluidStack> FAILED_EXTRACT = new InteractionResultHolder<>(InteractionResult.FAIL, null);
+    private static final InteractionResultHolder<FluidStack> PASSED_EXTRACT = new InteractionResultHolder<>(InteractionResult.PASS, null);
 
     public static final int NET_FLUID_AMOUNTS = 2;
 
@@ -214,7 +214,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     }
 
     @Override
-    public ActionResult<FluidStack> tryExtractFluidAdv(int millibuckets, Direction from, IFluidFilter filter,
+    public InteractionResultHolder<FluidStack> tryExtractFluidAdv(int millibuckets, Direction from, IFluidFilter filter,
         boolean simulate) {
         FluidExtractor extractor = (mb, c, handler) -> {
             if (c != null) {
@@ -254,7 +254,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         FluidStack extract(int millibuckets, FluidStack current, IFluidHandler handler);
     }
 
-    private ActionResult<FluidStack> tryExtractFluidInternal(int millibuckets, Direction from,
+    private InteractionResultHolder<FluidStack> tryExtractFluidInternal(int millibuckets, Direction from,
         FluidExtractor extractor, boolean simulate) {
         if (from == null || millibuckets <= 0) {
             return FAILED_EXTRACT;
@@ -291,7 +291,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
                 + " (handler = " + fluidHandler.getClass() + ") @" + pipe.getHolder().getPipePos()
             );
         }
-        return new ActionResult<>(InteractionResult.SUCCESS, toAdd);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, toAdd);
     }
 
     private static FluidStack extractSimple(int millibuckets, FluidStack filter, IFluidHandler handler,
@@ -474,7 +474,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         }
 
         if (currentFluid != null) {
-            // int timeSlot = (int) (world.getTotalWorldTime() % currentDelay);
+            // int timeSlot = (int) (world.getGameTime() % currentDelay);
             int totalFluid = 0;
             boolean canOutput = false;
 
@@ -715,7 +715,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     }
 
     @Override
-    public void writePayload(int id, FriendlyByteBuf buf, Side side) {
+    public void writePayload(int id, FriendlyByteBuf buf, Dist side) {
         PacketBufferBC buffer = PacketBufferBC.asPacketBufferBc(buf);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_FLUID_AMOUNTS || id == NET_ID_FULL_STATE) {
@@ -746,7 +746,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     }
 
     @Override
-    public void readPayload(int id, FriendlyByteBuf buf, Side side) throws IOException {
+    public void readPayload(int id, FriendlyByteBuf buf, Dist side) throws IOException {
         PacketBufferBC buffer = PacketBufferBC.asPacketBufferBc(buf);
         if (side == Dist.CLIENT) {
             if (id == NET_FLUID_AMOUNTS || id == NET_ID_FULL_STATE) {
@@ -768,7 +768,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
                     section.ticksInDirection = dir == Dir.NONE ? 0 : dir == Dir.IN ? COOLDOWN_INPUT : COOLDOWN_OUTPUT;
                 }
                 lastMessageMinus1 = lastMessage;
-                lastMessage = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+                lastMessage = pipe.getHolder().getPipeWorld().getGameTime();
             }
         }
     }

@@ -6,6 +6,7 @@
 
 package buildcraft.factory.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,14 +71,14 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     }
 
     public static boolean hasInventoryAtPosition(BlockGetter world, BlockPos pos, Direction side) {
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(worldPosition);
         return ItemTransactorHelper.getTransactor(tile, side.getOpposite()) != NoSpaceTransactor.INSTANCE;
     }
 
     private void pickupItems(Direction currentSide) {
-        AABB aabb = BoundingBoxUtil.extrudeFace(getPos(), currentSide, 0.25);
+        AABB aabb = BoundingBoxUtil.extrudeFace(getBlockPos(), currentSide, 0.25);
         int count = PICKUP_MAX;
-        for (ItemEntity entity : world.getEntitiesWithinAABB(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
+        for (ItemEntity entity : level.getEntitiesWithinAABB(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
             int moved = ItemTransactorHelper.move(new TransactorEntityItem(entity), inv, count);
             count -= moved;
             if (count <= 0) {
@@ -93,10 +94,10 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         sides.removeIf(Predicate.isEqual(currentSide));
         Stream.<Pair<Direction, BlockEntity>>concat(
             sides.stream()
-                .map(side -> Pair.of(side, world.getBlockEntity(pos.offset(side)))),
+                .map(side -> Pair.of(side, level.getBlockEntity(worldPosition.offset(side)))),
             sides.stream()
                 .flatMap(side ->
-                    world.getEntitiesWithinAABB(Entity.class, new AABB(pos.offset(side))).stream()
+                    level.getEntitiesWithinAABB(Entity.class, new AABB(worldPosition.offset(side))).stream()
                         .filter(entity -> !(entity instanceof LivingEntity))
                         .map(entity -> Pair.of(side, entity))
                 )
@@ -117,17 +118,17 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
-        if (!(world.getBlockState(pos).getBlock() instanceof BlockChute)) {
+        if (!(level.getBlockState(worldPosition).getBlock() instanceof BlockChute)) {
             return;
         }
 
-        battery.tick(getWorld(), getPos());
+        battery.tick(getLevel(), getBlockPos());
 
-        Direction currentSide = world.getBlockState(pos).getValue(BlockBCBase_Neptune.BLOCK_FACING_6);
+        Direction currentSide = level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.BLOCK_FACING_6);
 
         int target = 100000;
         if (currentSide == Direction.UP) {
@@ -144,15 +145,15 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         progress = nbt.getInt("progress");
         battery.deserializeNBT(nbt.getCompound("battery"));
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putInt("progress", progress);
         nbt.put("battery", battery.serializeNBT());
         return nbt;

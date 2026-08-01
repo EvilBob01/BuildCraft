@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -57,11 +57,11 @@ public enum CropHandlerPlantable implements ICropHandler {
         BlockState state = world.getBlockState(pos);
         if (seed.getItem() instanceof IPlantable) {
             Block block = state.getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isAirBlock(pos.up());
+            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isEmptyBlock(pos.up());
         } else {
             Block block = state.getBlock();
             IPlantable plantable = (IPlantable) ((BlockItem) seed.getItem()).getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isAirBlock(pos.up());
+            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isEmptyBlock(pos.up());
         }
     }
 

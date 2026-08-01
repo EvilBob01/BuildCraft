@@ -85,7 +85,7 @@ public class BlockQuarry extends BlockBCTile_Neptune implements IBlockWithFacing
         if (tile instanceof TileQuarry) {
             for (BlockPos blockPos : ((TileQuarry) tile).framePoses) {
                 if (world.getBlockState(blockPos).getBlock() == BCBuildersBlocks.frame) {
-                    world.setBlockToAir(blockPos);
+                    world.removeBlock(blockPos, false);
                 }
             }
         }

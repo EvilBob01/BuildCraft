@@ -1,4 +1,4 @@
-﻿package buildcraft.energy.generation;
+package buildcraft.energy.generation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +78,7 @@ public class OilGenerator {
             return;
         }
 
-        world.profiler.startSection("bc_oil");
+        world.getProfiler().push("bc_oil");
         int x = chunkX * 16 + 8;
         int z = chunkZ * 16 + 8;
         BlockPos min = new BlockPos(x, 0, z);
@@ -88,7 +88,7 @@ public class OilGenerator {
             for (int cdz = -MAX_CHUNK_RADIUS; cdz <= MAX_CHUNK_RADIUS; cdz++) {
                 int cx = chunkX + cdx;
                 int cz = chunkZ + cdz;
-                world.profiler.startSection("scan");
+                world.getProfiler().push("scan");
                 List<OilGenStructure> structures = getStructures(world, cx, cz, cdx == 0 && cdz == 0);
                 OilGenStructure.Spring spring = null;
                 world.profiler.endStartSection("gen");
@@ -105,10 +105,10 @@ public class OilGenerator {
                     }
                     spring.generate(world, count);
                 }
-                world.profiler.endSection();
+                world.getProfiler().pop();
             }
         }
-        world.profiler.endSection();
+        world.getProfiler().pop();
     }
 
     public static List<OilGenStructure> getStructures(Level world, int cx, int cz) {
@@ -269,7 +269,7 @@ public class OilGenerator {
     public static OilGenStructure createTube(BlockPos center, int length, int radius, Axis axis) {
         int valForAxis = VecUtil.getValue(center, axis);
         BlockPos min = VecUtil.replaceValue(center.add(-radius, -radius, -radius), axis, valForAxis);
-        BlockPos max = VecUtil.replaceValue(center.add(radius, radius, radius), axis, valForAxis + length);
+        BlockPos max = VecUtil.replaceValue(center.offset(radius, radius, radius), axis, valForAxis + length);
         double radiusSq = radius * radius;
         int toReplace = valForAxis;
         Predicate<BlockPos> tester = p -> VecUtil.replaceValue(p, axis, toReplace).distanceSq(center) <= radiusSq;
@@ -277,7 +277,7 @@ public class OilGenerator {
     }
 
     public static OilGenStructure createSphere(BlockPos center, int radius) {
-        Box box = new Box(center.add(-radius, -radius, -radius), center.add(radius, radius, radius));
+        Box box = new Box(center.add(-radius, -radius, -radius), center.offset(radius, radius, radius));
         double radiusSq = radius * radius + 0.01;
         Predicate<BlockPos> tester = p -> p.distanceSq(center) <= radiusSq;
         return new GenByPredicate(box, ReplaceType.ALWAYS, tester);

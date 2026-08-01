@@ -6,6 +6,7 @@
 
 package buildcraft.builders.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -124,14 +125,14 @@ public class TileFiller extends TileBC_Neptune
     @Override
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
-        BlockState blockState = world.getBlockState(pos);
-        WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
-        BlockPos offsetPos = pos.offset(blockState.getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite());
+        BlockState blockState = level.getBlockState(worldPosition);
+        WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(level);
+        BlockPos offsetPos = worldPosition.offset(blockState.getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite());
         VolumeBox volumeBox = volumeBoxes.getVolumeBoxAt(offsetPos);
-        BlockEntity tile = world.getBlockEntity(offsetPos);
+        BlockEntity tile = level.getBlockEntity(offsetPos);
         if (volumeBox != null) {
             addon = (AddonFillerPlanner) volumeBox.addons
                 .values()
@@ -142,7 +143,7 @@ public class TileFiller extends TileBC_Neptune
             if (addon != null) {
                 volumeBox.locks.add(
                     new Lock(
-                        new Lock.Cause.CauseBlock(pos, blockState.getBlock()),
+                        new Lock.Cause.CauseBlock(worldPosition, blockState.getBlock()),
                         new Lock.Target.TargetAddon(addon.getSlot()),
                         new Lock.Target.TargetRemove(),
                         new Lock.Target.TargetResize(),
@@ -160,7 +161,7 @@ public class TileFiller extends TileBC_Neptune
                 box.setMax(volumeBox.box.max());
                 volumeBox.locks.add(
                     new Lock(
-                        new Lock.Cause.CauseBlock(pos, blockState.getBlock()),
+                        new Lock.Cause.CauseBlock(worldPosition, blockState.getBlock()),
                         new Lock.Target.TargetRemove(),
                         new Lock.Target.TargetResize(),
                         new Lock.Target.TargetUsedByMachine(
@@ -187,7 +188,7 @@ public class TileFiller extends TileBC_Neptune
                                 int slot,
                                 @Nonnull ItemStack before,
                                 @Nonnull ItemStack after) {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             if (handler == invResources) {
                 Optional.ofNullable(getBuilder()).ifPresent(SnapshotBuilder::resourcesChanged);
             }
@@ -197,7 +198,7 @@ public class TileFiller extends TileBC_Neptune
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             if (isValid()) {
                 builder.tick();
             }
@@ -228,7 +229,7 @@ public class TileFiller extends TileBC_Neptune
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -261,7 +262,7 @@ public class TileFiller extends TileBC_Neptune
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -280,13 +281,13 @@ public class TileFiller extends TileBC_Neptune
                 markerBox = buffer.readBoolean();
                 if (buffer.readBoolean()) {
                     UUID volumeBoxId = buffer.readUniqueId();
-                    VolumeBox volumeBox = world.isClientSide
+                    VolumeBox volumeBox = level.isClientSide
                         ?
                         ClientVolumeBoxes.INSTANCE.volumeBoxes.stream()
                             .filter(localVolumeBox -> localVolumeBox.id.equals(volumeBoxId))
                             .findFirst()
                             .orElseThrow(NullPointerException::new)
-                        : WorldSavedDataVolumeBoxes.get(world).getVolumeBoxFromId(volumeBoxId);
+                        : WorldSavedDataVolumeBoxes.get(level).getVolumeBoxFromId(volumeBoxId);
                     addon = (AddonFillerPlanner) volumeBox
                         .addons
                         .get(buffer.readEnumValue(EnumAddonSlot.class));
@@ -325,7 +326,7 @@ public class TileFiller extends TileBC_Neptune
     }
 
     public void onStatementChange() {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             createAndSendMessage(NET_PATTERN, patternStatement::writeToBuffer);
         }
         finished = false;
@@ -335,8 +336,8 @@ public class TileFiller extends TileBC_Neptune
     // Read-write
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.put("battery", battery.serializeNBT());
         nbt.putBoolean("canExcavate", canExcavate);
         nbt.putBoolean("inverted", inverted);
@@ -355,8 +356,8 @@ public class TileFiller extends TileBC_Neptune
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         battery.deserializeNBT(nbt.getCompound("battery"));
         canExcavate = nbt.getBoolean("canExcavate");
         inverted = nbt.getBoolean("inverted");
@@ -365,7 +366,7 @@ public class TileFiller extends TileBC_Neptune
         mode = Optional.ofNullable(NBTUtilBC.readEnum(nbt.get("mode"), Mode.class)).orElse(Mode.ON);
         box.initialize(nbt.getCompound("box"));
         if (nbt.contains("addonSlot")) {
-            addon = (AddonFillerPlanner) WorldSavedDataVolumeBoxes.get(world)
+            addon = (AddonFillerPlanner) WorldSavedDataVolumeBoxes.get(level)
                 .getVolumeBoxFromId(nbt.getUniqueId("addonVolumeBoxId"))
                 .addons
                 .get(NBTUtilBC.readEnum(nbt.get("addonSlot"), EnumAddonSlot.class));
@@ -390,7 +391,7 @@ public class TileFiller extends TileBC_Neptune
     @Override
     @OnlyIn(Dist.CLIENT)
     public AABB getRenderBoundingBox() {
-        return BoundingBoxUtil.makeFrom(pos, addon != null ? addon.volumeBox.box : box);
+        return BoundingBoxUtil.makeFrom(worldPosition, addon != null ? addon.volumeBox.box : box);
     }
 
     @Override
@@ -482,7 +483,7 @@ public class TileFiller extends TileBC_Neptune
     }
 
     public boolean isValid() {
-        return hasBox() && (world.isClientSide || (addon != null ? addon.buildingInfo : buildingInfo) != null);
+        return hasBox() && (level.isClientSide || (addon != null ? addon.buildingInfo : buildingInfo) != null);
     }
 
     @Override

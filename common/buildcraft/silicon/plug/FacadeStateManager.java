@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -38,7 +38,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -151,21 +151,21 @@ public enum FacadeStateManager implements IFacadeRegistry {
      *         for a facade)</li>
      *         </ul>
      */
-    private static ActionResult<String> isValidFacadeBlock(Block block) {
+    private static InteractionResultHolder<String> isValidFacadeBlock(Block block) {
         String disablingMod = disabledBlocks.get(block);
         if (disablingMod != null) {
-            return new ActionResult<>(InteractionResult.FAIL, "it has been disabled by " + disablingMod);
+            return new InteractionResultHolder<>(InteractionResult.FAIL, "it has been disabled by " + disablingMod);
         }
         if (block instanceof IFluidBlock || block instanceof BlockLiquid) {
-            return new ActionResult<>(InteractionResult.FAIL, "it is a fluid block");
+            return new InteractionResultHolder<>(InteractionResult.FAIL, "it is a fluid block");
         }
         // if (block instanceof BlockSlime) {
         // return "it is a slime block";
         // }
         if (block instanceof GlassBlock || block instanceof StainedGlassBlock) {
-            return new ActionResult<>(InteractionResult.SUCCESS, "");
+            return new InteractionResultHolder<>(InteractionResult.SUCCESS, "");
         }
-        return new ActionResult<>(InteractionResult.PASS, "");
+        return new InteractionResultHolder<>(InteractionResult.PASS, "");
     }
 
     /** @return Any of:
@@ -175,17 +175,17 @@ public enum FacadeStateManager implements IFacadeRegistry {
      *         for a facade)</li>
      *         </ul>
      */
-    private static ActionResult<String> isValidFacadeState(BlockState state) {
+    private static InteractionResultHolder<String> isValidFacadeState(BlockState state) {
         if (state.getBlock().hasTileEntity(state)) {
-            return new ActionResult<>(InteractionResult.FAIL, "it has a tile entity");
+            return new InteractionResultHolder<>(InteractionResult.FAIL, "it has a tile entity");
         }
         if (state.getRenderType() != EnumBlockRenderType.MODEL) {
-            return new ActionResult<>(InteractionResult.FAIL, "it doesn't have a normal model");
+            return new InteractionResultHolder<>(InteractionResult.FAIL, "it doesn't have a normal model");
         }
         if (!state.isFullCube()) {
-            return new ActionResult<>(InteractionResult.FAIL, "it isn't a full cube");
+            return new InteractionResultHolder<>(InteractionResult.FAIL, "it isn't a full cube");
         }
-        return new ActionResult<>(InteractionResult.SUCCESS, "");
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, "");
     }
 
     @Nonnull
@@ -238,7 +238,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
                 return;
             }
 
-            ActionResult<String> result = isValidFacadeBlock(block);
+            InteractionResultHolder<String> result = isValidFacadeBlock(block);
             // These strings are hardcoded, so we can get away with not needing the .equals check
             if (result.getType() != InteractionResult.PASS && result.getType() != InteractionResult.SUCCESS) {
                 if (DEBUG) {

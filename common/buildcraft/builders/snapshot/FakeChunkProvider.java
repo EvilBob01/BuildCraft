@@ -20,7 +20,7 @@ public class FakeChunkProvider implements IChunkProvider {
     public final Map<ChunkPos, Chunk> chunks = new HashMap<>();
 
     public FakeChunkProvider(FakeWorld world) {
-        this.world = world;
+        this.level = world;
     }
 
     @Nullable

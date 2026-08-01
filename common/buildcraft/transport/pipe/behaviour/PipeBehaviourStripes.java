@@ -78,13 +78,13 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
     }
 
     @Override
-    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         direction = MessageUtil.readEnumOrNull(buffer, Direction.class);
     }
 
     @Override
-    public void writePayload(FriendlyByteBuf buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Dist side) {
         super.writePayload(buffer, side);
         MessageUtil.writeEnumOrNull(buffer, direction);
     }

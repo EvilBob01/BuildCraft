@@ -348,7 +348,7 @@ public class VanillaRotationHandlers {
 
                     tileSkull.setSkullRotation(rot);
                     tileSkull.setChanged();
-                    world.notifyBlockUpdate(pos, state, state, 3);
+                    world.sendBlockUpdated(pos, state, state, 3);
 
                     return InteractionResult.SUCCESS;
                 }

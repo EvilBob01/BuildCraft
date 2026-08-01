@@ -6,6 +6,7 @@
 
 package buildcraft.robotics.zone;
 
+import net.minecraft.core.HolderLookup;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
@@ -84,7 +85,7 @@ public class ZoneChunk {
         }
     }
 
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         fullSet = nbt.getBoolean("fullSet");
 
         if (nbt.contains("bits")) {

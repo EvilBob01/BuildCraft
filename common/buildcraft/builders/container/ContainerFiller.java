@@ -88,7 +88,7 @@ public class ContainerFiller extends ContainerBCTile<TileFiller> implements ICon
     }
 
     @Override
-    public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readMessage(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readMessage(id, buffer, side, ctx);
         IContainerFilling.super.readMessage(id, buffer, side, ctx);
     }

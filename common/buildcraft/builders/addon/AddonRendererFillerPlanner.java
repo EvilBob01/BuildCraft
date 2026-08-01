@@ -55,7 +55,7 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
 
         Minecraft.getInstance().mcProfiler.startSection("render");
         for (BlockPos p : list) {
-            AABB bb = new AABB(p, p.add(1, 1, 1)).grow(-0.1);
+            AABB bb = new AABB(p, p.offset(1, 1, 1)).grow(-0.1);
             TextureAtlasSprite s = ModelLoader.White.INSTANCE;
 
             vb.pos(bb.minX, bb.maxY, bb.minZ).color(204, 204, 204, 127).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();

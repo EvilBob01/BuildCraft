@@ -48,7 +48,7 @@ public class GlobalSavedDataSnapshots {
     );
     private final File snapshotsFile;
 
-    private GlobalSavedDataSnapshots(Side side) {
+    private GlobalSavedDataSnapshots(Dist side) {
         snapshotsFile = new File(
             FMLCommonHandler.instance().getSavesDirectory().getParentFile(),
             "snapshots-" + side.name().toLowerCase(Locale.ROOT)
@@ -62,11 +62,11 @@ public class GlobalSavedDataSnapshots {
         }
     }
 
-    public static void reInit(Side side) {
+    public static void reInit(Dist side) {
         INSTANCES.put(side, new GlobalSavedDataSnapshots(side));
     }
 
-    public static GlobalSavedDataSnapshots get(Side side) {
+    public static GlobalSavedDataSnapshots get(Dist side) {
         if (!INSTANCES.containsKey(side)) {
             INSTANCES.put(side, new GlobalSavedDataSnapshots(side));
         }

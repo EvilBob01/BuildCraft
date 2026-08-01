@@ -6,6 +6,7 @@
 
 package buildcraft.transport.tile;
 
+import net.minecraft.core.HolderLookup;
 import buildcraft.lib.misc.CapUtil;
 
 import java.io.IOException;
@@ -132,8 +133,8 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     // Read + write
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         if (pipe != null) {
             nbt.put("pipe", pipe.writeToNbt());
         }
@@ -153,8 +154,8 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         if (nbt.contains("pipe")) {
             try {
                 pipe = new Pipe(this, nbt.getCompound("pipe"));
@@ -205,7 +206,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         }
         scheduleRenderUpdate();
 
-        if (!world.isClientSide && hasOwner()) {
+        if (!level.isClientSide && hasOwner()) {
             AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_PLACE_PIPE);
         }
     }
@@ -242,7 +243,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     @Override
     public void onNeighbourBlockChanged(Block block, BlockPos neighbour) {
         super.onNeighbourBlockChanged(block, neighbour);
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
         if (pipe != null) {
@@ -295,12 +296,12 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         wireManager.tick();
 
         if (!Arrays.equals(redstoneValues, oldRedstoneValues)) {
-            Block block = world.getBlockState(pos).getBlock();
-            world.notifyNeighborsOfStateChange(pos, block, true);
+            Block block = level.getBlockState(worldPosition).getBlock();
+            level.notifyNeighborsOfStateChange(worldPosition, block, true);
             for (int i = 0; i < 6; i++) {
                 Direction face = Direction.VALUES[i];
                 if (oldRedstoneValues[i] != redstoneValues[i]) {
-                    world.notifyNeighborsOfStateChange(pos.offset(face), block, true);
+                    level.notifyNeighborsOfStateChange(worldPosition.offset(face), block, true);
                 }
             }
             oldRedstoneValues = redstoneValues;
@@ -314,7 +315,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     // Network
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -355,7 +356,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -421,12 +422,12 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
 
     @Override
     public Level getPipeWorld() {
-        return getWorld();
+        return getLevel();
     }
 
     @Override
     public BlockPos getPipePos() {
-        return getPos();
+        return getBlockPos();
     }
 
     @Override
@@ -462,14 +463,14 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         if (pipe != null) {
             pipe.markForUpdate();
         }
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             if (old != with) {
                 wireManager.getWireSystems().rebuildWireSystemsAround(this);
             }
             holder.sendNewPluggableData();
         }
         scheduleRenderUpdate();
-        world.neighborChanged(pos.offset(side), BCTransportBlocks.pipeHolder, pos);
+        level.neighborChanged(worldPosition.offset(side), BCTransportBlocks.pipeHolder, worldPosition);
         return old;
     }
 
@@ -541,9 +542,9 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     @Override
     public int getRedstoneInput(Direction side) {
         if (side == null) {
-            return world.isBlockIndirectlyGettingPowered(pos);
+            return level.isBlockIndirectlyGettingPowered(worldPosition);
         } else {
-            return world.getRedstonePower(pos.offset(side), side);
+            return level.getRedstonePower(worldPosition.offset(side), side);
         }
     }
 
@@ -598,7 +599,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         wireManager.parts
             .forEach((part, color) -> left.add(" - " + part + " = " + color + " = " + wireManager.isPowered(part)));
         left.add("All wire systems in world count = "
-            + (world.isClientSide ? 0 : wireManager.getWireSystems().wireSystems.size()));
+            + (level.isClientSide ? 0 : wireManager.getWireSystems().wireSystems.size()));
         if (unknownData != null) {
             left.add(unknownData.toString());
         }

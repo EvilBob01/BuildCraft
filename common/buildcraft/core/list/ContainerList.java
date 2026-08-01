@@ -133,7 +133,7 @@ public class ContainerList extends ContainerBC_Neptune {
     }
 
     @Override
-    public void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readMessage(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readMessage(id, buffer, side, ctx);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == ID_BUTTON) {

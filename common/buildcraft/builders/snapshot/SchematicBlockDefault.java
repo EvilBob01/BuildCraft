@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -240,7 +240,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
 
     @Override
     public boolean canBuild(Level world, BlockPos blockPos) {
-        return world.isAirBlock(blockPos);
+        return world.isEmptyBlock(blockPos);
     }
 
     @Override
@@ -249,7 +249,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
         if (placeBlock == Blocks.AIR) {
             return true;
         }
-        world.profiler.startSection("prepare block");
+        world.getProfiler().push("prepare block");
         BlockState newBlockState = blockState;
         if (placeBlock != blockState.getBlock()) {
             newBlockState = placeBlock.defaultBlockState();
@@ -270,18 +270,18 @@ public class SchematicBlockDefault implements ISchematicBlock {
                 placeBlock.defaultBlockState()
             );
         }
-        world.profiler.endSection();
-        world.profiler.startSection("place block");
+        world.getProfiler().pop();
+        world.getProfiler().push("place block");
         boolean b = world.setBlock(blockPos, newBlockState, 11);
-        world.profiler.endSection();
+        world.getProfiler().pop();
         if (b) {
-            world.profiler.startSection("notify");
+            world.getProfiler().push("notify");
             updateBlockOffsets.stream()
                 .map(blockPos::add)
                 .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, placeBlock, false));
-            world.profiler.endSection();
+            world.getProfiler().pop();
             if (tileNbt != null && blockState.getBlock().hasTileEntity(blockState)) {
-                world.profiler.startSection("prepare tile");
+                world.getProfiler().push("prepare tile");
                 Set<JsonRule> rules = RulesLoader.getRules(blockState, tileNbt);
                 CompoundTag replaceNbt = rules.stream()
                     .map(rule -> rule.replaceNbt)
@@ -297,8 +297,8 @@ public class SchematicBlockDefault implements ISchematicBlock {
                 newTileNbt.putInt("x", blockPos.getX());
                 newTileNbt.putInt("y", blockPos.getY());
                 newTileNbt.putInt("z", blockPos.getZ());
-                world.profiler.endSection();
-                world.profiler.startSection("place tile");
+                world.getProfiler().pop();
+                world.getProfiler().push("place tile");
                 BlockEntity tileEntity = BlockEntity.create(
                     world,
                     replaceNbt != null
@@ -306,13 +306,13 @@ public class SchematicBlockDefault implements ISchematicBlock {
                         : newTileNbt
                 );
                 if (tileEntity != null) {
-                    tileEntity.setWorld(world);
+                    tileEntity.setLevel(world);
                     world.setBlockEntity(blockPos, tileEntity);
                     if (tileRotation != Rotation.NONE) {
                         tileEntity.rotate(tileRotation);
                     }
                 }
-                world.profiler.endSection();
+                world.getProfiler().pop();
             }
             return true;
         }
@@ -333,7 +333,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
                 newTileNbt.putInt("z", blockPos.getZ());
                 BlockEntity tileEntity = BlockEntity.create(world, newTileNbt);
                 if (tileEntity != null) {
-                    tileEntity.setWorld(world);
+                    tileEntity.setLevel(world);
                     world.setBlockEntity(blockPos, tileEntity);
                     if (tileRotation != Rotation.NONE) {
                         tileEntity.rotate(tileRotation);
@@ -359,10 +359,10 @@ public class SchematicBlockDefault implements ISchematicBlock {
             "requiredBlockOffsets",
             NBTUtilBC.writeCompoundList(
                 requiredBlockOffsets.stream()
-                    .map(NBTUtil::createPosTag)
+                    .map(NbtUtils::createPosTag)
             )
         );
-        nbt.put("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
+        nbt.put("blockState", NbtUtils.writeBlockState(new CompoundTag(), blockState));
         nbt.put(
             "ignoredProperties",
             NBTUtilBC.writeStringList(
@@ -379,7 +379,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
             "updateBlockOffsets",
             NBTUtilBC.writeCompoundList(
                 updateBlockOffsets.stream()
-                    .map(NBTUtil::createPosTag)
+                    .map(NbtUtils::createPosTag)
             )
         );
         nbt.put(
@@ -396,9 +396,9 @@ public class SchematicBlockDefault implements ISchematicBlock {
     @Override
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         NBTUtilBC.readCompoundList(nbt.get("requiredBlockOffsets"))
-            .map(NBTUtil::getPosFromTag)
+            .map(NbtUtils::getPosFromTag)
             .forEach(requiredBlockOffsets::add);
-        blockState = NBTUtil.readBlockState(nbt.getCompound("blockState"));
+        blockState = NbtUtils.readBlockState(nbt.getCompound("blockState"));
         NBTUtilBC.readStringList(nbt.get("ignoredProperties"))
             .map(propertyName ->
                 blockState.getPropertyKeys().stream()
@@ -413,7 +413,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
         tileRotation = NBTUtilBC.readEnum(nbt.get("tileRotation"), Rotation.class);
         placeBlock = Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("placeBlock")));
         NBTUtilBC.readCompoundList(nbt.get("updateBlockOffsets"))
-            .map(NBTUtil::getPosFromTag)
+            .map(NbtUtils::getPosFromTag)
             .forEach(updateBlockOffsets::add);
         NBTUtilBC.readStringList(nbt.get("canBeReplacedWithBlocks"))
             .map(ResourceLocation::new)

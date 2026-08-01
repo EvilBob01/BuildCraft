@@ -112,7 +112,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     public void update() {
         deltaManager.tick();
 
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -163,7 +163,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     // 3. server adds snapshot to its database
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -175,7 +175,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
             if (id == NET_DOWN) {
                 Snapshot.Header header = BCBuildersItems.snapshot.getHeader(invDownIn.getStackInSlot(0));
                 if (header != null) {
-                    Snapshot snapshot = GlobalSavedDataSnapshots.get(world).getSnapshot(header.key);
+                    Snapshot snapshot = GlobalSavedDataSnapshots.get(level).getSnapshot(header.key);
                     if (snapshot != null) {
                         snapshot = snapshot.copy();
                         snapshot.key = new Snapshot.Key(snapshot.key, header);
@@ -199,7 +199,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -213,12 +213,12 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                 if (buffer.readBoolean()) {
                     Snapshot snapshot = Snapshot.loadAdditional(NbtSquisher.expand(buffer));
                     snapshot.computeKey();
-                    GlobalSavedDataSnapshots.get(world).addSnapshot(snapshot);
+                    GlobalSavedDataSnapshots.get(level).addSnapshot(snapshot);
                 }
             }
             if (id == NET_UP) {
                 if (selected != null) {
-                    Snapshot snapshot = GlobalSavedDataSnapshots.get(world).getSnapshot(selected);
+                    Snapshot snapshot = GlobalSavedDataSnapshots.get(level).getSnapshot(selected);
                     if (snapshot != null) {
                         try (OutputStream outputStream = new OutputStream() {
                             private byte[] buf = new byte[4 * 1024];
@@ -236,7 +236,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
 
                             @Override
                             public void write(int b) throws IOException {
-                                buf[pos++] = (byte) b;
+                                buf[worldPosition ++] = (byte) b;
                                 if (pos >= buf.length) {
                                     write(false);
                                     buf = new byte[buf.length];
@@ -250,7 +250,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                                     return;
                                 }
                                 closed = true;
-                                buf = Arrays.copyOf(buf, pos);
+                                buf = Arrays.copyOf(buf, worldPosition);
                                 pos = 0;
                                 write(true);
                             }
@@ -286,7 +286,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                         snapshot = snapshot.copy();
                         snapshot.key = new Snapshot.Key(snapshot.key, (Snapshot.Header) null);
                         snapshot.computeKey();
-                        GlobalSavedDataSnapshots.get(world).addSnapshot(snapshot);
+                        GlobalSavedDataSnapshots.get(level).addSnapshot(snapshot);
                         invUpOut.setStackInSlot(0, BCBuildersItems.snapshot.getUsed(snapshot.getType(), header));
                         invUpIn.setStackInSlot(0, StackUtil.EMPTY);
                     } finally {

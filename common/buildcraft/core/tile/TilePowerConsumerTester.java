@@ -1,5 +1,6 @@
 package buildcraft.core.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
@@ -28,8 +29,8 @@ public class TilePowerConsumerTester extends TileBC_Neptune implements IMjReceiv
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         lastReceived = nbt.getLong("last");
         nextTickReceived = nbt.getLong("nt");
         lastTickReceived = nbt.getLong("lt");
@@ -37,8 +38,8 @@ public class TilePowerConsumerTester extends TileBC_Neptune implements IMjReceiv
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        nbt = super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        nbt = super.saveAdditional(nbt, registries);
         nbt.putLong("last", lastReceived);
         nbt.putLong("nt", nextTickReceived);
         nbt.putLong("lt", lastTickReceived);

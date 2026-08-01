@@ -5,6 +5,7 @@
  */
 package buildcraft.factory.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 
@@ -145,8 +146,8 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.put("tanks", tankManager.serializeNBT());
         nbt.put("battery", mjBattery.serializeNBT());
         nbt.putLong("distillPower", distillPower);
@@ -155,7 +156,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         // TODO: remove in next version
         CompoundTag tanksTag = nbt.getCompound("tanks");
         if (tanksTag.contains("out_gas")) {
@@ -164,7 +165,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         if (tanksTag.contains("out_liquid")) {
             tanksTag.put("liquidOut", tanksTag.get("out_liquid"));
         }
-        super.loadAdditional(nbt);
+        super.loadAdditional(nbt, registries);
         tankManager.deserializeNBT(nbt.getCompound("tanks"));
         // TODO: remove in next version
         if (nbt.contains("mjBattery")) {
@@ -176,7 +177,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -201,7 +202,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -209,18 +210,18 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
                 readPayload(NET_TANK_GAS_OUT, buffer, side, ctx);
                 readPayload(NET_TANK_LIQUID_OUT, buffer, side, ctx);
 
-                smoothedTankIn.resetSmoothing(getWorld());
-                smoothedTankGasOut.resetSmoothing(getWorld());
-                smoothedTankLiquidOut.resetSmoothing(getWorld());
+                smoothedTankIn.resetSmoothing(getLevel());
+                smoothedTankGasOut.resetSmoothing(getLevel());
+                smoothedTankLiquidOut.resetSmoothing(getLevel());
 
                 isActive = buffer.readBoolean();
                 powerAvgClient = buffer.readLong();
             } else if (id == NET_TANK_IN) {
-                smoothedTankIn.handleMessage(getWorld(), buffer);
+                smoothedTankIn.handleMessage(getLevel(), buffer);
             } else if (id == NET_TANK_GAS_OUT) {
-                smoothedTankGasOut.handleMessage(getWorld(), buffer);
+                smoothedTankGasOut.handleMessage(getLevel(), buffer);
             } else if (id == NET_TANK_LIQUID_OUT) {
-                smoothedTankLiquidOut.handleMessage(getWorld(), buffer);
+                smoothedTankLiquidOut.handleMessage(getLevel(), buffer);
             } else if (id == NET_GUI_DATA || id == NET_GUI_TICK) {
                 tankManager.readData(buffer);
             }
@@ -243,7 +244,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         MODEL_POWER_MAX.value = MAX_MJ_PER_TICK / MjAPI.MJ;
         MODEL_FACING.value = Direction.WEST;
 
-        BlockState state = world.getBlockState(pos);
+        BlockState state = level.getBlockState(worldPosition);
         if (state.getBlock() == BCFactoryBlocks.distiller) {
             MODEL_FACING.value = state.getValue(BlockBCBase_Neptune.PROP_FACING);
         }
@@ -257,8 +258,8 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
             return true;
         }
 
-        if (!world.isClientSide) {
-            BCFactoryGuis.DISTILLER.openGUI(player, pos);
+        if (!level.isClientSide) {
+            BCFactoryGuis.DISTILLER.openGUI(player, worldPosition);
         }
 
         return true;
@@ -270,10 +271,10 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
 
     @Override
     public void update() {
-        smoothedTankIn.tick(getWorld());
-        smoothedTankGasOut.tick(getWorld());
-        smoothedTankLiquidOut.tick(getWorld());
-        if (world.isClientSide) {
+        smoothedTankIn.tick(getLevel());
+        smoothedTankGasOut.tick(getLevel());
+        smoothedTankLiquidOut.tick(getLevel());
+        if (level.isClientSide) {
             setClientModelVariables(1);
             clientModelData.tick();
             return;
@@ -325,7 +326,7 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
             }
         }
 
-        if (changedSinceNetUpdate && updateTracker.markTimeIfDelay(world)) {
+        if (changedSinceNetUpdate && updateTracker.markTimeIfDelay(level)) {
             powerAvgClient = powerAvg.getAverageLong();
             sendNetworkUpdate(NET_RENDER_DATA);
             changedSinceNetUpdate = false;

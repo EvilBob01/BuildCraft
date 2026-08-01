@@ -1,4 +1,4 @@
-﻿package buildcraft.core.item;
+package buildcraft.core.item;
 
 import java.util.List;
 

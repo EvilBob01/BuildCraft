@@ -1,5 +1,6 @@
-﻿package buildcraft.energy.tile;
+package buildcraft.energy.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,7 +9,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -44,22 +45,22 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
             return;
         }
         PlayerPumpInfo info = pumpProgress.computeIfAbsent(profile, PlayerPumpInfo::new);
-        info.lastPumpTick = world.getTotalWorldTime();
+        info.lastPumpTick = level.getGameTime();
         info.sourcesPumped++;
 
         // BCLog.logger.info("Pumped " + info.sourcesPumped + " / " + totalSources + " at " + oilPos + " (for " +
-        // System.identityHashCode(this) + ", "+getPos()+")");
+        // System.identityHashCode(this) + ", "+getBlockPos()+")");
         if (info.sourcesPumped >= totalSources * 7 / 8) {
             // BCLog.logger.info("Pumped nearly all oil blocks!");
-            if (oilPos.equals(getPos().up())) {
+            if (oilPos.equals(getBlockPos().up())) {
                 AdvancementUtil.unlockAdvancement(profile.getId(), ADVANCEMENT_PUMP_LARGE_OIL_WELL);
             }
         }
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         ListTag list = nbt.getList("pumpProgress", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             PlayerPumpInfo info = new PlayerPumpInfo(list.getCompoundTagAt(i));
@@ -68,8 +69,8 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putInt("totalSources", totalSources);
         ListTag list = new ListTag();
         for (PlayerPumpInfo info : pumpProgress.values()) {
@@ -89,7 +90,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
                 added = true;
             }
             left.add("  " + info.profile.getName() + " = " + info.sourcesPumped + " ( "
-                + (world.getTotalWorldTime() - info.lastPumpTick) / 20 + "s )");
+                + (level.getGameTime() - info.lastPumpTick) / 20 + "s )");
         }
     }
 
@@ -103,14 +104,14 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         }
 
         public PlayerPumpInfo(CompoundTag nbt) {
-            profile = NBTUtil.readGameProfileFromNBT(nbt.getCompound("profile"));
+            profile = NbtUtils.readGameProfileFromNBT(nbt.getCompound("profile"));
             lastPumpTick = nbt.getLong("lastPumpTick");
             sourcesPumped = nbt.getInt("sourcesPumped");
         }
 
         public CompoundTag writeToNbt() {
             CompoundTag nbt = new CompoundTag();
-            nbt.put("profile", NBTUtil.writeGameProfile(new CompoundTag(), profile));
+            nbt.put("profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
             nbt.putLong("lastPumpTick", lastPumpTick);
             nbt.putInt("sourcesPumped", sourcesPumped);
             return nbt;

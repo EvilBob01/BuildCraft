@@ -57,7 +57,7 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
         if (!invSnapshot.getStackInSlot(0).isEmpty() &&
@@ -65,7 +65,7 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
             !invSchematicTo.getStackInSlot(0).isEmpty()) {
             Header header = BCBuildersItems.snapshot.getHeader(invSnapshot.getStackInSlot(0));
             if (header != null) {
-                Snapshot snapshot = GlobalSavedDataSnapshots.get(world).getSnapshot(header.key);
+                Snapshot snapshot = GlobalSavedDataSnapshots.get(level).getSnapshot(header.key);
                 if (snapshot instanceof Blueprint) {
                     Blueprint blueprint = (Blueprint) snapshot;
                     try {
@@ -80,7 +80,7 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
                         Blueprint newBlueprint = blueprint.copy();
                         newBlueprint.replace(from, to);
                         newBlueprint.computeKey();
-                        GlobalSavedDataSnapshots.get(world).addSnapshot(newBlueprint);
+                        GlobalSavedDataSnapshots.get(level).addSnapshot(newBlueprint);
                         invSnapshot.setStackInSlot(
                             0,
                             BCBuildersItems.snapshot.getUsed(

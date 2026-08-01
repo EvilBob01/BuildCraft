@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -34,7 +34,7 @@ public enum CropHandlerReeds implements ICropHandler {
     public boolean canSustainPlant(Level world, ItemStack seed, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        return block.canSustainPlant(state, world, pos, Direction.UP, Blocks.REEDS) && block != Blocks.REEDS && world.isAirBlock(pos.up());
+        return block.canSustainPlant(state, world, pos, Direction.UP, Blocks.REEDS) && block != Blocks.REEDS && world.isEmptyBlock(pos.up());
     }
 
     @Override

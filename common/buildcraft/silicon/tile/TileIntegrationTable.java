@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     public void update() {
         super.update();
 
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -114,8 +115,8 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         if (recipe != null) {
             nbt.putString("recipe", recipe.name.toString());
         }
@@ -123,8 +124,8 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         if (nbt.contains("recipe")) {
             recipe = lookupRecipe(nbt.getString("recipe"));
         } else {
@@ -133,7 +134,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
 
         if (id == NET_GUI_DATA) {
@@ -145,7 +146,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
 
         if (id == NET_GUI_DATA) {

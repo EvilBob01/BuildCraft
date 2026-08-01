@@ -40,7 +40,7 @@ public class TemplateBuilder extends SnapshotBuilder<ITileForTemplateBuilder> {
 
     @Override
     protected boolean canPlace(BlockPos blockPos) {
-        return tile.getWorldBC().isAirBlock(blockPos);
+        return tile.getWorldBC().isEmptyBlock(blockPos);
     }
 
     @Override
@@ -82,6 +82,6 @@ public class TemplateBuilder extends SnapshotBuilder<ITileForTemplateBuilder> {
 
     @Override
     protected boolean isBlockCorrect(BlockPos blockPos) {
-        return !isAir(blockPos) && !tile.getWorldBC().isAirBlock(blockPos);
+        return !isAir(blockPos) && !tile.getWorldBC().isEmptyBlock(blockPos);
     }
 }

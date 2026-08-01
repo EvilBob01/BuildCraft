@@ -54,7 +54,7 @@ public class GuiConfigManager {
         return (IVariableNodeBoolean) getOrAddProperty(gui, name, NodeConstantBoolean.of(defaultValue));
     }
 
-    public static void markDirty() {
+    public static void setChanged() {
         if (!isDirty && BCLibConfig.guiConfigFile != null) {
             // Minimise successive file writes -- add a little bit of a delay
             MessageUtil.doDelayedClient(10, () -> {

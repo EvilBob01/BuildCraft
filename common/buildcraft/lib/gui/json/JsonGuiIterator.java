@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.GenericExpressionCompiler;
@@ -29,13 +29,13 @@ public class JsonGuiIterator {
     public JsonGuiIterator(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject obj = element.getAsJsonObject();
-            name = JsonUtils.getString(obj, "name", "index");
-            start = JsonUtils.getString(obj, "start", "0");
-            step = JsonUtils.getString(obj, "step");
+            name = GsonHelper.getString(obj, "name", "index");
+            start = GsonHelper.getString(obj, "start", "0");
+            step = GsonHelper.getString(obj, "step");
             if (obj.has("while")) {
-                shouldContinue = JsonUtils.getString(obj, "while");
+                shouldContinue = GsonHelper.getString(obj, "while");
             } else {
-                String end = JsonUtils.getString(obj, "end");
+                String end = GsonHelper.getString(obj, "end");
                 shouldContinue = "step > 0 ? ($name <= $end) : ($name >= $end)"//
                     .replace("$end", end).replace("$name", name);
             }

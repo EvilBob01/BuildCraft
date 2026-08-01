@@ -42,13 +42,13 @@ public abstract class PipeFlow {
     }
 
     /** Writes a payload with the specified id. Standard ID's are NET_ID_FULL_STATE and NET_ID_UPDATE. */
-    public void writePayload(int id, FriendlyByteBuf buffer, Side side) {}
+    public void writePayload(int id, FriendlyByteBuf buffer, Dist side) {}
 
     /** Reads a payload with the specified id. Standard ID's are NET_ID_FULL_STATE and NET_ID_UPDATE. */
-    public void readPayload(int id, FriendlyByteBuf buffer, Side side) throws IOException {}
+    public void readPayload(int id, FriendlyByteBuf buffer, Dist side) throws IOException {}
 
     public void sendPayload(int id) {
-        final Side side = pipe.getHolder().getPipeWorld().isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+        final Dist side = pipe.getHolder().getPipeWorld().isClientSide ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         sendCustomPayload(id, (buf) -> writePayload(id, buf, side));
     }
 

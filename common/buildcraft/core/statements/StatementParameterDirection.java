@@ -6,6 +6,7 @@
 
 package buildcraft.core.statements;
 
+import net.minecraft.core.HolderLookup;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -97,7 +98,7 @@ public class StatementParameterDirection implements IStatementParameter {
     }
 
 //    @Override
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         if (nbt.contains("direction")) {
             direction = Direction.VALUES[nbt.getByte("direction")];
         } else {

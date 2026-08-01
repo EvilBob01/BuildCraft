@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -133,20 +133,20 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (world.isClientSide) {
-            return new ActionResult<>(InteractionResult.PASS, stack);
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
         if (player.isSneaking()) {
             return clearMarkerData(StackUtil.asNonNull(stack));
         }
-        return new ActionResult<>(InteractionResult.PASS, stack);
+        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
-    private static ActionResult<ItemStack> clearMarkerData(@Nonnull ItemStack stack) {
+    private static InteractionResultHolder<ItemStack> clearMarkerData(@Nonnull ItemStack stack) {
         if (MapLocationType.getFromStack(stack) == MapLocationType.CLEAN) {
-            return new ActionResult<>(InteractionResult.PASS, stack);
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
         for (String key : STORAGE_TAGS) {
@@ -156,7 +156,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             stack.setTagCompound(null);
         }
         MapLocationType.CLEAN.setToStack(stack);
-        return new ActionResult<>(InteractionResult.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
     @Override

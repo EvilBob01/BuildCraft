@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.compat;
+package buildcraft.lib.compat;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +26,7 @@ public enum DefaultBlockAccessor implements ISoftBlockAccessor {
     @Nullable
     public BlockEntity getTile(Level world, BlockPos pos, boolean force) {
         if (direct | force) {
-            if (force || world.isBlockLoaded(pos)) {
+            if (force || world.isLoaded(pos)) {
                 return world.getBlockEntity(pos);
             }
             return null;
@@ -42,7 +42,7 @@ public enum DefaultBlockAccessor implements ISoftBlockAccessor {
     @Override
     public BlockState getState(Level world, BlockPos pos, boolean force) {
         if (direct | force) {
-            if (force || world.isBlockLoaded(pos)) {
+            if (force || world.isLoaded(pos)) {
                 return world.getBlockState(pos);
             }
             return Blocks.AIR.defaultBlockState();

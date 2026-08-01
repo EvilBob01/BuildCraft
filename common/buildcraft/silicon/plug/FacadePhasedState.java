@@ -6,7 +6,7 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.facades.IFacadePhasedState;
@@ -31,7 +31,7 @@ public class FacadePhasedState implements IFacadePhasedState {
         FacadeBlockStateInfo stateInfo = FacadeStateManager.defaultState;
         if (nbt.contains("state")) {
             try {
-                BlockState blockState = NBTUtil.readBlockState(nbt.getCompound("state"));
+                BlockState blockState = NbtUtils.readBlockState(nbt.getCompound("state"));
                 stateInfo = FacadeStateManager.validFacadeStates.get(blockState);
                 if (stateInfo == null) {
                     stateInfo = FacadeStateManager.defaultState;
@@ -47,7 +47,7 @@ public class FacadePhasedState implements IFacadePhasedState {
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
         try {
-            nbt.put("state", NBTUtil.writeBlockState(new CompoundTag(), stateInfo.state));
+            nbt.put("state", NbtUtils.writeBlockState(new CompoundTag(), stateInfo.state));
         } catch (Throwable t) {
             throw new IllegalStateException("Writing facade block state"//
                 + "\n\tState = " + stateInfo//

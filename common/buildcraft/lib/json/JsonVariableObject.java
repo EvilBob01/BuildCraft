@@ -9,7 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.InternalCompiler;
@@ -44,10 +44,10 @@ public class JsonVariableObject {
             if (value.isJsonObject()) {
                 JsonObject objValue = value.getAsJsonObject();
                 value = objValue.get("value");
-                type = JsonUtils.getString(objValue, "type");
-                getter = JsonUtils.getString(objValue, "getter");
+                type = GsonHelper.getString(objValue, "type");
+                getter = GsonHelper.getString(objValue, "getter");
                 if (objValue.has("rounder")) {
-                    rounder = JsonUtils.getString(objValue, "rounder");
+                    rounder = GsonHelper.getString(objValue, "rounder");
                 }
             }
 

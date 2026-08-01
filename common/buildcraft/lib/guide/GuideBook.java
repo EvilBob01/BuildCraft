@@ -3,7 +3,7 @@ package buildcraft.lib.guide;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 
@@ -25,7 +25,7 @@ public final class GuideBook {
     private static GuideBook deserialize(ResourceLocation name, JsonObject json, JsonDeserializationContext ctx) {
         ResourceLocation itemIcon = new ResourceLocation("buildcraftcore:guide_main");
         Component title = JsonUtil.getTextComponent(json, "title", "");
-        boolean addAll = JsonUtils.getBoolean(json, "all_entries", true);
+        boolean addAll = GsonHelper.getBoolean(json, "all_entries", true);
         return new GuideBook(name, itemIcon, title, addAll);
     }
 

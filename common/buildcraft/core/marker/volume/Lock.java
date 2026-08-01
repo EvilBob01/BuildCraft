@@ -6,6 +6,7 @@
 
 package buildcraft.core.marker.volume;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.IntStream;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -57,7 +58,7 @@ public class Lock {
         return nbt;
     }
 
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         CompoundTag causeTag = nbt.getCompound("cause");
         cause = NBTUtilBC.readEnum(causeTag.get("type"), Cause.EnumCause.class).supplier.get();
         cause.loadAdditional(causeTag.getCompound("data"));
@@ -115,15 +116,15 @@ public class Lock {
             }
 
             @Override
-            public CompoundTag writeToNBT(CompoundTag nbt) {
-                nbt.put("pos", NBTUtil.createPosTag(pos));
+            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+                nbt.put("pos", NbtUtils.createPosTag(pos));
                 nbt.putString("block", Block.REGISTRY.getNameForObject(block).toString());
                 return nbt;
             }
 
             @Override
-            public void readFromNBT(CompoundTag nbt) {
-                pos = NBTUtil.getPosFromTag(nbt.getCompound("pos"));
+            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+                pos = NbtUtils.getPosFromTag(nbt.getCompound("pos"));
                 block = Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("block")));
             }
 
@@ -174,12 +175,12 @@ public class Lock {
 
         public static class TargetRemove extends Target {
             @Override
-            public CompoundTag writeToNBT(CompoundTag nbt) {
+            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 return nbt;
             }
 
             @Override
-            public void readFromNBT(CompoundTag nbt) {
+            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
             }
 
             @Override
@@ -193,12 +194,12 @@ public class Lock {
 
         public static class TargetResize extends Target {
             @Override
-            public CompoundTag writeToNBT(CompoundTag nbt) {
+            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 return nbt;
             }
 
             @Override
-            public void readFromNBT(CompoundTag nbt) {
+            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
             }
 
             @Override
@@ -221,13 +222,13 @@ public class Lock {
             }
 
             @Override
-            public CompoundTag writeToNBT(CompoundTag nbt) {
+            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 nbt.put("slot", NBTUtilBC.writeEnum(slot));
                 return nbt;
             }
 
             @Override
-            public void readFromNBT(CompoundTag nbt) {
+            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 slot = NBTUtilBC.readEnum(nbt.get("slot"), EnumAddonSlot.class);
             }
 
@@ -253,13 +254,13 @@ public class Lock {
             }
 
             @Override
-            public CompoundTag writeToNBT(CompoundTag nbt) {
+            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 nbt.put("type", NBTUtilBC.writeEnum(type));
                 return nbt;
             }
 
             @Override
-            public void readFromNBT(CompoundTag nbt) {
+            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
                 type = NBTUtilBC.readEnum(nbt.get("type"), EnumType.class);
             }
 

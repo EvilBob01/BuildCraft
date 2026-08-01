@@ -54,13 +54,13 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
 
     @Override
     public long getTarget() {
-        return world.isClientSide ? POWER_REQ : crafting.canCraft() ? POWER_REQ : 0;
+        return level.isClientSide ? POWER_REQ : crafting.canCraft() ? POWER_REQ : 0;
     }
 
     @Override
     public void update() {
         super.update();
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
         boolean didChange = crafting.tick();
@@ -79,7 +79,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_GUI_DATA) {
@@ -89,7 +89,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_GUI_DATA) {

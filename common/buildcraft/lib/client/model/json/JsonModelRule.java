@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.core.Direction;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 
 import buildcraft.lib.client.model.MutableQuad;
@@ -40,18 +40,18 @@ public abstract class JsonModelRule {
             throw new JsonSyntaxException("Expected an object, got " + json);
         }
         JsonObject obj = json.getAsJsonObject();
-        String when = JsonUtils.getString(obj, "when");
+        String when = GsonHelper.getString(obj, "when");
         INodeBoolean nodeWhen = JsonVariableModelPart.convertStringToBooleanNode(when, fnCtx);
 
-        String type = JsonUtils.getString(obj, "type");
+        String type = GsonHelper.getString(obj, "type");
         if (type.startsWith("builtin:")) {
             String builtin = type.substring("builtin:".length());
             if ("rotate_facing".equals(builtin)) {
                 fnCtx = new FunctionContext(fnCtx, ExpressionCompat.ENUM_FACING);
-                String from = JsonUtils.getString(obj, "from");
+                String from = GsonHelper.getString(obj, "from");
                 INodeObject<Direction> nodeFrom = JsonVariableModelPart.convertStringToObjectNode(from, fnCtx, Direction.class);
 
-                String to = JsonUtils.getString(obj, "to");
+                String to = GsonHelper.getString(obj, "to");
                 INodeObject<Direction> nodeTo = JsonVariableModelPart.convertStringToObjectNode(to, fnCtx, Direction.class);
 
                 INodeDouble[] origin;

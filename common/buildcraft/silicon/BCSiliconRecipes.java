@@ -31,7 +31,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -365,7 +365,7 @@ public class BCSiliconRecipes {
         String name = root.relativize(file).toString().replace("\\", "/");
         ResourceLocation key = new ResourceLocation(ctx.getModId(), name);
         try (BufferedReader reader = Files.newBufferedReader(file)) {
-            JsonObject json = JsonUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             if (json == null || json.isJsonNull()) throw new JsonSyntaxException("Json is null (empty file?)");
 
             ItemStack output = CraftingHelper.getItemStack(json.getAsJsonObject("result"), ctx);
@@ -376,7 +376,7 @@ public class BCSiliconRecipes {
             json.getAsJsonArray("components").forEach(element -> {
                 JsonObject object = element.getAsJsonObject();
                 ingredients.add(new IngredientStack(CraftingHelper.getIngredient(object.get("ingredient"), ctx),
-                    JsonUtils.getInt(object, "amount", 1)));
+                    GsonHelper.getInt(object, "amount", 1)));
             });
 
             AssemblyRecipeRegistry.REGISTRY.put(key,

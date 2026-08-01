@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -178,7 +179,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     public void update() {
         super.update();
 
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
 
@@ -190,7 +191,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
                 AssemblyInstruction instruction = getActiveRecipe();
                 extract(inv, instruction.recipe.getInputsFor(instruction.output), false, false);
 
-                InventoryUtil.addToBestAcceptor(getWorld(), getPos(), null, instruction.output.copy());
+                InventoryUtil.addToBestAcceptor(getLevel(), getBlockPos(), null, instruction.output.copy());
 
                 power -= getTarget();
                 activateNextRecipe();
@@ -200,8 +201,8 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         ListTag recipesStatesTag = new ListTag();
         recipesStates.forEach((instruction, state) -> {
             CompoundTag entryTag = new CompoundTag();
@@ -215,8 +216,8 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         recipesStates.clear();
         ListTag recipesStatesTag = nbt.getList("recipes_states", Tag.TAG_COMPOUND);
         for (int i = 0; i < recipesStatesTag.size(); i++) {
@@ -231,7 +232,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
 
         if (id == NET_GUI_DATA) {
@@ -245,7 +246,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
 
         if (id == NET_GUI_DATA) {

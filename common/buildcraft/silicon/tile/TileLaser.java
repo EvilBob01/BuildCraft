@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,7 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
 
     @Override
     public BlockPos getSubscriberPos() {
-        return getPos();
+        return getBlockPos();
     }
 
     @Override
@@ -90,19 +91,19 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
 
     private void findPossibleTargets() {
         targetPositions.clear();
-        BlockState state = world.getBlockState(pos);
+        BlockState state = level.getBlockState(worldPosition);
         if (state.getBlock() != BCSiliconBlocks.laser) {
             return;
         }
         Direction face = state.getValue(BuildCraftProperties.BLOCK_FACING_6);
 
-        VolumeUtil.iterateCone(world, pos, face, TARGETING_RANGE, true, (w, s, p, visible) -> {
+        VolumeUtil.iterateCone(level, pos, face, TARGETING_RANGE, true, (w, s, p, visible) -> {
             if (!visible) {
                 return;
             }
-            BlockState stateAt = world.getBlockState(p);
+            BlockState stateAt = level.getBlockState(p);
             if (stateAt.getBlock() instanceof ILaserTargetBlock) {
-                BlockEntity tileAt = world.getBlockEntity(p);
+                BlockEntity tileAt = level.getBlockEntity(p);
                 if (tileAt instanceof ILaserTarget) {
                     targetPositions.add(p);
 
@@ -122,12 +123,12 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
             targetPos = null;
             return;
         }
-        targetPos = targetsNeedingPower.get(world.rand.nextInt(targetsNeedingPower.size()));
+        targetPos = targetsNeedingPower.get(level.rand.nextInt(targetsNeedingPower.size()));
     }
 
     private boolean isPowerNeededAt(BlockPos position) {
         if (position != null) {
-            BlockEntity tile = world.getBlockEntity(position);
+            BlockEntity tile = level.getBlockEntity(position);
             if (tile instanceof ILaserTarget) {
                 ILaserTarget target = (ILaserTarget) tile;
                 return target.getRequiredLaserPower() > 0;
@@ -138,8 +139,8 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
 
     private ILaserTarget getTarget() {
         if (targetPos != null) {
-            if (world.getBlockEntity(targetPos) instanceof ILaserTarget) {
-                return (ILaserTarget) world.getBlockEntity(targetPos);
+            if (level.getBlockEntity(targetPos) instanceof ILaserTarget) {
+                return (ILaserTarget) level.getBlockEntity(targetPos);
             }
         }
         return null;
@@ -149,9 +150,9 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
         if (targetPos != null) {
             laserPos = new Vec3(targetPos)
                 .addVector(
-                    (5 + world.rand.nextInt(6) + 0.5) / 16D,
+                    (5 + level.rand.nextInt(6) + 0.5) / 16D,
                     9 / 16D,
-                    (5 + world.rand.nextInt(6) + 0.5) / 16D
+                    (5 + level.rand.nextInt(6) + 0.5) / 16D
                 );
         } else {
             laserPos = null;
@@ -168,9 +169,9 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
 
     @Override
     public void update() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             // set laser render position on client side
-            if (clientLaserMoveInterval.markTimeIfDelay(world) || targetPos == null) {
+            if (clientLaserMoveInterval.markTimeIfDelay(level) || targetPos == null) {
                 updateLaser();
             }
             return;
@@ -189,7 +190,7 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
             targetPos = null;
         }
 
-        if (serverTargetMoveInterval.markTimeIfDelay(world) || !isPowerNeededAt(targetPos)) {
+        if (serverTargetMoveInterval.markTimeIfDelay(level) || !isPowerNeededAt(targetPos)) {
             randomlyChooseTargetPos();
         }
 
@@ -217,8 +218,8 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.put("battery", battery.serializeNBT());
         if (laserPos != null) {
             nbt.put("laser_pos", NBTUtilBC.writeVec3d(laserPos));
@@ -231,8 +232,8 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         // TODO: remove in next version
         if (nbt.contains("mj_battery")) {
             nbt.put("battery", nbt.get("mj_battery"));
@@ -244,7 +245,7 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -259,7 +260,7 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -285,16 +286,16 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     @Override
     public void validate() {
         super.validate();
-        if (!world.isClientSide) {
-            LocalBlockUpdateNotifier.instance(world).registerSubscriberForUpdateNotifications(this);
+        if (!level.isClientSide) {
+            LocalBlockUpdateNotifier.instance(level).registerSubscriberForUpdateNotifications(this);
         }
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        if (!world.isClientSide) {
-            LocalBlockUpdateNotifier.instance(world).removeSubscriberFromUpdateNotifications(this);
+        if (!level.isClientSide) {
+            LocalBlockUpdateNotifier.instance(level).removeSubscriberFromUpdateNotifications(this);
         }
     }
 

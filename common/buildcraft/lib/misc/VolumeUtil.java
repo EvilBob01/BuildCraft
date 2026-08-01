@@ -33,7 +33,7 @@ public class VolumeUtil {
             unknown.removeAll(allVisible);
             boolean visible = true;
             for (BlockPos p : unknown) {
-                if (world.isAirBlock(p)) {
+                if (world.isEmptyBlock(p)) {
                     allVisible.add(p);
                 } else {
                     visible = false;
@@ -49,7 +49,7 @@ public class VolumeUtil {
         public final List<BlockPos> required;
 
         public VisiblePos(BlockPos pos, BlockPos to) {
-            this.pos = pos;
+            this.worldPosition = pos;
             this.required = PositionUtil.getAllOnPath(pos, to);
         }
     }

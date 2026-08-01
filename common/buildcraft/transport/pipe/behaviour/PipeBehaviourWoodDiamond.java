@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -89,7 +89,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         if (side == Dist.CLIENT) {
             filterMode = FilterMode.get(buffer.readUnsignedByte());
@@ -99,7 +99,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     }
 
     @Override
-    public void writePayload(FriendlyByteBuf buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Dist side) {
         super.writePayload(buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             buffer.writeByte(filterMode.ordinal());
@@ -181,7 +181,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                     return flow.tryExtractFluid(millibuckets, dir, null, simulate);
                 }
                 // Firstly try the advanced version - if that fails we will need to try the basic version
-                ActionResult<FluidStack> result = flow.tryExtractFluidAdv(millibuckets, dir, new ArrayFluidFilter(filters.stacks), simulate);
+                InteractionResultHolder<FluidStack> result = flow.tryExtractFluidAdv(millibuckets, dir, new ArrayFluidFilter(filters.stacks), simulate);
                 FluidStack extracted = result.getResult();
                 if (result.getType() != InteractionResult.PASS) {
                     return extracted;

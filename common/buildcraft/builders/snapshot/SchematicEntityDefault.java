@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -25,7 +25,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Rotation;
@@ -76,7 +76,7 @@ public class SchematicEntityDefault implements ISchematicEntity {
     }
 
     @Override
-    public Vec3 getPos() {
+    public Vec3 getBlockPos() {
         return pos;
     }
 
@@ -172,7 +172,7 @@ public class SchematicEntityDefault implements ISchematicEntity {
                     entity.rotationPitch
                 );
             }
-            world.spawnEntity(entity);
+            world.addFreshEntity(entity);
         }
         return entity;
     }
@@ -187,7 +187,7 @@ public class SchematicEntityDefault implements ISchematicEntity {
         CompoundTag nbt = new CompoundTag();
         nbt.put("entityNbt", entityNbt);
         nbt.put("pos", NBTUtilBC.writeVec3d(pos));
-        nbt.put("hangingPos", NBTUtil.createPosTag(hangingPos));
+        nbt.put("hangingPos", NbtUtils.createPosTag(hangingPos));
         nbt.put("hangingFacing", NBTUtilBC.writeEnum(hangingFacing));
         nbt.put("entityRotation", NBTUtilBC.writeEnum(entityRotation));
         return nbt;
@@ -197,7 +197,7 @@ public class SchematicEntityDefault implements ISchematicEntity {
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         entityNbt = nbt.getCompound("entityNbt");
         pos = NBTUtilBC.readVec3d(nbt.get("pos"));
-        hangingPos = NBTUtil.getPosFromTag(nbt.getCompound("hangingPos"));
+        hangingPos = NbtUtils.getPosFromTag(nbt.getCompound("hangingPos"));
         hangingFacing = NBTUtilBC.readEnum(nbt.get("hangingFacing"), Direction.class);
         entityRotation = NBTUtilBC.readEnum(nbt.get("entityRotation"), Rotation.class);
     }

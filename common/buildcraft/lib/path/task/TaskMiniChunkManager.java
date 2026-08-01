@@ -21,7 +21,7 @@ public class TaskMiniChunkManager implements Callable<MiniChunkGraph> {
     private final Consumer<MiniChunkGraph> setter;
 
     public TaskMiniChunkManager(Level world, BlockPos offset, Consumer<MiniChunkGraph> setter) {
-        this.world = world;
+        this.level = world;
         this.offset = offset;
         this.setter = setter;
     }

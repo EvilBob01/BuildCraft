@@ -67,7 +67,7 @@ public interface IContainerFilling {
         sendData();
     }
 
-    default void readMessage(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    default void readMessage(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         if (side == Dist.DEDICATED_SERVER) {
             if (id == ContainerBC_Neptune.NET_DATA) {
                 if (isLocked()) {

@@ -2,7 +2,7 @@ package buildcraft.lib.gui.json;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
@@ -29,7 +29,7 @@ public class ElementTypeDrawnStack extends ElementType {
         INodeBoolean visible = getEquationBool(json, "visible", ctx, true);
         boolean foreground = resolveEquationBool(json, "foreground", ctx, false);
 
-        Item item = JsonUtils.getItem(json.json, "id");
+        Item item = GsonHelper.getItem(json.json, "id");
         int meta = resolveEquationInt(json, "meta", ctx);
         ItemStack stack = new ItemStack(item, 1, meta);
 

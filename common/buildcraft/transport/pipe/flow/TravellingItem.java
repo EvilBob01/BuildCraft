@@ -36,7 +36,7 @@ public class TravellingItem {
     int id = 0;
     boolean toCenter;
     double speed = 0.05;
-    /** Absolute times (relative to world.getTotalWorldTime()) with when an item started to when it finishes. */
+    /** Absolute times (relative to world.getGameTime()) with when an item started to when it finishes. */
     long tickStarted, tickFinished;
     /** Relative times (from tickStarted) until an event needs to be fired or this item needs changing. */
     int timeToDest;

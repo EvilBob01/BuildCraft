@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.client.model.ModelUtil.UvFaceData;
 import buildcraft.lib.expression.DefaultContexts;
@@ -39,8 +39,8 @@ public class JsonTexture {
 
     public JsonTexture(JsonObject obj) {
         try {
-            location = JsonUtils.getString(obj, "location");
-            JsonArray uvs = JsonUtils.getJsonArray(obj, "uv");
+            location = GsonHelper.getString(obj, "location");
+            JsonArray uvs = GsonHelper.getJsonArray(obj, "uv");
             if (uvs.size() != 4) {
                 throw new JsonSyntaxException("Must have 4 elements (uMin, vMin, uMax, vMax)");
             }

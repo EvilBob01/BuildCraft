@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.client.guide.entry;
+package buildcraft.lib.client.guide.entry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +15,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
@@ -141,7 +141,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
         final ItemStack stack;
         final boolean matchMeta, matchNbt;
         if (jStack.isJsonPrimitive()) {
-            String str = JsonUtils.getString(jStack, "stack");
+            String str = GsonHelper.getString(jStack, "stack");
             if (str.startsWith("{") && str.endsWith("}")) {
                 stack = MarkdownPageLoader.loadComplexItemStack(str.substring(1, str.length() - 1));
                 stack.setCount(1);

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
@@ -134,17 +134,17 @@ public abstract class Snapshot {
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.put("key", key.serializeNBT());
-        nbt.put("size", NBTUtil.createPosTag(size));
+        nbt.put("size", NbtUtils.createPosTag(size));
         nbt.put("facing", NBTUtilBC.writeEnum(facing));
-        nbt.put("offset", NBTUtil.createPosTag(offset));
+        nbt.put("offset", NbtUtils.createPosTag(offset));
         return nbt;
     }
 
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         key = new Key(nbt.getCompound("key"));
-        size = NBTUtil.getPosFromTag(nbt.getCompound("size"));
+        size = NbtUtils.getPosFromTag(nbt.getCompound("size"));
         facing = NBTUtilBC.readEnum(nbt.get("facing"), Direction.class);
-        offset = NBTUtil.getPosFromTag(nbt.getCompound("offset"));
+        offset = NbtUtils.getPosFromTag(nbt.getCompound("offset"));
     }
 
     abstract public Snapshot copy();
@@ -287,7 +287,7 @@ public abstract class Snapshot {
         }
 
         public Player getOwnerPlayer(Level world) {
-            return world.getPlayerEntityByUUID(owner);
+            return world.getPlayerByUUID(owner);
         }
 
         @Override

@@ -29,7 +29,7 @@ public enum EnumTraversalExpense {
     }
 
     public static EnumTraversalExpense getFor(Level world, BlockPos pos, BlockState state) {
-        if (world.isAirBlock(pos)) {
+        if (world.isEmptyBlock(pos)) {
             return AIR;
         }
         Material mat = state.getMaterial();

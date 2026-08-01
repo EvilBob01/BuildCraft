@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -65,10 +65,10 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = StackUtil.asNonNull(player.getItemInHand(hand));
         if (world.isClientSide) {
-            return new ActionResult<>(InteractionResult.PASS, stack);
+            return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
         if (player.isSneaking()) {
             CompoundTag itemData = NBTUtilBC.getItemData(stack);
@@ -77,9 +77,9 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
                 stack.setTagCompound(null);
             }
             stack.setItemDamage(DAMAGE_CLEAN);
-            return new ActionResult<>(InteractionResult.SUCCESS, stack);
+            return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
         }
-        return new ActionResult<>(InteractionResult.PASS, stack);
+        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
     @Override
@@ -122,8 +122,8 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
             if (!world.mayPlace(world.getBlockState(pos).getBlock(), placePos, false, side, null)) {
                 return InteractionResult.FAIL;
             }
-            if (replaceable && !world.isAirBlock(placePos)) {
-                world.setBlockToAir(placePos);
+            if (replaceable && !world.isEmptyBlock(placePos)) {
+                world.removeBlock(placePos, false);
             }
             try {
                 ISchematicBlock schematicBlock = getSchematic(stack);

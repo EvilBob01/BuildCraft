@@ -191,12 +191,12 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     }
 
     @Override
-    public void writePayload(FriendlyByteBuf buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Dist side) {
         throw new Error("All messages must have an ID, and we can't just write a payload directly!");
     }
 
     @Override
-    public void readPayload(FriendlyByteBuf b, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf b, Dist side, MessageContext ctx) throws IOException {
         logic.readPayload(PacketBufferBC.asPacketBufferBc(b), side, ctx);
     }
 

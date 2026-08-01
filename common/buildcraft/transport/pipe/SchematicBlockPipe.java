@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -86,7 +86,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
 
     @Override
     public boolean canBuild(Level world, BlockPos blockPos) {
-        return world.isAirBlock(blockPos);
+        return world.isEmptyBlock(blockPos);
     }
 
     @SuppressWarnings("Duplicates")
@@ -95,7 +95,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
         if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 11)) {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
-                tileEntity.setWorld(world);
+                tileEntity.setLevel(world);
                 world.setBlockEntity(blockPos, tileEntity);
                 if (tileRotation != Rotation.NONE) {
                     tileEntity.rotate(tileRotation);
@@ -112,7 +112,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
         if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 0)) {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
-                tileEntity.setWorld(world);
+                tileEntity.setLevel(world);
                 world.setBlockEntity(blockPos, tileEntity);
                 if (tileRotation != Rotation.NONE) {
                     tileEntity.rotate(tileRotation);

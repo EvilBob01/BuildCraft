@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.cache;
+package buildcraft.lib.cache;
 
 import java.lang.ref.WeakReference;
 

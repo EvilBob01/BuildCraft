@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -6,6 +6,7 @@
  */
 package buildcraft.builders.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -135,14 +136,14 @@ public class TileBuilder extends TileBC_Neptune
     @Override
     protected void onSlotChange(IItemHandlerModifiable handler, int slot, @Nonnull ItemStack before,
         @Nonnull ItemStack after) {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             if (handler == invSnapshot) {
                 currentBasePosIndex = 0;
                 snapshot = null;
                 if (after.getItem() instanceof ItemSnapshot) {
                     Snapshot.Header header = BCBuildersItems.snapshot.getHeader(after);
                     if (header != null) {
-                        Snapshot newSnapshot = GlobalSavedDataSnapshots.get(world).getSnapshot(header.key);
+                        Snapshot newSnapshot = GlobalSavedDataSnapshots.get(level).getSnapshot(header.key);
                         if (newSnapshot != null) {
                             snapshot = newSnapshot;
                         }
@@ -178,7 +179,7 @@ public class TileBuilder extends TileBC_Neptune
             snapshotType = snapshot.getType();
             if (canGetFacing) {
                 rotation = Arrays.stream(Rotation.values()).filter(r -> r.rotate(snapshot.facing) == world
-                    .getBlockState(pos).getValue(BlockBCBase_Neptune.PROP_FACING)).findFirst().orElse(null);
+                    .getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING)).findFirst().orElse(null);
             }
             if (snapshot.getType() == EnumSnapshotType.TEMPLATE) {
                 templateBuildingInfo = ((Template) snapshot).new BuildingInfo(getCurrentBasePos(), rotation);
@@ -210,7 +211,7 @@ public class TileBuilder extends TileBC_Neptune
                 basePoses.addAll(PositionUtil.getAllOnPath(path.get(i - 1), path.get(i)));
             }
         } else {
-            basePoses.add(pos.offset(world.getBlockState(pos).getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite()));
+            basePoses.add(worldPosition.offset(level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite()));
         }
     }
 
@@ -221,8 +222,8 @@ public class TileBuilder extends TileBC_Neptune
     @Override
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
-        Direction facing = world.getBlockState(pos).getValue(BlockBCBase_Neptune.PROP_FACING);
-        BlockEntity inFront = world.getBlockEntity(pos.offset(facing.getOpposite()));
+        Direction facing = level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING);
+        BlockEntity inFront = level.getBlockEntity(worldPosition.offset(facing.getOpposite()));
         if (inFront instanceof IPathProvider) {
             IPathProvider provider = (IPathProvider) inFront;
             ImmutableList<BlockPos> copiedPath = ImmutableList.copyOf(provider.getPath());
@@ -236,10 +237,10 @@ public class TileBuilder extends TileBC_Neptune
 
     @Override
     public void update() {
-        world.profiler.startSection("main");
-        world.profiler.startSection("power");
-        battery.tick(getWorld(), getPos());
-        world.profiler.endStartSection("builder");
+        level.getProfiler().push("main");
+        level.getProfiler().push("power");
+        battery.tick(getLevel(), getBlockPos());
+        level.profiler.endStartSection("builder");
         SnapshotBuilder<?> builder = getBuilder();
         if (builder != null) {
             isDone = builder.tick();
@@ -255,16 +256,16 @@ public class TileBuilder extends TileBC_Neptune
                 }
             }
         }
-        world.profiler.endStartSection("net_update");
+        level.profiler.endStartSection("net_update");
         sendNetworkUpdate(NET_RENDER_DATA); // FIXME
-        world.profiler.endSection();
-        world.profiler.endSection();
+        level.getProfiler().pop();
+        level.getProfiler().pop();
     }
 
     // Networking
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -295,7 +296,7 @@ public class TileBuilder extends TileBC_Neptune
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -348,12 +349,12 @@ public class TileBuilder extends TileBC_Neptune
     // Read-write
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         if (path != null) {
-            nbt.put("path", NBTUtilBC.writeCompoundList(path.stream().map(NBTUtil::createPosTag)));
+            nbt.put("path", NBTUtilBC.writeCompoundList(path.stream().map(NbtUtils::createPosTag)));
         }
-        nbt.put("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NBTUtil::createPosTag)));
+        nbt.put("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NbtUtils::createPosTag)));
         nbt.putBoolean("canExcavate", canExcavate);
         nbt.put("rotation", NBTUtilBC.writeEnum(rotation));
         Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.put("builder", builder.serializeNBT()));
@@ -361,13 +362,13 @@ public class TileBuilder extends TileBC_Neptune
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         if (nbt.contains("path")) {
             path =
-                NBTUtilBC.readCompoundList(nbt.get("path")).map(NBTUtil::getPosFromTag).collect(Collectors.toList());
+                NBTUtilBC.readCompoundList(nbt.get("path")).map(NbtUtils::getPosFromTag).collect(Collectors.toList());
         }
-        basePoses = NBTUtilBC.readCompoundList(nbt.get("basePoses")).map(NBTUtil::getPosFromTag)
+        basePoses = NBTUtilBC.readCompoundList(nbt.get("basePoses")).map(NbtUtils::getPosFromTag)
             .collect(Collectors.toList());
         canExcavate = nbt.getBoolean("canExcavate");
         rotation = NBTUtilBC.readEnum(nbt.get("rotation"), Rotation.class);
@@ -395,7 +396,7 @@ public class TileBuilder extends TileBC_Neptune
     @Override
     @OnlyIn(Dist.CLIENT)
     public AABB getRenderBoundingBox() {
-        return BoundingBoxUtil.makeFrom(getPos(), getBox(), path);
+        return BoundingBoxUtil.makeFrom(getBlockPos(), getBox(), path);
     }
 
     @Override

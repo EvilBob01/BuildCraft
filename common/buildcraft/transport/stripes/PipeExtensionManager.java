@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -217,7 +217,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
 
     private void extend(Level w, PipeExtensionRequest r) {
         BlockPos p = r.pos.offset(r.dir);
-        if (!w.isAirBlock(p) && !w.getBlockState(p).getBlock().isReplaceable(w, p)) {
+        if (!w.isEmptyBlock(p) && !w.getBlockState(p).getBlock().isReplaceable(w, p)) {
             r.stripes.sendItem(r.stack.copy(), r.dir);
             return;
         }
@@ -381,7 +381,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         public final ItemStack stack;
 
         private PipeExtensionRequest(BlockPos pos, Direction dir, IStripesActivator stripes, PipeDefinition pipeDef, ItemStack stack) {
-            this.pos = pos;
+            this.worldPosition = pos;
             this.dir = dir;
             this.stripes = stripes;
             this.pipeDef = pipeDef;

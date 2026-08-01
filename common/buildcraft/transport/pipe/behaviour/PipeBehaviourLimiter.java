@@ -55,13 +55,13 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
     }
 
     @Override
-    public void readPayload(FriendlyByteBuf buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(FriendlyByteBuf buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         limitShift = buffer.readUnsignedByte();
     }
 
     @Override
-    public void writePayload(FriendlyByteBuf buffer, Side side) {
+    public void writePayload(FriendlyByteBuf buffer, Dist side) {
         super.writePayload(buffer, side);
         buffer.writeByte(limitShift);
     }

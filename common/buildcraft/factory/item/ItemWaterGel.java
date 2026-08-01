@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.util.SoundCategory;
@@ -33,7 +33,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
         Vec3 look = player.getLookVec();
@@ -41,12 +41,12 @@ public class ItemWaterGel extends ItemBC_Neptune {
         BlockHitResult ray = world.rayTraceBlocks(start, end, true, false, true);
 
         if (ray == null || ray.getBlockPos() == null) {
-            return new ActionResult<>(InteractionResult.FAIL, stack);
+            return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
         }
 
         Block b = world.getBlockState(ray.getBlockPos()).getBlock();
         if (b != Blocks.WATER) {
-            return new ActionResult<>(InteractionResult.FAIL, stack);
+            return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
         }
 
         if (!player.getAbilities().instabuild) {
@@ -60,7 +60,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
 
         if (!world.isClientSide) {
             world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.defaultBlockState().withProperty(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0));
-            world.scheduleUpdate(ray.getBlockPos(), BCFactoryBlocks.waterGel, 200);
+            world.scheduleTick(ray.getBlockPos(), BCFactoryBlocks.waterGel, 200);
 
             // TODO: Snowball stuff
 
@@ -70,7 +70,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
         }
 
         // player.addStat(StatList.getObjectUseStats(this));
-        return new ActionResult<>(InteractionResult.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
 }

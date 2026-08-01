@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -179,10 +179,10 @@ public final class BlockUtil {
             return false;
         }
 
-        if (!world.isAirBlock(pos) && !world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
+        if (!world.isEmptyBlock(pos) && !world.isClientSide && world.getGameRules().getBoolean("doTileDrops")) {
             drops.addAll(getItemStackFromBlock(world, pos, owner));
         }
-        world.setBlockToAir(pos);
+        world.removeBlock(pos, false);
 
         return true;
     }
@@ -197,7 +197,7 @@ public final class BlockUtil {
         entityitem.lifespan = forcedLifespan;
         entityitem.setDefaultPickupDelay();
 
-        world.spawnEntity(entityitem);
+        world.addFreshEntity(entityitem);
     }
 
     public static Optional<List<ItemStack>> breakBlockAndGetDrops(ServerLevel world, BlockPos pos,

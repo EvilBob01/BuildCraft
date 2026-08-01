@@ -94,7 +94,7 @@ public final class PatternSpherePart extends Pattern implements IFillerPatternSh
 
         Axis axis = facing.face.getAxis();
         Vec3 offset = VecUtil.offset(Vec3.ZERO, facing.face, VecUtil.getValue(radius, axis));
-        center = center.add(offset);
+        center = center.offset(offset);
         radius = VecUtil.replaceValue(radius, axis, VecUtil.getValue(radius, axis) * 2);
 
         if (type.openFaces > 1) {
@@ -108,7 +108,7 @@ public final class PatternSpherePart extends Pattern implements IFillerPatternSh
             innerSides.add(secondaryFace);
 
             offset = VecUtil.offset(Vec3.ZERO, secondaryFace, VecUtil.getValue(radius, secondaryAxis));
-            center = center.add(offset);
+            center = center.offset(offset);
             radius = VecUtil.replaceValue(radius, secondaryAxis, VecUtil.getValue(radius, secondaryAxis) * 2);
 
             if (type.openFaces > 2) {
@@ -123,7 +123,7 @@ public final class PatternSpherePart extends Pattern implements IFillerPatternSh
                 innerSides.add(tertiaryFace);
 
                 offset = VecUtil.offset(Vec3.ZERO, tertiaryFace, VecUtil.getValue(radius, tertiaryAxis));
-                center = center.add(offset);
+                center = center.offset(offset);
                 radius = VecUtil.replaceValue(radius, tertiaryAxis, VecUtil.getValue(radius, tertiaryAxis) * 2);
             }
         }

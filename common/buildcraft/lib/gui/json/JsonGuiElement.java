@@ -15,7 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.GsonHelper;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.gui.json.JsonGuiIterator.ResolvedIterator;
@@ -60,7 +60,7 @@ public class JsonGuiElement extends JsonVariableObject {
             this.context = new FunctionContext(context);
             this.types = typeLookup;
 
-            String str = JsonUtils.getString(json, "type", null);
+            String str = GsonHelper.getString(json, "type", null);
             if (str != null) {
                 JsonGuiElement parent = typeLookup.get(str);
                 if (parent != null) {

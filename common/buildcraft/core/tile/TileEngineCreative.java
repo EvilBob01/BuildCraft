@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
@@ -33,7 +34,7 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     public int currentOutputIndex = 0;
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -43,7 +44,7 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -119,7 +120,7 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
         float hitZ) {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty() && stack.getItem() instanceof IToolWrench) {
-            if (!world.isClientSide) {
+            if (!level.isClientSide) {
                 currentOutputIndex++;
                 currentOutputIndex %= outputs.length;
                 player.sendStatusMessage(
@@ -132,15 +133,15 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putInt("currentOutputIndex", currentOutputIndex);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         currentOutputIndex = nbt.getInt("currentOutputIndex");
         currentOutputIndex = MathUtil.clamp(currentOutputIndex, 0, outputs.length);
     }

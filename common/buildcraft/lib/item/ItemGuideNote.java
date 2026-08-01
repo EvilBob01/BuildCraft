@@ -2,7 +2,7 @@ package buildcraft.lib.item;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
@@ -27,8 +27,8 @@ public class ItemGuideNote extends ItemBC_Neptune {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         player.openGui(BCLib.INSTANCE, 1, world, 0, 0, 0);
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 }

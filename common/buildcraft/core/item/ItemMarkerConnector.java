@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -54,7 +54,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         if (!world.isClientSide) {
             for (MarkerCache<?> cache : MarkerCache.CACHES) {
                 if (interactCache(cache.getSubCache(world), player)) {
@@ -63,7 +63,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                 }
             }
         }
-        return new ActionResult<>(onItemRightClickVolumeBoxes(world, player), player.getItemInHand(hand));
+        return new InteractionResultHolder<>(onItemRightClickVolumeBoxes(world, player), player.getItemInHand(hand));
     }
 
     private static <S extends MarkerSubCache<?>> boolean interactCache(S cache, Player player) {

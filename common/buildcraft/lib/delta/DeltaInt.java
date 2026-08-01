@@ -1,9 +1,10 @@
-﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.delta;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -149,7 +150,7 @@ public class DeltaInt {
         manager.sendDeltaMessage(EnumDeltaMessage.SET_VALUE, this, (buffer) -> buffer.writeInt(value));
     }
 
-    public void readFromNBT(CompoundTag nbt) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         tick = nbt.getLong("tick");
         staticStartValue = nbt.getInt("static-start");
         staticEndValue = nbt.getInt("static-end");

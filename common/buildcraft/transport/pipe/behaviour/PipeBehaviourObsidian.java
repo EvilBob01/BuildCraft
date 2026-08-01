@@ -138,7 +138,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
         Long tickPickupObj = entityDropTime.get(entity);
         if (tickPickupObj != null) {
             long tickPickup = tickPickupObj;
-            long tickNow = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+            long tickNow = pipe.getHolder().getPipeWorld().getGameTime();
             if (tickNow < tickPickup) {
                 return power;
             } else {
@@ -180,7 +180,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
 
     @PipeEventHandler
     public void onPipeDrop(PipeEventItem.Drop drop) {
-        entityDropTime.put(drop.getEntity(), pipe.getHolder().getPipeWorld().getTotalWorldTime() + DROP_GAP);
+        entityDropTime.put(drop.getEntity(), pipe.getHolder().getPipeWorld().getGameTime() + DROP_GAP);
     }
 
     // IMjRedstoneReceiver

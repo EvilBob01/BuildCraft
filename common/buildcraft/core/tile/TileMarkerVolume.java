@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.List;
 
@@ -70,22 +71,22 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.putBoolean("showSignals", showSignals);
         return nbt;
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         showSignals = nbt.getBoolean("showSignals");
     }
 
     public void switchSignals() {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             showSignals = !showSignals;
-            markDirty();
+            setChanged();
             sendNetworkUpdate(showSignals ? NET_SIGNALS_ON : NET_SIGNALS_OFF);
         }
     }
@@ -99,7 +100,7 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -109,7 +110,7 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_SIGNALS_ON) {
@@ -137,8 +138,8 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
 
     public void onManualConnectionAttempt(Player player) {
         MarkerSubCache<VolumeConnection> cache = this.getLocalCache();
-        for (BlockPos other : cache.getValidConnections(getPos())) {
-            cache.tryConnect(getPos(), other);
+        for (BlockPos other : cache.getValidConnections(getBlockPos())) {
+            cache.tryConnect(getBlockPos(), other);
         }
         VolumeConnection c = getCurrentConnection();
         if (c != null) {
@@ -155,10 +156,10 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
         super.onPlacedBy(placer, stack);
         // Check if we are the corner of an existing box
         MarkerSubCache<VolumeConnection> cache = this.getLocalCache();
-        for (BlockPos other : cache.getValidConnections(getPos())) {
+        for (BlockPos other : cache.getValidConnections(getBlockPos())) {
             VolumeConnection c = cache.getConnection(other);
-            if (c != null && c.getBox().isCorner(pos)) {
-                if (c.addMarker(pos)) {
+            if (c != null && c.getBox().isCorner(worldPosition)) {
+                if (c.addMarker(worldPosition)) {
                     // In theory we can't be the corner for multiple boxes
                     break;
                 }
@@ -179,18 +180,18 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     @Override
     public BlockPos min() {
         VolumeConnection connection = getCurrentConnection();
-        return connection == null ? getPos() : connection.getBox().min();
+        return connection == null ? getBlockPos() : connection.getBox().min();
     }
 
     @Override
     public BlockPos max() {
         VolumeConnection connection = getCurrentConnection();
-        return connection == null ? getPos() : connection.getBox().max();
+        return connection == null ? getBlockPos() : connection.getBox().max();
     }
 
     @Override
     public void removeFromWorld() {
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             return;
         }
         VolumeConnection connection = getCurrentConnection();
@@ -198,7 +199,7 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
             // Copy the list over because the iterator doesn't like it if you change the connection while using it
             List<BlockPos> allPositions = ImmutableList.copyOf(connection.getMarkerPositions());
             for (BlockPos p : allPositions) {
-                world.destroyBlock(p, true);
+                level.destroyBlock(p, true);
             }
         }
     }
@@ -210,11 +211,11 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
             return false;
         }
         Box box = connection.getBox();
-        if (box.contains(pos)) {
+        if (box.contains(worldPosition)) {
             return false;
         }
         for (BlockPos p : PositionUtil.getCorners(box.min(), box.max())) {
-            if (PositionUtil.isNextTo(p, pos)) {
+            if (PositionUtil.isNextTo(p, worldPosition)) {
                 return true;
             }
         }

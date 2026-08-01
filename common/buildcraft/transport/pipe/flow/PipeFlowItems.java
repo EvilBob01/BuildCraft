@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -75,7 +75,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
     public PipeFlowItems(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
         ListTag list = nbt.getList("items", Tag.TAG_COMPOUND);
-        long tickNow = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+        long tickNow = pipe.getHolder().getPipeWorld().getGameTime();
         for (int i = 0; i < list.size(); i++) {
             TravellingItem item = new TravellingItem(list.getCompoundTagAt(i), tickNow);
             if (!item.stack.isEmpty()) {
@@ -90,7 +90,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         List<List<TravellingItem>> allItems = items.getAllElements();
         ListTag list = new ListTag();
 
-        long tickNow = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+        long tickNow = pipe.getHolder().getPipeWorld().getGameTime();
         for (List<TravellingItem> l : allItems) {
             for (TravellingItem item : l) {
                 list.appendTag(item.writeToNbt(tickNow));
@@ -115,7 +115,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
                 item.side = buffer.readEnumValue(Direction.class);
                 item.colour = MessageUtil.readEnumOrNull(buffer, DyeColor.class);
                 item.timeToDest = buffer.readUnsignedShort();
-                item.tickStarted = pipe.getHolder().getPipeWorld().getTotalWorldTime() + 1;
+                item.tickStarted = pipe.getHolder().getPipeWorld().getGameTime() + 1;
                 item.tickFinished = item.tickStarted + item.timeToDest;
                 items.add(item.timeToDest + 1, item);
             }
@@ -137,7 +137,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         item.side = data.side;
         item.colour = data.colour;
         item.timeToDest = data.timeToDest;
-        item.tickStarted = pipe.getHolder().getPipeWorld().getTotalWorldTime() + 1;
+        item.tickStarted = pipe.getHolder().getPipeWorld().getGameTime() + 1;
         item.tickFinished = item.tickStarted + item.timeToDest;
         items.add(item.timeToDest + 1, item);
     }
@@ -231,7 +231,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         face1 = from == null ? to : null;
         face2 = to;
 
-        long now = pipe.getHolder().getPipeWorld().getTotalWorldTime();
+        long now = pipe.getHolder().getPipeWorld().getGameTime();
 
         TravellingItem firstItem = new TravellingItem(stack);
         firstItem.isPhantom = true;
@@ -284,7 +284,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         Level world = pipe.getHolder().getPipeWorld();
 
         List<TravellingItem> toTick = items.advance();
-        long currentTime = world.getTotalWorldTime();
+        long currentTime = world.getGameTime();
 
         for (TravellingItem item : toTick) {
             if (item.tickFinished > currentTime) {
@@ -359,7 +359,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         holder.fireEvent(findDest);
 
         Level world = holder.getPipeWorld();
-        long now = world.getTotalWorldTime();
+        long now = world.getGameTime();
         for (PipeEventItem.ItemEntry itemEntry : findDest.items) {
             if (itemEntry.stack.isEmpty()) {
                 continue;
@@ -463,7 +463,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         item.tried.add(item.side);
         item.toCenter = true;
         item.stack = excess;
-        item.genTimings(holder.getPipeWorld().getTotalWorldTime(), getPipeLength(item.side));
+        item.genTimings(holder.getPipeWorld().getGameTime(), getPipeLength(item.side));
         items.add(item.timeToDest, item);
         sendItemDataToClient(item);
     }
@@ -508,7 +508,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
             return;
         }
 
-        world.spawnEntity(ent);
+        world.addFreshEntity(ent);
     }
 
     @Override
@@ -564,7 +564,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         if (speed < 0.01) {
             speed = 0.01;
         }
-        long now = world.getTotalWorldTime();
+        long now = world.getGameTime();
         TravellingItem item = new TravellingItem(stack);
         if (from == null) {
             // Find a reasonable alternative (as it's not allowed to be null)
@@ -605,7 +605,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         }
 
         Level world = pipe.getHolder().getPipeWorld();
-        long now = world.getTotalWorldTime();
+        long now = world.getGameTime();
 
         TravellingItem item = new TravellingItem(toInsert);
         item.side = from;

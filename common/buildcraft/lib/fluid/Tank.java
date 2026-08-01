@@ -122,7 +122,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     @Override
     public final CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+        super.saveAdditional(nbt, registries);
         writeTankToNBT(nbt);
         return nbt;
     }
@@ -132,10 +132,10 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         if (nbt.contains(name)) {
             // Old style of saving + loading
             CompoundTag tankData = nbt.getCompound(name);
-            super.loadAdditional(tankData);
+            super.loadAdditional(tankData, registries);
             readTankFromNBT(tankData);
         } else {
-            super.loadAdditional(nbt);
+            super.loadAdditional(nbt, registries);
             readTankFromNBT(nbt);
         }
         return this;

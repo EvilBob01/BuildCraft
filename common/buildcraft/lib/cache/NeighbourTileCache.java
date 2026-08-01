@@ -1,4 +1,4 @@
-﻿package buildcraft.lib.cache;
+package buildcraft.lib.cache;
 
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
@@ -57,7 +57,7 @@ public class NeighbourTileCache implements ITileCache {
             lastSeenTilePos = tPos.toImmutable();
             cachedTiles.clear();
         }
-        if (!w.isBlockLoaded(lastSeenTilePos)) {
+        if (!w.isLoaded(lastSeenTilePos)) {
             cachedTiles.clear();
             return false;
         }
@@ -81,7 +81,7 @@ public class NeighbourTileCache implements ITileCache {
             } else {
                 Level w = tile.getLevel();
                 // Unfortunately tile.isInvalid is false even when it is unloaded
-                if (w == null || !w.isBlockLoaded(lastSeenTilePos.offset(offset))) {
+                if (w == null || !w.isLoaded(lastSeenTilePos.offset(offset))) {
                     cachedTiles.remove(offset);
                 } else {
                     return new TileCacheRet(oTile);

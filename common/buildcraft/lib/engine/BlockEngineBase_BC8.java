@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -108,7 +108,7 @@ public abstract class BlockEngineBase_BC8<E extends Enum<E> & IEngineType> exten
 
     @Override
     public BlockFaceShape getBlockFaceShape(BlockGetter world, BlockState state, BlockPos pos, Direction side) {
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(worldPosition);
         if (tile instanceof TileEngineBase_BC8) {
             TileEngineBase_BC8 engine = (TileEngineBase_BC8) tile;
             if (side == engine.currentDirection.getOpposite()) {
@@ -122,7 +122,7 @@ public abstract class BlockEngineBase_BC8<E extends Enum<E> & IEngineType> exten
 
     @Override
     public boolean isSideSolid(BlockState base_state, BlockGetter world, BlockPos pos, Direction side) {
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(worldPosition);
         if (tile instanceof TileEngineBase_BC8) {
             TileEngineBase_BC8 engine = (TileEngineBase_BC8) tile;
             return side == engine.currentDirection.getOpposite();
@@ -143,7 +143,7 @@ public abstract class BlockEngineBase_BC8<E extends Enum<E> & IEngineType> exten
             return null;
         }
         TileEngineBase_BC8 tile = constructor.get();
-        tile.setWorld(world);
+        tile.setLevel(level);
         return tile;
     }
 
@@ -164,8 +164,8 @@ public abstract class BlockEngineBase_BC8<E extends Enum<E> & IEngineType> exten
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos) {
         super.neighborChanged(state, world, pos, block, fromPos);
-        if (world.isClientSide) return;
-        BlockEntity tile = world.getBlockEntity(pos);
+        if (level.isClientSide) return;
+        BlockEntity tile = level.getBlockEntity(worldPosition);
         if (tile instanceof TileEngineBase_BC8) {
             TileEngineBase_BC8 engine = (TileEngineBase_BC8) tile;
             engine.rotateIfInvalid();
@@ -176,7 +176,7 @@ public abstract class BlockEngineBase_BC8<E extends Enum<E> & IEngineType> exten
 
     @Override
     public InteractionResult attemptRotation(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(worldPosition);
         if (tile instanceof TileEngineBase_BC8) {
             TileEngineBase_BC8 engine = (TileEngineBase_BC8) tile;
             return engine.attemptRotation();

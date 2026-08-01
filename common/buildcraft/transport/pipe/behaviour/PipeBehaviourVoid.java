@@ -42,7 +42,7 @@ public class PipeBehaviourVoid extends PipeBehaviour {
         /*
         Level world = move.holder.getPipeWorld();
         BlockPos pos = move.holder.getPipePos();
-        if (removed > 0 && (world.getTotalWorldTime() + pos.toLong()) % 23 == 0) {
+        if (removed > 0 && (world.getGameTime() + pos.toLong()) % 23 == 0) {
             SoundType soundType = SoundType.SLIME;
             final SoundEvent soundEvent;
             Fluid f = move.fluid.getFluid();

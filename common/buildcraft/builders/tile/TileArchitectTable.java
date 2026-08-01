@@ -6,6 +6,7 @@
  */
 package buildcraft.builders.tile;
 
+import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -120,11 +121,11 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         if (placer.level().isClientSide) {
             return;
         }
-        WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
-        BlockState blockState = world.getBlockState(pos);
-        BlockPos offsetPos = pos.offset(blockState.getValue(BlockArchitectTable.PROP_FACING).getOpposite());
+        WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(level);
+        BlockState blockState = level.getBlockState(worldPosition);
+        BlockPos offsetPos = worldPosition.offset(blockState.getValue(BlockArchitectTable.PROP_FACING).getOpposite());
         VolumeBox volumeBox = volumeBoxes.getVolumeBoxAt(offsetPos);
-        BlockEntity tile = world.getBlockEntity(offsetPos);
+        BlockEntity tile = level.getBlockEntity(offsetPos);
         if (volumeBox != null) {
             box.reset();
             box.setMin(volumeBox.box.min());
@@ -132,7 +133,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
             isValid = true;
             volumeBox.locks.add(
                 new Lock(
-                    new Lock.Cause.CauseBlock(pos, blockState.getBlock()),
+                    new Lock.Cause.CauseBlock(worldPosition, blockState.getBlock()),
                     new Lock.Target.TargetRemove(),
                     new Lock.Target.TargetResize(),
                     new Lock.Target.TargetUsedByMachine(
@@ -152,9 +153,9 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
             provider.removeFromWorld();
         } else {
             isValid = false;
-            BlockState state = world.getBlockState(pos);
+            BlockState state = level.getBlockState(worldPosition);
             state = state.withProperty(BlockArchitectTable.PROP_VALID, Boolean.FALSE);
-            world.setBlock(pos, state);
+            level.setBlock(worldPosition, state);
         }
     }
 
@@ -162,7 +163,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     public void update() {
         deltaManager.tick();
 
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             if (box.isInitialized()) {
                 ClientArchitectTables.BOXES.put(box.getBoundingBox(), ClientArchitectTables.START_BOX_VALUE);
             }
@@ -216,7 +217,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         BlockPos worldScanPos = boxIterator.getCurrent();
         BlockPos schematicPos = worldScanPos.subtract(box.min());
         if (snapshotType == EnumSnapshotType.TEMPLATE) {
-            templateScannedBlocks.set(Snapshot.posToIndex(box.size(), schematicPos), !world.isAirBlock(worldScanPos));
+            templateScannedBlocks.set(Snapshot.posToIndex(box.size(), schematicPos), !level.isEmptyBlock(worldScanPos));
         }
         if (snapshotType == EnumSnapshotType.BLUEPRINT) {
             ISchematicBlock schematicBlock = readSchematicBlock(worldScanPos);
@@ -246,13 +247,13 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
             world,
             box.min(),
             worldScanPos,
-            world.getBlockState(worldScanPos),
-            world.getBlockState(worldScanPos).getBlock()
+            level.getBlockState(worldScanPos),
+            level.getBlockState(worldScanPos).getBlock()
         ));
     }
 
     private void scanEntities() {
-        world.getEntitiesWithinAABB(Entity.class, box.getBoundingBox()).stream()
+        level.getEntitiesWithinAABB(Entity.class, box.getBoundingBox()).stream()
             .map(entity ->
                 SchematicEntityManager.getSchematicEntity(new SchematicEntityContext(
                     world,
@@ -274,7 +275,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         Snapshot snapshot = Snapshot.create(snapshotType);
         snapshot.size = box.size();
         snapshot.facing = facing;
-        snapshot.offset = box.min().subtract(pos.offset(facing.getOpposite()));
+        snapshot.offset = box.min().subtract(worldPosition.offset(facing.getOpposite()));
         if (snapshot instanceof Template) {
             ((Template) snapshot).data = templateScannedBlocks;
         }
@@ -284,7 +285,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
             ((Blueprint) snapshot).entities.addAll(blueprintScannedEntities);
         }
         snapshot.computeKey();
-        GlobalSavedDataSnapshots.get(world).addSnapshot(snapshot);
+        GlobalSavedDataSnapshots.get(level).addSnapshot(snapshot);
         ItemStack stackIn = invSnapshotIn.getStackInSlot(0);
         stackIn.setCount(stackIn.getCount() - 1);
         if (stackIn.getCount() == 0) {
@@ -312,7 +313,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void writePayload(int id, PacketBufferBC buffer, Side side) {
+    public void writePayload(int id, PacketBufferBC buffer, Dist side) {
         super.writePayload(id, buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
             if (id == NET_RENDER_DATA) {
@@ -326,7 +327,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
+    public void readPayload(int id, PacketBufferBC buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Dist.CLIENT) {
             if (id == NET_RENDER_DATA) {
@@ -345,8 +346,8 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         nbt.put("box", box.saveAdditional());
         nbt.putBoolean("markerBox", markerBox);
         if (boxIterator != null) {
@@ -360,8 +361,8 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     }
 
     @Override
-    public void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
         box.initialize(nbt.getCompound("box"));
         markerBox = nbt.getBoolean("markerBox");
         if (nbt.contains("iter")) {
@@ -388,7 +389,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     @Override
     @OnlyIn(Dist.CLIENT)
     public AABB getRenderBoundingBox() {
-        return BoundingBoxUtil.makeFrom(pos, box);
+        return BoundingBoxUtil.makeFrom(worldPosition, box);
     }
 
     @Override

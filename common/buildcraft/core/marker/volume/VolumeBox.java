@@ -20,7 +20,7 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -43,28 +43,28 @@ public class VolumeBox {
 
     public VolumeBox(Level world, BlockPos at) {
         if (world == null) throw new NullPointerException("world");
-        this.world = world;
+        this.level = world;
         id = UUID.randomUUID();
         box = new Box(at, at);
     }
 
     public VolumeBox(Level world, CompoundTag nbt) {
         if (world == null) throw new NullPointerException("world");
-        this.world = world;
+        this.level = world;
         id = nbt.getUniqueId("id");
         box = new Box();
         box.initialize(nbt.getCompound("box"));
-        player = nbt.contains("player") ? NBTUtil.getUUIDFromTag(nbt.getCompound("player")) : null;
-        oldPlayer = nbt.contains("oldPlayer") ? NBTUtil.getUUIDFromTag(nbt.getCompound("oldPlayer")) : null;
+        player = nbt.contains("player") ? NbtUtils.getUUIDFromTag(nbt.getCompound("player")) : null;
+        oldPlayer = nbt.contains("oldPlayer") ? NbtUtils.getUUIDFromTag(nbt.getCompound("oldPlayer")) : null;
         if (nbt.contains("held")) {
-            held = NBTUtil.getPosFromTag(nbt.getCompound("held"));
+            held = NbtUtils.getPosFromTag(nbt.getCompound("held"));
         }
         dist = nbt.getDouble("dist");
         if (nbt.contains("oldMin")) {
-            oldMin = NBTUtil.getPosFromTag(nbt.getCompound("oldMin"));
+            oldMin = NbtUtils.getPosFromTag(nbt.getCompound("oldMin"));
         }
         if (nbt.contains("oldMax")) {
-            oldMax = NBTUtil.getPosFromTag(nbt.getCompound("oldMax"));
+            oldMax = NbtUtils.getPosFromTag(nbt.getCompound("oldMax"));
         }
         NBTUtilBC.readCompoundList(nbt.get("addons")).forEach(addonsEntryTag -> {
             Class<? extends Addon> addonClass =
@@ -89,7 +89,7 @@ public class VolumeBox {
 
     public VolumeBox(Level world, PacketBufferBC buf) throws IOException {
         if (world == null) throw new NullPointerException("world");
-        this.world = world;
+        this.level = world;
         fromBytes(buf);
     }
 
@@ -143,7 +143,7 @@ public class VolumeBox {
 
     @SuppressWarnings("WeakerAccess")
     public Player getPlayer(Level world) {
-        return world.getPlayerEntityByUUID(player);
+        return world.getPlayerByUUID(player);
     }
 
     public void setHeldDistOldMinOldMax(BlockPos held, double dist, BlockPos oldMin, BlockPos oldMax) {
@@ -172,20 +172,20 @@ public class VolumeBox {
         nbt.setUniqueId("id", id);
         nbt.put("box", this.box.saveAdditional());
         if (player != null) {
-            nbt.put("player", NBTUtil.createUUIDTag(player));
+            nbt.put("player", NbtUtils.createUUIDTag(player));
         }
         if (oldPlayer != null) {
-            nbt.put("oldPlayer", NBTUtil.createUUIDTag(oldPlayer));
+            nbt.put("oldPlayer", NbtUtils.createUUIDTag(oldPlayer));
         }
         if (held != null) {
-            nbt.put("held", NBTUtil.createPosTag(held));
+            nbt.put("held", NbtUtils.createPosTag(held));
         }
         nbt.putDouble("dist", dist);
         if (oldMin != null) {
-            nbt.put("oldMin", NBTUtil.createPosTag(oldMin));
+            nbt.put("oldMin", NbtUtils.createPosTag(oldMin));
         }
         if (oldMax != null) {
-            nbt.put("oldMax", NBTUtil.createPosTag(oldMax));
+            nbt.put("oldMax", NbtUtils.createPosTag(oldMax));
         }
         nbt.put(
             "addons",
