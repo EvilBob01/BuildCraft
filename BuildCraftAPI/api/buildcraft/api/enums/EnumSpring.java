@@ -6,11 +6,11 @@ import java.util.function.Supplier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
-public enum EnumSpring implements IStringSerializable {
+public enum EnumSpring implements StringRepresentable {
     WATER(5, -1, Blocks.WATER.getDefaultState()),
     OIL(6000, 8, null); // Set in BuildCraftEnergy
 
@@ -34,7 +34,8 @@ public enum EnumSpring implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return lowerCaseName;
     }
+    public String getName() { return getSerializedName(); }
 }

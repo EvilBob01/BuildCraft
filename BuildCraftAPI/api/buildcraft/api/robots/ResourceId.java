@@ -11,7 +11,7 @@ public abstract class ResourceId {
     protected ResourceId() {}
 
     public void writeToNBT(CompoundTag nbt) {
-        nbt.setString("resourceName", RobotManager.getResourceIdName(getClass()));
+        nbt.putString("resourceName", RobotManager.getResourceIdName(getClass()));
     }
 
     protected void readFromNBT(CompoundTag nbt) {}
@@ -19,7 +19,7 @@ public abstract class ResourceId {
     public static ResourceId load(CompoundTag nbt) {
         try {
             Class<?> cls;
-            if (nbt.hasKey("class")) {
+            if (nbt.contains("class")) {
                 // Migration support for 6.4.x
                 cls = RobotManager.getResourceIdByLegacyClassName(nbt.getString("class"));
             } else {

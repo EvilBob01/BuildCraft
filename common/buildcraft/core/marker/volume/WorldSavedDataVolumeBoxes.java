@@ -106,7 +106,7 @@ public class WorldSavedDataVolumeBoxes extends SavedData {
     @Override
     public void setDirty() {
         super.setDirty();
-        MessageManager.sendToDimension(new MessageVolumeBoxes(volumeBoxes), world.provider.getDimension());
+        MessageManager.sendToDimension(new MessageVolumeBoxes(volumeBoxes), world.dimension().location().hashCode());
     }
 
     @SuppressWarnings("NullableProblems")

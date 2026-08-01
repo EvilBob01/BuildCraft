@@ -60,7 +60,7 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
         } else {
             buffer.writeBoolean(true);
             buffer.writeShort(Item.getIdFromItem(obj.getItem()));
-            buffer.writeShort(obj.getId());
+            buffer.writeShort(obj.getDamageValue());
             CompoundTag tag = null;
             if (obj.getItem().isDamageable() || obj.getItem().getShareTag()) {
                 tag = obj.getItem().getNBTShareTag(obj);

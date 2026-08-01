@@ -12,48 +12,56 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 
-public class FakeChunkProvider implements IChunkProvider {
+// TODO (Phase 7 — Rendering): ChunkSource is abstract and needs a LevelLightEngine; this stub provides
+// enough for FakeWorld block placement but will NPE if lighting is accessed.
+public class FakeChunkProvider extends ChunkSource {
     private final FakeWorld world;
-    public final Map<ChunkPos, Chunk> chunks = new HashMap<>();
+    public final Map<ChunkPos, LevelChunk> chunks = new HashMap<>();
 
     public FakeChunkProvider(FakeWorld world) {
-        this.level = world;
+        this.world = world;
     }
 
     @Nullable
     @Override
-    public LevelChunk getLoadedChunk(int x, int z) {
+    public LevelChunk getChunk(int x, int z, ChunkStatus status, boolean create) {
         ChunkPos chunkPos = new ChunkPos(x, z);
-        if (!chunks.containsKey(chunkPos)) {
-            chunks.put(chunkPos, new Chunk(world, x, z) {
-                @Override
-                public void generateSkylightMap() {
-                }
-            });
-        }
-        return chunks.get(chunkPos);
+        return chunks.computeIfAbsent(chunkPos, k -> new LevelChunk(world, k));
+    }
+
+    @Nullable
+    @Override
+    public LevelChunk getChunkNow(int x, int z) {
+        return chunks.get(new ChunkPos(x, z));
     }
 
     @Override
-    public LevelChunk provideChunk(int x, int z) {
-        return getLoadedChunk(x, z);
+    public LevelLightEngine getLightEngine() {
+        return null; // TODO Phase 7
     }
 
     @Override
-    public boolean tick() {
-        return false;
-    }
-
-    @Override
-    public String makeString() {
+    public String gatherStats() {
         return "fake";
     }
 
     @Override
-    public boolean isChunkGeneratedAt(int x, int z) {
-        return true;
+    public int getLoadedChunksCount() {
+        return chunks.size();
+    }
+
+    @Override
+    public void tick(java.util.function.BooleanSupplier hasTimeLeft, boolean tickChunks) {}
+
+    @Override
+    public net.minecraft.world.level.chunk.LightChunkGetter getLightChunkGetter() {
+        return null; // TODO Phase 7
     }
 }

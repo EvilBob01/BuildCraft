@@ -4,11 +4,11 @@ import java.util.Locale;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import buildcraft.api.BCItems;
 
-public enum EnumRedstoneChipset implements IStringSerializable {
+public enum EnumRedstoneChipset implements StringRepresentable {
     RED,
     IRON,
     GOLD,
@@ -45,7 +45,8 @@ public enum EnumRedstoneChipset implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name;
     }
+    public String getName() { return getSerializedName(); }
 }

@@ -222,7 +222,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                 mc.world,
                 new ZonePlannerMapChunkKey(
                     new ChunkPos(chunkX, chunkZ),
-                    mc.world.provider.getDimension(),
+                    mc.world.dimension().location().hashCode(),
                     container.tile.getLevel()
                 )
             );
@@ -252,7 +252,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
         scaleSpeed *= 0.7F;
         int posX = (int) positionX;
         int posZ = (int) positionZ;
-        int dimension = mc.world.provider.getDimension();
+        int dimension = mc.world.dimension().location().hashCode();
         {
             ChunkPos chunkPos = new ChunkPos(posX >> 4, posZ >> 4);
             ZonePlannerMapChunk zonePlannerMapChunk = ZonePlannerMapDataClient.INSTANCE.getChunk(
@@ -382,7 +382,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                 mc.world,
                 new ZonePlannerMapChunkKey(
                     new ChunkPos(found),
-                    mc.world.provider.getDimension(),
+                    mc.world.dimension().location().hashCode(),
                     container.tile.getLevel()
                 )
             );

@@ -7,6 +7,7 @@
 package buildcraft.lib.client.guide.parts.recipe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,15 +25,14 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.NonNullList;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.common.Tags;
-
 import buildcraft.lib.client.guide.parts.GuidePartFactory;
 import buildcraft.lib.misc.ItemStackKey;
 import buildcraft.lib.misc.StackUtil;
 import buildcraft.lib.recipe.ChangingItemStack;
 import buildcraft.lib.recipe.IRecipeViewable;
 
+// TODO (Phase 6 — GUI): ForgeRegistries.RECIPES was removed in 1.21; recipe iteration now requires a RecipeManager
+// from Minecraft.getInstance().getConnection().getRecipeManager(). Index generation is currently stubbed to empty.
 public enum GuideCraftingRecipes implements IStackRecipes {
     INSTANCE;
 
@@ -42,15 +42,10 @@ public enum GuideCraftingRecipes implements IStackRecipes {
 
     @Override
     public List<GuidePartFactory> getUsages(@Nonnull ItemStack target) {
-        final Iterable<Recipe> recipes;
-        if (USE_INDEX) {
-            generateInputIndex();
-            recipes = inputIndexMap.get(target.getItem());
-            if (recipes == null) {
-                return ImmutableList.of();
-            }
-        } else {
-            recipes = ForgeRegistries.RECIPES;
+        generateInputIndex();
+        Set<Recipe> recipes = inputIndexMap.get(target.getItem());
+        if (recipes == null) {
+            return ImmutableList.of();
         }
 
         List<GuidePartFactory> list = new ArrayList<>();
@@ -66,29 +61,19 @@ public enum GuideCraftingRecipes implements IStackRecipes {
     }
 
     public void generateIndices() {
-        if (USE_INDEX) {
-            generateInputIndex();
-            generateOutputIndex();
-        }
+        generateInputIndex();
+        generateOutputIndex();
     }
 
     private void generateInputIndex() {
         if (inputIndexMap == null) {
             inputIndexMap = new IdentityHashMap<>();
-            for (Recipe recipe : ForgeRegistries.RECIPES) {
-                generateInputIndex0(recipe);
-            }
-        }
-    }
-
-    private void generateInputIndex0(Recipe recipe) {
-        for (Ingredient ing : recipe.getIngredients()) {
-            generateIngredientIndex(recipe, ing, inputIndexMap);
+            // TODO (Phase 6): iterate RecipeManager recipes here
         }
     }
 
     private static void generateIngredientIndex(Recipe recipe, Ingredient ing, Map<Item, Set<Recipe>> indexMap) {
-        for (ItemStack stack : ing.getMatchingStacks()) {
+        for (ItemStack stack : ing.getItems()) {
             appendIndex(stack, recipe, indexMap);
         }
     }
@@ -103,13 +88,13 @@ public enum GuideCraftingRecipes implements IStackRecipes {
     }
 
     private static boolean checkRecipeUses(Recipe recipe, @Nonnull ItemStack target) {
-        NonNullList<Ingredient> ingrediants = recipe.getIngredients();
-        if (ingrediants.isEmpty()) {
+        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        if (ingredients.isEmpty()) {
             if (recipe instanceof IRecipeViewable) {
                 // TODO!
             }
         }
-        for (Ingredient ing : ingrediants) {
+        for (Ingredient ing : ingredients) {
             if (ing.test(target)) {
                 return true;
             }
@@ -117,33 +102,12 @@ public enum GuideCraftingRecipes implements IStackRecipes {
         return false;
     }
 
-    private static boolean matches(@Nonnull ItemStack target, @Nullable Object in) {
-        if (in instanceof ItemStack) {
-            return StackUtil.doesEitherStackMatch((ItemStack) in, target);
-        } else if (in instanceof List) {
-            for (Object obj : (List<?>) in) {
-                if (obj instanceof ItemStack) {
-                    if (StackUtil.doesEitherStackMatch((ItemStack) obj, target)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public List<GuidePartFactory> getRecipes(@Nonnull ItemStack target) {
-        final Iterable<Recipe> recipes;
-        if (USE_INDEX) {
-            generateOutputIndex();
-            recipes = outputIndexMap.get(target.getItem());
-            if (recipes == null) {
-                return ImmutableList.of();
-            }
-
-        } else {
-            recipes = ForgeRegistries.RECIPES;
+        generateOutputIndex();
+        Set<Recipe> recipes = outputIndexMap.get(target.getItem());
+        if (recipes == null) {
+            return ImmutableList.of();
         }
 
         List<GuidePartFactory> list = new ArrayList<>();
@@ -161,26 +125,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
     private void generateOutputIndex() {
         if (outputIndexMap == null) {
             outputIndexMap = new IdentityHashMap<>();
-            for (Recipe recipe : ForgeRegistries.RECIPES) {
-                generateOutputIndex0(recipe);
-            }
-        }
-    }
-
-    private void generateOutputIndex0(Recipe recipe) {
-        if (recipe instanceof IRecipeViewable) {
-            ChangingItemStack changing = ((IRecipeViewable) recipe).getRecipeOutputs();
-            for (ItemStackKey stack : changing.getOptions()) {
-                appendIndex(stack.baseStack, recipe, outputIndexMap);
-            }
-        } else {
-            ItemStack output = recipe.getRecipeOutput();
-            if (!output.isEmpty()) {
-                appendIndex(output, recipe, outputIndexMap);
-            }
-        }
-        for (Ingredient ing : recipe.getIngredients()) {
-            generateIngredientIndex(recipe, ing, outputIndexMap);
+            // TODO (Phase 6): iterate RecipeManager recipes here
         }
     }
 
@@ -191,9 +136,21 @@ public enum GuideCraftingRecipes implements IStackRecipes {
                 return true;
             }
         } else {
-            ItemStack out = StackUtil.asNonNull(recipe.getRecipeOutput());
-            if (OreDictionary.itemMatches(target, out, false) || OreDictionary.itemMatches(out, target, false)) {
-                return true;
+            // TODO (Phase 6): recipe.getResultItem(RegistryAccess) requires a RegistryAccess; stub for now
+        }
+        return false;
+    }
+
+    private static boolean matches(@Nonnull ItemStack target, @Nullable Object in) {
+        if (in instanceof ItemStack) {
+            return StackUtil.doesEitherStackMatch((ItemStack) in, target);
+        } else if (in instanceof List) {
+            for (Object obj : (List<?>) in) {
+                if (obj instanceof ItemStack) {
+                    if (StackUtil.doesEitherStackMatch((ItemStack) obj, target)) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

@@ -69,7 +69,7 @@ public enum FacadeSwapRecipe implements Recipe, IRecipeViewable.IViewableGrid {
     @Override
     public ItemStack getCraftingResult(CraftingContainer inv) {
         ItemStack stackIn = StackUtil.EMPTY;
-        for (int s = 0; s < inv.getSizeInventory(); s++) {
+        for (int s = 0; s < inv.getContainerSize(); s++) {
             ItemStack stack = inv.getStackInSlot(s);
             if (!stack.isEmpty()) {
                 if (stackIn.isEmpty()) {
@@ -88,7 +88,7 @@ public enum FacadeSwapRecipe implements Recipe, IRecipeViewable.IViewableGrid {
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
         return StackUtil.EMPTY;
     }
 

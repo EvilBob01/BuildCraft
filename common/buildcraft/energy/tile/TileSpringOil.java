@@ -52,7 +52,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         // System.identityHashCode(this) + ", "+getBlockPos()+")");
         if (info.sourcesPumped >= totalSources * 7 / 8) {
             // BCLog.logger.info("Pumped nearly all oil blocks!");
-            if (oilPos.equals(getBlockPos().up())) {
+            if (oilPos.equals(getBlockPos().above())) {
                 AdvancementUtil.unlockAdvancement(profile.getId(), ADVANCEMENT_PUMP_LARGE_OIL_WELL);
             }
         }

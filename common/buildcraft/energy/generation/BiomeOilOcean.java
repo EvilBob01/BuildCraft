@@ -7,18 +7,10 @@
 package buildcraft.energy.generation;
 
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.biome.BiomeOcean;
 
-import net.neoforged.neoforge.registries.GameData;
-
-import buildcraft.energy.BCEnergy;
-
-public final class BiomeOilOcean extends BiomeOcean {
-    @GameRegistry.ObjectHolder(BCEnergy.MODID + ":oil_ocean")
+// TODO (Phase 8 — World Gen): 1.12 biome subclassing (BiomeOcean, BiomeProperties, setRegistryName) was removed in
+// 1.13. Oil biomes must be registered as data-driven JSON biomes in the data/buildcraftenergy/worldgen/biome/ folder.
+// The INSTANCE field below is a placeholder; wire it up via DeferredRegister<Biome> in Phase 10.
+public final class BiomeOilOcean {
     public static final Biome INSTANCE = null;
-
-    public BiomeOilOcean() {
-        super(new BiomeProperties("Ocean Oil Field").setBaseHeight(-1.0F).setHeightVariation(0.1F));
-        setRegistryName("oil_ocean");
-    }
 }

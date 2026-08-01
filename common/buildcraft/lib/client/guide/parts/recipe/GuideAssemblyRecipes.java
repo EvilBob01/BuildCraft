@@ -58,7 +58,7 @@ public enum GuideAssemblyRecipes implements IStackRecipes {
 
     private static GuideAssemblyFactory getFactory(AssemblyRecipe recipe, ItemStack output) {
         ChangingItemStack[] stacks = recipe.getInputsFor(output).stream().map(definition -> {
-                NonNullList<ItemStack> items = Arrays.stream(definition.ingredient.getMatchingStacks()).map(ItemStack::copy).collect(StackUtil.nonNullListCollector());
+                NonNullList<ItemStack> items = Arrays.stream(definition.ingredient.getItems()).map(ItemStack::copy).collect(StackUtil.nonNullListCollector());
                 items.forEach(stack -> stack.setCount(definition.count));
                 return items;
         }).map(ChangingItemStack::new).toArray(ChangingItemStack[]::new);

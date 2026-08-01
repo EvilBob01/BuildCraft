@@ -59,7 +59,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         addVariant(variants, 0, "clean");
         for (DyeColor colour : DyeColor.values()) {
-            addVariant(variants, colour.getId() + 1, colour.getName());
+            addVariant(variants, colour.getDamageValue() + 1, colour.getName());
         }
     }
 
@@ -144,7 +144,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         }
 
         public Brush(ItemStack stack) {
-            int meta = stack.getId();
+            int meta = stack.getDamageValue();
             if (meta > 0 && meta <= 16) {
                 colour = DyeColor.byId(meta - 1);
                 CompoundTag nbt = NBTUtilBC.getTag(stack);
@@ -166,7 +166,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         @Nonnull
         public ItemStack save(@Nonnull ItemStack existing) {
             ItemStack stack = existing;
-            if (existing.isEmpty() || existing.getId() != getMeta()) {
+            if (existing.isEmpty() || existing.getDamageValue() != getMeta()) {
                 stack = new ItemStack(ItemPaintbrush_BC8.this, 1);
             }
             if (usesLeft != MAX_USES && colour != null) {
@@ -181,7 +181,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         }
 
         public int getMeta() {
-            return (usesLeft <= 0 || colour == null) ? 0 : colour.getId() + 1;
+            return (usesLeft <= 0 || colour == null) ? 0 : colour.getDamageValue() + 1;
         }
 
         public boolean useOnBlock(Level world, BlockPos pos, BlockState state, Vec3 hitPos, Direction side, Player player) {

@@ -6,54 +6,9 @@
 
 package buildcraft.energy.generation;
 
-import java.util.Random;
-
-import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.gen.layer.IntCache;
-
-import buildcraft.lib.misc.data.SimplexNoise;
-
-public abstract class GenLayerBiomeReplacer extends GenLayer {
+// TODO (Phase 8 — World Gen): GenLayer and IntCache were removed in 1.13. Biome placement is now handled by
+// BiomeSource in the data-driven world gen pipeline (ConfiguredFeature / PlacedFeature). This stub preserves the
+// class name so subclass references compile; the actual replacement algorithm needs a NoiseBasedBiomeSource rewrite.
+public abstract class GenLayerBiomeReplacer {
     public static final int OFFSET_RANGE = 500000;
-    protected final double xOffset;
-    protected final double zOffset;
-    protected final double noiseScale;
-    protected final double noiseThreshold;
-    protected final int newBiomeId;
-
-    public GenLayerBiomeReplacer(long worldSeed, long seed, GenLayer parent, double noiseScale, double noiseThreshold,
-        int newBiomeId) {
-        super(seed);
-        this.parent = parent;
-        this.noiseScale = noiseScale;
-        this.noiseThreshold = noiseThreshold;
-        this.newBiomeId = newBiomeId;
-        Random rand = new Random(worldSeed);
-        xOffset = rand.nextInt(OFFSET_RANGE) - (OFFSET_RANGE / 2);
-        zOffset = rand.nextInt(OFFSET_RANGE) - (OFFSET_RANGE / 2);
-        if (newBiomeId < 0) {
-            throw new IllegalArgumentException("This biome isn't registered!");
-        }
-    }
-
-    protected abstract boolean canReplaceBiome(int biomeId);
-
-    @Override
-    public int[] getInts(final int x, final int z, final int width, final int length) {
-        final int[] inputBiomeIDs = parent.getInts(x - 1, z - 1, width + 2, length + 2);
-        final int[] outputBiomeIDs = IntCache.getIntCache(width * length);
-        for (int xIter = 0; xIter < width; ++xIter) {
-            for (int zIter = 0; zIter < length; ++zIter) {
-                initChunkSeed(xIter + x, zIter + z);
-                int currentBiomeId = inputBiomeIDs[xIter + 1 + (zIter + 1) * (width + 2)];
-                if (canReplaceBiome(currentBiomeId) && SimplexNoise.noise((xIter + x + xOffset) * noiseScale,
-                    (zIter + z + zOffset) * noiseScale) > noiseThreshold) {
-                    outputBiomeIDs[xIter + zIter * width] = newBiomeId;
-                } else {
-                    outputBiomeIDs[xIter + zIter * width] = currentBiomeId;
-                }
-            }
-        }
-        return outputBiomeIDs;
-    }
 }

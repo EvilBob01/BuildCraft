@@ -42,7 +42,7 @@ public class ItemRedstoneChipset extends ItemBC_Neptune {
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return "item.redstone_" + EnumRedstoneChipset.values()[stack.getId()].getName() + "_chipset";
+    public String getDescriptionId(ItemStack stack) {
+        return "item.redstone_" + EnumRedstoneChipset.values()[stack.getDamageValue()].getName() + "_chipset";
     }
 }

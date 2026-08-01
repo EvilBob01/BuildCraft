@@ -56,7 +56,7 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
     }
 
     private static ItemStackKey[] makeRecipeArray(Ingredient ingredient) {
-        ItemStack[] stacks = ingredient.getMatchingStacks();
+        ItemStack[] stacks = ingredient.getItems();
         return makeStackArray(stacks);
     }
 

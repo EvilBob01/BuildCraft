@@ -47,7 +47,7 @@ public abstract class MarkerSubCache<C extends MarkerConnection<C>> {
 
     public MarkerSubCache(Level world, int cacheId) {
         this.isServer = !world.isClientSide;
-        this.dimensionId = world.provider.getDimension();
+        this.dimensionId = world.dimension().location().hashCode();
         this.cacheId = cacheId;
     }
 

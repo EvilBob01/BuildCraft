@@ -37,7 +37,7 @@ public enum StripesHandlerMinecartDestroy implements IStripesHandlerBlock {
             if (cart instanceof EntityMinecartContainer) {
                 // good job, Mojang. :<
                 EntityMinecartContainer container = (EntityMinecartContainer) cart;
-                for (int i = 0; i < container.getSizeInventory(); i++) {
+                for (int i = 0; i < container.getContainerSize(); i++) {
                     ItemStack s = container.getStackInSlot(i);
                     if (!s.isEmpty()) {
                         container.setInventorySlotContents(i, StackUtil.EMPTY);

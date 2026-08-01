@@ -7,14 +7,12 @@
 package buildcraft.lib.world;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 
 /** An {@link BlockGetter} for getting the properties of a single {@link BlockState}
  * at the {@link SingleBlockAccess#POS} */
@@ -27,13 +25,8 @@ public class SingleBlockAccess implements BlockGetter {
     }
 
     @Override
-    public BlockEntity getTileEntity(BlockPos pos) {
+    public BlockEntity getBlockEntity(BlockPos pos) {
         return null;
-    }
-
-    @Override
-    public int getCombinedLight(BlockPos pos, int lightValue) {
-        return lightValue << 4;
     }
 
     @Override
@@ -42,30 +35,17 @@ public class SingleBlockAccess implements BlockGetter {
     }
 
     @Override
-    public boolean isAirBlock(BlockPos pos) {
-        return getBlockState(pos).getBlock().isAir(state);
+    public FluidState getFluidState(BlockPos pos) {
+        return Fluids.EMPTY.defaultFluidState();
     }
 
     @Override
-    public Biome getBiome(BlockPos pos) {
-        return Biomes.PLAINS;
+    public int getHeight() {
+        return 256;
     }
 
     @Override
-    public int getStrongPower(BlockPos pos, Direction direction) {
+    public int getMinBuildHeight() {
         return 0;
-    }
-
-    @Override
-    public WorldType getWorldType() {
-        return WorldType.DEBUG_ALL_BLOCK_STATES;
-    }
-
-    @Override
-    public boolean isSideSolid(BlockPos pos, Direction side, boolean _default) {
-        if (POS.equals(pos)) {
-            return _default;
-        }
-        return state.isSideSolid(this, pos, side);
     }
 }

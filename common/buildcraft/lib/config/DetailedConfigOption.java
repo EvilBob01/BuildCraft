@@ -9,8 +9,8 @@ package buildcraft.lib.config;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -144,11 +144,11 @@ public class DetailedConfigOption {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public enum ReloadListener implements IResourceManagerReloadListener {
+    public enum ReloadListener implements ResourceManagerReloadListener {
         INSTANCE;
 
         @Override
-        public void onResourceManagerReload(IResourceManager resourceManager) {
+        public void onResourceManagerReload(ResourceManager resourceManager) {
             reloadAll();
         }
     }

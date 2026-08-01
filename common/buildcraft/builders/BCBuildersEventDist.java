@@ -15,26 +15,14 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.neoforged.neoforge.event.level.GetCollisionBoxesEvent;
-import net.neoforged.neoforge.event.tick.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import buildcraft.api.schematics.ISchematicBlock;
-
 import buildcraft.builders.client.ClientArchitectTables;
-import buildcraft.builders.item.ItemSchematicSingle;
-import buildcraft.builders.snapshot.Blueprint;
-import buildcraft.builders.snapshot.ClientSnapshots;
-import buildcraft.builders.snapshot.Snapshot;
-import buildcraft.builders.snapshot.Snapshot.Header;
 import buildcraft.builders.tile.TileQuarry;
 
 public enum BCBuildersEventDist {
@@ -65,68 +53,8 @@ public enum BCBuildersEventDist {
         }
     }
 
-    @SubscribeEvent
-    public synchronized void onGetCollisionBoxesForQuarry(GetCollisionBoxesEvent event) {
-        Deque<WeakReference<TileQuarry>> quarries = allQuarries.get(event.getLevel());
-        if (quarries == null) {
-            // No quarries in the target world
-            return;
-        }
-        Iterator<WeakReference<TileQuarry>> iter = quarries.iterator();
-        while (iter.hasNext()) {
-            WeakReference<TileQuarry> ref = iter.next();
-            TileQuarry quarry = ref.get();
-            if (quarry == null) {
-                iter.remove();
-                continue;
-            }
-            for (AABB aabb : quarry.getCollisionBoxes()) {
-                if (event.getAabb().intersects(aabb)) {
-                    event.getCollisionBoxesList().add(aabb);
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onRenderTooltipPostText(RenderTooltipEvent.PostText event) {
-        Snapshot snapshot = null;
-        ItemStack stack = event.getStack();
-        Header header = BCBuildersItems.snapshot != null ? BCBuildersItems.snapshot.getHeader(stack) : null;
-        if (header != null) {
-            snapshot = ClientSnapshots.INSTANCE.getSnapshot(header.key);
-        } else if (BCBuildersItems.schematicSingle != null) {
-            ISchematicBlock schematicBlock = ItemSchematicSingle.getSchematicSafe(stack);
-            if (schematicBlock != null) {
-                Blueprint blueprint = new Blueprint();
-                blueprint.size = new BlockPos(1, 1, 1);
-                blueprint.offset = BlockPos.ZERO;
-                blueprint.data = new int[] { 0 };
-                blueprint.palette.add(schematicBlock);
-                blueprint.computeKey();
-                snapshot = blueprint;
-            }
-        }
-
-        if (snapshot != null) {
-            int pX = event.getX();
-            int pY = event.getY() + event.getHeight() + 10;
-            int sX = 100;
-            int sY = 100;
-
-            // Copy from GuiUtils#drawHoveringText
-            // TODO (Phase 8): GuiUtils removed in NeoForge 1.21.1; drawGradientRect now lives
-            // on GuiGraphics. This tooltip-style background box needs to be redrawn using a
-            // GuiGraphics instance obtained from the current screen/render context.
-            int zLevel = 300;
-            int backgroundColor = 0xF0100010;
-            int borderColorStart = 0x505000FF;
-            int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
-
-            ClientSnapshots.INSTANCE.renderSnapshot(snapshot, pX, pY, sX, sY);
-        }
-    }
+    // GetCollisionBoxesEvent and RenderTooltipEvent.PostText were removed in NeoForge 1.21.
+    // Quarry collision boxes and snapshot tooltip previews are deferred to a later phase.
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent

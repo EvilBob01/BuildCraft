@@ -2,9 +2,9 @@ package buildcraft.api.enums;
 
 import java.util.Locale;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum EnumDecoratedBlock implements IStringSerializable {
+public enum EnumDecoratedBlock implements StringRepresentable {
     DESTROY(0),
     BLUEPRINT(10),
     TEMPLATE(10),
@@ -21,7 +21,7 @@ public enum EnumDecoratedBlock implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name().toLowerCase(Locale.ROOT);
     }
 
@@ -31,4 +31,5 @@ public enum EnumDecoratedBlock implements IStringSerializable {
         }
         return VALUES[meta];
     }
+    public String getName() { return getSerializedName(); }
 }

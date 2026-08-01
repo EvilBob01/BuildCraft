@@ -195,22 +195,22 @@ public class TilePump extends TileMiner {
                         prof.push("push");
                         prof.push("eq_get");
                         Fluid fluidAt = BlockUtil.getFluidWithFlowing(level, offsetPos);
-                        prof.endStartSection("eq_cmp");
+                        prof.popPush("eq_cmp");
                         boolean eq = FluidUtilBC.areFluidsEqual(fluidAt, queueFluid);
                         prof.pop();
                         if (eq) {
                             prof.push("prevPath");
                             FluidPath oldPath = paths.get(posToCheck);
-                            prof.endStartSection("new");
+                            prof.popPush("new");
                             FluidPath path = new FluidPath(offsetPos, oldPath);
-                            prof.endStartSection("putNew");
+                            prof.popPush("putNew");
                             paths.put(offsetPos, path);
-                            prof.endStartSection("getFluid");
+                            prof.popPush("getFluid");
                             if (BlockUtil.getFluid(level, offsetPos) != null) {
-                                prof.endStartSection("addToQueue");
+                                prof.popPush("addToQueue");
                                 queue.add(offsetPos);
                             }
-                            prof.endStartSection("next");
+                            prof.popPush("next");
                             nextPosesToCheck.add(offsetPos);
                             count++;
                             prof.pop();
@@ -241,7 +241,7 @@ public class TilePump extends TileMiner {
                 }
             }
         }
-        prof.endStartSection("oil_spring_search");
+        prof.popPush("oil_spring_search");
         if (isOil(queueFluid)) {
             List<BlockPos> springPositions = new ArrayList<>();
             BlockPos center = VecUtil.replaceValue(getBlockPos(), Axis.Y, 0);

@@ -39,7 +39,7 @@ public class GuideCraftingFactory implements GuidePartFactory {
         int[] ids = new int[input.getWidth() * input.getHeight()];
         int i = 0;
         for (Ingredient ingredient : input) {
-            ItemStack[] stacks = ingredient.getMatchingStacks();
+            ItemStack[] stacks = ingredient.getItems();
             ids[i++] = stacks.length == 0 ? 0 : BuiltInRegistries.ITEM.getId(stacks[0].getItem());
         }
         return Arrays.hashCode(ids);

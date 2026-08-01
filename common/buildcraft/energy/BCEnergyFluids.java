@@ -9,7 +9,7 @@ package buildcraft.energy;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.material.MapColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.BCModules;

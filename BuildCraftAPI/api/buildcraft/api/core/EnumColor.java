@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
 
@@ -17,7 +17,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 /** Use minecraft's DyeColor in as many places as possible. */
 @Deprecated
-public enum EnumColor implements IStringSerializable {
+public enum EnumColor implements StringRepresentable {
 
     BLACK,
     RED,
@@ -112,7 +112,7 @@ public enum EnumColor implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return NAMES[ordinal()];
     }
 
@@ -144,4 +144,5 @@ public enum EnumColor implements IStringSerializable {
     public TextureAtlasSprite getSprite() {
         return brushSprites[ordinal()];
     }
+    public String getName() { return getSerializedName(); }
 }

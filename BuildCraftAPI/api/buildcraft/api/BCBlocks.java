@@ -2,11 +2,11 @@ package buildcraft.api;
 
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.neoforge.registries.GameData.ObjectHolder;
+// TODO (Phase 10 — Registry): @ObjectHolder injection removed in NeoForge 1.21; use DeferredHolder instead.
 
 public class BCBlocks {
 
-    @ObjectHolder("buildcraftcore")
+
     public static class Core {
         public static final Block SPRING = null;
         public static final Block DECORATED = null;
@@ -15,7 +15,6 @@ public class BCBlocks {
         public static final Block MARKER_PATH = null;
     }
 
-    @ObjectHolder("buildcraftbuilders")
     public static class Builders {
         public static final Block ARCHITECT = null;
         public static final Block BUILDER = null;
@@ -26,12 +25,10 @@ public class BCBlocks {
         public static final Block FRAME = null;
     }
 
-    @ObjectHolder("buildcraftenergy")
     public static class Energy {
         // Fluid blocks can be accessed ~somewhere else~
     }
 
-    @ObjectHolder("buildcraftfactory")
     public static class Factory {
         public static final Block AUTOWORKBENCH_ITEM = null;
         public static final Block MINING_WELL = null;
@@ -45,13 +42,11 @@ public class BCBlocks {
         public static final Block HEAT_EXCHANGE = null;
     }
 
-    @ObjectHolder("buildcrafttransport")
     public static class Transport {
         public static final Block FILTERED_BUFFER = null;
         public static final Block PIPE_HOLDER = null;
     }
 
-    @ObjectHolder("buildcraftsilicon")
     public static class Silicon {
         public static final Block LASER = null;
         public static final Block ASSEMBLY_TABLE = null;
@@ -61,7 +56,6 @@ public class BCBlocks {
         public static final Block PROGRAMMING_TABLE = null;
     }
 
-    @ObjectHolder("buildcraftrobotics")
     public static class Robotics {
 
     }

@@ -49,7 +49,7 @@ public class RecipePipeColour implements Recipe, IRecipeViewable {
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
         return output;
     }
 

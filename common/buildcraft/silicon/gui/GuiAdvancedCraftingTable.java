@@ -84,7 +84,7 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
                     stacks.add(ItemStack.EMPTY);
                 } else {
                     Ingredient ing = ingredients.get(i);
-                    ItemStack[] matching = ing.getMatchingStacks();
+                    ItemStack[] matching = ing.getItems();
                     if (matching.length >= 1) {
                         stacks.add(matching[0]);
                     } else {

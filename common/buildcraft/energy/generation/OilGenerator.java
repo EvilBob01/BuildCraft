@@ -75,7 +75,7 @@ public class OilGenerator {
                 world.getProfiler().push("scan");
                 List<OilGenStructure> structures = getStructures(world, cx, cz, cdx == 0 && cdz == 0);
                 OilGenStructure.Spring spring = null;
-                world.getProfiler().endStartSection("gen");
+                world.getProfiler().popPush("gen");
                 for (OilGenStructure struct : structures) {
                     struct.generate(world, box);
                     if (struct instanceof OilGenStructure.Spring) {

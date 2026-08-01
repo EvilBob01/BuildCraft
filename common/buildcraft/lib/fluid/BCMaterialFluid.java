@@ -6,7 +6,7 @@
 
 package buildcraft.lib.fluid;
 
-import net.minecraft.block.material.MapColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.MapColorLiquid;
 
 public class BCMaterialFluid extends MaterialLiquid {

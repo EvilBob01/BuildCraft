@@ -23,7 +23,7 @@ import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 
-import net.minecraft.init.Bootstrap;
+import net.minecraft.server.Bootstrap;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -90,7 +90,7 @@ class NbtSquishMapWriter {
         if (debug) log("\nUsed flags = " + Integer.toBinaryString(flags));
         to.writeInt(flags);
 
-        profiler.endStartSection("bytes");
+        profiler.popPush("bytes");
         if (!bytes.isEmpty()) {
             if (debug) log("\nByte dictionary size = " + bytes.size());
             if (sort) bytes.sort();
@@ -99,7 +99,7 @@ class NbtSquishMapWriter {
                 to.writeByte(b);
             }
         }
-        profiler.endStartSection("shorts");
+        profiler.popPush("shorts");
         if (!shorts.isEmpty()) {
             if (debug) log("\nShort dictionary size = " + shorts.size());
             if (sort) shorts.sort();
@@ -108,7 +108,7 @@ class NbtSquishMapWriter {
                 to.writeShort(s);
             }
         }
-        profiler.endStartSection("integers");
+        profiler.popPush("integers");
         if (!ints.isEmpty()) {
             if (debug) log("\nInt dictionary size = " + ints.size());
             if (sort) ints.sort();
@@ -117,7 +117,7 @@ class NbtSquishMapWriter {
                 to.writeInt(i);
             }
         }
-        profiler.endStartSection("longs");
+        profiler.popPush("longs");
         if (!longs.isEmpty()) {
             if (debug) log("\nLong dictionary size = " + longs.size());
             if (sort) longs.sort();
@@ -126,7 +126,7 @@ class NbtSquishMapWriter {
                 to.writeLong(l);
             }
         }
-        profiler.endStartSection("floats");
+        profiler.popPush("floats");
         if (!floats.isEmpty()) {
             if (debug) log("\nFloat dictionary size = " + floats.size());
             if (sort) floats.sort();
@@ -135,7 +135,7 @@ class NbtSquishMapWriter {
                 to.writeFloat(f);
             }
         }
-        profiler.endStartSection("doubles");
+        profiler.popPush("doubles");
         if (!doubles.isEmpty()) {
             if (debug) log("\nDouble dictionary size = " + doubles.size());
             if (sort) doubles.sort();
@@ -144,7 +144,7 @@ class NbtSquishMapWriter {
                 to.writeDouble(d);
             }
         }
-        profiler.endStartSection("byte_arrays");
+        profiler.popPush("byte_arrays");
         if (!byteArrays.isEmpty()) {
             if (debug) log("\nByte Array dictionary size = " + byteArrays.size());
             writeVarInt(to, byteArrays.size());
@@ -155,7 +155,7 @@ class NbtSquishMapWriter {
                 }
             }
         }
-        profiler.endStartSection("int_arrays");
+        profiler.popPush("int_arrays");
         if (!intArrays.isEmpty()) {
             if (debug) log("\nInt Array dictionary size = " + intArrays.size());
             writeVarInt(to, intArrays.size());
@@ -166,7 +166,7 @@ class NbtSquishMapWriter {
                 }
             }
         }
-        profiler.endStartSection("strings");
+        profiler.popPush("strings");
         if (!strings.isEmpty()) {
             if (debug) log("\nString dictionary size = " + strings.size());
             if (sort) Collections.sort(strings);
@@ -179,7 +179,7 @@ class NbtSquishMapWriter {
                 to.write(stringBytes);
             }
         }
-        profiler.endStartSection("complex");
+        profiler.popPush("complex");
         if (!complex.isEmpty()) {
             if (debug) log("\nComplex dictionary size = " + complex.size());
             writeVarInt(to, complex.size());
@@ -288,7 +288,7 @@ class NbtSquishMapWriter {
         // First try to make a simple table
 
         // First sort the indexes into highest count first
-        profiler.endStartSection("sort");
+        profiler.popPush("sort");
         List<IndexEntry> entries = new ArrayList<>();
         for (int index : indexes.keys()) {
             int count = indexes.get(index);
@@ -298,7 +298,7 @@ class NbtSquishMapWriter {
         entries.sort(Comparator.reverseOrder());
         if (debug) log("\n " + entries.size() + " List entries");
         writeVarInt(to, entries.size());
-        profiler.endStartSection("write");
+        profiler.popPush("write");
 
         TIntArrayList sortedIndexes = new TIntArrayList();
         int i = 0;
@@ -318,7 +318,7 @@ class NbtSquishMapWriter {
         nextData.add(data);
         writeVarInt(to, data.length);
         profiler.pop();
-        profiler.endStartSection("contents");
+        profiler.popPush("contents");
         for (int b = 1; !nextData.isEmpty(); b++) {
             profiler.push("entry");
             CompactingBitSet bitset = new CompactingBitSet(b);
@@ -338,7 +338,7 @@ class NbtSquishMapWriter {
                 } else {
                     // profiler.push("bitset_append");
                     bitset.append(maxVal);
-                    // profiler.endStartSection("next_add");
+                    // profiler.popPush("next_add");
                     nextNextData.add(d);
                     // profiler.pop();
                 }

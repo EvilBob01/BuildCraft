@@ -39,13 +39,13 @@ public class ItemWire extends ItemBC_Neptune {
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (DyeColor color : DyeColor.values()) {
-            addVariant(variants, color.getId(), color.getName());
+            addVariant(variants, color.getDamageValue(), color.getName());
         }
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byId(stack.getId())) + " " + super.getItemStackDisplayName(stack);
+        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byId(stack.getDamageValue())) + " " + super.getItemStackDisplayName(stack);
     }
 
     @Override

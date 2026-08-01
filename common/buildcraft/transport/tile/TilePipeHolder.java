@@ -201,7 +201,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             if (pipe.flow instanceof IFlowItems && BCModules.SILICON.isLoaded()) {
                 eventBus.registerHandler(FilterEventHandler.class);
             }
-            int meta = stack.getId();
+            int meta = stack.getDamageValue();
             if (meta > 0 && meta <= 16) {
                 pipe.setColour(DyeColor.byId(meta - 1));
             }
@@ -210,7 +210,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         scheduleRenderUpdate();
 
         if (!level.isClientSide && hasOwner()) {
-            AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_PLACE_PIPE);
+            AdvancementUtil.unlockAdvancement(getOwner().getDamageValue(), ADVANCEMENT_PLACE_PIPE);
         }
     }
 

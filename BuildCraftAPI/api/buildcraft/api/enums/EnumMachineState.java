@@ -1,11 +1,11 @@
 package buildcraft.api.enums;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
 import buildcraft.api.properties.BuildCraftProperties;
 
-public enum EnumMachineState implements IStringSerializable {
+public enum EnumMachineState implements StringRepresentable {
     OFF,
     ON,
     DONE;
@@ -15,7 +15,8 @@ public enum EnumMachineState implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name();
     }
+    public String getName() { return getSerializedName(); }
 }

@@ -156,29 +156,29 @@ public class AIRobot {
     }
 
     public final void writeToNBT(CompoundTag nbt) {
-        nbt.setString("aiName", RobotManager.getAIRobotName(getClass()));
+        nbt.putString("aiName", RobotManager.getAIRobotName(getClass()));
 
         CompoundTag data = new CompoundTag();
         writeSelfToNBT(data);
-        nbt.setTag("data", data);
+        nbt.put("data", data);
 
         if (delegateAI != null && delegateAI.canLoadFromNBT()) {
             CompoundTag sub = new CompoundTag();
 
             delegateAI.saveAdditional(sub);
-            nbt.setTag("delegateAI", sub);
+            nbt.put("delegateAI", sub);
         }
     }
 
     public final void loadFromNBT(CompoundTag nbt) {
-        loadSelfFromNBT(nbt.getCompoundTag("data"));
+        loadSelfFromNBT(nbt.getCompound("data"));
 
-        if (nbt.hasKey("delegateAI")) {
-            CompoundTag sub = nbt.getCompoundTag("delegateAI");
+        if (nbt.contains("delegateAI")) {
+            CompoundTag sub = nbt.getCompound("delegateAI");
 
             try {
                 Class<?> aiRobotClass;
-                if (sub.hasKey("class")) {
+                if (sub.contains("class")) {
                     // Migration support for 6.4.x
                     aiRobotClass = RobotManager.getAIRobotByLegacyClassName(sub.getString("class"));
                 } else {
@@ -203,7 +203,7 @@ public class AIRobot {
 
         try {
             Class<?> aiRobotClass;
-            if (nbt.hasKey("class")) {
+            if (nbt.contains("class")) {
                 // Migration support for 6.4.x
                 aiRobotClass = RobotManager.getAIRobotByLegacyClassName(nbt.getString("class"));
             } else {

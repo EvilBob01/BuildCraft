@@ -90,7 +90,7 @@ public final class InventoryWrapper extends AbstractInvItemTransactor {
 
     @Override
     protected int getSlots() {
-        return inventory.getSizeInventory();
+        return inventory.getContainerSize();
     }
 
     @Override

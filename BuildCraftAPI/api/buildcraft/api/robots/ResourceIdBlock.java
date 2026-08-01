@@ -55,9 +55,9 @@ public class ResourceIdBlock extends ResourceId {
         super.saveAdditional(nbt);
 
         int[] arr = new int[] { pos.getX(), pos.getY(), pos.getZ() };
-        nbt.setIntArray("pos", arr);
+        nbt.putIntArray("pos", arr);
 
-        nbt.setTag("side", side.saveAdditional());
+        nbt.put("side", side.saveAdditional());
     }
 
     @Override
@@ -66,6 +66,6 @@ public class ResourceIdBlock extends ResourceId {
         int[] arr = nbt.getIntArray("pos");
         pos = new BlockPos(arr[0], arr[1], arr[2]);
 
-        side = EnumPipePart.loadAdditional(nbt.getTag("side"));
+        side = EnumPipePart.loadAdditional(nbt.get("side"));
     }
 }

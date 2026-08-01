@@ -25,7 +25,7 @@ public interface IMapLocation extends INamedItem {
         public final int meta = ordinal();
 
         public static MapLocationType getFromStack(@Nonnull ItemStack stack) {
-            int dam = stack.getItemDamage();
+            int dam = stack.getDamageValue();
             if (dam < 0 || dam >= values().length) {
                 return MapLocationType.CLEAN;
             }
@@ -33,7 +33,7 @@ public interface IMapLocation extends INamedItem {
         }
 
         public void setToStack(@Nonnull ItemStack stack) {
-            stack.setItemDamage(meta);
+            stack.setDamageValue(meta);
         }
     }
 

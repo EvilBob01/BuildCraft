@@ -2,20 +2,18 @@ package buildcraft.api;
 
 import net.minecraft.world.item.Item;
 
-import net.neoforged.neoforge.registries.GameData.ObjectHolder;
-
+// TODO (Phase 10 — Registry): @ObjectHolder injection removed in NeoForge 1.21.
+// Replace with DeferredHolder<Item, Item> fields registered via DeferredRegister.ITEMS in each module.
 import buildcraft.api.items.FluidItemDrops;
 
 public class BCItems {
 
-    @ObjectHolder("buildcraftlib")
     public static class Lib {
         public static final Item GUIDE = null;
         public static final Item GUIDE_NOTE = null;
         public static final Item DEBUGGER = null;
     }
 
-    @ObjectHolder("buildcraftcore")
     public static class Core {
         public static final Item GEAR_WOOD = null;
         public static final Item GEAR_STONE = null;
@@ -35,24 +33,20 @@ public class BCItems {
         public static final Item FRAGILE_FLUID_SHARD = null;
     }
 
-    @ObjectHolder("buildcraftbuilders")
     public static class Builders {
 
     }
 
-    @ObjectHolder("buildcraftenergy")
     public static class Energy {
         public static final Item GLOB_OF_OIL = null;
     }
 
-    @ObjectHolder("buildcraftfactory")
     public static class Factory {
         public static final Item PLASTIC_SHEET = null;
         public static final Item WATER_GEL = null;
         public static final Item GELLED_WATER = null;
     }
 
-    @ObjectHolder("buildcrafttransport")
     public static class Transport {
         public static final Item PLUG_BLOCKER = null;
         public static final Item PLUG_POWER_ADAPTOR = null;
@@ -65,14 +59,12 @@ public class BCItems {
         public static final Item PIPE_DIAMOND_WOOD_FLUID = null;
     }
 
-    @ObjectHolder("buildcraftsilicon")
     public static class Silicon {
         public static final Item REDSTONE_CHIPSET = null;
 
         public static final Item PLUG_PULSAR = null;
     }
 
-    @ObjectHolder("buildcraftrobotics")
     public static class Robotics {
 
     }

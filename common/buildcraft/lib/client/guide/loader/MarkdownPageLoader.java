@@ -72,8 +72,8 @@ public enum MarkdownPageLoader implements IPageLoaderText {
         try {
             int meta = Integer.parseInt(args[2].trim());
             if (meta == -1) {
-                // Use oredict
-                meta = OreDictionary.WILDCARD_VALUE;
+                // 32767 was OreDictionary.WILDCARD_VALUE; kept as literal since OreDictionary no longer exists
+                meta = 32767;
             }
             stack = new ItemStack(stack.getItem(), stack.getCount());
         } catch (NumberFormatException nfe) {

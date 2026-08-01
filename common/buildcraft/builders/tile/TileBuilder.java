@@ -244,7 +244,7 @@ public class TileBuilder extends TileBC_Neptune
         level.getProfiler().push("main");
         level.getProfiler().push("power");
         battery.tick(getLevel(), getBlockPos());
-        level.getProfiler().endStartSection("builder");
+        level.getProfiler().popPush("builder");
         SnapshotBuilder<?> builder = getBuilder();
         if (builder != null) {
             isDone = builder.tick();
@@ -260,7 +260,7 @@ public class TileBuilder extends TileBC_Neptune
                 }
             }
         }
-        level.getProfiler().endStartSection("net_update");
+        level.getProfiler().popPush("net_update");
         sendNetworkUpdate(NET_RENDER_DATA); // FIXME
         level.getProfiler().pop();
         level.getProfiler().pop();

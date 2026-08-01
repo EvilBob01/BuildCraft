@@ -660,7 +660,7 @@ public enum XmlPageLoader implements IPageLoaderText {
             }
             list.addAll(recipeParts);
         }
-        prof.endStartSection("uses");
+        prof.popPush("uses");
         List<GuidePartFactory> usageParts = RecipeLookupHelper.getAllUsages(stack, prof);
         // Ensure we don't have any duplicate recipes
         usageParts.removeAll(recipeParts);
@@ -778,8 +778,8 @@ public enum XmlPageLoader implements IPageLoaderText {
             try {
                 int meta = Integer.parseInt(data.trim());
                 if (meta == -1) {
-                    // Use oredict
-                    meta = OreDictionary.WILDCARD_VALUE;
+                    // 32767 was OreDictionary.WILDCARD_VALUE; kept as literal since OreDictionary no longer exists
+                    meta = 32767;
                 }
                 stack = new ItemStack(stack.getItem(), stack.getCount());
             } catch (NumberFormatException nfe) {

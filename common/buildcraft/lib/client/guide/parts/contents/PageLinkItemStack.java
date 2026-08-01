@@ -27,9 +27,9 @@ public final class PageLinkItemStack extends PageLink {
         prof.push("create_page_link");
         prof.push("get_tooltip");
         List<String> tooltip = getTooltip(stack);
-        prof.endStartSection("join_tooltip");
+        prof.popPush("join_tooltip");
         String searchText = joinTooltip(tooltip);
-        prof.endStartSection("create_line");
+        prof.popPush("create_line");
         ISimpleDrawable icon = new GuiStack(stack);
         PageLine text = new PageLine(icon, icon, 2, tooltip.get(0), true);
         prof.pop();
@@ -87,7 +87,7 @@ public final class PageLinkItemStack extends PageLink {
         this.stack = stack;
         prof.push("get_tooltip");
         tooltip = getTooltip(stack);
-        prof.endStartSection("join_tooltip");
+        prof.popPush("join_tooltip");
         searchText = joinTooltip(tooltip);
         prof.pop();
     }

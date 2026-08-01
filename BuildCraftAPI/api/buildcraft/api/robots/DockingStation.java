@@ -117,19 +117,19 @@ public abstract class DockingStation {
     }
 
     public void writeToNBT(CompoundTag nbt) {
-        nbt.setIntArray("pos", new int[] { getPos().getX(), getPos().getY(), getPos().getZ() });
-        nbt.setByte("side", (byte) side.ordinal());
-        nbt.setBoolean("isMain", linkIsMain);
-        nbt.setLong("robotId", robotTakingId);
+        nbt.putIntArray("pos", new int[] { getPos().getX(), getPos().getY(), getPos().getZ() });
+        nbt.putByte("side", (byte) side.ordinal());
+        nbt.putBoolean("isMain", linkIsMain);
+        nbt.putLong("robotId", robotTakingId);
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        if (nbt.hasKey("index")) {
+        if (nbt.contains("index")) {
             // For compatibility with older versions of minecraft and buildcraft
-            CompoundTag indexNBT = nbt.getCompoundTag("index");
-            int x = indexNBT.getInteger("i");
-            int y = indexNBT.getInteger("j");
-            int z = indexNBT.getInteger("k");
+            CompoundTag indexNBT = nbt.getCompound("index");
+            int x = indexNBT.getInt("i");
+            int y = indexNBT.getInt("j");
+            int z = indexNBT.getInt("k");
             pos = new BlockPos(x, y, z);
         } else {
             int[] array = nbt.getIntArray("pos");

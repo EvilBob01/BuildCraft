@@ -28,14 +28,14 @@ public abstract class RedstoneBoardNBT<T> {
     public abstract String getItemModelLocation();
 
     public void createBoard(CompoundTag nbt) {
-        nbt.setString("id", getID());
+        nbt.putString("id", getID());
     }
 
     public int getParameterNumber(CompoundTag nbt) {
-        if (!nbt.hasKey("parameters")) {
+        if (!nbt.contains("parameters")) {
             return 0;
         } else {
-            return nbt.getTagList("parameters", Tag.TAG_COMPOUND).tagCount();
+            return nbt.getList("parameters", Tag.TAG_COMPOUND).size();
         }
     }
 

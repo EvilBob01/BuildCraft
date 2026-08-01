@@ -42,13 +42,13 @@ public class ResourceIdRequest extends ResourceIdBlock {
     public void writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
 
-        nbt.setInteger("localId", slot);
+        nbt.putInt("localId", slot);
     }
 
     @Override
     protected void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
 
-        slot = nbt.getInteger("localId");
+        slot = nbt.getInt("localId");
     }
 }

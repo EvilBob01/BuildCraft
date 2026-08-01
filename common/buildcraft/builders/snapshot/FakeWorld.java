@@ -6,77 +6,82 @@
 
 package buildcraft.builders.snapshot;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.GameType;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.profiling.InactiveProfiler;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.biome.BiomeProvider;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.layer.GenLayer;
-import net.minecraft.world.storage.SaveHandlerMP;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.entity.LevelEntityGetter;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.ticks.LevelTickAccess;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import buildcraft.api.schematics.ISchematicBlock;
 
-@SuppressWarnings("NullableProblems")
+// TODO (Phase 7 — Rendering): FakeWorld was a 1.12 Level subclass used for client-side snapshot preview rendering.
+// The Level constructor and all abstract methods have changed significantly since 1.13. This stub compiles but
+// cannot be instantiated at runtime — needs a proper 1.21 ClientLevel-based implementation.
+@SuppressWarnings({"NullableProblems", "ConstantConditions"})
 @OnlyIn(Dist.CLIENT)
 public class FakeWorld extends Level {
-    private static final Biome BIOME = Biomes.PLAINS;
-    @SuppressWarnings("WeakerAccess")
     public static final BlockPos BLUEPRINT_OFFSET = new BlockPos(0, 127, 0);
 
-    @SuppressWarnings("WeakerAccess")
+    private final FakeChunkProvider fakeChunkProvider;
+
+    // TODO (Phase 7): Level constructor in 1.21 requires WritableLevelData, ResourceKey<Level>,
+    // RegistryAccess, Holder<DimensionType>, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChain.
+    // Replace the null/0 placeholders once the full registry system is wired up.
+    @SuppressWarnings("DataFlowIssue")
     public FakeWorld() {
         super(
-            new SaveHandlerMP(),
-            new WorldInfo(
-                new WorldSettings(
-                    0,
-                    GameType.CREATIVE,
-                    true,
-                    false,
-                    WorldType.DEFAULT
-                ),
-                "fake"
-            ),
-            new WorldProvider() {
-                @Override
-                public DimensionType getDimensionType() {
-                    return DimensionType.OVERWORLD;
-                }
-            },
-            new Profiler(),
-            true
+            (WritableLevelData) null,   // TODO Phase 7
+            Level.OVERWORLD,
+            (RegistryAccess) null,      // TODO Phase 7
+            (Holder<DimensionType>) null, // TODO Phase 7
+            true,   // isClientSide
+            false,  // isDebug
+            0L,     // biomeZoomSeed
+            1000    // maxChainedNeighborUpdates
         );
-        chunkProvider = new FakeChunkProvider(this);
+        this.fakeChunkProvider = new FakeChunkProvider(this);
     }
 
     public void clear() {
-        ((FakeChunkProvider) chunkProvider).chunks.clear();
+        fakeChunkProvider.chunks.clear();
     }
 
-    @SuppressWarnings("WeakerAccess")
     public void uploadSnapshot(Snapshot snapshot) {
         for (int z = 0; z < snapshot.size.getZ(); z++) {
             for (int y = 0; y < snapshot.size.getY(); y++) {
                 for (int x = 0; x < snapshot.size.getX(); x++) {
-                    BlockPos pos = new BlockPos(x, y, z).add(BLUEPRINT_OFFSET);
+                    BlockPos pos = new BlockPos(x, y, z).offset(BLUEPRINT_OFFSET.getX(), BLUEPRINT_OFFSET.getY(), BLUEPRINT_OFFSET.getZ());
                     if (snapshot instanceof Blueprint) {
                         ISchematicBlock schematicBlock = ((Blueprint) snapshot).palette
                             .get(((Blueprint) snapshot).data[snapshot.posToIndex(x, y, z)]);
@@ -86,7 +91,7 @@ public class FakeWorld extends Level {
                     }
                     if (snapshot instanceof Template) {
                         if (((Template) snapshot).data.get(snapshot.posToIndex(x, y, z))) {
-                            setBlockState(pos, Blocks.QUARTZ_BLOCK.defaultBlockState());
+                            setBlock(pos, Blocks.QUARTZ_BLOCK.defaultBlockState(), 0);
                         }
                     }
                 }
@@ -94,98 +99,86 @@ public class FakeWorld extends Level {
         }
         if (snapshot instanceof Blueprint) {
             ((Blueprint) snapshot).entities.forEach(schematicEntity ->
-                schematicEntity.buildWithoutChecks(this, FakeWorld.BLUEPRINT_OFFSET)
+                schematicEntity.buildWithoutChecks(this, BLUEPRINT_OFFSET)
             );
         }
     }
 
     @Override
-    public BlockPos getSpawnPoint() {
-        return BLUEPRINT_OFFSET;
+    public ChunkSource getChunkSource() {
+        return fakeChunkProvider;
     }
 
     @Override
-    protected IChunkProvider createChunkProvider() {
-        return chunkProvider;
+    public float getShade(Direction direction, boolean shade) {
+        return 1.0f;
     }
 
     @Override
-    protected boolean isChunkLoaded(int x, int z, boolean allowEmpty) {
-        return true;
+    public LevelTickAccess<net.minecraft.world.level.block.Block> getBlockTicks() {
+        return LevelTickAccess.emptyLevelList();
     }
 
     @Override
-    public Biome getBiome(BlockPos pos) {
-        return BIOME;
+    public LevelTickAccess<Fluid> getFluidTicks() {
+        return LevelTickAccess.emptyLevelList();
     }
 
     @Override
-    public Biome getBiomeForCoordsBody(BlockPos pos) {
-        return BIOME;
+    public void sendBlockUpdated(BlockPos pos, BlockState oldState, BlockState newState, int flags) {}
+
+    @Override
+    public void setSpawnSettings(boolean hostile, boolean peaceful) {}
+
+    @Override
+    public void playSeededSound(@Nullable Player player, double x, double y, double z,
+        Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed) {}
+
+    @Override
+    public void playSeededSound(@Nullable Player player, Entity entity,
+        Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed) {}
+
+    @Override
+    public String gatherChunkSourceStats() {
+        return "fake";
+    }
+
+    @Nullable
+    @Override
+    public Entity getEntity(int id) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public MapItemSavedData getMapData(MapId id) {
+        return null;
     }
 
     @Override
-    public BiomeProvider getBiomeProvider() {
-        return new BiomeProvider(worldInfo) {
-            @Override
-            public List<Biome> getBiomesToSpawnIn() {
-                return Collections.emptyList();
-            }
+    public void setMapData(MapId id, MapItemSavedData data) {}
 
-            @Override
-            public Biome getBiome(BlockPos pos) {
-                return BIOME;
-            }
+    @Override
+    public MapId getFreeMapId() {
+        return new MapId(0);
+    }
 
-            @Override
-            public Biome getBiome(BlockPos pos, Biome defaultBiome) {
-                return BIOME;
-            }
+    @Override
+    public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {}
 
-            @Override
-            public Biome[] getBiomesForGeneration(Biome[] biomes, int x, int z, int width, int height) {
-                return biomes;
-            }
+    @Override
+    public Scoreboard getScoreboard() {
+        return new Scoreboard();
+    }
 
-            @Override
-            public Biome[] getBiomes(@Nullable Biome[] oldBiomeList, int x, int z, int width, int depth) {
-                return oldBiomeList;
-            }
+    @Nullable
+    @Override
+    public RecipeManager getRecipeManager() {
+        return null;
+    }
 
-            @Override
-            public Biome[] getBiomes(@Nullable Biome[] listToReuse, int x, int z, int width, int length, boolean cacheFlag) {
-                return listToReuse;
-            }
-
-            @Override
-            public boolean areBiomesViable(int x, int z, int radius, List<Biome> allowed) {
-                return false;
-            }
-
-            @Nullable
-            @Override
-            public BlockPos findBiomePosition(int x, int z, int range, List<Biome> biomes, Random random) {
-                return BlockPos.ZERO;
-            }
-
-            @Override
-            public void cleanupCache() {
-            }
-
-            @Override
-            public GenLayer[] getModdedBiomeGenerators(WorldType worldType, long seed, GenLayer[] original) {
-                return original;
-            }
-
-            @Override
-            public boolean isFixedBiome() {
-                return true;
-            }
-
-            @Override
-            public Biome getFixedBiome() {
-                return BIOME;
-            }
-        };
+    @Override
+    public LevelEntityGetter<Entity> getEntities() {
+        return null;
     }
 }

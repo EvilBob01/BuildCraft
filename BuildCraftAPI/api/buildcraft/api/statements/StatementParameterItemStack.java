@@ -94,7 +94,7 @@ public class StatementParameterItemStack implements IStatementParameter {
         if (object instanceof StatementParameterItemStack) {
             StatementParameterItemStack param = (StatementParameterItemStack) object;
 
-            return ItemStack.areItemStacksEqual(stack, param.stack)
+            return ItemStack.isSameItemSameTags(stack, param.stack)
             && ItemStack.areItemStackTagsEqual(stack, param.stack);
         } else {
             return false;

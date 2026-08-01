@@ -111,7 +111,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
             paths.put(offset, ImmutableList.of(offset));
         }
         Direction[] directions = fluid.getFluid().isGaseous(fluid) ? SEARCH_GASEOUS : SEARCH_NORMAL;
-        level.getProfiler().endStartSection("build");
+        level.getProfiler().popPush("build");
         outer: while (!nextPosesToCheck.isEmpty()) {
             List<BlockPos> nextPosesToCheckCopy = new ArrayList<>(nextPosesToCheck);
             nextPosesToCheck.clear();

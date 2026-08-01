@@ -6,12 +6,12 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.core.Direction;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum EnumPipePart implements IStringSerializable {
+public enum EnumPipePart implements StringRepresentable {
     DOWN(Direction.DOWN),
     UP(Direction.UP),
     NORTH(Direction.NORTH),
@@ -80,7 +80,7 @@ public enum EnumPipePart implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name().toLowerCase(Locale.ROOT);
     }
 
@@ -119,7 +119,7 @@ public enum EnumPipePart implements IStringSerializable {
             String string = nbtString.getString();
             return nameMap.getOrDefault(string, CENTER);
         } else {
-            byte ord = ((NBTPrimitive) base).getByte();
+            byte ord = ((NumericTag) base).getAsByte();
             if (ord < 0 || ord > 6) {
                 return CENTER;
             }
@@ -130,4 +130,5 @@ public enum EnumPipePart implements IStringSerializable {
     public Tag writeToNBT() {
         return StringTag.valueOf(name());
     }
+    public String getName() { return getSerializedName(); }
 }

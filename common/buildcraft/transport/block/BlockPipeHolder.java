@@ -413,7 +413,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 PipeDefinition def = pipe.getDefinition();
                 Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(def);
                 if (item != null) {
-                    int meta = pipe.getColour() == null ? 0 : pipe.getColour().getId() + 1;
+                    int meta = pipe.getColour() == null ? 0 : pipe.getColour().getDamageValue() + 1;
                     return new ItemStack(item, 1, meta);
                 }
             }
@@ -503,7 +503,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 );
             }
             if (wirePart != null && attachTile != null) {
-                DyeColor colour = DyeColor.byId(held.getId());
+                DyeColor colour = DyeColor.byId(held.getDamageValue());
                 boolean attached = attachTile.getWireManager().addPart(wirePart, colour);
                 attachTile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
                 if (attached) {

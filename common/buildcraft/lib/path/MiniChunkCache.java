@@ -35,7 +35,7 @@ public class MiniChunkCache {
     }
 
     public static Future<MiniChunkGraph> requestGraph(Level world, BlockPos pos) {
-        int dimId = world.provider.getDimension();
+        int dimId = world.dimension().location().hashCode();
         if (!worldCaches.containsKey(dimId)) {
             worldCaches.put(dimId, new MiniChunkCache(dimId));
         }
@@ -43,7 +43,7 @@ public class MiniChunkCache {
     }
 
     public static MiniChunkGraph getGraphIfExists(Level world, BlockPos pos) {
-        int dimId = world.provider.getDimension();
+        int dimId = world.dimension().location().hashCode();
         if (!worldCaches.containsKey(dimId)) {
             worldCaches.put(dimId, new MiniChunkCache(dimId));
         }

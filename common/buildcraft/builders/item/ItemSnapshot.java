@@ -86,7 +86,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
+    public String getDescriptionId(ItemStack stack) {
         EnumItemSnapshotType type = EnumItemSnapshotType.getFromStack(stack);
         if (type.snapshotType == EnumSnapshotType.BLUEPRINT) {
             return "item.blueprintItem";
@@ -144,7 +144,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
         }
 
         public static EnumItemSnapshotType getFromStack(ItemStack stack) {
-            return values()[Math.abs(stack.getId()) % values().length];
+            return values()[Math.abs(stack.getDamageValue()) % values().length];
         }
     }
 }
