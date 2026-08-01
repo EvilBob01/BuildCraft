@@ -6,9 +6,8 @@
 
 package buildcraft.api.recipes;
 
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-
-import net.minecraftforge.common.crafting.CraftingHelper;
 
 public final class IngredientStack {
     public final Ingredient ingredient;
@@ -23,7 +22,13 @@ public final class IngredientStack {
         this(ingredient, 1);
     }
 
+    // TODO (Phase 8 — Recipes): CraftingHelper.getIngredient(Object) removed.
+    // In 1.21 use Ingredient.of(ItemStack), Ingredient.of(TagKey), etc. directly.
     public static IngredientStack of(Object o) {
-        return new IngredientStack(CraftingHelper.getIngredient(o));
+        if (o instanceof Ingredient) return new IngredientStack((Ingredient) o);
+        if (o instanceof ItemStack) return new IngredientStack(Ingredient.of((ItemStack) o));
+        if (o instanceof net.minecraft.world.item.Item) return new IngredientStack(Ingredient.of((net.minecraft.world.item.Item) o));
+        if (o instanceof net.minecraft.world.level.block.Block b) return new IngredientStack(Ingredient.of(b.asItem()));
+        return new IngredientStack(Ingredient.EMPTY);
     }
 }

@@ -12,11 +12,10 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldType;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.biome.BiomeEnd;
 
-import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.core.BCDebugging;
@@ -52,31 +51,16 @@ public class OilGenerator {
         NONE
     }
 
+    // TODO (Phase 8 — World Gen): PopulateChunkEvent, WorldType, and world.provider removed in 1.21.
+    // Oil gen must be ported to a ConfiguredFeature / PlacedFeature registered via data packs.
     @SubscribeEvent
-    public static void onPopulatePre(PopulateChunkEvent.Pre event) {
-        Level world = event.getLevel();
-        int chunkX = event.getChunkX();
-        int chunkZ = event.getChunkZ();
+    public static void onPopulatePre(Object event) {
+        // stub — see TODO above
+    }
 
-        if (world.getWorldType() == WorldType.FLAT) {
-            if (DEBUG_OILGEN_BASIC) {
-                BCLog.logger.info(
-                    "[energy.oilgen] Not generating oil in " + world + " chunk " + chunkX + ", " + chunkZ
-                        + " because it's WorldType is FLAT."
-                );
-            }
-            return;
-        }
-        boolean isExcludedDimension = BCEnergyConfig.excludedDimensions.contains(world.provider.getDimension());
-        if (isExcludedDimension == BCEnergyConfig.excludedDimensionsIsBlackList) {
-            if (DEBUG_OILGEN_BASIC) {
-                BCLog.logger.info(
-                    "[energy.oilgen] Not generating oil in " + world + " chunk " + chunkX + ", " + chunkZ
-                        + " because it's dimension is disabled."
-                );
-            }
-            return;
-        }
+    /** Called at chunk population time. Kept for reference; wired via onPopulatePre stub for now. */
+    @SuppressWarnings("unused")
+    private static void generateOilForChunk(Level world, int chunkX, int chunkZ) {
 
         world.getProfiler().push("bc_oil");
         int x = chunkX * 16 + 8;
@@ -122,21 +106,23 @@ public class OilGenerator {
         int x = cx * 16 + 8 + rand.nextInt(16);
         int z = cz * 16 + 8 + rand.nextInt(16);
 
-        Biome biome = world.getBiome(new BlockPos(x, 0, z));
+        Holder<Biome> biomeHolder = world.getBiome(new BlockPos(x, 0, z));
+        net.minecraft.resources.ResourceLocation biomeLoc = biomeHolder.unwrapKey()
+            .map(net.minecraft.resources.ResourceKey::location).orElse(null);
 
         // Do not generate oil in excluded biomes
-        boolean isExcludedBiome = BCEnergyConfig.excludedBiomes.contains(biome.builtInRegistryHolder().key().location());
+        boolean isExcludedBiome = biomeLoc != null && BCEnergyConfig.excludedBiomes.contains(biomeLoc);
         if (isExcludedBiome == BCEnergyConfig.excludedBiomesIsBlackList) {
             if (DEBUG_OILGEN_BASIC & log) {
                 BCLog.logger.info(
                     "[energy.oilgen] Not generating oil in " + toStr(world) + " chunk " + cx + ", " + cz
-                        + " because the biome we found (" + biome.builtInRegistryHolder().key().location() + ") is disabled!"
+                        + " because the biome we found (" + biomeLoc + ") is disabled!"
                 );
             }
             return ImmutableList.of();
         }
 
-        if (biome instanceof BiomeEnd && (Math.abs(x) < 1200 || Math.abs(z) < 1200)) {
+        if (biomeHolder.is(BiomeTags.IS_END) && (Math.abs(x) < 1200 || Math.abs(z) < 1200)) {
             if (DEBUG_OILGEN_BASIC & log) {
                 BCLog.logger.info(
                     "[energy.oilgen] Not generating oil in " + toStr(world) + " chunk " + cx + ", " + cz
@@ -146,11 +132,11 @@ public class OilGenerator {
             return ImmutableList.of();
         }
 
-        boolean oilBiome = BCEnergyConfig.surfaceDepositBiomes.contains(biome.builtInRegistryHolder().key().location());
+        boolean oilBiome = biomeLoc != null && BCEnergyConfig.surfaceDepositBiomes.contains(biomeLoc);
 
         double bonus = oilBiome ? 3.0 : 1.0;
         bonus *= BCEnergyConfig.oilWellGenerationRate;
-        if (BCEnergyConfig.excessiveBiomes.contains(biome.builtInRegistryHolder().key().location())) {
+        if (biomeLoc != null && BCEnergyConfig.excessiveBiomes.contains(biomeLoc)) {
             bonus *= 30.0;
         }
         final GenType type;

@@ -19,7 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.IShearable;
+import net.neoforged.neoforge.common.IShearable;
 
 import buildcraft.api.transport.IStripesActivator;
 import buildcraft.api.transport.IStripesHandlerItem;

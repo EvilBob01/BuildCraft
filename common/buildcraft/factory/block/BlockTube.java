@@ -41,7 +41,7 @@ public class BlockTube extends BlockBCBase_Neptune {
     public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest) {
         BlockPos currentPos = pos;
         // noinspection StatementWithEmptyBody
-        while (world.getBlockState(currentPos = currentPos.up()).getBlock() == this) {
+        while (world.getBlockState(currentPos = currentPos.above()).getBlock() == this) {
         }
         if (!(world.getBlockEntity(currentPos) instanceof TileMiner)) {
             return super.removedByPlayer(state, world, pos, player, willHarvest);

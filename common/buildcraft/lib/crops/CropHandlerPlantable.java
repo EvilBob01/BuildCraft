@@ -27,7 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.IPlantable;
+import net.neoforged.neoforge.common.IPlantable;
 
 import buildcraft.api.crops.ICropHandler;
 
@@ -44,7 +44,7 @@ public enum CropHandlerPlantable implements ICropHandler {
 
         if (stack.getItem() instanceof BlockItem) {
             Block block = ((BlockItem) stack.getItem()).getBlock();
-            if (block instanceof IPlantable && block != Blocks.REEDS) {
+            if (block instanceof IPlantable && block != Blocks.SUGAR_CANE) {
                 return true;
             }
         }
@@ -57,11 +57,11 @@ public enum CropHandlerPlantable implements ICropHandler {
         BlockState state = world.getBlockState(pos);
         if (seed.getItem() instanceof IPlantable) {
             Block block = state.getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isEmptyBlock(pos.up());
+            return block.canSustainPlant(state, world, pos, Direction.UP, (IPlantable) seed.getItem()) && world.isEmptyBlock(pos.above());
         } else {
             Block block = state.getBlock();
             IPlantable plantable = (IPlantable) ((BlockItem) seed.getItem()).getBlock();
-            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isEmptyBlock(pos.up());
+            return block.canSustainPlant(state, world, pos, Direction.UP, plantable) && block != ((BlockItem) seed.getItem()).getBlock() && world.isEmptyBlock(pos.above());
         }
     }
 

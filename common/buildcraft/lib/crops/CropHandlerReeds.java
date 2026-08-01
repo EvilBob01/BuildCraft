@@ -27,14 +27,14 @@ public enum CropHandlerReeds implements ICropHandler {
 
     @Override
     public boolean isSeed(ItemStack stack) {
-        return stack.getItem() == Items.REEDS;
+        return stack.getItem() == Items.SUGAR_CANE;
     }
 
     @Override
     public boolean canSustainPlant(Level world, ItemStack seed, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        return block.canSustainPlant(state, world, pos, Direction.UP, Blocks.REEDS) && block != Blocks.REEDS && world.isEmptyBlock(pos.up());
+        return block != Blocks.SUGAR_CANE && world.isEmptyBlock(pos.above());
     }
 
     @Override

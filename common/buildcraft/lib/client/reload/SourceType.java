@@ -6,10 +6,7 @@
 
 package buildcraft.lib.client.reload;
 
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import net.minecraftforge.client.model.IModel;
+// TODO (Phase 7 — Rendering): IBakedModel / IModel (Forge 1.12) removed; use BakedModel / IUnbakedModel (NeoForge 1.21)
 
 /** Defines that source of the change. Listeners should check to see what actually changed to see if they also need to
  * reload.

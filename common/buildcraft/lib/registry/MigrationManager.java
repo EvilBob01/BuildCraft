@@ -8,17 +8,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableList;
-
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
-import net.minecraft.resources.ResourceLocation;
-
-import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.RegisterEvent.MissingMappings;
-import net.neoforged.neoforge.registries.RegisterEvent.MissingMappings.Mapping;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
@@ -67,42 +58,7 @@ public enum MigrationManager {
         }
     }
 
-    @SubscribeEvent
-    public void onMissingBlocks(RegistryEvent.MissingMappings<Block> missing) {
-        onMissingMappings(missing, blockMigrations);
-    }
-
-    @SubscribeEvent
-    public void onMissingItems(RegistryEvent.MissingMappings<Item> missing) {
-        onMissingMappings(missing, itemMigrations);
-    }
-
-    private static <T extends IForgeRegistryEntry<T>> void onMissingMappings(MissingMappings<T> missing,
-        Map<String, T> migrations) {
-        ImmutableList<Mapping<T>> all = missing.getAllMappings();
-        if (all.isEmpty()) {
-            return;
-        }
-        if (DEBUG) {
-            BCLog.logger.info("[lib.migrate] Received missing mappings event for " + missing.getGenericType() + " with "
-                + all.size() + " missing.");
-        }
-        for (MissingMappings.Mapping<T> mapping : all) {
-            ResourceLocation loc = mapping.key;
-            String domain = loc.getNamespace();
-            String path = loc.getPath().toLowerCase(Locale.ROOT);
-            if (DEBUG) {
-                BCLog.logger.info("[lib.migrate]  - " + domain + ":" + path);
-            }
-            // TECHNICALLY this can pick up non-bc mods, but generally only addons
-            if (!domain.startsWith("buildcraft")) continue;
-            T to = migrations.get(path);
-            if (to != null) {
-                mapping.remap(to);
-                if (DEBUG) {
-                    BCLog.logger.info("[lib.migrate]    -> " + to.builtInRegistryHolder().key().location());
-                }
-            }
-        }
-    }
+    // TODO (Phase 10 — Registry): rewrite using NeoForge 1.21 MissingMappingsEvent
+    // (net.neoforged.neoforge.registries.MissingMappingsEvent). The old RegistryEvent.MissingMappings
+    // and IForgeRegistryEntry<T> APIs were removed.
 }

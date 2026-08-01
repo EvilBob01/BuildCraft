@@ -21,7 +21,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 import buildcraft.api.core.BCLog;
 
@@ -65,8 +65,8 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
     private void sendRecipe(Recipe recipe) {
         List<ItemStack> stacks = new ArrayList<>(9);
 
-        int maxX = recipe instanceof IShapedRecipe ? ((IShapedRecipe) recipe).getRecipeWidth() : 3;
-        int maxY = recipe instanceof IShapedRecipe ? ((IShapedRecipe) recipe).getRecipeHeight() : 3;
+        int maxX = recipe instanceof ShapedRecipe ? ((ShapedRecipe) recipe).getWidth() : 3;
+        int maxY = recipe instanceof ShapedRecipe ? ((ShapedRecipe) recipe).getHeight() : 3;
         int offsetX = maxX == 1 ? 1 : 0;
         int offsetY = maxY == 1 ? 1 : 0;
         List<Ingredient> ingredients = recipe.getIngredients();

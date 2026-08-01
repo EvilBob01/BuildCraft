@@ -11,12 +11,9 @@ import java.util.Random;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.event.terraingen.PopulateChunkEvent;
-import net.minecraftforge.event.terraingen.TerrainGen;
-import net.neoforged.bus.api.Event.Result;
 import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.enums.EnumSpring;
@@ -26,31 +23,16 @@ import buildcraft.core.BCCoreBlocks;
 
 public class SpringPopulate {
 
+    // TODO (Phase 8 — World Gen): PopulateChunkEvent and TerrainGen removed in 1.21.
+    // Spring gen must be ported to a ConfiguredFeature / PlacedFeature registered via data packs.
     @SubscribeEvent
-    public void populate(PopulateChunkEvent.Post event) {
-
-        Level world = event.getLevel();
-        Random rand = event.getRand();
-        int chunkX = event.getChunkX();
-        int chunkZ = event.getChunkZ();
-        boolean doGen = TerrainGen.populate(event.getGen(), world, rand, chunkX, chunkZ, event.isHasVillageGenerated(), PopulateChunkEvent.Populate.EventType.CUSTOM);
-
-        if (!doGen || !EnumSpring.WATER.canGen) {
-            event.setResult(Result.ALLOW);
-            return;
-        }
-
-        // shift to world coordinates
-        int worldX = chunkX << 4;
-        int worldZ = chunkZ << 4;
-
-        doPopulate(world, rand, worldX, worldZ);
+    public void populate(Object event) {
+        // stub — see TODO above
     }
 
     private static void doPopulate(Level world, Random random, int x, int z) {
-        int dimId = world.provider.getDimension();
         // No water springs will generate in the Nether or End.
-        if (dimId == -1 || dimId == 1) {
+        if (world.dimension() == Level.NETHER || world.dimension() == Level.END) {
             return;
         }
 

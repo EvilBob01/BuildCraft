@@ -13,7 +13,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import buildcraft.api.facades.FacadeAPI;
 
@@ -94,7 +94,7 @@ public enum FacadeSwapRecipe implements Recipe, IRecipeViewable.IViewableGrid {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+        return CommonHooks.defaultRecipeGetRemainingItems(inv);
     }
 
     @Override

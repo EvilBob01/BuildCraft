@@ -15,20 +15,10 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.GameData;
-import net.neoforged.neoforge.common.Tags;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import buildcraft.api.mj.MjAPI;
 import buildcraft.api.recipes.AssemblyRecipeBasic;
@@ -42,7 +32,7 @@ import buildcraft.transport.item.ItemPipeHolder;
 
 @Mod.EventBusSubscriber(modid = BCTransport.MODID)
 public class BCTransportRecipes {
-    @GameRegistry.ObjectHolder("buildcraftsilicon:assembly_table")
+    // TODO (Phase 8): restore ObjectHolder lookup when NeoForge registry system is wired
     private static final Block SILICON_TABLE_ASSEMBLY = null;
 
     @SubscribeEvent
@@ -54,10 +44,8 @@ public class BCTransportRecipes {
         addPipeRecipe(BCTransportItems.pipeItemIron, "ingotIron");
         addPipeRecipe(BCTransportItems.pipeItemGold, "ingotGold");
         addPipeRecipe(BCTransportItems.pipeItemClay, Blocks.CLAY);
-        addPipeRecipe(BCTransportItems.pipeItemSandstone,
-            new ItemStack(Blocks.SANDSTONE, 1, OreDictionary.WILDCARD_VALUE));
-        addPipeRecipe(BCTransportItems.pipeItemVoid, new ItemStack(Items.DYE, 1, DyeColor.BLACK.getDyeDamage()),
-            "dustRedstone");
+        addPipeRecipe(BCTransportItems.pipeItemSandstone, new ItemStack(Blocks.SANDSTONE));
+        addPipeRecipe(BCTransportItems.pipeItemVoid, new ItemStack(Items.BLACK_DYE), "dustRedstone");
         addPipeRecipe(BCTransportItems.pipeItemObsidian, Blocks.OBSIDIAN);
         addPipeRecipe(BCTransportItems.pipeItemDiamond, Items.DIAMOND);
         addPipeRecipe(BCTransportItems.pipeItemLapis, Blocks.LAPIS_BLOCK);
@@ -100,15 +88,9 @@ public class BCTransportRecipes {
             addPipeUpgradeRecipe(BCTransportItems.pipePowerStone, BCTransportItems.pipeRfStone, upgrade);
         }
 
-        if (BCTransportItems.wire != null) {
-            for (DyeColor color : ColourUtil.COLOURS) {
-                String name = StringUtilBC.formatDirect("wire-%s", color.getUnlocalizedName());
-                ImmutableSet<IngredientStack> input = ImmutableSet.of(IngredientStack.of("dustRedstone"),
-                    IngredientStack.of(ColourUtil.getDyeName(color)));
-                AssemblyRecipeRegistry.register(new AssemblyRecipeBasic(name, 10_000 * MjAPI.MJ, input,
-                    new ItemStack(BCTransportItems.wire, 8, color.getId())));
-            }
-        }
+        // TODO (Phase 8): wire color recipes used meta-based ItemStack (3-arg constructor removed in 1.21).
+        // Needs rewrite: ItemWire should store colour in NBT/DataComponents; one item per colour, or a single
+        // item with a colour data component. Assembly recipes must be re-authored accordingly.
     }
 
     private static void addPipeRecipe(ItemPipeHolder pipe, Object material) {

@@ -55,9 +55,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
+// TODO (Phase 7 — Rendering): ExtendedBlockState / IExtendedBlockState / IUnlistedProperty removed in 1.21.
+// Tile→model data now flows via BlockEntity.getModelData() / ModelData / ModelProperty<T>.
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -95,7 +94,7 @@ import buildcraft.transport.tile.TilePipeHolder;
 import buildcraft.transport.wire.EnumWireBetween;
 
 public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaintHandler {
-    public static final IUnlistedProperty<WeakReference<TilePipeHolder>> PROP_TILE
+    public static final UnlistedNonNullProperty<WeakReference<TilePipeHolder>> PROP_TILE
         = new UnlistedNonNullProperty<>("tile");
 
     private static final AABB BOX_CENTER = new AABB(0.25, 0.25, 0.25, 0.75, 0.75, 0.75);
@@ -120,10 +119,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
     // basics
 
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new Property[0], new IUnlistedProperty[] { PROP_TILE });
-    }
+    // TODO (Phase 7): createBlockState() / ExtendedBlockState removed; migrate to createBlockStateDefinition()
 
     @Override
     public TileBC_Neptune createTileEntity(Level world, BlockState state) {
@@ -1052,16 +1048,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
     // rendering
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public BlockState getExtendedState(BlockState state, BlockGetter world, BlockPos pos) {
-        IExtendedBlockState extended = (IExtendedBlockState) state;
-        TilePipeHolder tile = getPipe(world, pos, false);
-        if (tile != null) {
-            extended = extended.setValue(PROP_TILE, new WeakReference<>(tile));
-        }
-        return extended;
-    }
+    // TODO (Phase 7): getExtendedState / IExtendedBlockState removed; use TilePipeHolder.getModelData() instead
 
     @Override
     @OnlyIn(Dist.CLIENT)

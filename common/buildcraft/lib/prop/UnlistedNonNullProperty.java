@@ -6,32 +6,28 @@
 
 package buildcraft.lib.prop;
 
-import net.minecraftforge.common.property.IUnlistedProperty;
-
-public class UnlistedNonNullProperty<V> implements IUnlistedProperty<V> {
+// TODO (Phase 7 — Rendering): replaces IUnlistedProperty<V> (removed in 1.21).
+// In NeoForge 1.21, tile-to-model data is passed via BlockEntity.getModelData() / ModelData / ModelProperty<T>.
+public class UnlistedNonNullProperty<V> {
     public final String name;
 
     public UnlistedNonNullProperty(String name) {
         this.name = name;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public boolean isValid(V value) {
         return value != null;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
+    @SuppressWarnings("rawtypes")
     public Class getType() {
         return Object.class;
     }
 
-    @Override
     public String valueToString(V value) {
         return value.toString();
     }

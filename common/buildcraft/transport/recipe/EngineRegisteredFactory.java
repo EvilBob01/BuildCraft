@@ -1,20 +1,9 @@
 package buildcraft.transport.recipe;
 
-import java.util.function.BooleanSupplier;
-
-import com.google.gson.JsonObject;
-
-import net.minecraftforge.common.crafting.IConditionFactory;
-import net.minecraftforge.common.crafting.JsonContext;
-
-import buildcraft.api.enums.EnumEngineType;
-
-import buildcraft.core.BCCoreBlocks;
-
-public class EngineRegisteredFactory implements IConditionFactory {
-
-    @Override
-    public BooleanSupplier parse(JsonContext context, JsonObject json) {
-        return () -> BCCoreBlocks.engine.isRegistered(EnumEngineType.valueOf(json.get("engineType").getAsString()));
-    }
+// TODO (Phase 8 — Recipes): IConditionFactory / JsonContext removed in 1.21.
+// In NeoForge 1.21, recipe conditions use ICondition with a MapCodec registered via a ConditionCodec.
+// EngineRegisteredFactory checked whether a given engine type is registered before enabling its recipe.
+// Stub class retained to preserve compilation of callers; re-implement when recipe JSON is ported.
+public class EngineRegisteredFactory {
+    // no-op stub
 }

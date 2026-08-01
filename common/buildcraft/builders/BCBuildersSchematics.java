@@ -61,7 +61,7 @@ public class BCBuildersSchematics {
             @Override
             public boolean isReadyToBuild(Level world, BlockPos blockPos) {
                 return super.isReadyToBuild(world, blockPos)
-                    && (world.getBlockState(blockPos.up()).getBlock() instanceof VineBlock
+                    && (world.getBlockState(blockPos.above()).getBlock() instanceof VineBlock
                         || StreamSupport.stream(Direction.Plane.HORIZONTAL.spliterator(), false).map(blockPos::offset)
                             .map(world::getBlockState)
                             .anyMatch(state -> state.isFullCube() && state.getMaterial().blocksMovement()));
