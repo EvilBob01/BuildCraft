@@ -178,13 +178,38 @@ BuildCraft has a centralized network layer in `buildcraft.lib.net`.
 >    `CapabilityHelper`, `MjCapabilityHelper`, `ItemHandlerManager` and `TileBC_Neptune`, so
 >    `CapabilityHelper#addProvider` still composes them.
 >
+> ### ✅ Block capabilities are now REGISTERED with the game
+>
+> `RegistrationHelper` gained a `RegisterCapabilitiesEvent` listener on the mod bus. Without it every
+> `level.getCapability(...)` would return null at runtime no matter what a tile exposes internally,
+> because NeoForge never polls the block entity.
+>
+> Two changes made it work:
+> - `BlockEntityEntry` now **retains** the `BlockEntityType` it builds. Previously `buildType()` handed
+>   the type straight to the registry and dropped the reference, so there was nothing to attach
+>   capabilities to.
+> - All 17 BuildCraft block capabilities (`CapUtil.CAP_ITEMS`/`CAP_FLUIDS`/`CAP_ITEM_TRANSACTOR`,
+>   `Capabilities.EnergyStorage.BLOCK`, the 5 MJ caps, the 4 `TilesAPI` caps, the 4 `PipeApi` caps) are
+>   registered **generically for every BC block entity type** whose class implements
+>   `ICapabilityAccessor`, with the provider delegating to `getCapability(cap, side)`.
+>
+> The blanket approach is deliberate: `TileBC_Neptune` delegates to the `CapabilityHelper` that each
+> tile populates in its **own constructor**, so a tile that never registered a given capability just
+> returns null for it — which is what NeoForge expects. A per-tile registration table would duplicate
+> information that already lives in those constructors and would silently drift out of date.
+>
+> Note NeoForge's `ICapabilityProvider<BE, C, T>` — the interface removed from `IPipe`/`PipeBehaviour`/
+> `PipeFlow` above because it was a false friend there — is exactly what the provider lambda implements
+> here. It finally appears in its intended role: a registration-time factory, not a poll-able interface.
+>
 > ### ⏳ Genuinely remaining for Phase 6
 >
-> **Nothing registers any of this with the game yet.** It compiles, but a `RegisterCapabilitiesEvent`
-> listener on the mod bus is still required before capabilities work at runtime — registering each
-> block entity type against `CapUtil.CAP_ITEMS` / `CAP_ITEM_TRANSACTOR` / the MJ caps, delegating to the
-> `getCapability(cap, side)` methods now present on those holders. Item caps likewise: see the TODO in
-> `ItemFragileFluidContainer` for the exact `event.registerItem(...)` call needed.
+> - **Item capabilities are not registered.** Only block caps are wired. See the TODO in
+>   `ItemFragileFluidContainer` for the exact `event.registerItem(Capabilities.FluidHandler.ITEM, …)`
+>   call needed; the handler class itself is intact and ready.
+> - **None of this has been runtime-tested.** It compiles and is wired correctly, but the mod cannot
+>   launch yet (~18,500 errors remain in other subsystems), so no capability has actually been queried
+>   in-game. Treat correctness as *structural*, not *verified behaviour*.
 >
 > <details><summary>Historic: the original leaf-call-site list (now cleared)</summary>
 >

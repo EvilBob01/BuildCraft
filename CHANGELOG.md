@@ -6,6 +6,50 @@ Format: `[Version] — Date — Description`
 
 ---
 
+## [8.0.1-1.21.1] — 2026-07-30 — Wire up RegisterCapabilitiesEvent (block caps now registered)
+
+Capabilities previously compiled but were inert: NeoForge does not poll block entities, so without a
+`RegisterCapabilitiesEvent` listener every `level.getCapability(...)` returns null regardless of what a
+tile exposes internally. That listener now exists on the mod bus in `RegistrationHelper`.
+
+### Two changes
+
+**1. Retain the `BlockEntityType`.** `BlockEntityEntry.buildType()` handed its result straight to the
+registry and dropped the reference, leaving nothing to attach capabilities to. It is now kept on the
+entry via a `buildAndRetain` helper.
+
+**2. Blanket generic registration.** All 17 BuildCraft block capabilities — `CapUtil.CAP_ITEMS` /
+`CAP_FLUIDS` / `CAP_ITEM_TRANSACTOR`, `Capabilities.EnergyStorage.BLOCK`, the 5 MJ caps, the 4
+`TilesAPI` caps and the 4 `PipeApi` caps — are registered for **every** BC block entity type whose
+class implements `ICapabilityAccessor`, delegating to `getCapability(cap, side)`.
+
+This is deliberate rather than a per-tile table. `TileBC_Neptune` delegates to the `CapabilityHelper`
+each tile fills in its **own constructor**, so a tile that never registered a capability simply returns
+null for it — exactly what NeoForge expects. A parallel registration table would duplicate what those
+constructors already say and would rot as tiles change.
+
+`registerAccessorCapability` is split into its own generic method purely so the
+`BlockCapability<?, Direction>` wildcard from the list is captured into a concrete type variable;
+otherwise the provider lambda will not typecheck.
+
+Worth noting: NeoForge's `ICapabilityProvider<BE, C, T>` — the interface removed from `IPipe` /
+`PipeBehaviour` / `PipeFlow` in the previous entry because it was a false friend there — is precisely
+what the provider lambda implements here, in its actual intended role as a registration-time factory.
+
+### Result
+
+18,502 errors before and after: the listener compiles clean and disturbs nothing. `RegistrationHelper`
+has 0 errors; 0 capability-related errors remain project-wide; 0 files regressed.
+
+### Not done
+
+- **Item capabilities are still unregistered.** Only block caps are wired. `ItemFragileFluidContainer`
+  carries a TODO with the exact `event.registerItem(...)` call; its handler class is intact.
+- **Nothing here has been runtime-tested.** The mod cannot launch yet (~18,500 errors remain in other
+  subsystems), so no capability has been queried in-game. Correctness is *structural*, not *observed*.
+
+---
+
 ## [8.0.1-1.21.1] — 2026-07-30 — Capability system: ZERO compile errors (verified)
 
 Completes the capability port started in the previous entry. **Every capability-related compile error

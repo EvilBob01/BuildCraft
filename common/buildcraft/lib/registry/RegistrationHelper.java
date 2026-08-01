@@ -7,6 +7,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -16,9 +17,18 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+import buildcraft.api.core.ICapabilityAccessor;
+import buildcraft.api.mj.MjAPI;
+import buildcraft.api.tiles.TilesAPI;
+import buildcraft.api.transport.pipe.PipeApi;
+
 import buildcraft.lib.block.BlockBCBase_Neptune;
+import buildcraft.lib.misc.CapUtil;
 import buildcraft.lib.item.IItemBuildCraft;
 import buildcraft.lib.item.ItemBlockBC_Neptune;
 import buildcraft.lib.registry.TagManager.EnumTagType;
@@ -42,6 +52,7 @@ public final class RegistrationHelper {
             MOD_BUS.addListener(this::onRegisterBlocks);
             MOD_BUS.addListener(this::onRegisterItems);
             MOD_BUS.addListener(this::onRegisterBlockEntities);
+            MOD_BUS.addListener(this::onRegisterCapabilities);
         }
     }
 
@@ -74,8 +85,72 @@ public final class RegistrationHelper {
     private void onRegisterBlockEntities(RegisterEvent event) {
         event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
             for (BlockEntityEntry<?> entry : blockEntities) {
-                helper.register(entry.registryName, entry.buildType());
+                helper.register(entry.registryName, buildAndRetain(entry));
             }
+        });
+    }
+
+    /** Builds the type and keeps a reference, so {@link #onRegisterCapabilities} can attach capabilities to it. */
+    private static <T extends BlockEntity> BlockEntityType<T> buildAndRetain(BlockEntityEntry<T> entry) {
+        BlockEntityType<T> type = entry.buildType();
+        entry.type = type;
+        return type;
+    }
+
+    /** Every {@link BlockCapability} BuildCraft exposes on blocks.
+     * <p>
+     * These are attached generically to every BuildCraft block entity rather than listed per-tile, because
+     * {@code TileBC_Neptune} implements {@link ICapabilityAccessor} and delegates to the {@code CapabilityHelper}
+     * that each tile populates in its own constructor. A tile that never registered a given capability simply
+     * returns null for it, which is exactly what NeoForge expects — so a blanket registration is correct here and
+     * saves maintaining a parallel list that would silently drift out of date. */
+    private static final List<BlockCapability<?, Direction>> BC_BLOCK_CAPABILITIES = List.of(
+        CapUtil.CAP_ITEMS,
+        CapUtil.CAP_FLUIDS,
+        CapUtil.CAP_ITEM_TRANSACTOR,
+        Capabilities.EnergyStorage.BLOCK,
+        MjAPI.CAP_CONNECTOR,
+        MjAPI.CAP_RECEIVER,
+        MjAPI.CAP_REDSTONE_RECEIVER,
+        MjAPI.CAP_READABLE,
+        MjAPI.CAP_PASSIVE_PROVIDER,
+        TilesAPI.CAP_CONTROLLABLE,
+        TilesAPI.CAP_HAS_WORK,
+        TilesAPI.CAP_HEATABLE,
+        TilesAPI.CAP_TILE_AREA_PROVIDER,
+        PipeApi.CAP_PIPE,
+        PipeApi.CAP_PLUG,
+        PipeApi.CAP_PIPE_HOLDER,
+        PipeApi.CAP_INJECTABLE
+    );
+
+    /** Attaches BuildCraft's capabilities to every block entity type this helper registered.
+     * <p>
+     * This is the piece that makes capabilities actually work at runtime: NeoForge no longer polls the block entity,
+     * so without this listener every {@code level.getCapability(...)} would return null no matter what the tile
+     * exposes internally. */
+    private void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        for (BlockEntityEntry<?> entry : blockEntities) {
+            if (entry.type == null || !ICapabilityAccessor.class.isAssignableFrom(entry.clazz)) {
+                // Not registered (disabled by config), or a tile that doesn't expose capabilities at all.
+                continue;
+            }
+            for (BlockCapability<?, Direction> cap : BC_BLOCK_CAPABILITIES) {
+                registerAccessorCapability(event, cap, entry.type);
+            }
+        }
+    }
+
+    /** Separate generic method so the {@code BlockCapability<?, Direction>} wildcard is captured into a concrete
+     * type variable, letting the provider lambda typecheck. */
+    private static <C, BE extends BlockEntity> void registerAccessorCapability(
+        RegisterCapabilitiesEvent event, BlockCapability<C, Direction> capability, BlockEntityType<BE> type
+    ) {
+        event.registerBlockEntity(capability, type, (blockEntity, side) -> {
+            if (blockEntity instanceof ICapabilityAccessor accessor) {
+                return accessor.getCapability(capability, side);
+            }
+            return null;
         });
     }
 
@@ -151,6 +226,11 @@ public final class RegistrationHelper {
         final ResourceLocation registryName;
         final Class<T> clazz;
         final Block[] validBlocks;
+
+        /** Retained after registration so {@link RegisterCapabilitiesEvent} can attach capabilities to this type.
+         * Null until {@link #buildType()} has run. */
+        @Nullable
+        BlockEntityType<T> type;
 
         BlockEntityEntry(ResourceLocation name, Class<T> clazz, Block[] blocks) {
             this.registryName = name;
