@@ -89,7 +89,7 @@ public class PipeFlowPower extends PipeFlow implements IFlowPower, IDebuggable {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setBoolean("isReceiver", isReceiver);
+        nbt.putBoolean("isReceiver", isReceiver);
         return nbt;
     }
 

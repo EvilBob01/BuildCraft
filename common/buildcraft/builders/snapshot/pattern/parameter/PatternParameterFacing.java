@@ -63,7 +63,7 @@ public enum PatternParameterFacing implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setByte("v", (byte) ordinal());
+        nbt.putByte("v", (byte) ordinal());
     }
 
     @Override

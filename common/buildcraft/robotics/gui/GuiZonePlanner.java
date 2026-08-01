@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  *
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -71,13 +71,13 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
         super(container);
         xSize = SIZE_X;
         ySize = SIZE_Y;
-        BlockPos tilePos = container.tile.getPos();
+        BlockPos tilePos = container.tile.getBlockPos();
         positionX = tilePos.getX();
         positionZ = tilePos.getZ();
     }
 
     private ItemStack getCurrentStack() {
-        return mc.player.inventory.getItemStack();
+        return mc.player.containerMenu.getCarried();
     }
 
     private ItemStack getPaintbrush() {
@@ -140,14 +140,14 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                              z++) {
                             if (clickedMouseButton == 0) {
                                 bufferLayer.set(
-                                    x - container.tile.getPos().getX(),
-                                    z - container.tile.getPos().getZ(),
+                                    x - container.tile.getBlockPos().getX(),
+                                    z - container.tile.getBlockPos().getZ(),
                                     true
                                 );
                             } else if (clickedMouseButton == 1) {
                                 bufferLayer.set(
-                                    x - container.tile.getPos().getX(),
-                                    z - container.tile.getPos().getZ(),
+                                    x - container.tile.getBlockPos().getX(),
+                                    z - container.tile.getBlockPos().getZ(),
                                     false
                                 );
                             }
@@ -432,8 +432,8 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                         for (int blockX = chunkPos.getXStart(); blockX <= chunkPos.getXEnd(); blockX++) {
                             for (int blockZ = chunkPos.getZStart(); blockZ <= chunkPos.getZEnd(); blockZ++) {
                                 if (!layer.get(
-                                    blockX - container.tile.getPos().getX(),
-                                    blockZ - container.tile.getPos().getZ()
+                                    blockX - container.tile.getBlockPos().getX(),
+                                    blockZ - container.tile.getBlockPos().getZ()
                                 )) {
                                     continue;
                                 }

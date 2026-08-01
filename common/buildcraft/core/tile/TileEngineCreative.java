@@ -117,7 +117,7 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     @Override
     public boolean onActivated(Player player, InteractionHand hand, Direction side, float hitX, float hitY,
         float hitZ) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty() && stack.getItem() instanceof IToolWrench) {
             if (!world.isClientSide) {
                 currentOutputIndex++;
@@ -134,14 +134,14 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("currentOutputIndex", currentOutputIndex);
+        nbt.putInt("currentOutputIndex", currentOutputIndex);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        currentOutputIndex = nbt.getInteger("currentOutputIndex");
+        currentOutputIndex = nbt.getInt("currentOutputIndex");
         currentOutputIndex = MathUtil.clamp(currentOutputIndex, 0, outputs.length);
     }
 }

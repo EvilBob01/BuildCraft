@@ -63,17 +63,17 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        burnTime = nbt.getInteger("burnTime");
-        totalBurnTime = nbt.getInteger("totalBurnTime");
+        burnTime = nbt.getInt("burnTime");
+        totalBurnTime = nbt.getInt("totalBurnTime");
         esum = nbt.getLong("esum");
     }
 
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("burnTime", burnTime);
-        nbt.setInteger("totalBurnTime", totalBurnTime);
-        nbt.setLong("esum", esum);
+        nbt.putInt("burnTime", burnTime);
+        nbt.putInt("totalBurnTime", totalBurnTime);
+        nbt.putLong("esum", esum);
         return nbt;
     }
 

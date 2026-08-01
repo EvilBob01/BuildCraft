@@ -24,6 +24,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidTypeTank;
 import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -102,12 +103,12 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     public boolean isEmpty() {
         FluidStack fluidStack = getFluid();
-        return fluidStack == null || fluidStack.amount <= 0;
+        return fluidStack == null || fluidStack.getAmount() <= 0;
     }
 
     public boolean isFull() {
         FluidStack fluidStack = getFluid();
-        return fluidStack != null && fluidStack.amount >= getCapacity();
+        return fluidStack != null && fluidStack.getAmount() >= getCapacity();
     }
 
     public Fluid getFluidType() {
@@ -128,9 +129,9 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
 
     @Override
     public final FluidTank readFromNBT(CompoundTag nbt) {
-        if (nbt.hasKey(name)) {
+        if (nbt.contains(name)) {
             // Old style of saving + loading
-            CompoundTag tankData = nbt.getCompoundTag(name);
+            CompoundTag tankData = nbt.getCompound(name);
             super.loadAdditional(tankData);
             readTankFromNBT(tankData);
         } else {
@@ -161,10 +162,10 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         }
         toolTip.add(ChatFormatting.GRAY + LocaleUtil.localizeFluidStaticAmount(amount, getCapacity()));
         FluidStack serverFluid = getFluid();
-        if (serverFluid != null && serverFluid.amount > 0) {
+        if (serverFluid != null && serverFluid.getAmount() > 0) {
             toolTip.add(ChatFormatting.RED + "BUG: Server-side fluid on client!");
             toolTip.add(serverFluid.getLocalizedName());
-            toolTip.add(LocaleUtil.localizeFluidStaticAmount(serverFluid.amount, getCapacity()));
+            toolTip.add(LocaleUtil.localizeFluidStaticAmount(serverFluid.getAmount(), getCapacity()));
         }
     }
 
@@ -174,11 +175,16 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
     }
 
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
+    public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
         if (canFillFluidType(resource)) {
-            return super.fill(resource, doFill);
+            return super.fill(resource, action);
         }
         return 0;
+    }
+
+    /** Convenience wrapper so BC's internal code can call fill(resource, true/false). */
+    public int fill(FluidStack resource, boolean doFill) {
+        return fill(resource, doFill ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE);
     }
 
     @Override
@@ -188,7 +194,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         }
         FluidStack currentFluid = getFluid();
         if (currentFluid != null && drainFilter.matches(currentFluid)) {
-            return drain(maxDrain, doDrain);
+            return drain(maxDrain, doDrain ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE);
         }
         return null;
     }
@@ -249,17 +255,17 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
     public String getDebugString() {
         FluidStack f = getFluidForRender();
         if (f == null) f = getFluid();
-        return (f == null ? 0 : f.amount) + " / " + capacity + " mB of " + (f != null ? f.getFluid().getName() : "n/a");
+        return (f == null ? 0 : f.getAmount()) + " / " + capacity + " mB of " + (f != null ? f.getFluid().getName() : "n/a");
     }
 
     public void onGuiClicked(ContainerBC_Neptune container) {
         Player player = container.player;
-        ItemStack held = player.inventory.getItemStack();
+        ItemStack held = player.containerMenu.getCarried();
         if (held.isEmpty()) {
             return;
         }
         ItemStack stack = transferStackToTank(container, held);
-        player.inventory.setItemStack(stack);
+        player.containerMenu.setCarried(stack);
         ((ServerPlayer) player).updateHeldItem();
         player.inventoryContainer.detectAndSendChanges();
         if (player.openContainer != null) {
@@ -274,7 +280,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         Player player = container.player;
         // first try to fill this tank from the item
 
-        if (player.world.isClientSide) {
+        if (player.level().isClientSide) {
             return stack;
         }
 
@@ -283,16 +289,16 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         copy.setCount(1);
         int space = capacity - getFluidAmount();
 
-        boolean isCreative = player.capabilities.isCreativeMode;
+        boolean isCreative = player.getAbilities().instabuild;
         boolean isSurvival = !isCreative;
 
         FluidGetResult result = map(copy, space);
-        if (result != null && result.fluidStack != null && result.fluidStack.amount > 0) {
+        if (result != null && result.fluidStack != null && result.fluidStack.getAmount() > 0) {
             if (isCreative) {
                 stack = copy;// so we don't change the stack held by the player.
             }
             int accepted = fill(result.fluidStack, false);
-            if (isCreative ? (accepted > 0) : (accepted == result.fluidStack.amount)) {
+            if (isCreative ? (accepted > 0) : (accepted == result.fluidStack.getAmount())) {
                 int reallyAccepted = fill(result.fluidStack, true);
                 if (reallyAccepted != accepted) {
                     throw new IllegalStateException(
@@ -301,7 +307,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
                 stack.shrink(1);
                 FluidStack fl = getFluid();
                 if (fl != null) {
-                    SoundUtil.playBucketEmpty(player.world, player.getPosition(), fl);
+                    SoundUtil.playBucketEmpty(player.level(), player.blockPosition(), fl);
                 }
                 if (isSurvival) {
                     if (stack.isEmpty()) {
@@ -317,16 +323,16 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
         // Now try to drain the fluid into the item
         IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(copy);
         if (fluidHandler == null) return stack;
-        FluidStack drained = drainInternal(capacity, false);
-        if (drained == null || drained.amount <= 0) return stack;
-        int filled = fluidHandler.fill(drained, true);
+        FluidStack drained = drain(capacity, IFluidHandler.FluidAction.SIMULATE);
+        if (drained == null || drained.getAmount() <= 0) return stack;
+        int filled = fluidHandler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
         if (filled > 0) {
-            FluidStack reallyDrained = drainInternal(filled, true);
-            if ((reallyDrained == null || reallyDrained.amount != filled)) {
+            FluidStack reallyDrained = drain(filled, IFluidHandler.FluidAction.EXECUTE);
+            if ((reallyDrained == null || reallyDrained.getAmount() != filled)) {
                 throw new IllegalStateException("Somehow drained differently than expected! ( drained = "//
                     + drained + ", filled = " + filled + ", reallyDrained = " + reallyDrained + " )");
             }
-            SoundUtil.playBucketFill(player.world, player.getPosition(), reallyDrained);
+            SoundUtil.playBucketFill(player.level(), player.blockPosition(), reallyDrained);
             if (isSurvival) {
                 if (original.getCount() == 1) {
                     return fluidHandler.getContainer();
@@ -350,8 +356,8 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
     protected FluidGetResult map(ItemStack stack, int space) {
         IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack.copy());
         if (fluidHandler == null) return null;
-        FluidStack drained = fluidHandler.drain(space, true);
-        if (drained == null || drained.amount <= 0) return null;
+        FluidStack drained = fluidHandler.drain(space, IFluidHandler.FluidAction.EXECUTE);
+        if (drained == null || drained.getAmount() <= 0) return null;
         ItemStack leftOverStack = fluidHandler.getContainer();
         if (leftOverStack.isEmpty()) leftOverStack = StackUtil.EMPTY;
         return new FluidGetResult(leftOverStack, drained);

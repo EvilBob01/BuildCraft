@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -67,7 +67,7 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
 
         @Override
         public BlockState getBlockState() {
-            return Blocks.DISPENSER.getDefaultState().withProperty(DispenserBlock.FACING, side);
+            return Blocks.DISPENSER.defaultBlockState().withProperty(DispenserBlock.FACING, side);
         }
 
         @SuppressWarnings("unchecked")
@@ -115,7 +115,7 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
 
         IBlockSource source = new Source(world, pos, direction);
         ItemStack output = behaviour.dispense(source, stack.copy());
-        player.inventory.setInventorySlotContents(player.inventory.currentItem, output);
+        player.getInventory().setItem(player.getInventory().selected, output);
         return true;
     }
 }

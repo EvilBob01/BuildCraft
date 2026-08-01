@@ -43,14 +43,14 @@ public class SchematicEntityManager {
     @Nonnull
     public static <S extends ISchematicEntity> CompoundTag writeToNBT(S schematicEntity) {
         CompoundTag schematicEntityTag = new CompoundTag();
-        schematicEntityTag.setString(
+        schematicEntityTag.putString(
             "name",
             SchematicEntityFactoryRegistry
                 .getFactoryByInstance(schematicEntity)
                 .name
                 .toString()
         );
-        schematicEntityTag.setTag("data", schematicEntity.serializeNBT());
+        schematicEntityTag.put("data", schematicEntity.serializeNBT());
         return schematicEntityTag;
     }
 
@@ -62,7 +62,7 @@ public class SchematicEntityManager {
             throw new InvalidInputDataException("Unknown schematic type " + name);
         }
         ISchematicEntity schematicEntity = factory.supplier.get();
-        CompoundTag data = schematicEntityTag.getCompoundTag("data");
+        CompoundTag data = schematicEntityTag.getCompound("data");
         try {
             schematicEntity.deserializeNBT(data);
             return schematicEntity;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team This Source Code Form is subject to the terms of the Mozilla
  * Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at
  * https://mozilla.org/MPL/2.0/
@@ -42,7 +42,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
@@ -472,7 +472,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
         EnumPipePart part = trace.subHit == 0 ? EnumPipePart.CENTER : EnumPipePart.fromFacing(realSide);
 
-        ItemStack held = player.getHeldItem(hand);
+        ItemStack held = player.getItemInHand(hand);
         Item item = held.isEmpty() ? null : held.getItem();
         PipePluggable existing = tile.getPluggable(realSide);
         if (item instanceof IItemPluggable && existing == null) {
@@ -483,7 +483,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             } else {
                 tile.replacePluggable(realSide, plug);
                 plug.onPlacedBy(player);
-                if (!player.capabilities.isCreativeMode) {
+                if (!player.getAbilities().instabuild) {
                     held.shrink(1);
                 }
                 return true;
@@ -535,7 +535,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                         AdvancementUtil.unlockAdvancement(player, ADVANCEMENT_LOGIC_TRANSPORTATION);
                     }
 
-                    if (!player.capabilities.isCreativeMode) {
+                    if (!player.getAbilities().instabuild) {
                         held.shrink(1);
                     }
                 }
@@ -584,14 +584,14 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
         if (side != null) {
             removePluggable(side, tile, toDrop);
-            if (!player.capabilities.isCreativeMode) {
+            if (!player.getAbilities().instabuild) {
                 InventoryUtil.dropAll(world, pos, toDrop);
             }
             return false;
         } else if (part != null) {
             toDrop.add(new ItemStack(BCTransportItems.wire, 1, tile.wireManager.getColorOfPart(part).getMetadata()));
             tile.wireManager.removePart(part);
-            if (!player.capabilities.isCreativeMode) {
+            if (!player.getAbilities().instabuild) {
                 InventoryUtil.dropAll(world, pos, toDrop);
             }
             tile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
@@ -608,7 +608,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             } else {
                 tile.wireManager.removePart(between.parts[0]);
             }
-            if (!player.capabilities.isCreativeMode) {
+            if (!player.getAbilities().instabuild) {
                 InventoryUtil.dropAll(world, pos, toDrop);
             }
             tile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
@@ -619,7 +619,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 removePluggable(face, tile, NonNullList.create());
             }
         }
-        if (!player.capabilities.isCreativeMode) {
+        if (!player.getAbilities().instabuild) {
             InventoryUtil.dropAll(world, pos, toDrop);
         }
         return super.removedByPlayer(state, world, pos, player, willHarvest);
@@ -806,7 +806,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         HitSpriteInfo info = getHitSpriteInfo(subHit, pipe);
         if (info != null) {
 
-            Random random = pipe.getWorld().rand;
+            Random random = pipe.getLevel().rand;
 
             for (int i = 0; i < numberOfParticles; i++) {
 
@@ -815,10 +815,10 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 double speedZ = random.nextGaussian() * 0.15;
 
                 ParticleDigging particle
-                    = new ParticleBlockDust(pipe.getWorld(), posX, posY, posZ, speedX, speedY, speedZ, pipe.getCurrentState()) {
+                    = new ParticleBlockDust(pipe.getLevel(), posX, posY, posZ, speedX, speedY, speedZ, pipe.getCurrentState()) {
                         // Just to make the constructor public
                     };
-                particle.setBlockPos(pipe.getPos());
+                particle.setBlockPos(pipe.getBlockPos());
                 particle.setParticleTexture(info.sprite);
 
                 Minecraft.getInstance().effectRenderer.addEffect(particle);
@@ -835,7 +835,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         HitSpriteInfo info = getHitSpriteInfo(subHit, pipe);
         if (info != null) {
 
-            Random random = pipe.getWorld().rand;
+            Random random = pipe.getLevel().rand;
 
             posX += (random.nextFloat() - 0.5) * entityWidth;
             posY += 0.1;
@@ -846,10 +846,10 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             double speedZ = motionZ * -0.4;
 
             ParticleDigging particle
-                = new ParticleBlockDust(pipe.getWorld(), posX, posY, posZ, speedX, speedY, speedZ, pipe.getCurrentState()) {
+                = new ParticleBlockDust(pipe.getLevel(), posX, posY, posZ, speedX, speedY, speedZ, pipe.getCurrentState()) {
                     // Just to make the constructor public
                 };
-            particle.setBlockPos(pipe.getPos());
+            particle.setBlockPos(pipe.getBlockPos());
             particle.setParticleTexture(info.sprite);
 
             Minecraft.getInstance().effectRenderer.addEffect(particle);

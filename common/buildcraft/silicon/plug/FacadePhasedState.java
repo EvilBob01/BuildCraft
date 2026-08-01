@@ -29,9 +29,9 @@ public class FacadePhasedState implements IFacadePhasedState {
 
     public static FacadePhasedState readFromNbt(CompoundTag nbt) {
         FacadeBlockStateInfo stateInfo = FacadeStateManager.defaultState;
-        if (nbt.hasKey("state")) {
+        if (nbt.contains("state")) {
             try {
-                BlockState blockState = NBTUtil.readBlockState(nbt.getCompoundTag("state"));
+                BlockState blockState = NBTUtil.readBlockState(nbt.getCompound("state"));
                 stateInfo = FacadeStateManager.validFacadeStates.get(blockState);
                 if (stateInfo == null) {
                     stateInfo = FacadeStateManager.defaultState;
@@ -40,14 +40,14 @@ public class FacadePhasedState implements IFacadePhasedState {
                 throw new RuntimeException("Failed badly when reading a facade state!", t);
             }
         }
-        DyeColor colour = NBTUtilBC.readEnum(nbt.getTag("activeColour"), DyeColor.class);
+        DyeColor colour = NBTUtilBC.readEnum(nbt.get("activeColour"), DyeColor.class);
         return new FacadePhasedState(stateInfo, colour);
     }
 
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
         try {
-            nbt.setTag("state", NBTUtil.writeBlockState(new CompoundTag(), stateInfo.state));
+            nbt.put("state", NBTUtil.writeBlockState(new CompoundTag(), stateInfo.state));
         } catch (Throwable t) {
             throw new IllegalStateException("Writing facade block state"//
                 + "\n\tState = " + stateInfo//
@@ -55,7 +55,7 @@ public class FacadePhasedState implements IFacadePhasedState {
                 + stateInfo.state.getBlock().getClass(), t);
         }
         if (activeColour != null) {
-            nbt.setTag("activeColour", NBTUtilBC.writeEnum(activeColour));
+            nbt.put("activeColour", NBTUtilBC.writeEnum(activeColour));
         }
         return nbt;
     }

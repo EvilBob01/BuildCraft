@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -65,7 +65,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
 
     @Override
     public InteractionResult onItemUse(Player player, Level world, BlockPos pos, InteractionHand hand, Direction facing, float hitX, float hitY, float hitZ) {
-        ItemStack stack = StackUtil.asNonNull(player.getHeldItem(hand));
+        ItemStack stack = StackUtil.asNonNull(player.getItemInHand(hand));
         Brush brush = new Brush(stack);
         Vec3 hitPos = VecUtil.add(new Vec3(hitX, hitY, hitZ), pos);
         if (brush.useOnBlock(world, pos, world.getBlockState(pos), hitPos, facing, player)) {
@@ -147,7 +147,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
             int meta = stack.getMetadata();
             if (meta > 0 && meta <= 16) {
                 colour = DyeColor.byMetadata(meta - 1);
-                CompoundTag nbt = stack.getTagCompound();
+                CompoundTag nbt = stack.getTag();
                 if (nbt == null) {
                     usesLeft = MAX_USES;
                 } else {
@@ -170,12 +170,12 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
                 stack = new ItemStack(ItemPaintbrush_BC8.this, 1, getMeta());
             }
             if (usesLeft != MAX_USES && colour != null) {
-                CompoundTag nbt = stack.getTagCompound();
+                CompoundTag nbt = stack.getTag();
                 if (nbt == null) {
                     nbt = new CompoundTag();
                     stack.setTagCompound(nbt);
                 }
-                nbt.setByte(DAMAGE, (byte) (MAX_USES - usesLeft));
+                nbt.putByte(DAMAGE, (byte) (MAX_USES - usesLeft));
             }
             return stack == existing ? StackUtil.EMPTY : stack;
         }

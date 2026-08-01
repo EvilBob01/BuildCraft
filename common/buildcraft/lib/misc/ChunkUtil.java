@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -27,7 +27,7 @@ public class ChunkUtil {
 
         if (chunk != null) {
             if (chunk.isLoaded()) {
-                if (chunk.getWorld() == world && chunk.x == x && chunk.z == z) {
+                if (chunk.getLevel() == world && chunk.x == x && chunk.z == z) {
                     return chunk;
                 }
             } else {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -115,14 +115,14 @@ public class SchematicBlockFluid implements ISchematicBlock {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
-        nbt.setBoolean("isFlowing", isFlowing);
+        nbt.put("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
+        nbt.putBoolean("isFlowing", isFlowing);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
-        blockState = NBTUtil.readBlockState(nbt.getCompoundTag("blockState"));
+        blockState = NBTUtil.readBlockState(nbt.getCompound("blockState"));
         isFlowing = nbt.getBoolean("isFlowing");
     }
 

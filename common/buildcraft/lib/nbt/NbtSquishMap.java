@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -109,7 +109,7 @@ public class NbtSquishMap {
         } else if (nbt instanceof ListTag) {
             ListTag list = (ListTag) nbt;
             if (!complex.contains(list)) {
-                for (int i = 0; i < list.tagCount(); i++) {
+                for (int i = 0; i < list.size(); i++) {
                     addTag(list.get(i));
                 }
                 complex.add(list);
@@ -121,7 +121,7 @@ public class NbtSquishMap {
                     if (!strings.contains(key)) {
                         strings.add(key);
                     }
-                    addTag(compound.getTag(key));
+                    addTag(compound.get(key));
                 }
                 complex.add(compound);
             }

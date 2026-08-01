@@ -64,7 +64,7 @@ public enum PatternParameterXZDir implements IStatementParameter {
 
     public static PatternParameterXZDir readFromNbt(CompoundTag nbt) {
         Direction dir;
-        if (nbt.hasKey("dir", Tag.TAG_ANY_NUMERIC)) {
+        if (nbt.contains("dir", Tag.TAG_ANY_NUMERIC)) {
             // Older versions
             int d = nbt.getByte("dir") + 2;
             dir = Direction.from2DDataValue(d);
@@ -80,7 +80,7 @@ public enum PatternParameterXZDir implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setByte("d", (byte) dir.getHorizontalIndex());
+        nbt.putByte("d", (byte) dir.getHorizontalIndex());
     }
 
     @Override

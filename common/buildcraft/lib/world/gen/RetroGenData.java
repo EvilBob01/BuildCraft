@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -21,33 +21,38 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.datafix.DataFixTypes;
 
 import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;
 
-public class RetroGenData extends WorldSavedData {
+public class RetroGenData extends SavedData {
     public static final boolean DEBUG = BCDebugging.shouldDebugLog("lib.gen.retro");
     public static final String NAME = "buildcraft_world_gen";
     private final Map<ChunkPos, Set<String>> gennedChunks = new HashMap<>();
 
-    public RetroGenData() {
-        this(NAME);
+    public RetroGenData() {}
+
+    public static RetroGenData load(CompoundTag nbt, HolderLookup.Provider registries) {
+        RetroGenData instance = new RetroGenData();
+        instance.loadFromNBT(nbt);
+        return instance;
     }
 
-    public RetroGenData(String name) {
-        super(name);
+    public static SavedData.Factory<RetroGenData> factory() {
+        return new SavedData.Factory<>(RetroGenData::new, RetroGenData::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
     }
 
-    @Override
-    public void readFromNBT(CompoundTag nbt) {
+    private void loadFromNBT(CompoundTag nbt) {
         gennedChunks.clear();
 
-        ListTag registry = nbt.getTagList("registry", Tag.TAG_STRING);
-        String[] names = new String[registry.tagCount()];
-        for (int i = 0; i < registry.tagCount(); i++) {
+        ListTag registry = nbt.getList("registry", Tag.TAG_STRING);
+        String[] names = new String[registry.size()];
+        for (int i = 0; i < registry.size(); i++) {
             names[i] = registry.getStringTagAt(i);
         }
 
@@ -58,7 +63,7 @@ public class RetroGenData extends WorldSavedData {
             }
         }
 
-        CompoundTag data = nbt.getCompoundTag("data");
+        CompoundTag data = nbt.getCompound("data");
         for (String key : data.getKeySet()) {
             ChunkPos pos = deserializeChunkPos(key);
             if (pos == null) {
@@ -105,7 +110,7 @@ public class RetroGenData extends WorldSavedData {
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
         Set<String> allNames = new HashSet<>();
         for (Set<String> used : gennedChunks.values()) {
             allNames.addAll(used);
@@ -118,7 +123,7 @@ public class RetroGenData extends WorldSavedData {
             map.put(name, (byte) i);
             registry.appendTag(new StringTag(name));
         }
-        nbt.setTag("registry", registry);
+        nbt.put("registry", registry);
 
         CompoundTag data = new CompoundTag();
         for (Entry<ChunkPos, Set<String>> entry : gennedChunks.entrySet()) {
@@ -129,9 +134,9 @@ public class RetroGenData extends WorldSavedData {
                 byte b = map.get(s);
                 ids.add(b);
             }
-            data.setByteArray(key, ids.toArray());
+            data.putByteArray(key, ids.toArray());
         }
-        nbt.setTag("data", data);
+        nbt.put("data", data);
 
         return nbt;
     }

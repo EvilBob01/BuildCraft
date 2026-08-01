@@ -6,28 +6,48 @@
 
 package buildcraft.lib.fluid;
 
-import net.neoforged.neoforge.fluids.FluidStack;
+import javax.annotation.Nullable;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class TankProperties implements IFluidTankProperties {
-    private final Tank tank;
+
+    @Nullable
+    private final FluidStack contents;
+    private final int capacity;
     private final boolean canFill, canDrain;
 
+    /** Constructor matching {@code FluidTankProperties(FluidStack, int, boolean, boolean)} from old Forge. */
+    public TankProperties(@Nullable FluidStack contents, int capacity, boolean canFill, boolean canDrain) {
+        this.contents = contents == null ? null : contents.copy();
+        this.capacity = capacity;
+        this.canFill = canFill;
+        this.canDrain = canDrain;
+    }
+
+    /** Constructor matching {@code FluidTankProperties(FluidStack, int)} from old Forge (fill+drain both true). */
+    public TankProperties(@Nullable FluidStack contents, int capacity) {
+        this(contents, capacity, true, true);
+    }
+
+    /** Constructor from a live {@link Tank}. */
     public TankProperties(Tank tank, boolean canFill, boolean canDrain) {
-        this.tank = tank;
+        FluidStack current = tank.getFluid();
+        this.contents = current == null ? null : current.copy();
+        this.capacity = tank.getCapacity();
         this.canFill = canFill;
         this.canDrain = canDrain;
     }
 
     @Override
+    @Nullable
     public FluidStack getContents() {
-        FluidStack current = tank.getFluid();
-        return current == null ? null : current.copy();
+        return contents == null ? null : contents.copy();
     }
 
     @Override
     public int getCapacity() {
-        return tank.getCapacity();
+        return capacity;
     }
 
     @Override
@@ -42,11 +62,11 @@ public class TankProperties implements IFluidTankProperties {
 
     @Override
     public boolean canFillFluidType(FluidStack fluidStack) {
-        return canFill() && tank.canFillFluidType(fluidStack);
+        return canFill;
     }
 
     @Override
     public boolean canDrainFluidType(FluidStack fluidStack) {
-        return canDrain();
+        return canDrain;
     }
 }

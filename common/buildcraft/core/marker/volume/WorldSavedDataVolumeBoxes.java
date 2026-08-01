@@ -17,31 +17,38 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.storage.MapStorage;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.server.level.ServerLevel;
 
 import buildcraft.lib.misc.NBTUtilBC;
 import buildcraft.lib.net.MessageManager;
 
-public class WorldSavedDataVolumeBoxes extends WorldSavedData {
+public class WorldSavedDataVolumeBoxes extends SavedData {
     private static final String DATA_NAME = "buildcraft_volume_boxes";
-    /**
-     * Used to assign {@link WorldSavedDataVolumeBoxes#world} to pass it to {@link VolumeBox},
-     * as we can't pass it other way ({@link MapStorage} can call only constructor with one {@link String} argument
-     * and then it calls NBT deserialization method,
-     * giving us no chance to set the {@link WorldSavedDataVolumeBoxes#world} field).
-     */
-    private static Level currentWorld;
-    public final Level world = currentWorld;
+    public final Level world;
     public final List<VolumeBox> volumeBoxes = new ArrayList<>();
 
-    public WorldSavedDataVolumeBoxes() {
-        super(DATA_NAME);
+    public WorldSavedDataVolumeBoxes(Level world) {
+        this.world = world;
     }
 
-    @SuppressWarnings("unused")
-    public WorldSavedDataVolumeBoxes(String name) {
-        super(name);
+    public static SavedData.Factory<WorldSavedDataVolumeBoxes> factory(Level world) {
+        return new SavedData.Factory<>(
+            () -> new WorldSavedDataVolumeBoxes(world),
+            (nbt, registries) -> WorldSavedDataVolumeBoxes.load(nbt, registries, world),
+            DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+        );
+    }
+
+    public static WorldSavedDataVolumeBoxes load(CompoundTag nbt, HolderLookup.Provider registries, Level world) {
+        WorldSavedDataVolumeBoxes instance = new WorldSavedDataVolumeBoxes(world);
+        instance.volumeBoxes.clear();
+        NBTUtilBC.readCompoundList(nbt.get("volumeBoxes"))
+            .map(volumeBoxTag -> new VolumeBox(world, volumeBoxTag))
+            .forEach(instance.volumeBoxes::add);
+        return instance;
     }
 
     public VolumeBox getVolumeBoxAt(BlockPos pos) {
@@ -92,45 +99,27 @@ public class WorldSavedDataVolumeBoxes extends WorldSavedData {
             }
         }
         if (dirty.get()) {
-            markDirty();
+            setDirty();
         }
     }
 
     @Override
-    public void markDirty() {
-        super.setChanged();
+    public void setDirty() {
+        super.setDirty();
         MessageManager.sendToDimension(new MessageVolumeBoxes(volumeBoxes), world.provider.getDimension());
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        nbt.setTag("volumeBoxes", NBTUtilBC.writeCompoundList(volumeBoxes.stream().map(VolumeBox::writeToNBT)));
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
+        nbt.put("volumeBoxes", NBTUtilBC.writeCompoundList(volumeBoxes.stream().map(VolumeBox::writeToNBT)));
         return nbt;
-    }
-
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public void readFromNBT(CompoundTag nbt) {
-        volumeBoxes.clear();
-        NBTUtilBC.readCompoundList(nbt.getTag("volumeBoxes"))
-            .map(volumeBoxTag -> new VolumeBox(world, volumeBoxTag))
-            .forEach(volumeBoxes::add);
     }
 
     public static WorldSavedDataVolumeBoxes get(Level world) {
         if (world.isClientSide) {
             throw new IllegalArgumentException("Tried to create a world saved data instance on the client!");
         }
-        MapStorage storage = world.getPerWorldStorage();
-        currentWorld = world;
-        WorldSavedDataVolumeBoxes instance = (WorldSavedDataVolumeBoxes)
-            storage.getOrLoadData(WorldSavedDataVolumeBoxes.class, DATA_NAME);
-        if (instance == null) {
-            instance = new WorldSavedDataVolumeBoxes();
-            storage.setData(DATA_NAME, instance);
-        }
-        currentWorld = null;
-        return instance;
+        return ((ServerLevel) world).getDataStorage().computeIfAbsent(factory(world), DATA_NAME);
     }
 }

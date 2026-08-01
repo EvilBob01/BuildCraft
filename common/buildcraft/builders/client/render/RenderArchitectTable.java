@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -28,7 +28,7 @@ public class RenderArchitectTable extends TileEntitySpecialRenderer<TileArchitec
         Minecraft.getInstance().mcProfiler.startSection("architect_table");
 
         GL11.glPushMatrix();
-        GL11.glTranslated(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+        GL11.glTranslated(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
         RenderHelper.disableStandardItemLighting();
 
         Minecraft.getInstance().mcProfiler.startSection("box");

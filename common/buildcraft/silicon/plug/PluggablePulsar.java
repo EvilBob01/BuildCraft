@@ -124,18 +124,18 @@ public class PluggablePulsar extends PipePluggable {
     public PluggablePulsar(PluggableDefinition definition, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(definition, holder, side);
         this.manuallyEnabled = nbt.getBoolean("manuallyEnabled");
-        gateEnabledTicks = nbt.getInteger("gateEnabledTicks");
-        gateSinglePulses = nbt.getInteger("gateSinglePulses");
-        pulseStage = MathUtil.clamp(nbt.getInteger("pulseStage"), 0, PULSE_STAGE);
+        gateEnabledTicks = nbt.getInt("gateEnabledTicks");
+        gateSinglePulses = nbt.getInt("gateSinglePulses");
+        pulseStage = MathUtil.clamp(nbt.getInt("pulseStage"), 0, PULSE_STAGE);
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setBoolean("manuallyEnabled", manuallyEnabled);
-        nbt.setInteger("gateEnabledTicks", gateEnabledTicks);
-        nbt.setInteger("gateSinglePulses", gateSinglePulses);
-        nbt.setInteger("pulseStage", pulseStage);
+        nbt.putBoolean("manuallyEnabled", manuallyEnabled);
+        nbt.putInt("gateEnabledTicks", gateEnabledTicks);
+        nbt.putInt("gateSinglePulses", gateSinglePulses);
+        nbt.putInt("pulseStage", pulseStage);
         return nbt;
     }
 

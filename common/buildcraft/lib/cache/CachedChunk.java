@@ -1,4 +1,4 @@
-package buildcraft.lib.cache;
+﻿package buildcraft.lib.cache;
 
 import java.lang.ref.WeakReference;
 
@@ -29,7 +29,7 @@ public class CachedChunk implements IChunkCache {
             cachedChunk = null;
             return null;
         }
-        BlockPos tPos = tile.getPos();
+        BlockPos tPos = tile.getBlockPos();
         if (pos.getX() >> 4 != tPos.getX() >> 4 //
             || pos.getZ() >> 4 != tPos.getZ() >> 4) {
             return null;
@@ -41,13 +41,13 @@ public class CachedChunk implements IChunkCache {
             }
             cachedChunk = null;
         }
-        Level world = tile.getWorld();
+        Level world = tile.getLevel();
         if (world == null) {
             cachedChunk = null;
             return null;
         }
         LevelChunk chunk = ChunkUtil.getChunk(world, pos, true);
-        if (chunk != null && chunk.getWorld() == world) {
+        if (chunk != null && chunk.getLevel() == world) {
             cachedChunk = new WeakReference<>(chunk);
             return chunk;
         }

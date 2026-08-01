@@ -146,15 +146,15 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        progress = nbt.getInteger("progress");
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
+        progress = nbt.getInt("progress");
+        battery.deserializeNBT(nbt.getCompound("battery"));
     }
 
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("progress", progress);
-        nbt.setTag("battery", battery.serializeNBT());
+        nbt.putInt("progress", progress);
+        nbt.put("battery", battery.serializeNBT());
         return nbt;
     }
 

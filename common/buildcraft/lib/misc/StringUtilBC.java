@@ -98,7 +98,7 @@ public final class StringUtilBC {
         if (fluid == null) {
             return "null";
         }
-        return fluid.amount + "mb " + fluid.getFluid().getName();
+        return fluid.getAmount() + "mb " + fluid.getFluid().getName();
     }
 
     // Displaying objects

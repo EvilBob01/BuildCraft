@@ -42,7 +42,7 @@ public class PipeBehaviourDaizuli extends PipeBehaviourDirectional {
 
     public PipeBehaviourDaizuli(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        colour = NBTUtilBC.readEnum(nbt.getTag("colour"), DyeColor.class);
+        colour = NBTUtilBC.readEnum(nbt.get("colour"), DyeColor.class);
         if (colour == null) {
             colour = DyeColor.WHITE;
         }
@@ -51,7 +51,7 @@ public class PipeBehaviourDaizuli extends PipeBehaviourDirectional {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("colour", NBTUtilBC.writeEnum(colour));
+        nbt.put("colour", NBTUtilBC.writeEnum(colour));
         return nbt;
     }
 
@@ -91,7 +91,7 @@ public class PipeBehaviourDaizuli extends PipeBehaviourDirectional {
             // And so does clicking on the current facing side
             return super.onPipeActivate(player, trace, hitX, hitY, hitZ, part);
         }
-        if (player.world.isClientSide) {
+        if (player.level().isClientSide) {
             return EntityUtil.getWrenchHand(player) != null;
         }
         if (EntityUtil.getWrenchHand(player) != null) {

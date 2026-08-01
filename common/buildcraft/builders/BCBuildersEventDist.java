@@ -20,13 +20,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.event.level.GetCollisionBoxesEvent;
-// TODO (Phase 8): net.minecraftforge.fml.client.config.GuiUtils removed in NeoForge 1.21.1;
-// drawGradientRect now lives on GuiGraphics. Callers below need to be rewritten to use a
-// GuiGraphics instance instead of static GuiUtils calls.
+import net.neoforged.neoforge.event.tick.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -48,12 +45,12 @@ public enum BCBuildersEventDist {
 
     public synchronized void validateQuarry(TileQuarry quarry) {
         Deque<WeakReference<TileQuarry>> quarries =
-            allQuarries.computeIfAbsent(quarry.getWorld(), k -> new LinkedList<>());
+            allQuarries.computeIfAbsent(quarry.getLevel(), k -> new LinkedList<>());
         quarries.add(new WeakReference<>(quarry));
     }
 
     public synchronized void invalidateQuarry(TileQuarry quarry) {
-        Deque<WeakReference<TileQuarry>> quarries = allQuarries.get(quarry.getWorld());
+        Deque<WeakReference<TileQuarry>> quarries = allQuarries.get(quarry.getLevel());
         if (quarries == null) {
             // Odd.
             return;
@@ -70,7 +67,7 @@ public enum BCBuildersEventDist {
 
     @SubscribeEvent
     public synchronized void onGetCollisionBoxesForQuarry(GetCollisionBoxesEvent event) {
-        Deque<WeakReference<TileQuarry>> quarries = allQuarries.get(event.getWorld());
+        Deque<WeakReference<TileQuarry>> quarries = allQuarries.get(event.getLevel());
         if (quarries == null) {
             // No quarries in the target world
             return;
@@ -133,8 +130,8 @@ public enum BCBuildersEventDist {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public void onTickClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !Minecraft.getInstance().isGamePaused()) {
+    public void onTickClientTick(ClientTickEvent.Post event) {
+        if (!Minecraft.getInstance().isGamePaused()) {
             ClientArchitectTables.tick();
         }
     }

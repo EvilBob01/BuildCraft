@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -40,7 +40,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Explosion;
@@ -159,10 +159,10 @@ public final class BlockUtil {
 
         while (player.getHeldItemMainhand() != tool && i < 9) {
             if (i > 0) {
-                player.inventory.setInventorySlotContents(i - 1, StackUtil.EMPTY);
+                player.getInventory().setItem(i - 1, StackUtil.EMPTY);
             }
 
-            player.inventory.setInventorySlotContents(i, tool);
+            player.getInventory().setItem(i, tool);
             i++;
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -119,7 +119,7 @@ public class NbtPath {
             } catch (NumberFormatException e) {
                 return NBTUtilBC.NBT_NULL;
             }
-            if (key >= 0 && key < tag.tagCount()) {
+            if (key >= 0 && key < tag.size()) {
                 return new NbtPath(elements.subList(1, elements.size())).get(tag.get(key));
             } else {
                 return NBTUtilBC.NBT_NULL;
@@ -134,8 +134,8 @@ public class NbtPath {
     public Tag get(CompoundTag tag) {
         if (!elements.isEmpty()) {
             String key = elements.get(0);
-            if (tag.hasKey(key)) {
-                return new NbtPath(elements.subList(1, elements.size())).get(tag.getTag(key));
+            if (tag.contains(key)) {
+                return new NbtPath(elements.subList(1, elements.size())).get(tag.get(key));
             } else {
                 return NBTUtilBC.NBT_NULL;
             }

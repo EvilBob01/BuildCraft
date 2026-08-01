@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -67,7 +67,7 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
         double minZ = -offset;
         double maxZ = 1 + offset;
 
-        BlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getLevel().getBlockState(tile.getBlockPos());
         if (state.getBlock() != BCRoboticsBlocks.zonePlanner) {
             return;
         }
@@ -163,29 +163,29 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
                 int offset2 = (textureY - TEXTURE_HEIGHT / 2) * scale;
                 switch (side) {
                     case NORTH:
-                        posX = tile.getPos().getX() + offset1;
-                        posZ = tile.getPos().getZ() - offset2;
+                        posX = tile.getBlockPos().getX() + offset1;
+                        posZ = tile.getBlockPos().getZ() - offset2;
                         break;
                     case EAST:
-                        posX = tile.getPos().getX() + offset2;
-                        posZ = tile.getPos().getZ() + offset1;
+                        posX = tile.getBlockPos().getX() + offset2;
+                        posZ = tile.getBlockPos().getZ() + offset1;
                         break;
                     case SOUTH:
-                        posX = tile.getPos().getX() + offset1;
-                        posZ = tile.getPos().getZ() + offset2;
+                        posX = tile.getBlockPos().getX() + offset1;
+                        posZ = tile.getBlockPos().getZ() + offset2;
                         break;
                     case WEST:
                     default:
-                        posX = tile.getPos().getX() - offset2;
-                        posZ = tile.getPos().getZ() + offset1;
+                        posX = tile.getBlockPos().getX() - offset2;
+                        posZ = tile.getBlockPos().getZ() + offset1;
                         break;
                 }
                 ChunkPos chunkPos = new ChunkPos(posX >> 4, posZ >> 4);
                 texture.setColor(textureX, textureY, -1);
                 ZonePlannerMapChunkKey key =
-                    new ZonePlannerMapChunkKey(chunkPos, tile.getWorld().provider.getDimension(), tile.getLevel());
+                    new ZonePlannerMapChunkKey(chunkPos, tile.getLevel().provider.getDimension(), tile.getLevel());
                 ZonePlannerMapChunk zonePlannerMapChunk =
-                    ZonePlannerMapDataClient.INSTANCE.getChunk(tile.getWorld(), key);
+                    ZonePlannerMapDataClient.INSTANCE.getChunk(tile.getLevel(), key);
                 if (zonePlannerMapChunk != null) {
                     texture.setColor(textureX, textureY, zonePlannerMapChunk.getColour(posX, posZ) | 0xFF_00_00_00);
                 } else {

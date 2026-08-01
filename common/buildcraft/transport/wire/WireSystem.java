@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -208,8 +208,8 @@ public final class WireSystem {
     }
 
     public boolean isPlayerWatching(ServerPlayer player) {
-        if (player.world instanceof ServerLevel) {
-            ServerLevel world = (ServerLevel) player.world;
+        if (player.level() instanceof ServerLevel) {
+            ServerLevel world = (ServerLevel) player.level();
             return getChunkPosesAsStream().map(chunkPos -> world.getPlayerChunkMap().getEntry(chunkPos.x, chunkPos.z))
                     .anyMatch(playerChunkMapEntry -> playerChunkMapEntry != null && playerChunkMapEntry.containsPlayer(player));
         }
@@ -230,17 +230,17 @@ public final class WireSystem {
         CompoundTag nbt = new CompoundTag();
         ListTag elementsList = new ListTag();
         elements.stream().map(WireElement::writeToNBT).forEach(elementsList::appendTag);
-        nbt.setTag("elements", elementsList);
-        nbt.setInteger("color", color.getMetadata());
+        nbt.put("elements", elementsList);
+        nbt.putInt("color", color.getMetadata());
         return nbt;
     }
 
     public WireSystem(CompoundTag nbt) {
         networkId = nextServerNetworkId();
-        ListTag elementsList = nbt.getTagList("elements", Tag.TAG_COMPOUND);
+        ListTag elementsList = nbt.getList("elements", Tag.TAG_COMPOUND);
         //noinspection UnstableApiUsage
-        elements = IntStream.range(0, elementsList.tagCount()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
-        color = DyeColor.byMetadata(nbt.getInteger("color"));
+        elements = IntStream.range(0, elementsList.size()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
+        color = DyeColor.byMetadata(nbt.getInt("color"));
 
         this.cachedHashCode = this.computeHashCode();
         this.cachedWiresHashCode = this.computeCachedWiresHashCode();
@@ -315,18 +315,18 @@ public final class WireSystem {
         }
 
         public WireElement(CompoundTag nbt) {
-            type = Type.values()[nbt.getInteger("type")];
-            blockPos = NBTUtilBC.readBlockPos(nbt.getTag("blockPos"));
+            type = Type.values()[nbt.getInt("type")];
+            blockPos = NBTUtilBC.readBlockPos(nbt.get("blockPos"));
             if (blockPos == null) {
                 // Oh dear. We probably can't recover from this properly
                 throw new NullPointerException("Cannot read this Wire Systems from NBT!");
             }
             if (type == Type.WIRE_PART) {
-                wirePart = EnumWirePart.VALUES[nbt.getInteger("wirePart")];
+                wirePart = EnumWirePart.VALUES[nbt.getInt("wirePart")];
                 this.emitterSide = null;
             } else if (type == Type.EMITTER_SIDE) {
                 this.wirePart = null;
-                emitterSide = Direction.from3DDataValue(nbt.getInteger("emitterSide"));
+                emitterSide = Direction.from3DDataValue(nbt.getInt("emitterSide"));
             } else {
                 this.wirePart = null;
                 this.emitterSide = null;
@@ -347,14 +347,14 @@ public final class WireSystem {
 
         public CompoundTag writeToNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setInteger("type", type.ordinal());
-            nbt.setTag("blockPos", NBTUtilBC.writeBlockPos(blockPos));
+            nbt.putInt("type", type.ordinal());
+            nbt.put("blockPos", NBTUtilBC.writeBlockPos(blockPos));
             if (type == Type.WIRE_PART) {
                 assert wirePart != null;
-                nbt.setInteger("wirePart", wirePart.ordinal());
+                nbt.putInt("wirePart", wirePart.ordinal());
             } else if (type == Type.EMITTER_SIDE) {
                 assert emitterSide != null;
-                nbt.setInteger("emitterSide", emitterSide.getIndex());
+                nbt.putInt("emitterSide", emitterSide.getIndex());
             }
             return nbt;
         }

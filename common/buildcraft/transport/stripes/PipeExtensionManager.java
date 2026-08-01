@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -168,13 +168,13 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         // Step 3: Place stripes pipe back and remove old one
         if (!canceled) {
             // - Correct NBT coordinates
-            stripesNBTOld.setInteger("x", p.getX());
-            stripesNBTOld.setInteger("y", p.getY());
-            stripesNBTOld.setInteger("z", p.getZ());
+            stripesNBTOld.putInt("x", p.getX());
+            stripesNBTOld.putInt("y", p.getY());
+            stripesNBTOld.putInt("z", p.getZ());
 
             // - Create block and tile
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, p);
-            player.inventory.clear();
+            player.getInventory().clearContent();
             w.setBlock(p, stripesStateOld, 3);
             BlockEvent.PlaceEvent placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshot2, r.dir, InteractionHand.MAIN_HAND);
             if (canceled = placeEvent.isCanceled()) {
@@ -201,8 +201,8 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
                     }
                 } else {
                     stacksToSendBack.addAll(list);
-                    for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                        ItemStack stack = player.inventory.removeStackFromSlot(i);
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack stack = player.getInventory().removeItemNoUpdate(i);
                         if (!stack.isEmpty()) {
                             stacksToSendBack.add(stack);
                         }
@@ -257,11 +257,11 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         // Step 2: Add new pipe
         if (!canceled) {
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, r.pos);
-            player.inventory.clear();
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, r.stack);
+            player.getInventory().clearContent();
+            player.getInventory().setItem(player.getInventory().selected, r.stack);
             InteractionResult result = ForgeHooks.onPlaceItemIntoWorld(r.stack, player, w, r.pos, r.dir.getOpposite(), 0.5F, 0.5F, 0.5F, InteractionHand.MAIN_HAND);
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack stack = player.inventory.removeStackFromSlot(i);
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack stack = player.getInventory().removeItemNoUpdate(i);
                 if (!stack.isEmpty()) {
                     list.add(stack);
                 }
@@ -278,13 +278,13 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         // Step 3: Place stripes pipe back
         if (!canceled) {
             // - Correct NBT coordinates
-            stripesNBTOld.setInteger("x", p.getX());
-            stripesNBTOld.setInteger("y", p.getY());
-            stripesNBTOld.setInteger("z", p.getZ());
+            stripesNBTOld.putInt("x", p.getX());
+            stripesNBTOld.putInt("y", p.getY());
+            stripesNBTOld.putInt("z", p.getZ());
 
             // - Create block and tile
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, p);
-            player.inventory.clear();
+            player.getInventory().clearContent();
             BlockSnapshot blockSnapshot2 = BlockSnapshot.getBlockSnapshot(w, p);
             w.setBlock(p, stripesStateOld, 3);
             BlockEvent.PlaceEvent placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshot2, r.dir.getOpposite(), InteractionHand.MAIN_HAND);

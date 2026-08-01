@@ -39,8 +39,8 @@ public class ItemDebugger extends ItemBC_Neptune {
     }
 
     public static boolean isShowDebugInfo(Player player) {
-        return player.capabilities.isCreativeMode ||
-            player.getHeldItem(InteractionHand.MAIN_HAND).getItem() instanceof ItemDebugger ||
-            player.getHeldItem(InteractionHand.OFF_HAND).getItem() instanceof ItemDebugger;
+        return player.getAbilities().instabuild ||
+            player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemDebugger ||
+            player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemDebugger;
     }
 }

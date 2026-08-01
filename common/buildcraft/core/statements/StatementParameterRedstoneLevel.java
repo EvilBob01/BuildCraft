@@ -54,9 +54,9 @@ public class StatementParameterRedstoneLevel implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setByte("l", (byte) level);
-        nbt.setByte("mi", (byte) minLevel);
-        nbt.setByte("ma", (byte) maxLevel);
+        nbt.putByte("l", (byte) level);
+        nbt.putByte("mi", (byte) minLevel);
+        nbt.putByte("ma", (byte) maxLevel);
     }
 
     @Nonnull

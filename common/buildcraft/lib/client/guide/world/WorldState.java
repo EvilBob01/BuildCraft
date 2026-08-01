@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -26,7 +26,7 @@ public class WorldState {
         // if (blueprint instanceof Blueprint) {
         // this.world = new FakeWorld((Blueprint) blueprint);
         // } else {
-        // this.world = new FakeWorld((Template) blueprint, Blocks.BRICK_BLOCK.getDefaultState());
+        // this.world = new FakeWorld((Template) blueprint, Blocks.BRICK_BLOCK.defaultBlockState());
         // }
         this.labels = ImmutableList.copyOf(info.labels);
         this.cameraPos = null;// TODO Utils.convertFloat(info.cameraPos);

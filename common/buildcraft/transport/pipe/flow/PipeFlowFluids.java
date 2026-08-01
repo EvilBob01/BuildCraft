@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,6 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -110,17 +109,19 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         for (EnumPipePart part : EnumPipePart.VALUES) {
             sections.put(part, new Section(part));
         }
-        if (nbt.hasKey("fluid")) {
-            setFluid(FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag("fluid")));
+        if (nbt.contains("fluid")) {
+            // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
+            setFluid(FluidStack.loadFluidStackFromNBT(nbt.getCompound("fluid")));
         } else {
             setFluid(null);
         }
 
         for (EnumPipePart part : EnumPipePart.VALUES) {
             int direction = part.getIndex();
-            if (nbt.hasKey("tank[" + direction + "]")) {
-                CompoundTag compound = nbt.getCompoundTag("tank[" + direction + "]");
-                if (compound.hasKey("FluidType")) {
+            if (nbt.contains("tank[" + direction + "]")) {
+                CompoundTag compound = nbt.getCompound("tank[" + direction + "]");
+                if (compound.contains("FluidType")) {
+                    // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
                     FluidStack stack = FluidStack.loadFluidStackFromNBT(compound);
                     if (currentFluid == null) {
                         setFluid(stack);
@@ -142,13 +143,13 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         if (currentFluid != null) {
             CompoundTag fluidTag = new CompoundTag();
             currentFluid.saveAdditional(fluidTag);
-            nbt.setTag("fluid", fluidTag);
+            nbt.put("fluid", fluidTag);
 
             for (EnumPipePart part : EnumPipePart.VALUES) {
                 int direction = part.getIndex();
                 CompoundTag subTag = new CompoundTag();
                 sections.get(part).writeToNbt(subTag);
-                nbt.setTag("tank[" + direction + "]", subTag);
+                nbt.put("tank[" + direction + "]", subTag);
             }
         }
 
@@ -230,13 +231,13 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
 
             // Search for the first valid fluid
 
-            IFluidTankProperties[] tanks = handler.getTankProperties();
-            if (tanks == null) {
+            int tankCount = handler.getTanks();
+            if (tankCount == 0) {
                 return null;
             }
-            for (IFluidTankProperties tank : tanks) {
-                FluidStack contents = tank.getContents();
-                if (contents != null && filter.matches(contents)) {
+            for (int i = 0; i < tankCount; i++) {
+                FluidStack contents = handler.getFluidInTank(i);
+                if (!contents.isEmpty() && filter.matches(contents)) {
                     FluidStack extracted = extractSimple(mb, contents, handler, simulate);
                     if (extracted != null) {
                         return extracted;
@@ -270,10 +271,10 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
             return FAILED_EXTRACT;
         }
         FluidStack toAdd = extractor.extract(millibuckets, currentFluid, fluidHandler);
-        if (toAdd == null || toAdd.amount <= 0) {
+        if (toAdd == null || toAdd.getAmount() <= 0) {
             return FAILED_EXTRACT;
         }
-        millibuckets = toAdd.amount;
+        millibuckets = toAdd.getAmount();
         if (currentFluid == null && !simulate) {
             setFluid(toAdd);
         }
@@ -296,11 +297,11 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     private static FluidStack extractSimple(int millibuckets, FluidStack filter, IFluidHandler handler,
         boolean simulate) {
         if (filter == null) {
-            return handler.drain(millibuckets, !simulate);
+            return handler.drain(millibuckets, simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
         }
         filter = filter.copy();
-        filter.amount = millibuckets;
-        FluidStack drained = handler.drain(filter, !simulate);
+        filter.setAmount(millibuckets);
+        FluidStack drained = handler.drain(filter, simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
         if (drained != null) {
             if (!filter.isFluidEqual(filter)) {
                 String detail = "(Filter = " + StringUtilBC.fluidToString(filter);
@@ -315,7 +316,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
     @Override
     public int insertFluidsForce(FluidStack fluid, @Nullable Direction from, boolean simulate) {
         Section s = sections.get(EnumPipePart.CENTER);
-        if (fluid == null || fluid.amount == 0) {
+        if (fluid == null || fluid.getAmount() == 0) {
             return 0;
         }
         if (currentFluid != null && !currentFluid.isFluidEqual(fluid)) {
@@ -324,7 +325,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         if (currentFluid == null && !simulate) {
             setFluid(fluid.copy());
         }
-        int filled = s.fill(fluid.amount, !simulate);
+        int filled = s.fill(fluid.getAmount(), !simulate);
         if (filled == 0) {
             return 0;
         }
@@ -551,8 +552,8 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
 
                     FluidStack fluidToPush = new FluidStack(currentFluid, maxDrain);
 
-                    if (fluidToPush.amount > 0) {
-                        int filled = fluidHandler.fill(fluidToPush, true);
+                    if (fluidToPush.getAmount() > 0) {
+                        int filled = fluidHandler.fill(fluidToPush, IFluidHandler.FluidAction.EXECUTE);
                         if (filled > 0) {
                             section.drainInternal(filled, true);
                             section.ticksInDirection = COOLDOWN_OUTPUT;
@@ -809,12 +810,12 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         }
 
         void writeToNbt(CompoundTag nbt) {
-            nbt.setShort("capacity", (short) amount);
-            nbt.setShort("lastSentAmount", (short) lastSentAmount);
-            nbt.setShort("ticksInDirection", (short) ticksInDirection);
+            nbt.putShort("capacity", (short) amount);
+            nbt.putShort("lastSentAmount", (short) lastSentAmount);
+            nbt.putShort("ticksInDirection", (short) ticksInDirection);
             
             for (int i = 0; i < incoming.length; ++i) {
-                nbt.setShort("in[" + i + "]", (short) incoming[i]);
+                nbt.putShort("in[" + i + "]", (short) incoming[i]);
             }
         }
 
@@ -953,25 +954,35 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         // IFluidHandler
 
         @Override
+        public int getTanks() { return 1; }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            if (currentFluid == null || amount == 0) return FluidStack.EMPTY;
+            return new FluidStack(currentFluid, amount);
+        }
+
+        @Override
+        public int getTankCapacity(int tank) { return capacity; }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) { return true; }
+
+        @Override
         @Deprecated
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
+        public FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
             return null;
         }
 
         /** @deprecated USE {@link #drainInternal(int, boolean)} rather than this! */
         @Override
         @Deprecated
-        public FluidStack drain(int maxDrain, boolean doDrain) {
+        public FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
             return null;
         }
 
         @Override
-        public IFluidTankProperties[] getTankProperties() {
-            return new IFluidTankProperties[0];
-        }
-
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
+        public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
             if (!getCurrentDirection().canInput() || !pipe.isConnected(part.face) || resource == null) {
                 return 0;
             }
@@ -985,13 +996,13 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
             }
 
             if (currentFluid == null || currentFluid.isFluidEqual(resource)) {
-                if (doFill) {
+                if (action.execute()) {
                     if (currentFluid == null) {
                         setFluid(resource.copy());
                     }
                 }
-                int filled = fill(resource.amount, doFill);
-                if (filled > 0 && doFill) {
+                int filled = fill(resource.getAmount(), action.execute());
+                if (filled > 0 && action.execute()) {
                     ticksInDirection = COOLDOWN_INPUT;
                 }
                 return filled;

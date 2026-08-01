@@ -525,10 +525,10 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setByteArray("checkResults", checkResults);
-        nbt.setTag("breakTasks", NBTUtilBC.writeCompoundList(breakTasks.stream().map(BreakTask::writeToNBT)));
-        nbt.setTag("placeTasks", NBTUtilBC.writeCompoundList(placeTasks.stream().map(PlaceTask::writeToNBT)));
-        nbt.setInteger("currentCheckIndex", currentCheckIndex);
+        nbt.putByteArray("checkResults", checkResults);
+        nbt.put("breakTasks", NBTUtilBC.writeCompoundList(breakTasks.stream().map(BreakTask::writeToNBT)));
+        nbt.put("placeTasks", NBTUtilBC.writeCompoundList(placeTasks.stream().map(PlaceTask::writeToNBT)));
+        nbt.putInt("currentCheckIndex", currentCheckIndex);
         return nbt;
     }
 
@@ -537,10 +537,10 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
         updateSnapshot();
         checkResults = nbt.getByteArray("checkResults");
         breakTasks.clear();
-        NBTUtilBC.readCompoundList(nbt.getTag("breakTasks")).map(BreakTask::new).forEach(breakTasks::add);
+        NBTUtilBC.readCompoundList(nbt.get("breakTasks")).map(BreakTask::new).forEach(breakTasks::add);
         placeTasks.clear();
-        NBTUtilBC.readCompoundList(nbt.getTag("placeTasks")).map(PlaceTask::new).forEach(placeTasks::add);
-        currentCheckIndex = nbt.getInteger("currentCheckIndex");
+        NBTUtilBC.readCompoundList(nbt.get("placeTasks")).map(PlaceTask::new).forEach(placeTasks::add);
+        currentCheckIndex = nbt.getInt("currentCheckIndex");
     }
 
     public class BreakTask {
@@ -561,7 +561,7 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
 
         @SuppressWarnings("WeakerAccess")
         public BreakTask(CompoundTag nbt) {
-            pos = NBTUtil.getPosFromTag(nbt.getCompoundTag("pos"));
+            pos = NBTUtil.getPosFromTag(nbt.getCompound("pos"));
             power = nbt.getLong("power");
         }
 
@@ -581,8 +581,8 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
 
         public CompoundTag writeToNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setTag("pos", NBTUtil.createPosTag(pos));
-            nbt.setLong("power", power);
+            nbt.put("pos", NBTUtil.createPosTag(pos));
+            nbt.putLong("power", power);
             return nbt;
         }
     }
@@ -614,9 +614,9 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
 
         @SuppressWarnings("WeakerAccess")
         public PlaceTask(CompoundTag nbt) {
-            pos = NBTUtil.getPosFromTag(nbt.getCompoundTag("pos"));
+            pos = NBTUtil.getPosFromTag(nbt.getCompound("pos"));
             items = ImmutableList.copyOf(
-                NBTUtilBC.readCompoundList(nbt.getTag("items"))
+                NBTUtilBC.readCompoundList(nbt.get("items"))
                     .map(ItemStack::new)
                     .collect(Collectors.toList())
             );
@@ -636,9 +636,9 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
 
         public CompoundTag writeToNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setTag("pos", NBTUtil.createPosTag(pos));
-            nbt.setTag("items", NBTUtilBC.writeCompoundList(items.stream().map(ItemStack::serializeNBT)));
-            nbt.setLong("power", power);
+            nbt.put("pos", NBTUtil.createPosTag(pos));
+            nbt.put("items", NBTUtilBC.writeCompoundList(items.stream().map(ItemStack::serializeNBT)));
+            nbt.putLong("power", power);
             return nbt;
         }
     }

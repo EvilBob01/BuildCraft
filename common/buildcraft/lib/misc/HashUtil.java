@@ -1,4 +1,4 @@
-package buildcraft.lib.misc;
+﻿package buildcraft.lib.misc;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -58,7 +58,7 @@ public class HashUtil {
         }
         // Test the method -- just in case
         CompoundTag nbt = new CompoundTag();
-        nbt.setInteger("test", 42);
+        nbt.putInt("test", 42);
         computeHash(nbt);
     }
 
@@ -113,7 +113,7 @@ public class HashUtil {
     private static void writeStableCompound(CompoundTag nbt, DataOutput out) throws IOException {
         TreeMap<String, Tag> entries = new TreeMap<>();
         for (String key : nbt.getKeySet()) {
-            entries.put(key, nbt.getTag(key));
+            entries.put(key, nbt.get(key));
         }
         for (String key : entries.keySet()) {
             Tag tag = entries.get(key);
@@ -137,8 +137,8 @@ public class HashUtil {
             type = nbt.get(0).getId();
         }
         out.writeByte(type);
-        out.writeInt(nbt.tagCount());
-        for (int i = 0; i < nbt.tagCount(); i++) {
+        out.writeInt(nbt.size());
+        for (int i = 0; i < nbt.size(); i++) {
             writeStableNbt(nbt.get(i), out);
         }
     }

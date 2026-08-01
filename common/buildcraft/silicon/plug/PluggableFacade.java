@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -78,18 +78,18 @@ public class PluggableFacade extends PipePluggable implements IFacade {
 
     public PluggableFacade(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
-        if (nbt.hasKey("states") && !nbt.hasKey("facade")) {
-            ListTag tagStates = nbt.getTagList("states", Tag.TAG_COMPOUND);
-            if (tagStates.tagCount() > 0) {
+        if (nbt.contains("states") && !nbt.contains("facade")) {
+            ListTag tagStates = nbt.getList("states", Tag.TAG_COMPOUND);
+            if (tagStates.size() > 0) {
                 boolean isHollow = tagStates.getCompoundTagAt(0).getBoolean("isHollow");
                 CompoundTag tagFacade = new CompoundTag();
-                tagFacade.setTag("states", tagStates);
-                tagFacade.setBoolean("isHollow", isHollow);
-                nbt.setTag("facade", tagFacade);
+                tagFacade.put("states", tagStates);
+                tagFacade.putBoolean("isHollow", isHollow);
+                nbt.put("facade", tagFacade);
             }
         }
-        this.states = FacadeInstance.readFromNbt(nbt.getCompoundTag("facade"));
-        activeState = MathUtil.clamp(nbt.getInteger("activeState"), 0, states.phasedStates.length - 1);
+        this.states = FacadeInstance.readFromNbt(nbt.getCompound("facade"));
+        activeState = MathUtil.clamp(nbt.getInt("activeState"), 0, states.phasedStates.length - 1);
         isSideSolid = states.areAllStatesSolid(side);
         blockFaceShape = states.getBlockFaceShape(side);
     }
@@ -97,8 +97,8 @@ public class PluggableFacade extends PipePluggable implements IFacade {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("facade", states.writeToNbt());
-        nbt.setInteger("activeState", activeState);
+        nbt.put("facade", states.writeToNbt());
+        nbt.putInt("activeState", activeState);
         return nbt;
     }
 

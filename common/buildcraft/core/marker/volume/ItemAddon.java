@@ -28,7 +28,7 @@ public abstract class ItemAddon extends ItemBC_Neptune {
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         if (world.isClientSide) {
-            return new ActionResult<>(InteractionResult.PASS, player.getHeldItem(hand));
+            return new ActionResult<>(InteractionResult.PASS, player.getItemInHand(hand));
         }
 
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
@@ -46,11 +46,11 @@ public abstract class ItemAddon extends ItemBC_Neptune {
                     volumeBox.addons.put(slot, addon);
                     volumeBox.addons.get(slot).onAdded();
                     volumeBoxes.setChanged();
-                    return new ActionResult<>(InteractionResult.SUCCESS, player.getHeldItem(hand));
+                    return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
                 }
             }
         }
 
-        return new ActionResult<>(InteractionResult.PASS, player.getHeldItem(hand));
+        return new ActionResult<>(InteractionResult.PASS, player.getItemInHand(hand));
     }
 }

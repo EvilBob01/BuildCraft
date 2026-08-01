@@ -111,15 +111,15 @@ public class ZonePlan implements IZone {
     }
 
     public void writeToNBT(CompoundTag nbt) {
-        nbt.setTag(
+        nbt.put(
                 "chunkMapping",
                 NBTUtilBC.writeCompoundList(
                         chunkMapping.entrySet().stream()
                                 .map(entry -> {
                                     CompoundTag zoneChunkTag = new CompoundTag();
                                     entry.getValue().saveAdditional(zoneChunkTag);
-                                    zoneChunkTag.setInteger("chunkX", entry.getKey().x);
-                                    zoneChunkTag.setInteger("chunkZ", entry.getKey().z);
+                                    zoneChunkTag.putInt("chunkX", entry.getKey().x);
+                                    zoneChunkTag.putInt("chunkZ", entry.getKey().z);
                                     return zoneChunkTag;
                                 })
                 )
@@ -127,14 +127,14 @@ public class ZonePlan implements IZone {
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        NBTUtilBC.readCompoundList(nbt.getTag("chunkMapping"))
+        NBTUtilBC.readCompoundList(nbt.get("chunkMapping"))
                 .forEach(zoneChunkTag -> {
                     ZoneChunk chunk = new ZoneChunk();
                     chunk.loadAdditional(zoneChunkTag);
                     chunkMapping.put(
                             new ChunkPos(
-                                    zoneChunkTag.getInteger("chunkX"),
-                                    zoneChunkTag.getInteger("chunkZ")
+                                    zoneChunkTag.getInt("chunkX"),
+                                    zoneChunkTag.getInt("chunkZ")
                             ),
                             chunk
                     );

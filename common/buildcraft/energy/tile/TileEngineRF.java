@@ -66,14 +66,14 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("currentRF", currentRF);
+        nbt.putInt("currentRF", currentRF);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        currentRF = nbt.getInteger("currentRF");
+        currentRF = nbt.getInt("currentRF");
     }
 
     @Override
@@ -107,7 +107,7 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     public boolean onActivated(
         Player player, InteractionHand hand, Direction side, float hitX, float hitY, float hitZ
     ) {
-        ItemStack current = player.getHeldItem(hand).copy();
+        ItemStack current = player.getItemInHand(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
             return true;
         }

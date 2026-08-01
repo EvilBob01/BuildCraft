@@ -55,15 +55,13 @@ public enum FakePlayerProvider implements IFakePlayerProvider {
             BCLog.logger.warn("[lib.fake] Null GameProfile! This is a bug!", new IllegalArgumentException());
             profile = NULL_PROFILE;
         }
-        FakePlayerBC player = players.computeIfAbsent(profile, p -> new FakePlayerBC(world, p));
-        player.world = world;
-        player.posX = pos.getX();
-        player.posY = pos.getY();
-        player.posZ = pos.getZ();
+        GameProfile finalProfile = profile;
+        FakePlayerBC player = players.computeIfAbsent(profile, p -> new FakePlayerBC(world, finalProfile));
+        player.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         return player;
     }
 
     public void unloadWorld(ServerLevel world) {
-        players.values().removeIf(entry -> entry.world == world);
+        players.values().removeIf(entry -> entry.level() == world);
     }
 }

@@ -219,12 +219,12 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("battery", battery.serializeNBT());
+        nbt.put("battery", battery.serializeNBT());
         if (laserPos != null) {
-            nbt.setTag("laser_pos", NBTUtilBC.writeVec3d(laserPos));
+            nbt.put("laser_pos", NBTUtilBC.writeVec3d(laserPos));
         }
         if (targetPos != null) {
-            nbt.setTag("target_pos", NBTUtilBC.writeBlockPos(targetPos));
+            nbt.put("target_pos", NBTUtilBC.writeBlockPos(targetPos));
         }
         avgPower.writeToNbt(nbt, "average_power");
         return nbt;
@@ -234,12 +234,12 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
         // TODO: remove in next version
-        if (nbt.hasKey("mj_battery")) {
-            nbt.setTag("battery", nbt.getTag("mj_battery"));
+        if (nbt.contains("mj_battery")) {
+            nbt.put("battery", nbt.get("mj_battery"));
         }
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
-        targetPos = NBTUtilBC.readBlockPos(nbt.getTag("target_pos"));
-        laserPos = NBTUtilBC.readVec3d(nbt.getTag("laser_pos"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
+        targetPos = NBTUtilBC.readBlockPos(nbt.get("target_pos"));
+        laserPos = NBTUtilBC.readVec3d(nbt.get("laser_pos"));
         avgPower.readFromNbt(nbt, "average_power");
     }
 

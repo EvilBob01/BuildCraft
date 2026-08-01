@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -76,15 +76,15 @@ public final class Pipe implements IPipe, IDebuggable {
 
     public Pipe(IPipeHolder holder, CompoundTag nbt) throws InvalidInputDataException {
         this.holder = holder;
-        this.colour = NBTUtilBC.readEnum(nbt.getTag("col"), DyeColor.class);
+        this.colour = NBTUtilBC.readEnum(nbt.get("col"), DyeColor.class);
         this.definition = PipeRegistry.INSTANCE.loadDefinition(nbt.getString("def"));
         if (!definition.canBeColoured) {
             colour = null;
         }
-        this.behaviour = definition.logicLoader.loadBehaviour(this, nbt.getCompoundTag("beh"));
-        this.flow = definition.flowType.loader.loadFlow(this, nbt.getCompoundTag("flow"));
+        this.behaviour = definition.logicLoader.loadBehaviour(this, nbt.getCompound("beh"));
+        this.flow = definition.flowType.loader.loadFlow(this, nbt.getCompound("flow"));
 
-        int connectionData = nbt.getInteger("con");
+        int connectionData = nbt.getInt("con");
         for (Direction face : Direction.VALUES) {
             int data = (connectionData >>> (face.ordinal() * 2)) & 0b11;
             // The only important aspect of this is the pipe type
@@ -103,10 +103,10 @@ public final class Pipe implements IPipe, IDebuggable {
 
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("col", NBTUtilBC.writeEnum(colour));
-        nbt.setString("def", definition.identifier.toString());
-        nbt.setTag("beh", behaviour.writeToNbt());
-        nbt.setTag("flow", flow.writeToNbt());
+        nbt.put("col", NBTUtilBC.writeEnum(colour));
+        nbt.putString("def", definition.identifier.toString());
+        nbt.put("beh", behaviour.writeToNbt());
+        nbt.put("flow", flow.writeToNbt());
 
         int connectionData = 0;
         for (Direction face : Direction.VALUES) {
@@ -116,7 +116,7 @@ public final class Pipe implements IPipe, IDebuggable {
                 connectionData |= data << (face.ordinal() * 2);
             }
         }
-        nbt.setInteger("con", connectionData);
+        nbt.putInt("con", connectionData);
         return nbt;
     }
 

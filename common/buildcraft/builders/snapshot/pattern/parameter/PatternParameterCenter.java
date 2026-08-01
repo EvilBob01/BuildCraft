@@ -58,7 +58,7 @@ public enum PatternParameterCenter implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setByte("dir", (byte) ordinal());
+        nbt.putByte("dir", (byte) ordinal());
     }
 
     @Override

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -77,7 +77,7 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
 
         buffer.setTranslation(x, y, z);
         Direction facing = Direction.NORTH;
-        BlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getLevel().getBlockState(tile.getBlockPos());
         if (state.getBlock() == BCFactoryBlocks.miningWell) {
             facing = state.getValue(BuildCraftProperties.BLOCK_FACING);
         }
@@ -105,7 +105,7 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
             }
         }
 
-        int combinedLight = tile.getWorld().getCombinedLight(tile.getPos().offset(facing), 0);
+        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos().offset(facing), 0);
         LED_POWER.center.lighti(combinedLight);
         LED_STATUS.center.lighti(combinedLight);
 

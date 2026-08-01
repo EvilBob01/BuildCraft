@@ -1,4 +1,4 @@
-package buildcraft.factory.client.render;
+﻿package buildcraft.factory.client.render;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -93,7 +93,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         profiler.startSection("bc");
         profiler.startSection("heat_exchange");
 
-        int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), 0);
+        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
@@ -118,7 +118,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             int middles = section.middleCount;
             if (sectionEnd != null) {
                 // TODO: Move this into the other renderer!
-                BlockPos diff = sectionEnd.getTile().getPos().subtract(tile.getPos());
+                BlockPos diff = sectionEnd.getTile().getBlockPos().subtract(tile.getBlockPos());
                 bb.setTranslation(x + diff.getX(), y + diff.getY(), z + diff.getZ());
                 renderTank(TANK_TOP, sectionEnd.smoothedTankOutput, combinedLight, partialTicks, bb);
                 renderTank(sideTank.end, sectionEnd.smoothedTankInput, combinedLight, partialTicks, bb);

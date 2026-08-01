@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -25,7 +25,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -74,9 +74,9 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
 
     public PipeFlowItems(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        ListTag list = nbt.getTagList("items", Tag.TAG_COMPOUND);
+        ListTag list = nbt.getList("items", Tag.TAG_COMPOUND);
         long tickNow = pipe.getHolder().getPipeWorld().getTotalWorldTime();
-        for (int i = 0; i < list.tagCount(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             TravellingItem item = new TravellingItem(list.getCompoundTagAt(i), tickNow);
             if (!item.stack.isEmpty()) {
                 items.add(item.getCurrentDelay(tickNow), item);
@@ -96,7 +96,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
                 list.appendTag(item.writeToNbt(tickNow));
             }
         }
-        nbt.setTag("items", list);
+        nbt.put("items", list);
         return nbt;
     }
 

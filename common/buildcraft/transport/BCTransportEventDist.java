@@ -6,15 +6,17 @@
 
 package buildcraft.transport;
 
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import buildcraft.transport.client.render.PipeWireRenderer;
 import buildcraft.transport.net.PipeItemMessageQueue;
 import buildcraft.transport.wire.WorldSavedDataWireSystems;
 
@@ -22,27 +24,26 @@ public enum BCTransportEventDist {
     INSTANCE;
 
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (!event.world.isClientSide && event.world.getMinecraftServer() != null) {
-            WorldSavedDataWireSystems.get(event.world).tick();
+    public void onWorldTick(LevelTickEvent.Post event) {
+        Level level = event.getLevel();
+        if (!level.isClientSide && level instanceof ServerLevel serverLevel
+                && serverLevel.getServer() != null) {
+            WorldSavedDataWireSystems.get(serverLevel).tick();
         }
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
+    public void onServerTick(ServerTickEvent.Post event) {
         PipeItemMessageQueue.serverTick();
     }
 
     @SubscribeEvent
     public void onChunkWatch(ChunkWatchEvent event) {
-        WorldSavedDataWireSystems.get(event.getPlayer().world).changedPlayers.add(event.getPlayer());
+        WorldSavedDataWireSystems.get(event.getPlayer().level()).changedPlayers.add(event.getPlayer());
     }
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void onTextureStitch(TextureStitchEvent.Post event) {
-        PipeWireRenderer.clearWireCache();
-    }
+    // TODO (Phase 7 — rendering): onTextureStitch (TextureStitchEvent → NeoForge atlas stitch event)
+    // PipeWireRenderer.clearWireCache() should be called after atlas rebuild.
 
     @SubscribeEvent
     public void onBlockPlace(BlockEvent.PlaceEvent event) {

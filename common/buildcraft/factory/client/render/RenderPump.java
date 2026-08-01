@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -122,9 +122,9 @@ public class RenderPump extends FastTESR<TilePump> {
         for (int i = 0; i < 4; i++) {
             // Get the light level of a direction
             Direction dir = Direction.from2DDataValue(i);
-            BlockPos pos = tile.getPos().offset(dir);
-            int block = tile.getWorld().getLightFor(EnumSkyBlock.BLOCK, pos);
-            int sky = tile.getWorld().getLightFor(EnumSkyBlock.SKY, pos);
+            BlockPos pos = tile.getBlockPos().offset(dir);
+            int block = tile.getLevel().getLightFor(EnumSkyBlock.BLOCK, pos);
+            int sky = tile.getLevel().getLightFor(EnumSkyBlock.SKY, pos);
 
             LED_POWER[i].center.colouri(powerColour);
             LED_STATUS[i].center.colouri(statusColour);

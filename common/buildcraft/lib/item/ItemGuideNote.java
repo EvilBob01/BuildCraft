@@ -22,13 +22,13 @@ public class ItemGuideNote extends ItemBC_Neptune {
 
     public ItemStack storeNoteId(String noteId) {
         ItemStack stack = new ItemStack(this);
-        NBTUtilBC.getItemData(stack).setString("note_id", noteId);
+        NBTUtilBC.getItemData(stack).putString("note_id", noteId);
         return stack;
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         player.openGui(BCLib.INSTANCE, 1, world, 0, 0, 0);
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getHeldItem(hand));
+        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 }

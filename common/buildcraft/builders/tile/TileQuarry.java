@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -270,7 +270,7 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
     @Override
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
-        if (placer.world.isClientSide) {
+        if (placer.level().isClientSide) {
             return;
         }
         Direction facing = world.getBlockState(pos).getValue(BlockBCBase_Neptune.PROP_FACING);
@@ -685,41 +685,41 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("box", miningBox.saveAdditional());
-        nbt.setTag("frame", frameBox.saveAdditional());
+        nbt.put("box", miningBox.saveAdditional());
+        nbt.put("frame", frameBox.saveAdditional());
         if (boxIterator != null) {
-            nbt.setTag("boxIterator", boxIterator.writeToNbt());
+            nbt.put("boxIterator", boxIterator.writeToNbt());
         }
-        nbt.setTag("battery", battery.serializeNBT());
+        nbt.put("battery", battery.serializeNBT());
         if (currentTask != null) {
-            nbt.setByte(
+            nbt.putByte(
                 "currentTaskId", (byte) Arrays.stream(EnumTaskType.values()).filter(
                     type -> type.clazz == currentTask.getClass()
                 ).findFirst().orElseThrow(IllegalStateException::new).ordinal()
             );
-            nbt.setTag("currentTaskData", currentTask.serializeNBT());
+            nbt.put("currentTaskData", currentTask.serializeNBT());
         }
         if (drillPos != null) {
-            nbt.setTag("drillPos", NBTUtilBC.writeVec3d(drillPos));
+            nbt.put("drillPos", NBTUtilBC.writeVec3d(drillPos));
         }
-        nbt.setBoolean("firstChecked", firstChecked);
+        nbt.putBoolean("firstChecked", firstChecked);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        miningBox.initialize(nbt.getCompoundTag("box"));
-        frameBox.initialize(nbt.getCompoundTag("frame"));
-        boxIterator = BoxIterator.readFromNbt(nbt.getCompoundTag("boxIterator"));
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
-        if (nbt.hasKey("currentTask")) {
+        miningBox.initialize(nbt.getCompound("box"));
+        frameBox.initialize(nbt.getCompound("frame"));
+        boxIterator = BoxIterator.readFromNbt(nbt.getCompound("boxIterator"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
+        if (nbt.contains("currentTask")) {
             currentTask = EnumTaskType.values()[(int) nbt.getByte("currentTaskId")].supplier.apply(this);
-            currentTask.loadAdditional(nbt.getCompoundTag("currentTaskData"));
+            currentTask.loadAdditional(nbt.getCompound("currentTaskData"));
         } else {
             currentTask = null;
         }
-        drillPos = NBTUtilBC.readVec3d(nbt.getTag("drillPos"));
+        drillPos = NBTUtilBC.readVec3d(nbt.get("drillPos"));
         firstChecked = nbt.getBoolean("firstChecked");
         if (drillPos != null && drillPos.squareDistanceTo(new Vec3(getPos())) > 1024 * 1024) {
             drillPos = null;
@@ -900,7 +900,7 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
 
         CompoundTag serializeNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setLong("power", power);
+            nbt.putLong("power", power);
             return nbt;
         }
 
@@ -963,14 +963,14 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
         @Override
         CompoundTag serializeNBT() {
             CompoundTag nbt = super.serializeNBT();
-            nbt.setTag("breakPos", NBTUtilBC.writeBlockPos(breakPos));
+            nbt.put("breakPos", NBTUtilBC.writeBlockPos(breakPos));
             return nbt;
         }
 
         @Override
         void readFromNBT(CompoundTag nbt) {
             super.loadAdditional(nbt);
-            breakPos = NBTUtilBC.readBlockPos(nbt.getTag("breakPos"));
+            breakPos = NBTUtilBC.readBlockPos(nbt.get("breakPos"));
             if (breakPos == null) {
                 // We failed to read, abort
                 currentTask = null;
@@ -1065,14 +1065,14 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
         @Override
         CompoundTag serializeNBT() {
             CompoundTag nbt = super.serializeNBT();
-            nbt.setTag("framePos", NBTUtilBC.writeBlockPos(framePos));
+            nbt.put("framePos", NBTUtilBC.writeBlockPos(framePos));
             return nbt;
         }
 
         @Override
         void readFromNBT(CompoundTag nbt) {
             super.loadAdditional(nbt);
-            framePos = NBTUtilBC.readBlockPos(nbt.getTag("framePos"));
+            framePos = NBTUtilBC.readBlockPos(nbt.get("framePos"));
             if (framePos == null) {
                 // We failed to read, abort
                 currentTask = null;
@@ -1106,7 +1106,7 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
             if (canIgnoreInFrameBox(framePos)) {
                 return false;
             }
-            world.setBlock(framePos, BCBuildersBlocks.frame.getDefaultState());
+            world.setBlock(framePos, BCBuildersBlocks.frame.defaultBlockState());
             return true;
         }
 
@@ -1135,16 +1135,16 @@ public class TileQuarry extends TileBC_Neptune implements ITickable, IDebuggable
         @Override
         CompoundTag serializeNBT() {
             CompoundTag nbt = super.serializeNBT();
-            nbt.setTag("from", NBTUtilBC.writeVec3d(from));
-            nbt.setTag("to", NBTUtilBC.writeVec3d(to));
+            nbt.put("from", NBTUtilBC.writeVec3d(from));
+            nbt.put("to", NBTUtilBC.writeVec3d(to));
             return nbt;
         }
 
         @Override
         void readFromNBT(CompoundTag nbt) {
             super.loadAdditional(nbt);
-            from = NBTUtilBC.readVec3d(nbt.getTag("from"));
-            to = NBTUtilBC.readVec3d(nbt.getTag("to"));
+            from = NBTUtilBC.readVec3d(nbt.get("from"));
+            to = NBTUtilBC.readVec3d(nbt.get("to"));
             if (from == null || to == null) {
                 // We failed to read. Abort.
                 currentTask = null;

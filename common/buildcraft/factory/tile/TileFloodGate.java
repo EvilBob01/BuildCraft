@@ -91,7 +91,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
         queue.clear();
         paths.clear();
         FluidStack fluid = tank.getFluid();
-        if (fluid == null || fluid.amount <= 0) {
+        if (fluid == null || fluid.getAmount() <= 0) {
             world.profiler.endSection();
             return;
         }
@@ -180,7 +180,7 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
         if (tick % 16 == 0) {
             if (!tank.isEmpty() && !queue.isEmpty()) {
                 FluidStack fluid = tank.drain(Fluid.BUCKET_VOLUME, false);
-                if (fluid != null && fluid.amount >= Fluid.BUCKET_VOLUME) {
+                if (fluid != null && fluid.getAmount() >= Fluid.BUCKET_VOLUME) {
                     BlockPos currentPos = queue.removeLast();
                     List<BlockPos> path = paths.get(currentPos);
                     boolean canFill = true;
@@ -232,14 +232,14 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                 b |= 1 << face.getIndex();
             }
         }
-        nbt.setByte("openSides", b);
+        nbt.putByte("openSides", b);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        Tag open = nbt.getTag("openSides");
+        Tag open = nbt.get("openSides");
         if (open instanceof NBTPrimitive) {
             byte sides = ((NBTPrimitive) open).getByte();
             for (Direction face : Direction.VALUES) {

@@ -64,8 +64,8 @@ public class PluggableLens extends PipePluggable {
 
     public PluggableLens(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
-        if (nbt.hasKey("colour")) {
-            colour = NBTUtilBC.readEnum(nbt.getTag("colour"), DyeColor.class);
+        if (nbt.contains("colour")) {
+            colour = NBTUtilBC.readEnum(nbt.get("colour"), DyeColor.class);
         } else {
             colour = DyeColor.byMetadata(nbt.getByte("c"));
         }
@@ -75,8 +75,8 @@ public class PluggableLens extends PipePluggable {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("colour", NBTUtilBC.writeEnum(colour));
-        nbt.setBoolean("f", isFilter);
+        nbt.put("colour", NBTUtilBC.writeEnum(colour));
+        nbt.putBoolean("f", isFilter);
         return nbt;
     }
 

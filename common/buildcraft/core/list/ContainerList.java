@@ -106,7 +106,7 @@ public class ContainerList extends ContainerBC_Neptune {
     public void switchButton(final int lineIndex, final int button) {
         lines[lineIndex].toggleOption(button);
 
-        if (player.world.isClientSide) {
+        if (player.level().isClientSide) {
             sendMessage(ID_BUTTON, (buffer) -> {
                 buffer.writeByte(lineIndex);
                 buffer.writeByte(button);
@@ -127,7 +127,7 @@ public class ContainerList extends ContainerBC_Neptune {
     public void setLabel(final String text) {
         BCCoreItems.list.setName(getListItemStack(), text);
 
-        if (player.world.isClientSide) {
+        if (player.level().isClientSide) {
             sendMessage(ID_LABEL, (buffer) -> buffer.writeString(text));
         }
     }

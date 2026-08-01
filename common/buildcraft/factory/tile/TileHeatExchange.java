@@ -1,4 +1,4 @@
-package buildcraft.factory.tile;
+﻿package buildcraft.factory.tile;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -19,7 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -86,7 +86,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
 
-        CompoundTag nbtSection = nbt.getCompoundTag("section");
+        CompoundTag nbtSection = nbt.getCompound("section");
         if (!nbtSection.hasNoTags()) {
             if (nbtSection.getBoolean("start")) {
                 section = new ExchangeSectionStart(this, nbtSection);
@@ -101,7 +101,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (section != null) {
-            nbt.setTag("section", section.writeToNbt());
+            nbt.put("section", section.writeToNbt());
         }
         return nbt;
     }
@@ -368,7 +368,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
                 }
                 exchange.section = null;
                 world.setBlock(
-                    exchange.getPos(),
+                    exchange.getBlockPos(),
                     exchange.getCurrentState().withProperty(BlockHeatExchange.PROP_FACING, thisFacing.getOpposite())
                 );
                 exchange.checkNeighbours = true;
@@ -445,8 +445,8 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
         ExchangeSection(TileHeatExchange tile, CompoundTag nbt) {
             this(tile);
-            tankInput.loadAdditional(nbt.getCompoundTag("input"));
-            tankOutput.loadAdditional(nbt.getCompoundTag("output"));
+            tankInput.loadAdditional(nbt.getCompound("input"));
+            tankOutput.loadAdditional(nbt.getCompound("output"));
         }
 
         FluidSmoother createFluidSmoother(Tank tank, int netId) {
@@ -455,8 +455,8 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
         CompoundTag writeToNbt() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setTag("input", tankInput.serializeNBT());
-            nbt.setTag("output", tankOutput.serializeNBT());
+            nbt.put("input", tankInput.serializeNBT());
+            nbt.put("output", tankOutput.serializeNBT());
             return nbt;
         }
 
@@ -541,16 +541,16 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
         ExchangeSectionStart(TileHeatExchange tile, CompoundTag nbt) {
             super(tile, nbt);
-            inputCoolantAmountCharge = nbt.getInteger("coolantCharge");
-            inputHeatantAmountCharge = nbt.getInteger("heatantCharge");
+            inputCoolantAmountCharge = nbt.getInt("coolantCharge");
+            inputHeatantAmountCharge = nbt.getInt("heatantCharge");
         }
 
         @Override
         CompoundTag writeToNbt() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setBoolean("start", true);
-            nbt.setInteger("coolantCharge", inputCoolantAmountCharge);
-            nbt.setInteger("heatantCharge", inputHeatantAmountCharge);
+            nbt.putBoolean("start", true);
+            nbt.putInt("coolantCharge", inputCoolantAmountCharge);
+            nbt.putInt("heatantCharge", inputHeatantAmountCharge);
             return nbt;
         }
 
@@ -716,7 +716,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
                 if (end == null) {
                     return;
                 }
-                Vec3 from = VecUtil.convertCenter(getTile().getPos());
+                Vec3 from = VecUtil.convertCenter(getTile().getBlockPos());
                 FluidStack c_in_f = end.smoothedTankInput.getFluidForRender();
                 if (c_in_f != null && c_in_f.getFluid() == FluidRegistry.LAVA) {
                     Direction facing = getTile().getFacing();
@@ -726,7 +726,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
                 }
 
                 FluidStack h_in_f = smoothedTankInput.getFluidForRender();
-                from = VecUtil.convertCenter(end.getTile().getPos());
+                from = VecUtil.convertCenter(end.getTile().getBlockPos());
                 if (h_in_f != null && h_in_f.getFluid() == FluidRegistry.WATER) {
                     Direction dir = Direction.UP;
                     spewForth(from, dir, EnumParticleTypes.CLOUD);
@@ -744,7 +744,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
             Vec3 motion = VecUtil.scale(vecDir, 0.4);
             int particleCount = Minecraft.getInstance().gameSettings.particleSetting;
-            Level w = getTile().getWorld();
+            Level w = getTile().getLevel();
             if (particleCount == 2 || w == null) {
                 return;
             }
@@ -781,7 +781,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
 
         private static int drainableAmount(Tank t, FluidStack fluid) {
             FluidStack f2 = t.drainInternal(fluid, false);
-            return f2 == null ? 0 : f2.amount;
+            return f2 == null ? 0 : f2.getAmount();
         }
 
         private static void fill(Tank t, FluidStack fluid) {
@@ -789,17 +789,17 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
                 return;
             }
             int a = t.fillInternal(fluid, true);
-            if (a != fluid.amount) {
+            if (a != fluid.getAmount()) {
                 String err = "Buggy transition! Failed to fill " + fluid.getFluid();
-                throw new IllegalStateException(err + " x " + fluid.amount + " into " + t);
+                throw new IllegalStateException(err + " x " + fluid.getAmount() + " into " + t);
             }
         }
 
         private static void drain(Tank t, FluidStack fluid) {
             FluidStack f2 = t.drainInternal(fluid, true);
-            if (f2 == null || f2.amount != fluid.amount) {
+            if (f2 == null || f2.getAmount() != fluid.getAmount()) {
                 String err = "Buggy transition! Failed to drain " + fluid.getFluid();
-                throw new IllegalStateException(err + " x " + fluid.amount + " from " + t);
+                throw new IllegalStateException(err + " x " + fluid.getAmount() + " from " + t);
             }
         }
 
@@ -858,7 +858,7 @@ public class TileHeatExchange extends TileBC_Neptune implements ITickable, IDebu
         @Override
         CompoundTag writeToNbt() {
             CompoundTag nbt = super.writeToNbt();
-            nbt.setBoolean("start", false);
+            nbt.putBoolean("start", false);
             return nbt;
         }
 

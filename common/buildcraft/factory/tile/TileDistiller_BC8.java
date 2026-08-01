@@ -147,9 +147,9 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("tanks", tankManager.serializeNBT());
-        nbt.setTag("battery", mjBattery.serializeNBT());
-        nbt.setLong("distillPower", distillPower);
+        nbt.put("tanks", tankManager.serializeNBT());
+        nbt.put("battery", mjBattery.serializeNBT());
+        nbt.putLong("distillPower", distillPower);
         powerAvg.writeToNbt(nbt, "powerAvg");
         return nbt;
     }
@@ -157,20 +157,20 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
     @Override
     public void readFromNBT(CompoundTag nbt) {
         // TODO: remove in next version
-        CompoundTag tanksTag = nbt.getCompoundTag("tanks");
-        if (tanksTag.hasKey("out_gas")) {
-            tanksTag.setTag("gasOut", tanksTag.getTag("out_gas"));
+        CompoundTag tanksTag = nbt.getCompound("tanks");
+        if (tanksTag.contains("out_gas")) {
+            tanksTag.put("gasOut", tanksTag.get("out_gas"));
         }
-        if (tanksTag.hasKey("out_liquid")) {
-            tanksTag.setTag("liquidOut", tanksTag.getTag("out_liquid"));
+        if (tanksTag.contains("out_liquid")) {
+            tanksTag.put("liquidOut", tanksTag.get("out_liquid"));
         }
         super.loadAdditional(nbt);
-        tankManager.deserializeNBT(nbt.getCompoundTag("tanks"));
+        tankManager.deserializeNBT(nbt.getCompound("tanks"));
         // TODO: remove in next version
-        if (nbt.hasKey("mjBattery")) {
-            nbt.setTag("battery", nbt.getTag("mjBattery"));
+        if (nbt.contains("mjBattery")) {
+            nbt.put("battery", nbt.get("mjBattery"));
         }
-        mjBattery.deserializeNBT(nbt.getCompoundTag("battery"));
+        mjBattery.deserializeNBT(nbt.getCompound("battery"));
         distillPower = nbt.getLong("distillPower");
         powerAvg.readFromNbt(nbt, "powerAvg");
     }
@@ -296,8 +296,8 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
             FluidStack potentialIn = tankIn.drainInternal(reqIn, false);
             boolean canExtract = reqIn.isFluidStackIdentical(potentialIn);
 
-            boolean canFillLiquid = tankLiquidOut.fillInternal(outLiquid, false) == outLiquid.amount;
-            boolean canFillGas = tankGasOut.fillInternal(outGas, false) == outGas.amount;
+            boolean canFillLiquid = tankLiquidOut.fillInternal(outLiquid, false) == outLiquid.getAmount();
+            boolean canFillGas = tankGasOut.fillInternal(outGas, false) == outGas.getAmount();
 
             if (canExtract && canFillLiquid && canFillGas) {
                 hasWork = true;

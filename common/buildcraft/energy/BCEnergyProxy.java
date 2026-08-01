@@ -6,147 +6,41 @@
 
 package buildcraft.energy;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 
-import buildcraft.energy.client.gui.GuiDynamoMJ;
-import buildcraft.energy.client.gui.GuiEngineIron_BC8;
-import buildcraft.energy.client.gui.GuiEngineRF;
-import buildcraft.energy.client.gui.GuiEngineStone_BC8;
-import buildcraft.energy.client.render.RenderDynamoMJ;
-import buildcraft.energy.client.render.RenderEngineIron;
-import buildcraft.energy.client.render.RenderEngineRF;
-import buildcraft.energy.client.render.RenderEngineStone;
-import buildcraft.energy.container.ContainerDynamoMJ;
-import buildcraft.energy.container.ContainerEngineIron_BC8;
-import buildcraft.energy.container.ContainerEngineRF;
-import buildcraft.energy.container.ContainerEngineStone_BC8;
 import buildcraft.energy.event.ChristmasHandler;
-import buildcraft.energy.tile.TileDynamoMJ;
-import buildcraft.energy.tile.TileEngineIron_BC8;
-import buildcraft.energy.tile.TileEngineRF;
-import buildcraft.energy.tile.TileEngineStone_BC8;
 
-public abstract class BCEnergyProxy implements IGuiHandler {
-    @SidedProxy(modId = BCEnergy.MODID)
-    private static BCEnergyProxy proxy;
+public class BCEnergyProxy {
+    private static final BCEnergyProxy INSTANCE = new BCEnergyProxy();
 
     public static BCEnergyProxy getProxy() {
-        return proxy;
+        return INSTANCE;
     }
 
-    public void fmlPreInit() {}
-
-    public void fmlInit() {}
-
-    public void fmlPostInit() {}
-
-    @Override
-    public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
-        return null;
-    }
-
-    @Override
-    public Object getServerGuiElement(int id, Player player, Level world, int x, int y, int z) {
-        BCEnergyGuis gui = BCEnergyGuis.get(id);
-        if (gui == null) return null;
-        BlockPos pos = new BlockPos(x, y, z);
-        BlockEntity tile = world.getBlockEntity(pos);
-        switch (gui) {
-            case ENGINE_STONE:
-                if (tile instanceof TileEngineStone_BC8) {
-                    return new ContainerEngineStone_BC8(player, (TileEngineStone_BC8) tile);
-                }
-                return null;
-            case ENGINE_IRON:
-                if (tile instanceof TileEngineIron_BC8) {
-                    return new ContainerEngineIron_BC8(player, (TileEngineIron_BC8) tile);
-                }
-
-                return null;
-            case ENGINE_RF:
-                if (tile instanceof TileEngineRF) {
-                    return new ContainerEngineRF(player, (TileEngineRF) tile);
-                }
-
-                return null;
-            case DYNAMO_MJ:
-                if (tile instanceof TileDynamoMJ) {
-                    return new ContainerDynamoMJ(player, (TileDynamoMJ) tile);
-                }
-
-                return null;
-            default:
-                return null;
+    public static void init(IEventBus modEventBus) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            clientInit();
+        } else {
+            serverInit();
         }
     }
 
     @OnlyIn(Dist.DEDICATED_SERVER)
-    public static class ServerProxy extends BCEnergyProxy {
-        @Override
-        public void fmlPreInit() {
-            super.fmlPreInit();
-            ChristmasHandler.fmlPreInitDedicatedServer();
-        }
+    private static void serverInit() {
+        ChristmasHandler.fmlPreInitDedicatedServer();
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class ClientProxy extends BCEnergyProxy {
-        @Override
-        public void fmlPreInit() {
-            super.fmlPreInit();
-            ChristmasHandler.fmlPreInitClient();
-            BCEnergyModels.fmlPreInit();
-            BCEnergySprites.fmlPreInit();
-        }
-
-        @Override
-        public void fmlInit() {
-            super.fmlInit();
-            ClientRegistry.bindTileEntitySpecialRenderer(TileEngineStone_BC8.class, RenderEngineStone.INSTANCE);
-            ClientRegistry.bindTileEntitySpecialRenderer(TileEngineIron_BC8.class, RenderEngineIron.INSTANCE);
-            ClientRegistry.bindTileEntitySpecialRenderer(TileEngineRF.class, RenderEngineRF.INSTANCE);
-            ClientRegistry.bindTileEntitySpecialRenderer(TileDynamoMJ.class, RenderDynamoMJ.INSTANCE);
-        }
-
-        @Override
-        public Object getClientGuiElement(int id, Player player, Level world, int x, int y, int z) {
-            BCEnergyGuis gui = BCEnergyGuis.get(id);
-            if (gui == null) return null;
-            BlockPos pos = new BlockPos(x, y, z);
-            BlockEntity tile = world.getBlockEntity(pos);
-            switch (gui) {
-                case ENGINE_STONE:
-                    if (tile instanceof TileEngineStone_BC8) {
-                        return new GuiEngineStone_BC8(new ContainerEngineStone_BC8(player, (TileEngineStone_BC8) tile));
-                    }
-                    return null;
-                case ENGINE_IRON:
-                    if (tile instanceof TileEngineIron_BC8) {
-                        return new GuiEngineIron_BC8(new ContainerEngineIron_BC8(player, (TileEngineIron_BC8) tile));
-                    }
-                    return null;
-                case ENGINE_RF:
-                    if (tile instanceof TileEngineRF) {
-                        return new GuiEngineRF(new ContainerEngineRF(player, (TileEngineRF) tile));
-                    }
-                    return null;
-                case DYNAMO_MJ:
-                    if (tile instanceof TileDynamoMJ) {
-                        return new GuiDynamoMJ(new ContainerDynamoMJ(player, (TileDynamoMJ) tile));
-                    }
-                    return null;
-                default:
-                    return null;
-            }
-        }
+    private static void clientInit() {
+        ChristmasHandler.fmlPreInitClient();
+        // TODO (Phase 7 — rendering): BCEnergyModels.fmlPreInit();
+        // TODO (Phase 7 — rendering): BCEnergySprites.fmlPreInit();
+        // TODO (Phase 7 — rendering): ClientRegistry.bindTileEntitySpecialRenderer(TileEngineStone_BC8.class, RenderEngineStone.INSTANCE);
+        // TODO (Phase 7 — rendering): ClientRegistry.bindTileEntitySpecialRenderer(TileEngineIron_BC8.class, RenderEngineIron.INSTANCE);
+        // TODO (Phase 7 — rendering): ClientRegistry.bindTileEntitySpecialRenderer(TileEngineRF.class, RenderEngineRF.INSTANCE);
+        // TODO (Phase 7 — rendering): ClientRegistry.bindTileEntitySpecialRenderer(TileDynamoMJ.class, RenderDynamoMJ.INSTANCE);
     }
 }

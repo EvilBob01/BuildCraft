@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -64,9 +64,9 @@ public enum BCLibEventDist {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
-        MarkerCache.onWorldUnload(event.getWorld());
-        if (event.getWorld() instanceof ServerLevel) {
-            FakePlayerProvider.INSTANCE.unloadWorld((ServerLevel) event.getWorld());
+        MarkerCache.onWorldUnload(event.getLevel());
+        if (event.getLevel() instanceof ServerLevel) {
+            FakePlayerProvider.INSTANCE.unloadWorld((ServerLevel) event.getLevel());
         }
     }
 
@@ -148,7 +148,7 @@ public enum BCLibEventDist {
                     IDebuggable debuggable = ClientDebuggables.getDebuggableObject(mouseOver);
                     if (debuggable instanceof BlockEntity) {
                         BlockEntity tile = (BlockEntity) debuggable;
-                        MessageManager.sendToServer(new MessageDebugRequest(tile.getPos(), mouseOver.sideHit));
+                        MessageManager.sendToServer(new MessageDebugRequest(tile.getBlockPos(), mouseOver.sideHit));
                     } else if (debuggable instanceof Entity) {
                         // TODO: Support entities!
                     }

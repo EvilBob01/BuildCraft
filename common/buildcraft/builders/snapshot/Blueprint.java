@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 
 import net.minecraft.nbt.Tag;
@@ -60,7 +60,7 @@ public class Blueprint extends Snapshot {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = super.serializeNBT();
-        nbt.setTag("palette", NBTUtilBC.writeCompoundList(palette.stream().map(SchematicBlockManager::writeToNBT)));
+        nbt.put("palette", NBTUtilBC.writeCompoundList(palette.stream().map(SchematicBlockManager::writeToNBT)));
         ListTag list = new ListTag();
         for (int z = 0; z < size.getZ(); z++) {
             for (int y = 0; y < size.getY(); y++) {
@@ -69,8 +69,8 @@ public class Blueprint extends Snapshot {
                 }
             }
         }
-        nbt.setTag("data", list);
-        nbt.setTag("entities", NBTUtilBC.writeCompoundList(entities.stream().map(SchematicEntityManager::writeToNBT)));
+        nbt.put("data", list);
+        nbt.put("entities", NBTUtilBC.writeCompoundList(entities.stream().map(SchematicEntityManager::writeToNBT)));
         return nbt;
     }
 
@@ -79,7 +79,7 @@ public class Blueprint extends Snapshot {
         super.deserializeNBT(nbt);
         palette.clear();
         for (CompoundTag schematicBlockTag :
-            NBTUtilBC.readCompoundList(nbt.getTag("palette")).collect(Collectors.toList())) {
+            NBTUtilBC.readCompoundList(nbt.get("palette")).collect(Collectors.toList())) {
             // TODO: Allow reading blueprints partially - invalid elements should be replaced with air
             // (Although this needs to add a "pass-through" ISchematicBlock that will store the
             // invalid CompoundTag and show up in the tooltip as an error, so that we can migrate
@@ -87,10 +87,10 @@ public class Blueprint extends Snapshot {
             palette.add(SchematicBlockManager.loadAdditional(schematicBlockTag));
         }
         data = new int[Snapshot.getDataSize(size)];
-        ListTag serializedDataList = nbt.hasKey("data", Tag.TAG_LIST)
-            ? nbt.getTagList("data", Tag.TAG_INT)
+        ListTag serializedDataList = nbt.contains("data", Tag.TAG_LIST)
+            ? nbt.getList("data", Tag.TAG_INT)
             : null;
-        int[] serializedDataIntArray = nbt.hasKey("data", Tag.TAG_INT_ARRAY)
+        int[] serializedDataIntArray = nbt.contains("data", Tag.TAG_INT_ARRAY)
             ? nbt.getIntArray("data")
             : null;
         if (serializedDataIntArray == null && serializedDataList == null) {
@@ -98,7 +98,7 @@ public class Blueprint extends Snapshot {
         }
         int serializedDataLength = serializedDataList == null
             ? serializedDataIntArray.length
-            : serializedDataList.tagCount();
+            : serializedDataList.size();
         if (serializedDataLength != getDataSize()) {
             throw new InvalidInputDataException(
                 "Serialized data has length of " + serializedDataLength +
@@ -116,7 +116,7 @@ public class Blueprint extends Snapshot {
             }
         }
         for (CompoundTag schematicEntityTag :
-            NBTUtilBC.readCompoundList(nbt.getTag("entities")).collect(Collectors.toList())) {
+            NBTUtilBC.readCompoundList(nbt.get("entities")).collect(Collectors.toList())) {
             entities.add(SchematicEntityManager.loadAdditional(schematicEntityTag));
         }
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -63,7 +63,7 @@ public class Box implements IBox {
     }
 
     public Box(BlockEntity e) {
-        this(e.getPos(), e.getPos());
+        this(e.getBlockPos(), e.getBlockPos());
     }
 
     public void reset() {
@@ -104,19 +104,19 @@ public class Box implements IBox {
 
     public void initialize(CompoundTag nbt) {
         reset();
-        if (nbt.hasKey("xMin")) {
-            min = new BlockPos(nbt.getInteger("xMin"), nbt.getInteger("yMin"), nbt.getInteger("zMin"));
-            max = new BlockPos(nbt.getInteger("xMax"), nbt.getInteger("yMax"), nbt.getInteger("zMax"));
+        if (nbt.contains("xMin")) {
+            min = new BlockPos(nbt.getInt("xMin"), nbt.getInt("yMin"), nbt.getInt("zMin"));
+            max = new BlockPos(nbt.getInt("xMax"), nbt.getInt("yMax"), nbt.getInt("zMax"));
         } else {
-            min = NBTUtilBC.readBlockPos(nbt.getTag("min"));
-            max = NBTUtilBC.readBlockPos(nbt.getTag("max"));
+            min = NBTUtilBC.readBlockPos(nbt.get("min"));
+            max = NBTUtilBC.readBlockPos(nbt.get("max"));
         }
         extendToEncompassBoth(min, max);
     }
 
     public void writeToNBT(CompoundTag nbt) {
-        if (min != null) nbt.setTag("min", NBTUtilBC.writeBlockPos(min));
-        if (max != null) nbt.setTag("max", NBTUtilBC.writeBlockPos(max));
+        if (min != null) nbt.put("min", NBTUtilBC.writeBlockPos(min));
+        if (max != null) nbt.put("max", NBTUtilBC.writeBlockPos(max));
     }
 
     public CompoundTag writeToNBT() {

@@ -107,7 +107,7 @@ public class GuiElementStatementParam extends GuiElementSimple
             if (currentPlayer == null) {
                 heldStack = ItemStack.EMPTY;
             } else {
-                heldStack = currentPlayer.inventory.getItemStack();
+                heldStack = currentPlayer.containerMenu.getCarried();
             }
 
             IStatementParameter pNew = param.onClick(container, ref.get(), heldStack, clickEvent);

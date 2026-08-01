@@ -51,9 +51,9 @@ public enum PatternParameterHollow implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag compound) {
-        compound.setBoolean("filled", filled);
+        compound.putBoolean("filled", filled);
         if (filled) {
-            compound.setBoolean("outer", outerFilled);
+            compound.putBoolean("outer", outerFilled);
         }
     }
 

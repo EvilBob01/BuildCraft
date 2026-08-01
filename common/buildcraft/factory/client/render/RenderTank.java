@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -71,7 +71,7 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
             Vec3 max = connectedUp ? MAX_CONNECTED : MAX;
             FluidStack fluid = forRender.fluid;
             int blocklight = fluid.getFluid().getLuminosity(fluid);
-            int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), blocklight);
+            int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), blocklight);
 
             FluidRenderer.vertex.lighti(combinedLight);
 
@@ -91,8 +91,8 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
     }
 
     private static boolean isFullyConnected(TileTank thisTank, Direction face, float partialTicks) {
-        BlockPos pos = thisTank.getPos().offset(face);
-        BlockEntity oTile = thisTank.getWorld().getBlockEntity(pos);
+        BlockPos pos = thisTank.getBlockPos().offset(face);
+        BlockEntity oTile = thisTank.getLevel().getBlockEntity(pos);
         if (oTile instanceof TileTank) {
             TileTank oTank = (TileTank) oTile;
             if (!TileTank.canTanksConnect(thisTank, oTank, face)) {

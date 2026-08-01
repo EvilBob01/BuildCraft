@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -28,7 +28,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -143,16 +143,16 @@ public class SchematicEntityDefault implements ISchematicEntity {
         BlockPos placeHangingPos = basePos.add(hangingPos);
         CompoundTag newEntityNbt = new CompoundTag();
         entityNbt.getKeySet().stream()
-            .map(key -> Pair.of(key, entityNbt.getTag(key)))
-            .forEach(kv -> newEntityNbt.setTag(kv.getKey(), kv.getValue()));
-        newEntityNbt.setTag("Pos", NBTUtilBC.writeVec3d(placePos));
+            .map(key -> Pair.of(key, entityNbt.get(key)))
+            .forEach(kv -> newEntityNbt.put(kv.getKey(), kv.getValue()));
+        newEntityNbt.put("Pos", NBTUtilBC.writeVec3d(placePos));
         newEntityNbt.setUniqueId("UUID", UUID.randomUUID());
         boolean rotate = false;
         if (Stream.of("TileX", "TileY", "TileZ", "Facing").allMatch(newEntityNbt::hasKey)) {
-            newEntityNbt.setInteger("TileX", placeHangingPos.getX());
-            newEntityNbt.setInteger("TileY", placeHangingPos.getY());
-            newEntityNbt.setInteger("TileZ", placeHangingPos.getZ());
-            newEntityNbt.setByte("Facing", (byte) hangingFacing.getHorizontalIndex());
+            newEntityNbt.putInt("TileX", placeHangingPos.getX());
+            newEntityNbt.putInt("TileY", placeHangingPos.getY());
+            newEntityNbt.putInt("TileZ", placeHangingPos.getZ());
+            newEntityNbt.putByte("Facing", (byte) hangingFacing.getHorizontalIndex());
         } else {
             rotate = true;
         }
@@ -185,21 +185,21 @@ public class SchematicEntityDefault implements ISchematicEntity {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("entityNbt", entityNbt);
-        nbt.setTag("pos", NBTUtilBC.writeVec3d(pos));
-        nbt.setTag("hangingPos", NBTUtil.createPosTag(hangingPos));
-        nbt.setTag("hangingFacing", NBTUtilBC.writeEnum(hangingFacing));
-        nbt.setTag("entityRotation", NBTUtilBC.writeEnum(entityRotation));
+        nbt.put("entityNbt", entityNbt);
+        nbt.put("pos", NBTUtilBC.writeVec3d(pos));
+        nbt.put("hangingPos", NBTUtil.createPosTag(hangingPos));
+        nbt.put("hangingFacing", NBTUtilBC.writeEnum(hangingFacing));
+        nbt.put("entityRotation", NBTUtilBC.writeEnum(entityRotation));
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
-        entityNbt = nbt.getCompoundTag("entityNbt");
-        pos = NBTUtilBC.readVec3d(nbt.getTag("pos"));
-        hangingPos = NBTUtil.getPosFromTag(nbt.getCompoundTag("hangingPos"));
-        hangingFacing = NBTUtilBC.readEnum(nbt.getTag("hangingFacing"), Direction.class);
-        entityRotation = NBTUtilBC.readEnum(nbt.getTag("entityRotation"), Rotation.class);
+        entityNbt = nbt.getCompound("entityNbt");
+        pos = NBTUtilBC.readVec3d(nbt.get("pos"));
+        hangingPos = NBTUtil.getPosFromTag(nbt.getCompound("hangingPos"));
+        hangingFacing = NBTUtilBC.readEnum(nbt.get("hangingFacing"), Direction.class);
+        entityRotation = NBTUtilBC.readEnum(nbt.get("entityRotation"), Rotation.class);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class ItemList_BC8 extends ItemBC_Neptune implements IList {
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         AdvancementUtil.unlockAdvancement(player, ADVANCEMENT);
         BCCoreGuis.LIST.openGUI(player);
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getHeldItem(hand));
+        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ItemList_BC8 extends ItemBC_Neptune implements IList {
 
     @Override
     public boolean setName(@Nonnull ItemStack stack, String name) {
-        NBTUtilBC.getItemData(stack).setString("label", name);
+        NBTUtilBC.getItemData(stack).putString("label", name);
         return true;
     }
 

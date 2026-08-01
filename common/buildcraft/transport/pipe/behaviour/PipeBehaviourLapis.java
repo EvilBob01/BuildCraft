@@ -43,7 +43,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
 
     public PipeBehaviourLapis(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        colour = NBTUtilBC.readEnum(nbt.getTag("colour"), DyeColor.class);
+        colour = NBTUtilBC.readEnum(nbt.get("colour"), DyeColor.class);
         if (colour == null) {
             colour = DyeColor.WHITE;
         }
@@ -52,7 +52,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("colour", NBTUtilBC.writeEnum(colour));
+        nbt.put("colour", NBTUtilBC.writeEnum(colour));
         return nbt;
     }
 
@@ -79,7 +79,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
 
     @Override
     public boolean onPipeActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ, EnumPipePart part) {
-        if (player.world.isClientSide) {
+        if (player.level().isClientSide) {
             return EntityUtil.getWrenchHand(player) != null;
         }
         if (EntityUtil.getWrenchHand(player) != null) {

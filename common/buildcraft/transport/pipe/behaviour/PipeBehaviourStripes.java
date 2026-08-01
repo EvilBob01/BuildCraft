@@ -65,15 +65,15 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
 
     public PipeBehaviourStripes(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
-        setDirection(NBTUtilBC.readEnum(nbt.getTag("direction"), Direction.class));
+        battery.deserializeNBT(nbt.getCompound("battery"));
+        setDirection(NBTUtilBC.readEnum(nbt.get("direction"), Direction.class));
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("battery", battery.serializeNBT());
-        nbt.setTag("direction", NBTUtilBC.writeEnum(direction));
+        nbt.put("battery", battery.serializeNBT());
+        nbt.put("direction", NBTUtilBC.writeEnum(direction));
         return nbt;
     }
 
@@ -204,13 +204,13 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
         Level world = holder.getPipeWorld();
         BlockPos pos = holder.getPipePos();
         FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) world, holder.getOwner(), pos);
-        player.inventory.clear();
+        player.getInventory().clearContent();
         // set the main hand of the fake player to the stack
-        player.inventory.setInventorySlotContents(player.inventory.currentItem, event.getStack());
+        player.getInventory().setItem(player.getInventory().selected, event.getStack());
         if (PipeApi.stripeRegistry.handleItem(world, pos, direction, event.getStack(), player, this)) {
             event.setStack(StackUtil.EMPTY);
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack stack = player.inventory.removeStackFromSlot(i);
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack stack = player.getInventory().removeItemNoUpdate(i);
                 if (!stack.isEmpty()) {
                     sendItem(stack, direction);
                 }

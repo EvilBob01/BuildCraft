@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import net.neoforged.neoforge.common.Tags;
 
@@ -153,7 +153,7 @@ public class StackUtil {
         return nbtTarget.equals(nbtWith);
     }
 
-    /** TODO (Phase 11 — see ROADMAP.md): previously used {@code OreDictionary.itemMatches()} (which also
+    /** TODO (Phase 11 â€” see ROADMAP.md): previously used {@code OreDictionary.itemMatches()} (which also
      * matched wildcard-metadata ore entries). OreDictionary no longer exists; this now falls back to a
      * plain item-type match until rewritten against {@code ItemTags}. */
     public static boolean doesEitherStackMatch(@Nonnull ItemStack stackA, @Nonnull ItemStack stackB) {
@@ -219,7 +219,7 @@ public class StackUtil {
      * @param comparison The stack to compare.
      * @param oreDictionary true to take the Forge OreDictionary into account.
      * @return true if comparison should be considered a crafting equivalent for base. */
-    /** TODO (Phase 11 — see ROADMAP.md): the {@code oreDictionary} parameter previously widened the match
+    /** TODO (Phase 11 â€” see ROADMAP.md): the {@code oreDictionary} parameter previously widened the match
      * using {@code OreDictionary.getOres()}. OreDictionary no longer exists (replaced by item tags); the
      * ore-based widening is dropped until this is rewritten against {@code ItemTags}. */
     public static boolean isCraftingEquivalent(@Nonnull ItemStack base, @Nonnull ItemStack comparison,
@@ -227,7 +227,7 @@ public class StackUtil {
         return isMatchingItem(base, comparison, true, false);
     }
 
-    /** TODO (Phase 11 — see ROADMAP.md): stubbed to false until rewritten against {@code ItemTags}; the
+    /** TODO (Phase 11 â€” see ROADMAP.md): stubbed to false until rewritten against {@code ItemTags}; the
      * int[] ore-ID based lookup this used to perform no longer has a direct equivalent. */
     public static boolean isCraftingEquivalent(int[] oreIDs, ItemStack comparison) {
         return false;
@@ -293,8 +293,8 @@ public class StackUtil {
             }
         }
         if (matchNBT) {
-            CompoundTag baseTag = base.getTagCompound();
-            if (baseTag != null && !baseTag.equals(comparison.getTagCompound())) {
+            CompoundTag baseTag = base.getTag();
+            if (baseTag != null && !baseTag.equals(comparison.getTag())) {
                 return false;
             }
         } else {
@@ -405,7 +405,7 @@ public class StackUtil {
         if (stack.isEmpty()) {
             return 0;
         }
-        if (!stack.hasTagCompound()) {
+        if (!stack.hasTag()) {
             return Objects.hash(stack.getItem(), stack.getMetadata());
         }
         return stack.serializeNBT().hashCode();

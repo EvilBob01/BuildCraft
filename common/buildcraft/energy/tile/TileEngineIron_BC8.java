@@ -18,7 +18,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.util.Mth;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 
@@ -36,7 +36,6 @@ import buildcraft.api.transport.pipe.IItemPipe;
 import buildcraft.lib.engine.EngineConnector;
 import buildcraft.lib.engine.TileEngineBase_BC8;
 import buildcraft.lib.fluid.Tank;
-import buildcraft.lib.fluid.TankProperties;
 import buildcraft.lib.gui.help.ElementHelpInfo;
 import buildcraft.lib.misc.CapUtil;
 import buildcraft.lib.misc.EntityUtil;
@@ -60,7 +59,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                 return super.map(stack, space);
             }
             FluidStack fluidCoolant = coolant.getFluidFromSolidCoolant(stack);
-            if (fluidCoolant == null || fluidCoolant.amount <= 0 || fluidCoolant.amount > space) {
+            if (fluidCoolant == null || fluidCoolant.getAmount() <= 0 || fluidCoolant.getAmount() > space) {
                 return super.map(stack, space);
             }
             return new FluidGetResult(StackUtil.EMPTY, fluidCoolant);
@@ -97,16 +96,16 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("penaltyCooling", penaltyCooling);
-        nbt.setDouble("burnTime", burnTime);
-        nbt.setDouble("residueAmount", residueAmount);
+        nbt.putInt("penaltyCooling", penaltyCooling);
+        nbt.putDouble("burnTime", burnTime);
+        nbt.putDouble("residueAmount", residueAmount);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        penaltyCooling = nbt.getInteger("penaltyCooling");
+        penaltyCooling = nbt.getInt("penaltyCooling");
         burnTime = nbt.getDouble("burnTime");
         residueAmount = Math.max(0, nbt.getDouble("residueAmount"));
     }
@@ -136,7 +135,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     @Override
     public boolean onActivated(Player player, InteractionHand hand, Direction side, float hitX, float hitY,
         float hitZ) {
-        ItemStack current = player.getHeldItem(hand).copy();
+        ItemStack current = player.getItemInHand(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
             return true;
         }
@@ -179,7 +178,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     @Override
     public boolean isBurning() {
         FluidStack fuel = tankFuel.getFluid();
-        return fuel != null && fuel.amount > 0 && penaltyCooling == 0 && isRedstonePowered;
+        return fuel != null && fuel.getAmount() > 0 && penaltyCooling == 0 && isRedstonePowered;
     }
 
     @Override
@@ -197,25 +196,25 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
             if (isRedstonePowered) {
                 lastPowered = true;
 
-                if (burnTime > 0 || fuel.amount > 0) {
+                if (burnTime > 0 || fuel.getAmount() > 0) {
                     if (burnTime > 0) {
                         burnTime--;
                     }
                     if (burnTime <= 0) {
-                        if (fuel.amount > 0) {
-                            fuel.amount--;
+                        if (fuel.getAmount() > 0) {
+                            fuel.setAmount(fuel.getAmount() - 1);
                             burnTime += currentFuel.getTotalBurningTime() / 1000.0;
 
                             // If we also produce residue then put it out too
                             if (currentFuel instanceof IDirtyFuel) {
                                 IDirtyFuel dirtyFuel = (IDirtyFuel) currentFuel;
                                 FluidStack residueFluid = dirtyFuel.getResidue().copy();
-                                residueAmount += residueFluid.amount / 1000.0;
+                                residueAmount += residueFluid.getAmount() / 1000.0;
                                 if (residueAmount >= 1) {
-                                    residueFluid.amount = Mth.floor(residueAmount);
+                                    residueFluid.setAmount(Mth.floor(residueAmount));
                                     residueAmount -= tankResidue.fill(residueFluid, true);
                                 } else if (tankResidue.getFluid() == null) {
-                                    residueFluid.amount = 0;
+                                    residueFluid.setAmount(0);
                                     tankResidue.setFluid(residueFluid);
                                 }
                             }
@@ -237,7 +236,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
             }
         }
 
-        if (burnTime <= 0 && fuel.amount <= 0) {
+        if (burnTime <= 0 && fuel.getAmount() <= 0) {
             tankFuel.setFluid(null);
         }
     }
@@ -361,39 +360,62 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     }
 
     private class InternalFluidHandler implements IFluidHandlerAdv {
-        private final IFluidTankProperties[] properties = { //
-            new TankProperties(tankFuel, true, false), //
-            new TankProperties(tankCoolant, true, false), //
-            new TankProperties(tankResidue, false, true),//
-        };
 
         @Override
-        public IFluidTankProperties[] getTankProperties() {
-            return properties;
-        }
-
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
-            int filled = tankFuel.fill(resource, doFill);
+        public int fill(FluidStack resource, FluidAction action) {
+            int filled = tankFuel.fill(resource, action);
             if (filled == 0) {
-                filled = tankCoolant.fill(resource, doFill);
+                filled = tankCoolant.fill(resource, action);
             }
             return filled;
         }
 
         @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            return tankResidue.drain(resource, doDrain);
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return tankResidue.drain(resource, action);
         }
 
         @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            return tankResidue.drain(maxDrain, doDrain);
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return tankResidue.drain(maxDrain, action);
         }
 
         @Override
         public FluidStack drain(IFluidFilter filter, int maxDrain, boolean doDrain) {
             return tankResidue.drain(filter, maxDrain, doDrain);
+        }
+
+        @Override
+        public int getTanks() { return 3; }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            switch (tank) {
+                case 0: return tankFuel.getFluidInTank(0);
+                case 1: return tankCoolant.getFluidInTank(0);
+                case 2: return tankResidue.getFluidInTank(0);
+                default: return FluidStack.EMPTY;
+            }
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            switch (tank) {
+                case 0: return tankFuel.getTankCapacity(0);
+                case 1: return tankCoolant.getTankCapacity(0);
+                case 2: return tankResidue.getTankCapacity(0);
+                default: return 0;
+            }
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            switch (tank) {
+                case 0: return tankFuel.isFluidValid(0, stack);
+                case 1: return tankCoolant.isFluidValid(0, stack);
+                case 2: return tankResidue.isFluidValid(0, stack);
+                default: return false;
+            }
         }
     }
 }

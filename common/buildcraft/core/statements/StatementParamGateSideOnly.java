@@ -47,7 +47,7 @@ public enum StatementParamGateSideOnly implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag compound) {
-        compound.setBoolean("isOn", isSpecific);
+        compound.putBoolean("isOn", isSpecific);
     }
 
     @Nonnull

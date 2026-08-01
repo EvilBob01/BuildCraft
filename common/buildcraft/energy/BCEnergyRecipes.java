@@ -162,12 +162,12 @@ public class BCEnergyRecipes {
         if (existing != null) {
             throw new IllegalStateException("Already added distillation recipe for " + _in.getFluid().getName());
         }
-        int hcf = MathUtil.findHighestCommonFactor(_in.amount, _outGas.amount);
-        hcf = MathUtil.findHighestCommonFactor(hcf, _outLiquid.amount);
+        int hcf = MathUtil.findHighestCommonFactor(_in.getAmount(), _outGas.getAmount());
+        hcf = MathUtil.findHighestCommonFactor(hcf, _outLiquid.getAmount());
         if (hcf > 1) {
-            (_in = _in.copy()).amount /= hcf;
-            (_outGas = _outGas.copy()).amount /= hcf;
-            (_outLiquid = _outLiquid.copy()).amount /= hcf;
+            _in = _in.copy(); _in.setAmount(_in.getAmount() / hcf);
+            _outGas = _outGas.copy(); _outGas.setAmount(_outGas.getAmount() / hcf);
+            _outLiquid = _outLiquid.copy(); _outLiquid.setAmount(_outLiquid.getAmount() / hcf);
             mjCost /= hcf;
         }
         BuildcraftRecipeRegistry.refineryRecipes.addDistillationRecipe(_in, _outGas, _outLiquid, mjCost);

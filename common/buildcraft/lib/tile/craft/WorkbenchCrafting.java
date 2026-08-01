@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -84,11 +84,11 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     /** @return True if anything changed, false otherwise */
     public boolean tick() {
-        if (tile.getWorld().isClientSide) {
+        if (tile.getLevel().isClientSide) {
             throw new IllegalStateException("Never call this on the client side!");
         }
         if (isBlueprintDirty) {
-            currentRecipe = CraftingUtil.findMatchingRecipe(this, tile.getWorld());
+            currentRecipe = CraftingUtil.findMatchingRecipe(this, tile.getLevel());
             if (currentRecipe == null) {
                 assumedResult = ItemStack.EMPTY;
                 recipeType = null;
@@ -206,7 +206,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
         // Some recipes (for example vanilla fireworks) require calling
         // matches before calling getCraftingResult, as they store the
         // result of matches for getCraftingResult and getResult.
-        if (!currentRecipe.matches(this, tile.getWorld())) {
+        if (!currentRecipe.matches(this, tile.getLevel())) {
             return false;
         }
         ItemStack result = currentRecipe.getCraftingResult(this);
@@ -217,7 +217,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
         }
         ItemStack leftover = invResult.insert(result, false, false);
         if (!leftover.isEmpty()) {
-            InventoryUtil.addToBestAcceptor(tile.getWorld(), tile.getPos(), null, leftover);
+            InventoryUtil.addToBestAcceptor(tile.getLevel(), tile.getBlockPos(), null, leftover);
         }
         NonNullList<ItemStack> remainingStacks = currentRecipe.getRemainingItems(this);
         for (int s = 0; s < remainingStacks.size(); s++) {
@@ -239,7 +239,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
                 } else {
                     leftover = invMaterials.insert(remaining, false, false);
                     if (!leftover.isEmpty()) {
-                        InventoryUtil.addToBestAcceptor(tile.getWorld(), tile.getPos(), null, leftover);
+                        InventoryUtil.addToBestAcceptor(tile.getLevel(), tile.getBlockPos(), null, leftover);
                     }
                 }
             }
@@ -252,7 +252,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
             if (!inSlot.isEmpty()) {
                 leftover = invMaterials.insert(inSlot, false, false);
                 if (!leftover.isEmpty()) {
-                    InventoryUtil.addToBestAcceptor(tile.getWorld(), tile.getPos(), null, leftover);
+                    InventoryUtil.addToBestAcceptor(tile.getLevel(), tile.getBlockPos(), null, leftover);
                 }
             }
         }

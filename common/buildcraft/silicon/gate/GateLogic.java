@@ -119,11 +119,11 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
     // Saving + Loading
 
     public GateLogic(PluggableGate pluggable, CompoundTag nbt) {
-        this(pluggable, new GateVariant(nbt.getCompoundTag("variant")));
+        this(pluggable, new GateVariant(nbt.getCompound("variant")));
 
         readConfigData(nbt);
 
-        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.getTag("wireBroadcasts"), DyeColor.class));
+        wireBroadcasts.addAll(NBTUtilBC.readEnumSet(nbt.get("wireBroadcasts"), DyeColor.class));
     }
 
     public void readConfigData(CompoundTag nbt) {
@@ -136,28 +136,28 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
             String tName = "trigger[" + i + "]";
             String aName = "action[" + i + "]";
             // Legacy
-            if (nbt.hasKey(tName, Tag.TAG_STRING)) {
+            if (nbt.contains(tName, Tag.TAG_STRING)) {
                 CompoundTag nbt2 = new CompoundTag();
-                nbt2.setString("kind", nbt.getString(tName));
-                nbt2.setByte("side", nbt.getByte(tName + ".side"));
-                nbt.setTag(tName, nbt2);
+                nbt2.putString("kind", nbt.getString(tName));
+                nbt2.putByte("side", nbt.getByte(tName + ".side"));
+                nbt.put(tName, nbt2);
             }
             // Legacy
-            if (nbt.hasKey(aName, Tag.TAG_STRING)) {
+            if (nbt.contains(aName, Tag.TAG_STRING)) {
                 CompoundTag nbt2 = new CompoundTag();
-                nbt2.setString("kind", nbt.getString(aName));
-                nbt2.setByte("side", nbt.getByte(aName + ".side"));
-                nbt.setTag(aName, nbt2);
+                nbt2.putString("kind", nbt.getString(aName));
+                nbt2.putByte("side", nbt.getByte(aName + ".side"));
+                nbt.put(aName, nbt2);
             }
 
-            statements[i].trigger.readFromNbt(nbt.getCompoundTag(tName));
-            statements[i].action.readFromNbt(nbt.getCompoundTag(aName));
+            statements[i].trigger.readFromNbt(nbt.getCompound(tName));
+            statements[i].action.readFromNbt(nbt.getCompound(aName));
         }
     }
 
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("variant", variant.saveAdditional());
+        nbt.put("variant", variant.saveAdditional());
 
         short c = 0;
         for (int i = 0; i < connections.length; i++) {
@@ -165,17 +165,17 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 c |= 1 << i;
             }
         }
-        nbt.setShort("connections", c);
+        nbt.putShort("connections", c);
 
         for (int s = 0; s < statements.length; s++) {
             if (statements[s].trigger.get() != null) {
-                nbt.setTag("trigger[" + s + "]", statements[s].trigger.writeToNbt());
+                nbt.put("trigger[" + s + "]", statements[s].trigger.writeToNbt());
             }
             if (statements[s].action.get() != null) {
-                nbt.setTag("action[" + s + "]", statements[s].action.writeToNbt());
+                nbt.put("action[" + s + "]", statements[s].action.writeToNbt());
             }
         }
-        nbt.setTag("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, DyeColor.class));
+        nbt.put("wireBroadcasts", NBTUtilBC.writeEnumSet(wireBroadcasts, DyeColor.class));
         return nbt;
     }
 

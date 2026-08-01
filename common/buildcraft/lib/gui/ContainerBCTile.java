@@ -16,25 +16,25 @@ public abstract class ContainerBCTile<T extends TileBC_Neptune> extends Containe
     public ContainerBCTile(Player player, T tile) {
         super(player);
         this.tile = tile;
-        if (!tile.getWorld().isClientSide) {
+        if (!tile.getLevel().isClientSide) {
             tile.onPlayerOpen(player);
         }
     }
 
     @Override
-    public void onContainerClosed(Player player) {
-        super.onContainerClosed(player);
+    public void removed(Player player) {
+        super.removed(player);
         tile.onPlayerClose(player);
     }
 
     @Override
-    public final boolean canInteractWith(Player player) {
+    public final boolean stillValid(Player player) {
         return tile.canInteractWith(player);
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
         tile.sendNetworkGuiTick(this.player);
     }
 }

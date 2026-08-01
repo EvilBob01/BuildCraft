@@ -46,7 +46,7 @@ public enum PatternParameterYDir implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setBoolean("up", up);
+        nbt.putBoolean("up", up);
     }
 
     @Override

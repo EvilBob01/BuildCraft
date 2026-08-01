@@ -117,7 +117,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     @Override
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
-        if (placer.world.isClientSide) {
+        if (placer.level().isClientSide) {
             return;
         }
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
@@ -347,28 +347,28 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("box", box.saveAdditional());
-        nbt.setBoolean("markerBox", markerBox);
+        nbt.put("box", box.saveAdditional());
+        nbt.putBoolean("markerBox", markerBox);
         if (boxIterator != null) {
-            nbt.setTag("iter", boxIterator.writeToNbt());
+            nbt.put("iter", boxIterator.writeToNbt());
         }
-        nbt.setBoolean("scanning", scanning);
-        nbt.setTag("snapshotType", NBTUtilBC.writeEnum(snapshotType));
-        nbt.setBoolean("isValid", isValid);
-        nbt.setString("name", name);
+        nbt.putBoolean("scanning", scanning);
+        nbt.put("snapshotType", NBTUtilBC.writeEnum(snapshotType));
+        nbt.putBoolean("isValid", isValid);
+        nbt.putString("name", name);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        box.initialize(nbt.getCompoundTag("box"));
+        box.initialize(nbt.getCompound("box"));
         markerBox = nbt.getBoolean("markerBox");
-        if (nbt.hasKey("iter")) {
-            boxIterator = BoxIterator.readFromNbt(nbt.getCompoundTag("iter"));
+        if (nbt.contains("iter")) {
+            boxIterator = BoxIterator.readFromNbt(nbt.getCompound("iter"));
         }
         scanning = nbt.getBoolean("scanning");
-        snapshotType = NBTUtilBC.readEnum(nbt.getTag("snapshotType"), EnumSnapshotType.class);
+        snapshotType = NBTUtilBC.readEnum(nbt.get("snapshotType"), EnumSnapshotType.class);
         isValid = nbt.getBoolean("isValid");
         name = nbt.getString("name");
     }

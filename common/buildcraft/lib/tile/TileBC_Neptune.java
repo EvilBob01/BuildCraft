@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.Explosion;
@@ -307,7 +307,7 @@ public abstract class TileBC_Neptune extends BlockEntity
     }
 
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
-        if (!placer.world.isClientSide) {
+        if (!placer.level().isClientSide) {
             if (placer instanceof Player) {
                 Player player = (Player) placer;
                 owner = player.getGameProfile();
@@ -558,7 +558,7 @@ public abstract class TileBC_Neptune extends BlockEntity
         buf.readBytes(bytes);
 
         CompoundTag nbt = super.getUpdateTag();
-        nbt.setByteArray("d", bytes);
+        nbt.putByteArray("d", bytes);
         return nbt;
     }
 
@@ -566,7 +566,7 @@ public abstract class TileBC_Neptune extends BlockEntity
     public void handleUpdateTag(CompoundTag tag) {
         // Explicitly don't read the (server) data from NBT
         super.loadAdditional(tag);
-        if (!tag.hasKey("d", Tag.TAG_BYTE_ARRAY)) {
+        if (!tag.contains("d", Tag.TAG_BYTE_ARRAY)) {
             // A bit odd, but ok - this was probably sent by something else
             return;
         }
@@ -685,45 +685,45 @@ public abstract class TileBC_Neptune extends BlockEntity
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        migrateOldNBT(nbt.getInteger("data-version"), nbt);
-        deltaManager.loadAdditional(nbt.getCompoundTag("deltas"));
-        if (nbt.hasKey("owner")) {
-            owner = NBTUtil.readGameProfileFromNBT(nbt.getCompoundTag("owner"));
+        migrateOldNBT(nbt.getInt("data-version"), nbt);
+        deltaManager.loadAdditional(nbt.getCompound("deltas"));
+        if (nbt.contains("owner")) {
+            owner = NBTUtil.readGameProfileFromNBT(nbt.getCompound("owner"));
         }
-        if (nbt.hasKey("items", Tag.TAG_COMPOUND)) {
-            itemManager.deserializeNBT(nbt.getCompoundTag("items"));
+        if (nbt.contains("items", Tag.TAG_COMPOUND)) {
+            itemManager.deserializeNBT(nbt.getCompound("items"));
         }
-        if (nbt.hasKey("tanks", Tag.TAG_COMPOUND)) {
-            tankManager.deserializeNBT(nbt.getCompoundTag("tanks"));
+        if (nbt.contains("tanks", Tag.TAG_COMPOUND)) {
+            tankManager.deserializeNBT(nbt.getCompound("tanks"));
         }
     }
 
     protected void migrateOldNBT(int version, CompoundTag nbt) {
         // 7.99.0 -> 7.99.4
         // Most tiles with a single tank saved it under "tank"
-        CompoundTag tankComp = nbt.getCompoundTag("tank");
+        CompoundTag tankComp = nbt.getCompound("tank");
         if (!tankComp.hasNoTags()) {
             CompoundTag tanks = new CompoundTag();
-            tanks.setTag("tank", tankComp);
-            nbt.setTag("tanks", tanks);
+            tanks.put("tank", tankComp);
+            nbt.put("tanks", tanks);
         }
     }
 
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("data-version", BCVersion.CURRENT.dataVersion);
-        nbt.setTag("deltas", deltaManager.saveAdditional());
+        nbt.putInt("data-version", BCVersion.CURRENT.dataVersion);
+        nbt.put("deltas", deltaManager.saveAdditional());
         if (owner != null && owner.isComplete() && owner != FakePlayerProvider.NULL_PROFILE) {
-            nbt.setTag("owner", NBTUtil.writeGameProfile(new CompoundTag(), owner));
+            nbt.put("owner", NBTUtil.writeGameProfile(new CompoundTag(), owner));
         }
         CompoundTag items = itemManager.serializeNBT();
         if (!items.hasNoTags()) {
-            nbt.setTag("items", items);
+            nbt.put("items", items);
         }
         CompoundTag tanks = tankManager.serializeNBT();
         if (!tanks.hasNoTags()) {
-            nbt.setTag("tanks", tanks);
+            nbt.put("tanks", tanks);
         }
         return nbt;
     }

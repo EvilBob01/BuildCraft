@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.InvalidInputDataException;
@@ -46,7 +46,7 @@ public class Template extends Snapshot {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = super.serializeNBT();
-        nbt.setByteArray("data", data.toByteArray());
+        nbt.putByteArray("data", data.toByteArray());
         return nbt;
     }
 

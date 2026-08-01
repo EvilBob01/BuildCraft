@@ -138,7 +138,7 @@ public class ItemRenderUtil {
             category.addDetail("Item Class", () -> "" + stack.getItem().getClass());
             category.addDetail("Item ID", () -> "" + ForgeRegistries.ITEMS.getKey(stack.getItem()));
             category.addDetail("Item Meta", () -> "" + stack.getMetadata());
-            category.addDetail("Item NBT", () -> "" + stack.getTagCompound());
+            category.addDetail("Item NBT", () -> "" + stack.getTag());
             throw new ReportedException(report);
         }
     }

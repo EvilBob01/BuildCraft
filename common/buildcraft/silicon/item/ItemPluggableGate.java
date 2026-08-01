@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -19,7 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.api.distmarker.Dist;
@@ -49,20 +49,20 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
     }
 
     public static GateVariant getVariant(@Nonnull ItemStack stack) {
-        return new GateVariant(NBTUtilBC.getItemData(stack).getCompoundTag("gate"));
+        return new GateVariant(NBTUtilBC.getItemData(stack).getCompound("gate"));
     }
 
     @Nonnull
     public ItemStack getStack(GateVariant variant) {
         ItemStack stack = new ItemStack(this);
-        NBTUtilBC.getItemData(stack).setTag("gate", variant.saveAdditional());
+        NBTUtilBC.getItemData(stack).put("gate", variant.saveAdditional());
         return stack;
     }
 
     @Override
     public PipePluggable onPlace(@Nonnull ItemStack stack, IPipeHolder holder, Direction side, Player player, InteractionHand hand) {
         GateVariant variant = getVariant(stack);
-        SoundUtil.playBlockPlace(holder.getPipeWorld(), holder.getPipePos(), variant.material.block.getDefaultState());
+        SoundUtil.playBlockPlace(holder.getPipeWorld(), holder.getPipePos(), variant.material.block.defaultBlockState());
         PluggableDefinition def = BCSiliconPlugs.gate;
         return new PluggableGate(def, holder, side, variant);
     }

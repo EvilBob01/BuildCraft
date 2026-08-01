@@ -66,7 +66,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
-        ItemStack stack = StackUtil.asNonNull(player.getHeldItem(hand));
+        ItemStack stack = StackUtil.asNonNull(player.getItemInHand(hand));
         if (world.isClientSide) {
             return new ActionResult<>(InteractionResult.PASS, stack);
         }
@@ -87,7 +87,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
         if (world.isClientSide) {
             return InteractionResult.PASS;
         }
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (player.isSneaking()) {
             CompoundTag itemData = NBTUtilBC.getItemData(StackUtil.asNonNull(stack));
             itemData.removeTag(NBT_KEY);
@@ -110,7 +110,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
             if (schematicBlock.isAir()) {
                 return InteractionResult.FAIL;
             }
-            NBTUtilBC.getItemData(stack).setTag(NBT_KEY, SchematicBlockManager.saveAdditional(schematicBlock));
+            NBTUtilBC.getItemData(stack).put(NBT_KEY, SchematicBlockManager.saveAdditional(schematicBlock));
             stack.setItemDamage(DAMAGE_USED);
             return InteractionResult.SUCCESS;
         } else {
@@ -186,7 +186,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
 
     public static ISchematicBlock getSchematic(@Nonnull ItemStack stack) throws InvalidInputDataException {
         if (stack.getItem() instanceof ItemSchematicSingle) {
-            return SchematicBlockManager.loadAdditional(NBTUtilBC.getItemData(stack).getCompoundTag(NBT_KEY));
+            return SchematicBlockManager.loadAdditional(NBTUtilBC.getItemData(stack).getCompound(NBT_KEY));
         }
         return null;
     }

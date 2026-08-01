@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -70,51 +69,48 @@ public class TriggerFluidContainer extends BCStatement implements ITriggerExtern
             }
 
             if (searchedFluid != null) {
-                searchedFluid.amount = 1;
+                searchedFluid.setAmount(1);
             }
 
-            IFluidTankProperties[] liquids = handler.getTankProperties();
-            if (liquids == null || liquids.length == 0) {
+            int tankCount = handler.getTanks();
+            if (tankCount == 0) {
                 return false;
             }
 
             switch (state) {
                 case EMPTY:
-                    FluidStack drained = handler.drain(1, false);
-                    return drained == null || drained.amount <= 0;
+                    FluidStack drained = handler.drain(1, IFluidHandler.FluidAction.SIMULATE);
+                    return drained == null || drained.getAmount() <= 0;
                 case CONTAINS:
-                    for (IFluidTankProperties c : liquids) {
-                        if (c == null) continue;
-                        FluidStack fluid = c.getContents();
-                        if (fluid != null && fluid.amount > 0 && (searchedFluid == null || searchedFluid.isFluidEqual(fluid))) {
+                    for (int i = 0; i < tankCount; i++) {
+                        FluidStack fluid = handler.getFluidInTank(i);
+                        if (!fluid.isEmpty() && fluid.getAmount() > 0 && (searchedFluid == null || searchedFluid.isFluidEqual(fluid))) {
                             return true;
                         }
                     }
                     return false;
                 case SPACE:
                     if (searchedFluid == null) {
-                        for (IFluidTankProperties c : liquids) {
-                            if (c == null) continue;
-                            FluidStack fluid = c.getContents();
-                            if ((fluid == null || fluid.amount < c.getCapacity())) {
+                        for (int i = 0; i < tankCount; i++) {
+                            FluidStack fluid = handler.getFluidInTank(i);
+                            if (fluid.isEmpty() || fluid.getAmount() < handler.getTankCapacity(i)) {
                                 return true;
                             }
                         }
                         return false;
                     }
-                    return handler.fill(searchedFluid, false) > 0;
+                    return handler.fill(searchedFluid, IFluidHandler.FluidAction.SIMULATE) > 0;
                 case FULL:
                     if (searchedFluid == null) {
-                        for (IFluidTankProperties c : liquids) {
-                            if (c == null) continue;
-                            FluidStack fluid = c.getContents();
-                            if ((fluid == null || fluid.amount < c.getCapacity())) {
+                        for (int i = 0; i < tankCount; i++) {
+                            FluidStack fluid = handler.getFluidInTank(i);
+                            if (fluid.isEmpty() || fluid.getAmount() < handler.getTankCapacity(i)) {
                                 return false;
                             }
                         }
                         return true;
                     }
-                    return handler.fill(searchedFluid, false) <= 0;
+                    return handler.fill(searchedFluid, IFluidHandler.FluidAction.SIMULATE) <= 0;
             }
         }
 

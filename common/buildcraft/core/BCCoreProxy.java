@@ -6,14 +6,13 @@ package buildcraft.core;
 
 import java.util.List;
 
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import buildcraft.api.BCModules;
 
@@ -21,84 +20,47 @@ import buildcraft.lib.client.render.DetachedRenderer;
 import buildcraft.lib.client.render.DetachedRenderer.RenderMatrixType;
 import buildcraft.lib.net.MessageManager;
 
-import buildcraft.core.client.RenderTickListener;
 import buildcraft.core.client.render.RenderVolumeBoxes;
-import buildcraft.core.list.ContainerList;
-import buildcraft.core.list.GuiList;
 import buildcraft.core.list.ListTooltipHandler;
 import buildcraft.core.marker.volume.ClientVolumeBoxes;
 import buildcraft.core.marker.volume.MessageVolumeBoxes;
 import buildcraft.core.marker.volume.VolumeBox;
 import buildcraft.core.marker.volume.WorldSavedDataVolumeBoxes;
 
-public abstract class BCCoreProxy implements IGuiHandler {
-    @SidedProxy(modId = BCCore.MODID)
-    private static BCCoreProxy proxy = null;
+/** Replaces the old {@code @SidedProxy}-based split. See {@code BCLibProxy} for the migration notes. */
+public class BCCoreProxy {
+    private static final BCCoreProxy INSTANCE = new BCCoreProxy();
 
     public static BCCoreProxy getProxy() {
-        return proxy;
+        return INSTANCE;
     }
 
-    @Override
-    public Object getServerGuiElement(int ID, Player player, Level world, int x, int y, int z) {
-        if (ID == BCCoreGuis.LIST.ordinal()) {
-            return new ContainerList(player);
-        }
-        return null;
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
-        return null;
-    }
-
-    public void fmlPreInit() {
+    public static void init(IEventBus modEventBus) {
         MessageManager.registerMessageClass(BCModules.CORE, MessageVolumeBoxes.class, Dist.CLIENT);
-    }
-
-    public void fmlInit() {}
-
-    public void fmlPostInit() {}
-
-    public List<VolumeBox> getVolumeBoxes(Level world) {
-        return WorldSavedDataVolumeBoxes.get(world).volumeBoxes;
-    }
-
-    @OnlyIn(Dist.DEDICATED_SERVER)
-    public static class ServerProxy extends BCCoreProxy {
-
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            clientInit();
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class ClientProxy extends BCCoreProxy {
-        @Override
-        public Object getClientGuiElement(int ID, Player player, Level world, int x, int y, int z) {
-            if (ID == BCCoreGuis.LIST.ordinal()) {
-                return new GuiList(player);
-            }
-            return null;
-        }
+    private static void clientInit() {
+        // TODO (Phase 7 — rendering): BCCoreSprites.fmlPreInit(); BCCoreModels.fmlPreInit();
+        DetachedRenderer.INSTANCE.addRenderer(RenderMatrixType.FROM_WORLD_ORIGIN, RenderVolumeBoxes.INSTANCE);
+        NeoForge.EVENT_BUS.register(ListTooltipHandler.INSTANCE);
+        MessageManager.setHandler(MessageVolumeBoxes.class, MessageVolumeBoxes.HANDLER, Dist.CLIENT);
+        // TODO (Phase 7 — rendering): BCCoreModels.fmlInit(); NeoForge.EVENT_BUS.register(RenderTickListener.class);
+    }
 
-        @Override
-        public void fmlPreInit() {
-            super.fmlPreInit();
-            BCCoreSprites.fmlPreInit();
-            BCCoreModels.fmlPreInit();
-            DetachedRenderer.INSTANCE.addRenderer(RenderMatrixType.FROM_WORLD_ORIGIN, RenderVolumeBoxes.INSTANCE);
-            NeoForge.EVENT_BUS.register(ListTooltipHandler.INSTANCE);
-            MessageManager.setHandler(MessageVolumeBoxes.class, MessageVolumeBoxes.HANDLER, Dist.CLIENT);
+    public List<VolumeBox> getVolumeBoxes(Level world) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            return getVolumeBoxesClient(world);
         }
+        return WorldSavedDataVolumeBoxes.get(world).volumeBoxes;
+    }
 
-        @Override
-        public void fmlInit() {
-            super.fmlInit();
-            BCCoreModels.fmlInit();
-            NeoForge.EVENT_BUS.register(RenderTickListener.class);
-        }
-
-        @Override
-        public List<VolumeBox> getVolumeBoxes(Level world) {
-            return world.isClientSide ? ClientVolumeBoxes.INSTANCE.volumeBoxes : super.getVolumeBoxes(world);
-        }
+    @OnlyIn(Dist.CLIENT)
+    private static List<VolumeBox> getVolumeBoxesClient(Level world) {
+        return world.isClientSide ? ClientVolumeBoxes.INSTANCE.volumeBoxes
+            : WorldSavedDataVolumeBoxes.get(world).volumeBoxes;
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -49,7 +49,7 @@ public enum StripesHandlerShears implements IStripesHandlerItem {
                 if (stack.attemptDamageItem(1, player.getRNG(), player instanceof ServerPlayer ? (ServerPlayer) player : null)) {
                     stack.shrink(1);
                 }
-                world.setBlock(pos, Blocks.AIR.getDefaultState(), 11); // Might become obsolete in 1.12+
+                world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11); // Might become obsolete in 1.12+
                 for (ItemStack dropStack : drops) {
                     activator.sendItem(dropStack, direction);
                 }

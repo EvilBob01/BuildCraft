@@ -78,7 +78,7 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setLong("power", power);
+        nbt.putLong("power", power);
         return nbt;
     }
 

@@ -212,7 +212,7 @@ public class WireManager implements IWireManager {
             wiresArray[i[0] + 1] = color.getMetadata();
             i[0] += 2;
         });
-        nbt.setIntArray("parts", wiresArray);
+        nbt.putIntArray("parts", wiresArray);
         return nbt;
     }
 

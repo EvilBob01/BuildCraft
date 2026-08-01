@@ -45,26 +45,26 @@ public class Lock {
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
         CompoundTag causeTag = new CompoundTag();
-        causeTag.setTag("type", NBTUtilBC.writeEnum(Cause.EnumCause.getForClass(cause.getClass())));
-        causeTag.setTag("data", cause.saveAdditional(new CompoundTag()));
-        nbt.setTag("cause", causeTag);
-        nbt.setTag("targets", NBTUtilBC.writeCompoundList(targets.stream().map(target -> {
+        causeTag.put("type", NBTUtilBC.writeEnum(Cause.EnumCause.getForClass(cause.getClass())));
+        causeTag.put("data", cause.saveAdditional(new CompoundTag()));
+        nbt.put("cause", causeTag);
+        nbt.put("targets", NBTUtilBC.writeCompoundList(targets.stream().map(target -> {
             CompoundTag targetTag = new CompoundTag();
-            targetTag.setTag("type", NBTUtilBC.writeEnum(Target.EnumTarget.getForClass(target.getClass())));
-            targetTag.setTag("data", target.saveAdditional(new CompoundTag()));
+            targetTag.put("type", NBTUtilBC.writeEnum(Target.EnumTarget.getForClass(target.getClass())));
+            targetTag.put("data", target.saveAdditional(new CompoundTag()));
             return targetTag;
         })));
         return nbt;
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        CompoundTag causeTag = nbt.getCompoundTag("cause");
-        cause = NBTUtilBC.readEnum(causeTag.getTag("type"), Cause.EnumCause.class).supplier.get();
-        cause.loadAdditional(causeTag.getCompoundTag("data"));
-        NBTUtilBC.readCompoundList(nbt.getTag("targets")).map(targetTag -> {
+        CompoundTag causeTag = nbt.getCompound("cause");
+        cause = NBTUtilBC.readEnum(causeTag.get("type"), Cause.EnumCause.class).supplier.get();
+        cause.loadAdditional(causeTag.getCompound("data"));
+        NBTUtilBC.readCompoundList(nbt.get("targets")).map(targetTag -> {
             Target target;
-            target = NBTUtilBC.readEnum(targetTag.getTag("type"), Target.EnumTarget.class).supplier.get();
-            target.loadAdditional(targetTag.getCompoundTag("data"));
+            target = NBTUtilBC.readEnum(targetTag.get("type"), Target.EnumTarget.class).supplier.get();
+            target.loadAdditional(targetTag.getCompound("data"));
             return target;
         }).forEach(targets::add);
     }
@@ -116,14 +116,14 @@ public class Lock {
 
             @Override
             public CompoundTag writeToNBT(CompoundTag nbt) {
-                nbt.setTag("pos", NBTUtil.createPosTag(pos));
-                nbt.setString("block", Block.REGISTRY.getNameForObject(block).toString());
+                nbt.put("pos", NBTUtil.createPosTag(pos));
+                nbt.putString("block", Block.REGISTRY.getNameForObject(block).toString());
                 return nbt;
             }
 
             @Override
             public void readFromNBT(CompoundTag nbt) {
-                pos = NBTUtil.getPosFromTag(nbt.getCompoundTag("pos"));
+                pos = NBTUtil.getPosFromTag(nbt.getCompound("pos"));
                 block = Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("block")));
             }
 
@@ -222,13 +222,13 @@ public class Lock {
 
             @Override
             public CompoundTag writeToNBT(CompoundTag nbt) {
-                nbt.setTag("slot", NBTUtilBC.writeEnum(slot));
+                nbt.put("slot", NBTUtilBC.writeEnum(slot));
                 return nbt;
             }
 
             @Override
             public void readFromNBT(CompoundTag nbt) {
-                slot = NBTUtilBC.readEnum(nbt.getTag("slot"), EnumAddonSlot.class);
+                slot = NBTUtilBC.readEnum(nbt.get("slot"), EnumAddonSlot.class);
             }
 
             @Override
@@ -254,13 +254,13 @@ public class Lock {
 
             @Override
             public CompoundTag writeToNBT(CompoundTag nbt) {
-                nbt.setTag("type", NBTUtilBC.writeEnum(type));
+                nbt.put("type", NBTUtilBC.writeEnum(type));
                 return nbt;
             }
 
             @Override
             public void readFromNBT(CompoundTag nbt) {
-                type = NBTUtilBC.readEnum(nbt.getTag("type"), EnumType.class);
+                type = NBTUtilBC.readEnum(nbt.get("type"), EnumType.class);
             }
 
             @Override

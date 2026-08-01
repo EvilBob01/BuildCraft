@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 SpaceToad and the BuildCraft team
+﻿/* Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -55,7 +55,7 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
         VolumeConnection volume = marker.getCurrentConnection();
         Set<Axis> taken = volume == null ? ImmutableSet.of() : volume.getConnectedAxis();
 
-        Vec3 start = VecUtil.add(VEC_HALF, marker.getPos());
+        Vec3 start = VecUtil.add(VEC_HALF, marker.getBlockPos());
         for (Direction face : Direction.VALUES) {
             if (taken.contains(face.getAxis())) {
                 continue;

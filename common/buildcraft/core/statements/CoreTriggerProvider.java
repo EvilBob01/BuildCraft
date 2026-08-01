@@ -83,8 +83,7 @@ public enum CoreTriggerProvider implements ITriggerProvider {
             IFluidHandler fluidHandler = CapUtil.getCapability(tile, CapUtil.CAP_FLUIDS, side.getOpposite());
             if (fluidHandler != null) {
 
-                IFluidTankProperties[] liquids = fluidHandler.getTankProperties();
-                if (liquids != null && liquids.length > 0) {
+                if (fluidHandler.getTanks() > 0) {
                     res.add(BCCoreStatements.TRIGGER_FLUID_EMPTY);
                     res.add(BCCoreStatements.TRIGGER_FLUID_SPACE);
                     res.add(BCCoreStatements.TRIGGER_FLUID_CONTAINS);

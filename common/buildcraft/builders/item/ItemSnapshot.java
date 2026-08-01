@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.level.Level;
 
 import net.minecraft.nbt.Tag;
@@ -46,7 +46,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
 
     public ItemStack getUsed(EnumSnapshotType snapshotType, Header header) {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("header", header.serializeNBT());
+        nbt.put("header", header.serializeNBT());
         ItemStack stack = new ItemStack(this, 1, EnumItemSnapshotType.get(snapshotType, true).ordinal());
         stack.setTagCompound(nbt);
         return stack;
@@ -55,10 +55,10 @@ public class ItemSnapshot extends ItemBC_Neptune {
     public Header getHeader(ItemStack stack) {
         if (stack.getItem() instanceof ItemSnapshot) {
             if (EnumItemSnapshotType.getFromStack(stack).used) {
-                CompoundTag nbt = stack.getTagCompound();
+                CompoundTag nbt = stack.getTag();
                 if (nbt != null) {
-                    if (nbt.hasKey("header", Tag.TAG_COMPOUND)) {
-                        return new Header(nbt.getCompoundTag("header"));
+                    if (nbt.contains("header", Tag.TAG_COMPOUND)) {
+                        return new Header(nbt.getCompound("header"));
                     }
                 }
             }

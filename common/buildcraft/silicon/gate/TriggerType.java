@@ -57,8 +57,8 @@ public class TriggerType extends StatementType<TriggerWrapper> {
         if (slot == null) {
             return nbt;
         }
-        nbt.setString("kind", slot.getUniqueTag());
-        nbt.setByte("side", (byte) slot.sourcePart.getIndex());
+        nbt.putString("kind", slot.getUniqueTag());
+        nbt.putByte("side", (byte) slot.sourcePart.getIndex());
         return nbt;
     }
 

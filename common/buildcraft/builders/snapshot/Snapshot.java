@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -17,7 +17,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -116,12 +116,12 @@ public abstract class Snapshot {
 
     public static CompoundTag writeToNBT(Snapshot snapshot) {
         CompoundTag nbt = snapshot.serializeNBT();
-        nbt.setTag("type", NBTUtilBC.writeEnum(snapshot.getType()));
+        nbt.put("type", NBTUtilBC.writeEnum(snapshot.getType()));
         return nbt;
     }
 
     public static Snapshot readFromNBT(CompoundTag nbt) throws InvalidInputDataException {
-        Tag tag = nbt.getTag("type");
+        Tag tag = nbt.get("type");
         EnumSnapshotType type = NBTUtilBC.readEnum(tag, EnumSnapshotType.class);
         if (type == null) {
             throw new InvalidInputDataException("Unknown snapshot type " + tag);
@@ -133,18 +133,18 @@ public abstract class Snapshot {
 
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("key", key.serializeNBT());
-        nbt.setTag("size", NBTUtil.createPosTag(size));
-        nbt.setTag("facing", NBTUtilBC.writeEnum(facing));
-        nbt.setTag("offset", NBTUtil.createPosTag(offset));
+        nbt.put("key", key.serializeNBT());
+        nbt.put("size", NBTUtil.createPosTag(size));
+        nbt.put("facing", NBTUtilBC.writeEnum(facing));
+        nbt.put("offset", NBTUtil.createPosTag(offset));
         return nbt;
     }
 
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
-        key = new Key(nbt.getCompoundTag("key"));
-        size = NBTUtil.getPosFromTag(nbt.getCompoundTag("size"));
-        facing = NBTUtilBC.readEnum(nbt.getTag("facing"), Direction.class);
-        offset = NBTUtil.getPosFromTag(nbt.getCompoundTag("offset"));
+        key = new Key(nbt.getCompound("key"));
+        size = NBTUtil.getPosFromTag(nbt.getCompound("size"));
+        facing = NBTUtilBC.readEnum(nbt.get("facing"), Direction.class);
+        offset = NBTUtil.getPosFromTag(nbt.getCompound("offset"));
     }
 
     abstract public Snapshot copy();
@@ -153,7 +153,7 @@ public abstract class Snapshot {
 
     public void computeKey() {
         CompoundTag nbt = writeToNBT(this);
-        if (nbt.hasKey("key", Tag.TAG_COMPOUND)) {
+        if (nbt.contains("key", Tag.TAG_COMPOUND)) {
             nbt.removeTag("key");
         }
         key = new Key(key, HashUtil.computeHash(nbt));
@@ -195,7 +195,7 @@ public abstract class Snapshot {
         @SuppressWarnings("WeakerAccess")
         public Key(CompoundTag nbt) {
             hash = nbt.getByteArray("hash");
-            header = nbt.hasKey("header") ? new Header(nbt.getCompoundTag("header")) : null;
+            header = nbt.contains("header") ? new Header(nbt.getCompound("header")) : null;
         }
 
         public Key(PacketBufferBC buffer) {
@@ -205,9 +205,9 @@ public abstract class Snapshot {
 
         public CompoundTag serializeNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setByteArray("hash", hash);
+            nbt.putByteArray("hash", hash);
             if (header != null) {
-                nbt.setTag("header", header.serializeNBT());
+                nbt.put("header", header.serializeNBT());
             }
             return nbt;
         }
@@ -256,7 +256,7 @@ public abstract class Snapshot {
 
         @SuppressWarnings("WeakerAccess")
         public Header(CompoundTag nbt) {
-            key = new Key(nbt.getCompoundTag("key"));
+            key = new Key(nbt.getCompound("key"));
             owner = nbt.getUniqueId("owner");
             created = new Date(nbt.getLong("created"));
             name = nbt.getString("name");
@@ -272,10 +272,10 @@ public abstract class Snapshot {
 
         public CompoundTag serializeNBT() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setTag("key", key.serializeNBT());
+            nbt.put("key", key.serializeNBT());
             nbt.setUniqueId("owner", owner);
-            nbt.setLong("created", created.getTime());
-            nbt.setString("name", name);
+            nbt.putLong("created", created.getTime());
+            nbt.putString("name", name);
             return nbt;
         }
 

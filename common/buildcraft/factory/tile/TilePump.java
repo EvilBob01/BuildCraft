@@ -419,14 +419,14 @@ public class TilePump extends TileMiner {
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        oilSpringPos = NBTUtilBC.readBlockPos(nbt.getTag("oilSpringPos"));
+        oilSpringPos = NBTUtilBC.readBlockPos(nbt.get("oilSpringPos"));
     }
 
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (oilSpringPos != null) {
-            nbt.setTag("oilSpringPos", NBTUtilBC.writeBlockPos(oilSpringPos));
+            nbt.put("oilSpringPos", NBTUtilBC.writeBlockPos(oilSpringPos));
         }
         return nbt;
     }

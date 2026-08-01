@@ -50,12 +50,12 @@ public class BoxIterator implements Iterator<BlockPos> {
     }
 
     public static BoxIterator readFromNbt(CompoundTag nbt) {
-        BlockPos min = NBTUtilBC.readBlockPos(nbt.getTag("min"));
-        BlockPos max = NBTUtilBC.readBlockPos(nbt.getTag("max"));
+        BlockPos min = NBTUtilBC.readBlockPos(nbt.get("min"));
+        BlockPos max = NBTUtilBC.readBlockPos(nbt.get("max"));
         boolean invert = nbt.getBoolean("invert");
         boolean repeat = false;
-        AxisOrder order = AxisOrder.readNbt(nbt.getCompoundTag("order"));
-        BlockPos current = NBTUtilBC.readBlockPos(nbt.getTag("current"));
+        AxisOrder order = AxisOrder.readNbt(nbt.getCompound("order"));
+        BlockPos current = NBTUtilBC.readBlockPos(nbt.get("current"));
         if (min == null || max == null || order == null) {
             return null;
         }
@@ -64,13 +64,13 @@ public class BoxIterator implements Iterator<BlockPos> {
 
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("min", NBTUtilBC.writeBlockPos(min));
-        nbt.setTag("max", NBTUtilBC.writeBlockPos(max));
-        nbt.setBoolean("invert", invert);
+        nbt.put("min", NBTUtilBC.writeBlockPos(min));
+        nbt.put("max", NBTUtilBC.writeBlockPos(max));
+        nbt.putBoolean("invert", invert);
         // repeat
-        nbt.setTag("order", order.writeNBT());
+        nbt.put("order", order.writeNBT());
         if (current != null) {
-            nbt.setTag("current", NBTUtilBC.writeBlockPos(current));
+            nbt.put("current", NBTUtilBC.writeBlockPos(current));
         }
         return nbt;
     }

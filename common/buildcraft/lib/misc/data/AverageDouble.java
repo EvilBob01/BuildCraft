@@ -59,20 +59,20 @@ public class AverageDouble implements INBTSerializable<CompoundTag> {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setInteger("pos", pos);
-        nbt.setInteger("precise", precise);
-        nbt.setDouble("averageRaw", averageRaw);
-        nbt.setDouble("tickValue", tickValue);
-        nbt.setTag("data", NBTUtilBC.writeDoubleArray(data));
+        nbt.putInt("pos", pos);
+        nbt.putInt("precise", precise);
+        nbt.putDouble("averageRaw", averageRaw);
+        nbt.putDouble("tickValue", tickValue);
+        nbt.put("data", NBTUtilBC.writeDoubleArray(data));
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        precise = MathUtil.clamp(nbt.getInteger("precise"), 1, Short.MAX_VALUE);
-        pos = MathUtil.clamp(nbt.getInteger("pos"), 0, precise);
+        precise = MathUtil.clamp(nbt.getInt("precise"), 1, Short.MAX_VALUE);
+        pos = MathUtil.clamp(nbt.getInt("pos"), 0, precise);
         averageRaw = nbt.getDouble("averageRaw");
         tickValue = nbt.getDouble("tickValue");
-        data = NBTUtilBC.readDoubleArray(nbt.getTag("data"), precise);
+        data = NBTUtilBC.readDoubleArray(nbt.get("data"), precise);
     }
 }

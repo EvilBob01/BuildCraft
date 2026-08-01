@@ -41,7 +41,7 @@ public interface IItemBuildCraft {
     }
 
     default void addVariant(TIntObjectHashMap<ModelResourceLocation> variants, int meta, String suffix) {
-        String tag = TagManager.getTag(id(), EnumTagType.MODEL_LOCATION);
+        String tag = TagManager.get(id(), EnumTagType.MODEL_LOCATION);
         variants.put(meta, new ModelResourceLocation(tag + suffix, "inventory"));
     }
 

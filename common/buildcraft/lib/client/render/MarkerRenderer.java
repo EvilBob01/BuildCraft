@@ -19,7 +19,7 @@ public enum MarkerRenderer implements IDetachedRenderer {
     @Override
     public void render(Player player, float partialTicks) {
         for (MarkerCache<? extends MarkerSubCache<?>> cache : MarkerCache.CACHES) {
-            for (MarkerConnection<?> connection : cache.getSubCache(player.world).getConnections()) {
+            for (MarkerConnection<?> connection : cache.getSubCache(player.level()).getConnections()) {
                 connection.renderInWorld();
             }
         }

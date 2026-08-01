@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -12,45 +12,43 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.core.HolderLookup;
 
 import buildcraft.api.core.BCLog;
 
 import buildcraft.lib.misc.NBTUtilBC;
 
-public abstract class MarkerSavedData<S extends MarkerSubCache<C>, C extends MarkerConnection<C>> extends WorldSavedData {
+public abstract class MarkerSavedData<S extends MarkerSubCache<C>, C extends MarkerConnection<C>> extends SavedData {
     protected static final boolean DEBUG_FULL = MarkerSubCache.DEBUG_FULL;
 
     protected final List<BlockPos> markerPositions = new ArrayList<>();
     protected final List<List<BlockPos>> markerConnections = new ArrayList<>();
     private S subCache;
 
-    public MarkerSavedData(String name) {
-        super(name);
-    }
+    public MarkerSavedData() {}
 
-    @Override
-    public void readFromNBT(CompoundTag nbt) {
+    protected void loadFromNBT(CompoundTag nbt) {
         markerPositions.clear();
         markerConnections.clear();
 
-        ListTag positionList = (ListTag) nbt.getTag("positions");
-        for (int i = 0; i < positionList.tagCount(); i++) {
+        ListTag positionList = (ListTag) nbt.get("positions");
+        for (int i = 0; i < positionList.size(); i++) {
             markerPositions.add(NBTUtilBC.readBlockPos(positionList.get(i)));
         }
 
-        ListTag connectionList = (ListTag) nbt.getTag("connections");
-        for (int i = 0; i < connectionList.tagCount(); i++) {
+        ListTag connectionList = (ListTag) nbt.get("connections");
+        for (int i = 0; i < connectionList.size(); i++) {
             positionList = (ListTag) connectionList.get(i);
             List<BlockPos> inner = new ArrayList<>();
             markerConnections.add(inner);
-            for (int j = 0; j < positionList.tagCount(); j++) {
+            for (int j = 0; j < positionList.size(); j++) {
                 inner.add(NBTUtilBC.readBlockPos(positionList.get(j)));
             }
         }
 
         if (DEBUG_FULL) {
-            BCLog.logger.info("[lib.marker.full] Reading from NBT (" + mapName + ")");
+            BCLog.logger.info("[lib.marker.full] Reading from NBT (" + getClass().getSimpleName() + ")");
             BCLog.logger.info("[lib.marker.full]  - Positions:");
             for (BlockPos pos : markerPositions) {
                 BCLog.logger.info("[lib.marker.full]   - " + pos);
@@ -66,7 +64,7 @@ public abstract class MarkerSavedData<S extends MarkerSubCache<C>, C extends Mar
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
         markerPositions.clear();
         markerConnections.clear();
 
@@ -79,7 +77,7 @@ public abstract class MarkerSavedData<S extends MarkerSubCache<C>, C extends Mar
         for (BlockPos p : markerPositions) {
             positionList.appendTag(NBTUtilBC.writeBlockPos(p));
         }
-        nbt.setTag("positions", positionList);
+        nbt.put("positions", positionList);
 
         ListTag connectionList = new ListTag();
         for (List<BlockPos> connection : markerConnections) {
@@ -89,10 +87,10 @@ public abstract class MarkerSavedData<S extends MarkerSubCache<C>, C extends Mar
             }
             connectionList.appendTag(inner);
         }
-        nbt.setTag("connections", connectionList);
+        nbt.put("connections", connectionList);
 
         if (DEBUG_FULL) {
-            BCLog.logger.info("[lib.marker.full] Writing to NBT (" + mapName + ")");
+            BCLog.logger.info("[lib.marker.full] Writing to NBT (" + getClass().getSimpleName() + ")");
             BCLog.logger.info("[lib.marker.full]  - Positions:");
             for (BlockPos pos : markerPositions) {
                 BCLog.logger.info("[lib.marker.full]   - " + pos);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -18,7 +18,7 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.lists.ListMatchHandler;
@@ -175,8 +175,8 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
     }
 
     private boolean isCarryingNonEmptyList() {
-        ItemStack stack = mc.player.inventory.getItemStack();
-        return !stack.isEmpty() && stack.getItem() instanceof ItemList_BC8 && stack.getTagCompound() != null;
+        ItemStack stack = mc.player.containerMenu.getCarried();
+        return !stack.isEmpty() && stack.getItem() instanceof ItemList_BC8 && stack.getTag() != null;
     }
 
     private boolean hasListEquipped() {

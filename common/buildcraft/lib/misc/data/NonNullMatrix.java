@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -10,7 +10,7 @@ import java.util.AbstractList;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 /** Defines a non-null 2 dimensional matrix, where the width and height are known at creation time. Note that this
  * matrix cannot be resized. */

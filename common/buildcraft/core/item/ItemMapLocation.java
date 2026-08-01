@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -73,7 +73,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         stack = StackUtil.asNonNull(stack);
         CompoundTag cpt = NBTUtilBC.getItemData(stack);
 
-        if (cpt.hasKey("name")) {
+        if (cpt.contains("name")) {
             String name = cpt.getString("name");
             if (name.length() > 0) {
                 strings.add(name);
@@ -83,10 +83,10 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         MapLocationType type = MapLocationType.getFromStack(stack);
         switch (type) {
             case SPOT: {
-                if (cpt.hasKey("x") && cpt.hasKey("y") && cpt.hasKey("z") && cpt.hasKey("side")) {
-                    int x = cpt.getInteger("x");
-                    int y = cpt.getInteger("y");
-                    int z = cpt.getInteger("z");
+                if (cpt.contains("x") && cpt.contains("y") && cpt.contains("z") && cpt.contains("side")) {
+                    int x = cpt.getInt("x");
+                    int y = cpt.getInt("y");
+                    int z = cpt.getInt("z");
                     Direction side = Direction.VALUES[cpt.getByte("side")];
 
                     strings.add(LocaleUtil.localize("{" + x + ", " + y + ", " + z + ", " + side + "}"));
@@ -94,14 +94,14 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                 break;
             }
             case AREA: {
-                if (cpt.hasKey("xMin") && cpt.hasKey("yMin") && cpt.hasKey("zMin") && cpt.hasKey("xMax")
-                    && cpt.hasKey("yMax") && cpt.hasKey("zMax")) {
-                    int x = cpt.getInteger("xMin");
-                    int y = cpt.getInteger("yMin");
-                    int z = cpt.getInteger("zMin");
-                    int xLength = cpt.getInteger("xMax") - x + 1;
-                    int yLength = cpt.getInteger("yMax") - y + 1;
-                    int zLength = cpt.getInteger("zMax") - z + 1;
+                if (cpt.contains("xMin") && cpt.contains("yMin") && cpt.contains("zMin") && cpt.contains("xMax")
+                    && cpt.contains("yMax") && cpt.contains("zMax")) {
+                    int x = cpt.getInt("xMin");
+                    int y = cpt.getInt("yMin");
+                    int z = cpt.getInt("zMin");
+                    int xLength = cpt.getInt("xMax") - x + 1;
+                    int yLength = cpt.getInt("yMax") - y + 1;
+                    int zLength = cpt.getInt("zMax") - z + 1;
 
                     strings.add(LocaleUtil.localize(
                         "{" + x + ", " + y + ", " + z + "} + {" + xLength + " x " + yLength + " x " + zLength + "}"));
@@ -110,14 +110,14 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             }
             case PATH:
             case PATH_REPEATING: {
-                if (cpt.hasKey("path")) {
-                    ListTag pathNBT = (ListTag) cpt.getTag("path");
+                if (cpt.contains("path")) {
+                    ListTag pathNBT = (ListTag) cpt.get("path");
 
-                    if (pathNBT.tagCount() > 0) {
+                    if (pathNBT.size() > 0) {
                         BlockPos first = NBTUtilBC.readBlockPos(pathNBT.get(0));
                         if (first != null) {
                             strings.add("{"+
-                                StringUtilBC.blockPosToString(first) + "}, (+" + (pathNBT.tagCount() - 1) + " elements)");
+                                StringUtilBC.blockPosToString(first) + "}, (+" + (pathNBT.size() - 1) + " elements)");
                         }
                     }
                 }
@@ -134,7 +134,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (world.isClientSide) {
             return new ActionResult<>(InteractionResult.PASS, stack);
         }
@@ -166,7 +166,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             return InteractionResult.PASS;
         }
 
-        ItemStack stack = StackUtil.asNonNull(player.getHeldItem(hand));
+        ItemStack stack = StackUtil.asNonNull(player.getItemInHand(hand));
         if (MapLocationType.getFromStack(stack) != MapLocationType.CLEAN) {
             return InteractionResult.FAIL;
         }
@@ -197,26 +197,26 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                 pathNBT.appendTag(NBTUtilBC.writeBlockPos(posInPath));
             }
 
-            cpt.setTag("path", pathNBT);
+            cpt.put("path", pathNBT);
         } else if (tile instanceof IAreaProvider) {
             MapLocationType.AREA.setToStack(modified);
 
             IAreaProvider areaTile = (IAreaProvider) tile;
 
-            cpt.setInteger("xMin", areaTile.min().getX());
-            cpt.setInteger("yMin", areaTile.min().getY());
-            cpt.setInteger("zMin", areaTile.min().getZ());
-            cpt.setInteger("xMax", areaTile.max().getX());
-            cpt.setInteger("yMax", areaTile.max().getY());
-            cpt.setInteger("zMax", areaTile.max().getZ());
+            cpt.putInt("xMin", areaTile.min().getX());
+            cpt.putInt("yMin", areaTile.min().getY());
+            cpt.putInt("zMin", areaTile.min().getZ());
+            cpt.putInt("xMax", areaTile.max().getX());
+            cpt.putInt("yMax", areaTile.max().getY());
+            cpt.putInt("zMax", areaTile.max().getZ());
 
         } else {
             MapLocationType.SPOT.setToStack(modified);
 
-            cpt.setByte("side", (byte) side.getIndex());
-            cpt.setInteger("x", pos.getX());
-            cpt.setInteger("y", pos.getY());
-            cpt.setInteger("z", pos.getZ());
+            cpt.putByte("side", (byte) side.getIndex());
+            cpt.putInt("x", pos.getX());
+            cpt.putInt("y", pos.getY());
+            cpt.putInt("z", pos.getZ());
         }
 
         return InteractionResult.SUCCESS;
@@ -224,14 +224,14 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
 
     public static IBox getAreaBox(@Nonnull ItemStack item) {
         CompoundTag cpt = NBTUtilBC.getItemData(item);
-        int xMin = cpt.getInteger("xMin");
-        int yMin = cpt.getInteger("yMin");
-        int zMin = cpt.getInteger("zMin");
+        int xMin = cpt.getInt("xMin");
+        int yMin = cpt.getInt("yMin");
+        int zMin = cpt.getInt("zMin");
         BlockPos min = new BlockPos(xMin, yMin, zMin);
 
-        int xMax = cpt.getInteger("xMax");
-        int yMax = cpt.getInteger("yMax");
-        int zMax = cpt.getInteger("zMax");
+        int xMax = cpt.getInt("xMax");
+        int yMax = cpt.getInt("yMax");
+        int zMax = cpt.getInt("zMax");
         BlockPos max = new BlockPos(xMax, yMax, zMax);
 
         return new Box(min, max);
@@ -243,9 +243,9 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
 
         switch (type) {
             case SPOT: {
-                int x = cpt.getInteger("x");
-                int y = cpt.getInteger("y");
-                int z = cpt.getInteger("z");
+                int x = cpt.getInt("x");
+                int y = cpt.getInt("y");
+                int z = cpt.getInt("z");
 
                 BlockPos pos = new BlockPos(x, y, z);
 
@@ -297,7 +297,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         MapLocationType type = MapLocationType.getFromStack(item);
 
         if (type == MapLocationType.SPOT) {
-            return new BlockPos(cpt.getInteger("x"), cpt.getInteger("y"), cpt.getInteger("z"));
+            return new BlockPos(cpt.getInt("x"), cpt.getInt("y"), cpt.getInt("z"));
         } else {
             return null;
         }
@@ -334,8 +334,8 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             case PATH:
             case PATH_REPEATING: {
                 List<BlockPos> indexList = new ArrayList<>();
-                ListTag pathNBT = (ListTag) cpt.getTag("path");
-                for (int i = 0; i < pathNBT.tagCount(); i++) {
+                ListTag pathNBT = (ListTag) cpt.get("path");
+                for (int i = 0; i < pathNBT.size(); i++) {
                     BlockPos pos = NBTUtilBC.readBlockPos(pathNBT.get(i));
                     if (pos != null) {
                         indexList.add(pos);
@@ -345,7 +345,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             }
             case SPOT: {
                 List<BlockPos> indexList = new ArrayList<>();
-                indexList.add(new BlockPos(cpt.getInteger("x"), cpt.getInteger("y"), cpt.getInteger("z")));
+                indexList.add(new BlockPos(cpt.getInt("x"), cpt.getInt("y"), cpt.getInt("z")));
                 return indexList;
             }
             default: {
@@ -368,7 +368,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
     @Override
     public boolean setName(@Nonnull ItemStack item, String name) {
         CompoundTag cpt = NBTUtilBC.getItemData(item);
-        cpt.setString("name", name);
+        cpt.putString("name", name);
         return true;
     }
 }

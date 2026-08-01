@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -36,8 +36,8 @@ public class AdvDebuggerLaser implements DetachedRenderer.IDetachedRenderer {
     private final Direction face;
 
     public AdvDebuggerLaser(TileLaser tile) {
-        pos = tile.getPos();
-        BlockState state = tile.getWorld().getBlockState(pos);
+        pos = tile.getBlockPos();
+        BlockState state = tile.getLevel().getBlockState(pos);
         face = state.getBlock() == BCSiliconBlocks.laser
             ? state.getValue(BuildCraftProperties.BLOCK_FACING_6)
             : null;
@@ -51,7 +51,7 @@ public class AdvDebuggerLaser implements DetachedRenderer.IDetachedRenderer {
         }
         BufferBuilder bb = Tessellator.getInstance().getBuffer();
         bb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        VolumeUtil.iterateCone(player.world, pos, face, 6, true, (world, start, p, visible) -> {
+        VolumeUtil.iterateCone(player.level(), pos, face, 6, true, (world, start, p, visible) -> {
             int colour = visible ? COLOUR_VISIBLE : COLOUR_NOT_VISIBLE;
             DebugRenderHelper.renderSmallCuboid(bb, p, colour);
         });

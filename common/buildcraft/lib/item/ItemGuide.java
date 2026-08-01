@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,7 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -39,7 +39,7 @@ public class ItemGuide extends ItemBC_Neptune {
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         AdvancementUtil.unlockAdvancement(player, ADVANCEMENT);
         player.openGui(BCLib.INSTANCE, 0, world, hand == InteractionHand.MAIN_HAND ? 0 : 1, 0, 0);
-        return new ActionResult<>(InteractionResult.SUCCESS, player.getHeldItem(hand));
+        return new ActionResult<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 
     @Override
@@ -64,8 +64,8 @@ public class ItemGuide extends ItemBC_Neptune {
     }
 
     public static String getBookName(ItemStack stack) {
-        CompoundTag nbt = stack.getTagCompound();
-        if (nbt == null || !nbt.hasKey(TAG_BOOK_NAME, Tag.TAG_STRING)) {
+        CompoundTag nbt = stack.getTag();
+        if (nbt == null || !nbt.contains(TAG_BOOK_NAME, Tag.TAG_STRING)) {
             // So that existing guide books continue to work
             return ItemGuide.DEFAULT_BOOK;
         }
@@ -74,6 +74,6 @@ public class ItemGuide extends ItemBC_Neptune {
 
     public static void setBookName(ItemStack stack, String book) {
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
-        nbt.setString(TAG_BOOK_NAME, book);
+        nbt.putString(TAG_BOOK_NAME, book);
     }
 }

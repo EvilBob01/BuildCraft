@@ -1,4 +1,4 @@
-package buildcraft.silicon.plug;
+﻿package buildcraft.silicon.plug;
 
 import java.util.Arrays;
 
@@ -42,12 +42,12 @@ public class FacadeInstance implements IFacade {
     }
 
     public static FacadeInstance readFromNbt(CompoundTag nbt) {
-        ListTag list = nbt.getTagList("states", Tag.TAG_COMPOUND);
+        ListTag list = nbt.getList("states", Tag.TAG_COMPOUND);
         if (list.hasNoTags()) {
             return FacadeInstance.createSingle(FacadeStateManager.defaultState, false);
         }
-        FacadePhasedState[] states = new FacadePhasedState[list.tagCount()];
-        for (int i = 0; i < list.tagCount(); i++) {
+        FacadePhasedState[] states = new FacadePhasedState[list.size()];
+        for (int i = 0; i < list.size(); i++) {
             states[i] = FacadePhasedState.readFromNbt(list.getCompoundTagAt(i));
         }
         boolean hollow = nbt.getBoolean("isHollow");
@@ -60,8 +60,8 @@ public class FacadeInstance implements IFacade {
         for (FacadePhasedState state : phasedStates) {
             list.appendTag(state.writeToNbt());
         }
-        nbt.setTag("states", list);
-        nbt.setBoolean("isHollow", isHollow);
+        nbt.put("states", list);
+        nbt.putBoolean("isHollow", isHollow);
         return nbt;
     }
 

@@ -6,21 +6,12 @@
 
 package buildcraft.factory;
 
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
-import buildcraft.factory.client.render.RenderMiningWell;
-import buildcraft.factory.client.render.RenderPump;
 
 public enum BCFactoryEventDist {
     INSTANCE;
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void textureStitchPost(TextureStitchEvent.Post event) {
-        RenderPump.textureStitchPost();
-        RenderMiningWell.textureStitchPost();
-    }
+    // TODO (Phase 7 — rendering): textureStitchPost (TextureStitchEvent → NeoForge atlas stitch event)
+    // RenderPump.textureStitchPost() and RenderMiningWell.textureStitchPost() should be called after atlas rebuild.
 }

@@ -92,13 +92,13 @@ public class StatementParameterDirection implements IStatementParameter {
     @Override
     public void writeToNbt(CompoundTag nbt) {
         if (direction != null) {
-            nbt.setByte("direction", (byte) direction.ordinal());
+            nbt.putByte("direction", (byte) direction.ordinal());
         }
     }
 
 //    @Override
     public void readFromNBT(CompoundTag nbt) {
-        if (nbt.hasKey("direction")) {
+        if (nbt.contains("direction")) {
             direction = Direction.VALUES[nbt.getByte("direction")];
         } else {
             direction = null;

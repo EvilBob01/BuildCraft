@@ -51,8 +51,8 @@ public class AxisOrder {
 
     public CompoundTag writeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setString("order", order.name());
-        nbt.setString("inversion", inversion.name());
+        nbt.putString("order", order.name());
+        nbt.putString("inversion", inversion.name());
         return nbt;
     }
 

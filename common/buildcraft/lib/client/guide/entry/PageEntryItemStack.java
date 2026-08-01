@@ -1,4 +1,4 @@
-package buildcraft.lib.client.guide.entry;
+﻿package buildcraft.lib.client.guide.entry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.neoforge.registries.ForgeRegistries;
@@ -146,7 +146,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                 stack = MarkdownPageLoader.loadComplexItemStack(str.substring(1, str.length() - 1));
                 stack.setCount(1);
                 matchMeta = true;
-                matchNbt = stack.hasTagCompound();
+                matchNbt = stack.hasTag();
             } else {
                 if (str.startsWith("(") && str.endsWith(")")) {
                     str = str.substring(1, str.length() - 1);

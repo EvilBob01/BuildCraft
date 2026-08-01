@@ -78,11 +78,11 @@ public class ContainerFiller extends ContainerBCTile<TileFiller> implements ICon
     public void valuesChanged() {
         if (tile.addon != null) {
             tile.addon.updateBuildingInfo();
-            if (!player.world.isClientSide) {
+            if (!player.level().isClientSide) {
                 WorldSavedDataVolumeBoxes.get(getPlayer().world).setChanged();
             }
         }
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             tile.onStatementChange();
         }
     }

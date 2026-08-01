@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -87,7 +87,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
     }
 
     public static FacadeBlockStateInfo getInfoForBlock(Block block) {
-        return getInfoForState(block.getDefaultState());
+        return getInfoForState(block.defaultBlockState());
     }
 
     private static FacadeBlockStateInfo getInfoForState(BlockState state) {
@@ -118,8 +118,8 @@ public enum FacadeStateManager implements IFacadeRegistry {
             }
             CompoundTag nbt = message.getNBTValue();
             String regName = nbt.getString(FacadeAPI.NBT_CUSTOM_BLOCK_REG_KEY);
-            int meta = nbt.getInteger(FacadeAPI.NBT_CUSTOM_BLOCK_META);
-            ItemStack stack = new ItemStack(nbt.getCompoundTag(FacadeAPI.NBT_CUSTOM_ITEM_STACK));
+            int meta = nbt.getInt(FacadeAPI.NBT_CUSTOM_BLOCK_META);
+            ItemStack stack = new ItemStack(nbt.getCompound(FacadeAPI.NBT_CUSTOM_ITEM_STACK));
             if (regName.isEmpty()) {
                 BCLog.logger.warn("[facade.imc] Received an invalid IMC message from " + message.getSender() + " - "
                     + id + " should have a registry name for the block, stored as "
@@ -203,7 +203,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
     }
 
     public static void init() {
-        defaultState = new FacadeBlockStateInfo(Blocks.AIR.getDefaultState(), StackUtil.EMPTY, ImmutableSet.of());
+        defaultState = new FacadeBlockStateInfo(Blocks.AIR.defaultBlockState(), StackUtil.EMPTY, ImmutableSet.of());
         if (FacadeAPI.facadeItem == null) {
             previewState = defaultState;
             return;
@@ -213,7 +213,7 @@ public enum FacadeStateManager implements IFacadeRegistry {
             scanBlock(block);
         }
 
-        previewState = validFacadeStates.get(Blocks.BRICK_BLOCK.getDefaultState());
+        previewState = validFacadeStates.get(Blocks.BRICK_BLOCK.defaultBlockState());
         FacadeSwapRecipe.genRecipes();
     }
 

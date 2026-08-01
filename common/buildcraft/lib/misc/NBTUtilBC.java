@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -54,17 +54,17 @@ public final class NBTUtilBC {
                 ((CompoundTag) destination).getKeySet(),
                 ((CompoundTag) source).getKeySet()
             )) {
-                if (!((CompoundTag) source).hasKey(key)) {
-                    result.setTag(key, ((CompoundTag) destination).getTag(key));
-                } else if (((CompoundTag) source).getTag(key) != NBT_NULL) {
-                    if (!((CompoundTag) destination).hasKey(key)) {
-                        result.setTag(key, ((CompoundTag) source).getTag(key));
+                if (!((CompoundTag) source).contains(key)) {
+                    result.put(key, ((CompoundTag) destination).get(key));
+                } else if (((CompoundTag) source).get(key) != NBT_NULL) {
+                    if (!((CompoundTag) destination).contains(key)) {
+                        result.put(key, ((CompoundTag) source).get(key));
                     } else {
-                        result.setTag(
+                        result.put(
                             key,
                             merge(
-                                ((CompoundTag) destination).getTag(key),
-                                ((CompoundTag) source).getTag(key)
+                                ((CompoundTag) destination).get(key),
+                                ((CompoundTag) source).get(key)
                             )
                         );
                     }
@@ -79,7 +79,7 @@ public final class NBTUtilBC {
         if (stack.isEmpty()) {
             return new CompoundTag();
         }
-        CompoundTag nbt = stack.getTagCompound();
+        CompoundTag nbt = stack.getTag();
         if (nbt == null) {
             nbt = new CompoundTag();
             stack.setTagCompound(nbt);
@@ -100,9 +100,9 @@ public final class NBTUtilBC {
             throw new NullPointerException("Cannot return a null NBTTag -- pos was null!");
         }
         CompoundTag nbt = new CompoundTag();
-        nbt.setInteger("x", pos.getX());
-        nbt.setInteger("y", pos.getY());
-        nbt.setInteger("z", pos.getZ());
+        nbt.putInt("x", pos.getX());
+        nbt.putInt("y", pos.getY());
+        nbt.putInt("z", pos.getZ());
         return nbt;
     }
 
@@ -122,18 +122,18 @@ public final class NBTUtilBC {
             case Tag.TAG_COMPOUND: {
                 CompoundTag nbt = (CompoundTag) base;
                 BlockPos pos = null;
-                if (nbt.hasKey("i")) {
-                    int i = nbt.getInteger("i");
-                    int j = nbt.getInteger("j");
-                    int k = nbt.getInteger("k");
+                if (nbt.contains("i")) {
+                    int i = nbt.getInt("i");
+                    int j = nbt.getInt("j");
+                    int k = nbt.getInt("k");
                     pos = new BlockPos(i, j, k);
-                } else if (nbt.hasKey("x")) {
-                    int x = nbt.getInteger("x");
-                    int y = nbt.getInteger("y");
-                    int z = nbt.getInteger("z");
+                } else if (nbt.contains("x")) {
+                    int x = nbt.getInt("x");
+                    int y = nbt.getInt("y");
+                    int z = nbt.getInt("z");
                     pos = new BlockPos(x, y, z);
-                } else if (nbt.hasKey("pos")) {
-                    return readBlockPos(nbt.getTag("pos"));
+                } else if (nbt.contains("pos")) {
+                    return readBlockPos(nbt.get("pos"));
                 } else {
                     BCLog.logger.warn("Attempted to read a block positions from a compound tag without the correct sub-tags! (" + base + ")", new Throwable());
                 }
@@ -213,7 +213,7 @@ public final class NBTUtilBC {
         double[] arr = new double[intendedLength];
         if (tag instanceof ListTag) {
             ListTag list = (ListTag) tag;
-            for (int i = 0; i < list.tagCount() && i < intendedLength; i++) {
+            for (int i = 0; i < list.size() && i < intendedLength; i++) {
                 arr[i] = list.getDoubleAt(i);
             }
         }
@@ -277,7 +277,7 @@ public final class NBTUtilBC {
         if (!(list instanceof ListTag)) {
             throw new IllegalArgumentException();
         }
-        return IntStream.range(0, ((ListTag) list).tagCount()).mapToObj(((ListTag) list)::getCompoundTagAt);
+        return IntStream.range(0, ((ListTag) list).size()).mapToObj(((ListTag) list)::getCompoundTagAt);
     }
 
     public static ListTag writeStringList(Stream<String> stream) {
@@ -293,6 +293,6 @@ public final class NBTUtilBC {
         if (!(list instanceof ListTag)) {
             throw new IllegalArgumentException();
         }
-        return IntStream.range(0, ((ListTag) list).tagCount()).mapToObj(((ListTag) list)::getStringTagAt);
+        return IntStream.range(0, ((ListTag) list).size()).mapToObj(((ListTag) list)::getStringTagAt);
     }
 }

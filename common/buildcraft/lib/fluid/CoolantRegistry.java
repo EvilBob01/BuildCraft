@@ -58,7 +58,7 @@ public enum CoolantRegistry implements ICoolantManager {
 
     @Override
     public ICoolant getCoolant(FluidStack fluid) {
-        if (fluid == null || fluid.amount == 0) {
+        if (fluid == null || fluid.getAmount() == 0) {
             return null;
         }
         for (ICoolant coolant : coolants) {
@@ -71,7 +71,7 @@ public enum CoolantRegistry implements ICoolantManager {
 
     @Override
     public float getDegreesPerMb(FluidStack fluid, float heat) {
-        if (fluid == null || fluid.amount == 0) {
+        if (fluid == null || fluid.getAmount() == 0) {
             return 0;
         }
         for (ICoolant coolant : coolants) {
@@ -132,7 +132,7 @@ public enum CoolantRegistry implements ICoolantManager {
             if (stack == null || !stack.isItemEqual(solid)) {
                 return null;
             }
-            int liquidAmount = (int) (stack.getCount() * fluid.amount * multiplier / solid.getCount());
+            int liquidAmount = (int) (stack.getCount() * fluid.getAmount() * multiplier / solid.getCount());
             return new FluidStack(fluid.getFluid(), liquidAmount);
         }
     }

@@ -93,7 +93,7 @@ public class DeltaManager {
     public void readFromNBT(CompoundTag nbt) {
         for (List<DeltaInt> innerList : deltas.values()) {
             for (DeltaInt delta : innerList) {
-                delta.loadAdditional(nbt.getCompoundTag(delta.name));
+                delta.loadAdditional(nbt.getCompound(delta.name));
             }
         }
     }
@@ -102,7 +102,7 @@ public class DeltaManager {
         CompoundTag nbt = new CompoundTag();
         for (List<DeltaInt> innerList : deltas.values()) {
             for (DeltaInt delta : innerList) {
-                nbt.setTag(delta.name, delta.saveAdditional());
+                nbt.put(delta.name, delta.saveAdditional());
             }
         }
         return nbt;

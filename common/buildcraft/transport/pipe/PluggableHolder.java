@@ -50,8 +50,8 @@ public final class PluggableHolder {
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
         if (pluggable != null) {
-            nbt.setString("id", pluggable.definition.identifier.toString());
-            nbt.setTag("data", pluggable.writeToNbt());
+            nbt.putString("id", pluggable.definition.identifier.toString());
+            nbt.put("data", pluggable.writeToNbt());
         }
         return nbt;
     }
@@ -62,7 +62,7 @@ public final class PluggableHolder {
             return;
         }
         String id = nbt.getString("id");
-        CompoundTag data = nbt.getCompoundTag("data");
+        CompoundTag data = nbt.getCompound("data");
         ResourceLocation identifier = new ResourceLocation(id);
         PluggableDefinition def = PipeApi.pluggableRegistry.getDefinition(identifier);
         if (def == null) {

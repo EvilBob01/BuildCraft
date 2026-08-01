@@ -135,29 +135,29 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (pipe != null) {
-            nbt.setTag("pipe", pipe.writeToNbt());
+            nbt.put("pipe", pipe.writeToNbt());
         }
         CompoundTag plugs = new CompoundTag();
         for (Direction face : Direction.VALUES) {
             CompoundTag plugTag = pluggables.get(face).writeToNbt();
             if (!plugTag.hasNoTags()) {
-                plugs.setTag(face.getName(), plugTag);
+                plugs.put(face.getName(), plugTag);
             }
         }
         if (!plugs.hasNoTags()) {
-            nbt.setTag("plugs", plugs);
+            nbt.put("plugs", plugs);
         }
-        nbt.setTag("wireManager", wireManager.writeToNbt());
-        nbt.setIntArray("redstone", redstoneValues);
+        nbt.put("wireManager", wireManager.writeToNbt());
+        nbt.putIntArray("redstone", redstoneValues);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        if (nbt.hasKey("pipe")) {
+        if (nbt.contains("pipe")) {
             try {
-                pipe = new Pipe(this, nbt.getCompoundTag("pipe"));
+                pipe = new Pipe(this, nbt.getCompound("pipe"));
                 eventBus.registerHandler(pipe.behaviour);
                 eventBus.registerHandler(pipe.flow);
                 if (pipe.flow instanceof IFlowItems && BCModules.SILICON.isLoaded()) {
@@ -169,12 +169,12 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
                 unknownData = nbt.copy();
             }
         }
-        CompoundTag plugs = nbt.getCompoundTag("plugs");
+        CompoundTag plugs = nbt.getCompound("plugs");
         for (Direction face : Direction.VALUES) {
-            pluggables.get(face).readFromNbt(plugs.getCompoundTag(face.getName()));
+            pluggables.get(face).readFromNbt(plugs.getCompound(face.getName()));
         }
-        wireManager.readFromNbt(nbt.getCompoundTag("wireManager"));
-        if (nbt.hasKey("redstone")) {
+        wireManager.readFromNbt(nbt.getCompound("wireManager"));
+        if (nbt.contains("redstone")) {
 
             int[] temp = nbt.getIntArray("redstone");
             if (temp.length == 6) {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -13,7 +13,7 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.util.ReportedException;
 
 import net.minecraft.nbt.Tag;
@@ -87,17 +87,17 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
             stack.saveAdditional(itemNbt);
             list.appendTag(itemNbt);
         }
-        nbt.setTag("items", list);
+        nbt.put("items", list);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        ListTag list = nbt.getTagList("items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.tagCount() && i < getSlots(); i++) {
+        ListTag list = nbt.getList("items", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size() && i < getSlots(); i++) {
             setStackInternal(i, new ItemStack(list.getCompoundTagAt(i)));
         }
-        for (int i = list.tagCount(); i < getSlots(); i++) {
+        for (int i = list.size(); i < getSlots(); i++) {
             setStackInternal(i, StackUtil.EMPTY);
         }
     }

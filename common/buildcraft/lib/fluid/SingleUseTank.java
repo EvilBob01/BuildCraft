@@ -12,9 +12,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import net.minecraft.nbt.Tag;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class SingleUseTank extends Tank {
 
@@ -27,18 +26,18 @@ public class SingleUseTank extends Tank {
     }
 
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
+    public int fill(FluidStack resource, IFluidHandler.FluidAction action) {
         if (resource == null) {
             return 0;
         }
 
-        if (doFill && acceptedFluid == null) {
+        if (action.execute() && acceptedFluid == null) {
             acceptedFluid = resource.copy();
-            acceptedFluid.amount = 1;
+            acceptedFluid.setAmount(1);
         }
 
         if (acceptedFluid == null || acceptedFluid.isFluidEqual(resource)) {
-            return super.fill(resource, doFill);
+            return super.fill(resource, action);
         }
 
         return 0;
@@ -72,17 +71,19 @@ public class SingleUseTank extends Tank {
     public void writeTankToNBT(CompoundTag nbt) {
         super.writeTankToNBT(nbt);
         if (acceptedFluid != null) {
-            nbt.setTag(NBT_ACCEPTED_FLUID, acceptedFluid.saveAdditional(new CompoundTag()));
+            nbt.put(NBT_ACCEPTED_FLUID, acceptedFluid.saveAdditional(new CompoundTag()));
         }
     }
 
     @Override
     public void readTankFromNBT(CompoundTag nbt) {
         super.readTankFromNBT(nbt);
-        if (nbt.hasKey(NBT_ACCEPTED_FLUID, Tag.TAG_STRING)) {
-            setAcceptedFluid(FluidRegistry.getFluid(nbt.getString(NBT_ACCEPTED_FLUID)));
+        if (nbt.contains(NBT_ACCEPTED_FLUID, Tag.TAG_STRING)) {
+            // TODO: FluidRegistry removed in NeoForge 1.21.1 — need to look up fluid by ResourceLocation
+            setAcceptedFluid((FluidStack) null);
         } else {
-            acceptedFluid = FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag(NBT_ACCEPTED_FLUID));
+            // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
+            acceptedFluid = FluidStack.loadFluidStackFromNBT(nbt.getCompound(NBT_ACCEPTED_FLUID));
         }
     }
 }

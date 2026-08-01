@@ -337,44 +337,44 @@ public class TileFiller extends TileBC_Neptune
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("battery", battery.serializeNBT());
-        nbt.setBoolean("canExcavate", canExcavate);
-        nbt.setBoolean("inverted", inverted);
-        nbt.setBoolean("finished", finished);
-        nbt.setByte("lockedTicks", lockedTicks);
-        nbt.setTag("mode", NBTUtilBC.writeEnum(mode));
-        nbt.setTag("box", box.saveAdditional());
+        nbt.put("battery", battery.serializeNBT());
+        nbt.putBoolean("canExcavate", canExcavate);
+        nbt.putBoolean("inverted", inverted);
+        nbt.putBoolean("finished", finished);
+        nbt.putByte("lockedTicks", lockedTicks);
+        nbt.put("mode", NBTUtilBC.writeEnum(mode));
+        nbt.put("box", box.saveAdditional());
         if (addon != null) {
             nbt.setUniqueId("addonVolumeBoxId", addon.volumeBox.id);
-            nbt.setTag("addonSlot", NBTUtilBC.writeEnum(addon.getSlot()));
+            nbt.put("addonSlot", NBTUtilBC.writeEnum(addon.getSlot()));
         }
-        nbt.setBoolean("markerBox", markerBox);
-        nbt.setTag("patternStatement", patternStatement.writeToNbt());
-        Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.setTag("builder", builder.serializeNBT()));
+        nbt.putBoolean("markerBox", markerBox);
+        nbt.put("patternStatement", patternStatement.writeToNbt());
+        Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.put("builder", builder.serializeNBT()));
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
         canExcavate = nbt.getBoolean("canExcavate");
         inverted = nbt.getBoolean("inverted");
         finished = nbt.getBoolean("finished");
         lockedTicks = nbt.getByte("lockedTicks");
-        mode = Optional.ofNullable(NBTUtilBC.readEnum(nbt.getTag("mode"), Mode.class)).orElse(Mode.ON);
-        box.initialize(nbt.getCompoundTag("box"));
-        if (nbt.hasKey("addonSlot")) {
+        mode = Optional.ofNullable(NBTUtilBC.readEnum(nbt.get("mode"), Mode.class)).orElse(Mode.ON);
+        box.initialize(nbt.getCompound("box"));
+        if (nbt.contains("addonSlot")) {
             addon = (AddonFillerPlanner) WorldSavedDataVolumeBoxes.get(world)
                 .getVolumeBoxFromId(nbt.getUniqueId("addonVolumeBoxId"))
                 .addons
-                .get(NBTUtilBC.readEnum(nbt.getTag("addonSlot"), EnumAddonSlot.class));
+                .get(NBTUtilBC.readEnum(nbt.get("addonSlot"), EnumAddonSlot.class));
         }
         markerBox = nbt.getBoolean("markerBox");
-        patternStatement.readFromNbt(nbt.getCompoundTag("patternStatement"));
+        patternStatement.readFromNbt(nbt.getCompound("patternStatement"));
         updateBuildingInfo();
-        if (nbt.hasKey("builder")) {
-            Optional.ofNullable(getBuilder()).ifPresent(builder -> builder.deserializeNBT(nbt.getCompoundTag("builder")));
+        if (nbt.contains("builder")) {
+            Optional.ofNullable(getBuilder()).ifPresent(builder -> builder.deserializeNBT(nbt.getCompound("builder")));
         }
     }
 

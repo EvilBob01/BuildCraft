@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -556,7 +556,7 @@ public class JsonUtil {
                     context) -> new StringTag(json.getAsJsonPrimitive().getAsString()))
             .registerTypeAdapter(ListTag.class, (JsonSerializer<ListTag>) (src, typeOfSrc, context) -> {
                 JsonArray jsonArray = new JsonArray();
-                for (int i = 0; i < src.tagCount(); i++) {
+                for (int i = 0; i < src.size(); i++) {
                     Tag element = src.get(i);
                     jsonArray.add(context.serialize(element, Tag.class));
                 }
@@ -570,14 +570,14 @@ public class JsonUtil {
             }).registerTypeAdapter(CompoundTag.class, (JsonSerializer<CompoundTag>) (src, typeOfSrc, context) -> {
                 JsonObject jsonObject = new JsonObject();
                 for (String key : src.getKeySet()) {
-                    jsonObject.add(key, context.serialize(src.getTag(key), Tag.class));
+                    jsonObject.add(key, context.serialize(src.get(key), Tag.class));
                 }
                 return jsonObject;
             })
             .registerTypeAdapter(CompoundTag.class, (JsonDeserializer<CompoundTag>) (json, typeOfT, context) -> {
                 CompoundTag nbtTagCompound = new CompoundTag();
                 for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
-                    nbtTagCompound.setTag(entry.getKey(), context.deserialize(entry.getValue(), Tag.class));
+                    nbtTagCompound.put(entry.getKey(), context.deserialize(entry.getValue(), Tag.class));
                 }
                 return nbtTagCompound;
             }).registerTypeAdapter(IntArrayTag.class, (JsonSerializer<IntArrayTag>) (src, typeOfSrc, context) -> {

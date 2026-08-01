@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 SpaceToad and the BuildCraft team
  * 
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -351,30 +351,30 @@ public class TileBuilder extends TileBC_Neptune
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (path != null) {
-            nbt.setTag("path", NBTUtilBC.writeCompoundList(path.stream().map(NBTUtil::createPosTag)));
+            nbt.put("path", NBTUtilBC.writeCompoundList(path.stream().map(NBTUtil::createPosTag)));
         }
-        nbt.setTag("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NBTUtil::createPosTag)));
-        nbt.setBoolean("canExcavate", canExcavate);
-        nbt.setTag("rotation", NBTUtilBC.writeEnum(rotation));
-        Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.setTag("builder", builder.serializeNBT()));
+        nbt.put("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NBTUtil::createPosTag)));
+        nbt.putBoolean("canExcavate", canExcavate);
+        nbt.put("rotation", NBTUtilBC.writeEnum(rotation));
+        Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.put("builder", builder.serializeNBT()));
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        if (nbt.hasKey("path")) {
+        if (nbt.contains("path")) {
             path =
-                NBTUtilBC.readCompoundList(nbt.getTag("path")).map(NBTUtil::getPosFromTag).collect(Collectors.toList());
+                NBTUtilBC.readCompoundList(nbt.get("path")).map(NBTUtil::getPosFromTag).collect(Collectors.toList());
         }
-        basePoses = NBTUtilBC.readCompoundList(nbt.getTag("basePoses")).map(NBTUtil::getPosFromTag)
+        basePoses = NBTUtilBC.readCompoundList(nbt.get("basePoses")).map(NBTUtil::getPosFromTag)
             .collect(Collectors.toList());
         canExcavate = nbt.getBoolean("canExcavate");
-        rotation = NBTUtilBC.readEnum(nbt.getTag("rotation"), Rotation.class);
-        if (nbt.hasKey("builder")) {
+        rotation = NBTUtilBC.readEnum(nbt.get("rotation"), Rotation.class);
+        if (nbt.contains("builder")) {
             updateSnapshot(false);
             Optional.ofNullable(getBuilder())
-                .ifPresent(builder -> builder.deserializeNBT(nbt.getCompoundTag("builder")));
+                .ifPresent(builder -> builder.deserializeNBT(nbt.getCompound("builder")));
         }
     }
 

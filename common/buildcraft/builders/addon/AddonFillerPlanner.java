@@ -87,14 +87,14 @@ public class AddonFillerPlanner extends Addon implements ISingleAddon, IFillerSt
 
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
-        nbt.setTag("patternStatement", patternStatement.writeToNbt());
-        nbt.setBoolean("inverted", inverted);
+        nbt.put("patternStatement", patternStatement.writeToNbt());
+        nbt.putBoolean("inverted", inverted);
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
-        patternStatement.readFromNbt(nbt.getCompoundTag("patternStatement"));
+        patternStatement.readFromNbt(nbt.getCompound("patternStatement"));
         inverted = nbt.getBoolean("inverted");
     }
 

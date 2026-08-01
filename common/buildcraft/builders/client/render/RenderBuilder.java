@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -34,7 +34,7 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
         Minecraft.getInstance().mcProfiler.startSection("bc");
         Minecraft.getInstance().mcProfiler.startSection("builder");
 
-        buffer.setTranslation(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+        buffer.setTranslation(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
         Minecraft.getInstance().mcProfiler.startSection("box");
         Box box = tile.getBox();
@@ -63,7 +63,7 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
         buffer.setTranslation(0, 0, 0);
 
         if (tile.getBuilder() != null) {
-            RenderSnapshotBuilder.render(tile.getBuilder(), tile.getWorld(), tile.getPos(), x, y, z, partialTicks, buffer);
+            RenderSnapshotBuilder.render(tile.getBuilder(), tile.getLevel(), tile.getBlockPos(), x, y, z, partialTicks, buffer);
         }
 
         Minecraft.getInstance().mcProfiler.endSection();

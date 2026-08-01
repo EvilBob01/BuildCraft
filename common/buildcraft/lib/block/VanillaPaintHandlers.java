@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -41,7 +41,7 @@ public class VanillaPaintHandlers {
                 if (to == null) {
                     return InteractionResult.FAIL;
                 }
-                BlockState painted = dyed.getDefaultState().withProperty(colourProp, to);
+                BlockState painted = dyed.defaultBlockState().withProperty(colourProp, to);
                 world.setBlock(pos, painted);
                 return InteractionResult.SUCCESS;
             } else if (state.getBlock() == dyed) {
@@ -49,7 +49,7 @@ public class VanillaPaintHandlers {
                     return InteractionResult.FAIL;
                 }
                 if (to == null) {
-                    state = clear.getDefaultState();
+                    state = clear.defaultBlockState();
                 } else {
                     state = state.withProperty(colourProp, to);
                 }

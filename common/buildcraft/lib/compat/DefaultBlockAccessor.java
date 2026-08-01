@@ -1,4 +1,4 @@
-package buildcraft.lib.compat;
+﻿package buildcraft.lib.compat;
 
 import javax.annotation.Nullable;
 
@@ -45,11 +45,11 @@ public enum DefaultBlockAccessor implements ISoftBlockAccessor {
             if (force || world.isBlockLoaded(pos)) {
                 return world.getBlockState(pos);
             }
-            return Blocks.AIR.getDefaultState();
+            return Blocks.AIR.defaultBlockState();
         } else {
             LevelChunk chunk = ChunkUtil.getChunk(world, pos, force);
             if (chunk == null) {
-                return Blocks.AIR.getDefaultState();
+                return Blocks.AIR.defaultBlockState();
             }
             return chunk.getBlockState(pos);
         }

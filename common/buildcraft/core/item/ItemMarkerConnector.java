@@ -63,7 +63,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                 }
             }
         }
-        return new ActionResult<>(onItemRightClickVolumeBoxes(world, player), player.getHeldItem(hand));
+        return new ActionResult<>(onItemRightClickVolumeBoxes(world, player), player.getItemInHand(hand));
     }
 
     private static <S extends MarkerSubCache<?>> boolean interactCache(S cache, Player player) {

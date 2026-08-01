@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -92,7 +92,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
         }
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+        GlStateManager.translate(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
         final BlockPos min = tile.frameBox.min();
         final BlockPos max = tile.frameBox.max();
@@ -110,7 +110,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 if (tile.drillPos == null) {
                     if (taskBreakBlock.clientPower != 0) {
                         // Don't render a laser before we have any power
-                        Vec3 from = VecUtil.convertCenter(tile.getPos());
+                        Vec3 from = VecUtil.convertCenter(tile.getBlockPos());
                         Vec3 to = VecUtil.convertCenter(pos);
                         LaserData_BC8 laser = new LaserData_BC8(LASER, from, to, 1 / 16.0);
                         LaserRenderer_BC8.renderLaserStatic(laser);
@@ -120,7 +120,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                         taskBreakBlock.prevClientPower +
                             (taskBreakBlock.clientPower - taskBreakBlock.prevClientPower) * (double) partialTicks
                     );
-                    AABB aabb = tile.getWorld().getBlockState(pos).getBoundingBox(tile.getWorld(), pos);
+                    AABB aabb = tile.getLevel().getBlockState(pos).getBoundingBox(tile.getLevel(), pos);
                     double value = (double) power / taskBreakBlock.getTarget();
                     if (value < 0.9) {
                         value = 1 - value / 0.9;
@@ -183,8 +183,8 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                     : -1 /* not possible */;
                 double xProgress = -1;
                 double zProgress = -1;
-                Direction side = tile.getWorld().getBlockState(tile.getPos()).getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
-                BlockPos firstPos = tile.getPos().offset(side);
+                Direction side = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
+                BlockPos firstPos = tile.getBlockPos().offset(side);
                 switch (side) {
                     case SOUTH:
                         if (firstPos.getX() == min.getX()) {
@@ -232,9 +232,9 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 GlStateManager.disableTexture2D();
                 GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+                GlStateManager.translate(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(xResult + 0.5, tile.getPos().getY(), zResult + 0.5);
+                GlStateManager.translate(xResult + 0.5, tile.getBlockPos().getY(), zResult + 0.5);
                 GlStateManager.scale(3, 3, 3);
                 Minecraft.getInstance().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
                 GlStateManager.popMatrix();

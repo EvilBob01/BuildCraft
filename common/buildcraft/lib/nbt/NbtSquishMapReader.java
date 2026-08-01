@@ -161,7 +161,7 @@ class NbtSquishMapReader {
         for (int i = 0; i < count; i++) {
             String key = map.getStringForReading(stringType.readIndex(in));
             Tag value = map.getTagForReading(type.readIndex(in));
-            nbt.setTag(key, value.copy());
+            nbt.put(key, value.copy());
         }
         return nbt;
     }

@@ -59,7 +59,7 @@ public class PluggablePowerAdaptor extends PipePluggable {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setLong("storedMJ", storedMJ);
+        nbt.putLong("storedMJ", storedMJ);
         return nbt;
     }
 

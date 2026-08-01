@@ -63,16 +63,16 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
         boolean single = (flags & CLICK_FLAG_SINGLE) == CLICK_FLAG_SINGLE;
         boolean clone = (flags & CLICK_FLAG_CLONE) == CLICK_FLAG_CLONE;
         if (clone) {
-            if (container.player.capabilities.isCreativeMode) {
+            if (container.player.getAbilities().instabuild) {
                 ItemStack get = getStack();
-                if (!get.isEmpty() && container.player.inventory.getItemStack().isEmpty()) {
-                    container.player.inventory.setItemStack(get.copy());
+                if (!get.isEmpty() && container.player.containerMenu.getCarried().isEmpty()) {
+                    container.player.containerMenu.setCarried(get.copy());
                 }
             }
         } else if (shift) {
             setStack(StackUtil.EMPTY, true);
         } else {
-            ItemStack toSet = container.player.inventory.getItemStack();
+            ItemStack toSet = container.player.containerMenu.getCarried();
             if (toSet.isEmpty()) {
                 setStack(StackUtil.EMPTY, true);
             } else {
@@ -110,7 +110,7 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
         if (stack.getCount() > max) {
             this.stack.setCount(max);
         }
-        if (tellClient && !container.player.world.isClientSide) {
+        if (tellClient && !container.player.level().isClientSide) {
             sendWidgetData(buffer -> {
                 buffer.writeByte(NET_SERVER_TO_CLIENT_ITEM);
                 buffer.writeItemStack(stack);

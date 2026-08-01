@@ -6,19 +6,27 @@ package buildcraft.core.marker;
 
 import java.util.List;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import buildcraft.lib.marker.MarkerSavedData;
 
 public class PathSavedData extends MarkerSavedData<PathSubCache, PathConnection> {
     public static final String NAME = "buildcraft_marker_path";
 
-    public PathSavedData(String name) {
-        super(name);
+    public PathSavedData() {}
+
+    public static PathSavedData load(CompoundTag nbt, HolderLookup.Provider registries) {
+        PathSavedData instance = new PathSavedData();
+        instance.loadFromNBT(nbt);
+        return instance;
     }
 
-    public PathSavedData() {
-        this(NAME);
+    public static SavedData.Factory<PathSavedData> factory() {
+        return new SavedData.Factory<>(PathSavedData::new, PathSavedData::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
     }
 
     public void loadInto(PathSubCache subCache) {

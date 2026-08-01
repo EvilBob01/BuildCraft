@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -34,7 +34,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
         Vec3 look = player.getLookVec();
         Vec3 end = start.add(look.scale(7));
@@ -49,7 +49,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
             return new ActionResult<>(InteractionResult.FAIL, stack);
         }
 
-        if (!player.capabilities.isCreativeMode) {
+        if (!player.getAbilities().instabuild) {
             stack.setCount(stack.getCount() - 1);
         }
 
@@ -59,7 +59,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
                 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClientSide) {
-            world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.getDefaultState().withProperty(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0));
+            world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.defaultBlockState().withProperty(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0));
             world.scheduleUpdate(ray.getBlockPos(), BCFactoryBlocks.waterGel, 200);
 
             // TODO: Snowball stuff

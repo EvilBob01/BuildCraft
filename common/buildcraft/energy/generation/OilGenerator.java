@@ -1,4 +1,4 @@
-package buildcraft.energy.generation;
+﻿package buildcraft.energy.generation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class OilGenerator {
 
     @SubscribeEvent
     public static void onPopulatePre(PopulateChunkEvent.Pre event) {
-        Level world = event.getWorld();
+        Level world = event.getLevel();
         int chunkX = event.getChunkX();
         int chunkZ = event.getChunkZ();
 

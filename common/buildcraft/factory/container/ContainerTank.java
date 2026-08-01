@@ -30,7 +30,7 @@ public class ContainerTank extends ContainerBCTile<TileTank> {
     public ItemStack transferStackInSlot(Player player, int index) {
         // The only slots are player slots -- try to interact with the tank
 
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             Slot slot = inventorySlots.get(index);
             ItemStack stack = slot.getStack();
             ItemStack original = stack.copy();

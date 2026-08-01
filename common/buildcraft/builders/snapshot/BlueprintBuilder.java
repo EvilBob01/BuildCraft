@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -140,11 +140,11 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
                                 .map(fluidStack -> tile.getTankManager().drain(fluidStack, !simulate))
                                 .map(fluidStack -> {
                                     ItemStack stack = FluidUtil.getFilledBucket(fluidStack);
-                                    if (!stack.hasTagCompound()) {
+                                    if (!stack.hasTag()) {
                                         stack.setTagCompound(new CompoundTag());
                                     }
                                     // noinspection ConstantConditions
-                                    stack.getTagCompound().setTag(
+                                    stack.getTag().put(
                                         FLUID_STACK_KEY,
                                         fluidStack.saveAdditional(new CompoundTag())
                                     );
@@ -201,16 +201,17 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
         super.cancelPlaceTask(placeTask);
         // noinspection ConstantConditions
         placeTask.items.stream()
-            .filter(stack -> !stack.hasTagCompound() || !stack.getTagCompound().hasKey(FLUID_STACK_KEY))
+            .filter(stack -> !stack.hasTag() || !stack.getTag().contains(FLUID_STACK_KEY))
             .forEach(stack -> tile.getInvResources().insert(stack, false, false));
         // noinspection ConstantConditions
         placeTask.items.stream()
-            .filter(stack -> stack.hasTagCompound() && stack.getTagCompound().hasKey(FLUID_STACK_KEY))
-            .map(stack -> Pair.of(stack.getCount(), stack.getTagCompound().getCompoundTag(FLUID_STACK_KEY)))
+            .filter(stack -> stack.hasTag() && stack.getTag().contains(FLUID_STACK_KEY))
+            .map(stack -> Pair.of(stack.getCount(), stack.getTag().getCompound(FLUID_STACK_KEY)))
             .map(countNbt -> {
+                // TODO: FluidStack.loadFluidStackFromNBT was removed in NeoForge 1.21.1 — replace with new deserialization API
                 FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(countNbt.getRight());
                 if (fluidStack != null) {
-                    fluidStack.amount *= countNbt.getLeft();
+                    fluidStack.setAmount(fluidStack.getAmount() * countNbt.getLeft());
                 }
                 return fluidStack;
             })
@@ -250,7 +251,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
             .filter(schematicEntity ->
                 entitiesWithinBox.stream()
                     .map(Entity::getPositionVector)
-                    .map(schematicEntity.getPos().add(new Vec3(getBuildingInfo().offsetPos))::distanceTo)
+                    .map(schematicEntity.getBlockPos().add(new Vec3(getBuildingInfo().offsetPos))::distanceTo)
                     .noneMatch(distance -> distance < MAX_ENTITY_DISTANCE)
             )
             .collect(Collectors.toList());

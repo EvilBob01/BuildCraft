@@ -1,4 +1,4 @@
-package buildcraft.energy.tile;
+﻿package buildcraft.energy.tile;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
     @Override
     public void onPumpOil(GameProfile profile, BlockPos oilPos) {
         if (profile == null) {
-            // BCLog.logger.warn("Unknown owner for pump at " + pump.getPos());
+            // BCLog.logger.warn("Unknown owner for pump at " + pump.getBlockPos());
             return;
         }
         PlayerPumpInfo info = pumpProgress.computeIfAbsent(profile, PlayerPumpInfo::new);
@@ -60,8 +60,8 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        ListTag list = nbt.getTagList("pumpProgress", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.tagCount(); i++) {
+        ListTag list = nbt.getList("pumpProgress", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
             PlayerPumpInfo info = new PlayerPumpInfo(list.getCompoundTagAt(i));
             pumpProgress.put(info.profile, info);
         }
@@ -70,12 +70,12 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setInteger("totalSources", totalSources);
+        nbt.putInt("totalSources", totalSources);
         ListTag list = new ListTag();
         for (PlayerPumpInfo info : pumpProgress.values()) {
             list.appendTag(info.writeToNbt());
         }
-        nbt.setTag("pumpProgress", list);
+        nbt.put("pumpProgress", list);
         return nbt;
     }
 
@@ -103,16 +103,16 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         }
 
         public PlayerPumpInfo(CompoundTag nbt) {
-            profile = NBTUtil.readGameProfileFromNBT(nbt.getCompoundTag("profile"));
+            profile = NBTUtil.readGameProfileFromNBT(nbt.getCompound("profile"));
             lastPumpTick = nbt.getLong("lastPumpTick");
-            sourcesPumped = nbt.getInteger("sourcesPumped");
+            sourcesPumped = nbt.getInt("sourcesPumped");
         }
 
         public CompoundTag writeToNbt() {
             CompoundTag nbt = new CompoundTag();
-            nbt.setTag("profile", NBTUtil.writeGameProfile(new CompoundTag(), profile));
-            nbt.setLong("lastPumpTick", lastPumpTick);
-            nbt.setInteger("sourcesPumped", sourcesPumped);
+            nbt.put("profile", NBTUtil.writeGameProfile(new CompoundTag(), profile));
+            nbt.putLong("lastPumpTick", lastPumpTick);
+            nbt.putInt("sourcesPumped", sourcesPumped);
             return nbt;
         }
     }

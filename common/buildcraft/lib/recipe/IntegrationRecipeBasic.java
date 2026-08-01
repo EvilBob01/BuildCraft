@@ -1,4 +1,4 @@
-package buildcraft.lib.recipe;
+﻿package buildcraft.lib.recipe;
 
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BuildCraftAPI;

@@ -47,13 +47,13 @@ public abstract class PipeBehaviourDirectional extends PipeBehaviour {
 
     public PipeBehaviourDirectional(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        setCurrentDir(NBTUtilBC.readEnum(nbt.getTag("currentDir"), Direction.class));
+        setCurrentDir(NBTUtilBC.readEnum(nbt.get("currentDir"), Direction.class));
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("currentDir", NBTUtilBC.writeEnum(getCurrentDir()));
+        nbt.put("currentDir", NBTUtilBC.writeEnum(getCurrentDir()));
         return nbt;
     }
 

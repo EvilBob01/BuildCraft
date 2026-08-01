@@ -39,13 +39,13 @@ public abstract class PipeBehaviourDiamond extends PipeBehaviour {
 
     public PipeBehaviourDiamond(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        filters.deserializeNBT(nbt.getCompoundTag("filters"));
+        filters.deserializeNBT(nbt.getCompound("filters"));
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("filters", filters.serializeNBT());
+        nbt.put("filters", filters.serializeNBT());
         return nbt;
     }
 
@@ -74,7 +74,7 @@ public abstract class PipeBehaviourDiamond extends PipeBehaviour {
     @Override
     public boolean onPipeActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ,
         EnumPipePart part) {
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             BCTransportGuis.PIPE_DIAMOND.openGui(player, pipe.getHolder().getPipePos());
         }
         return true;

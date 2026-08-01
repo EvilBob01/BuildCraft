@@ -117,7 +117,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (recipe != null) {
-            nbt.setString("recipe", recipe.name.toString());
+            nbt.putString("recipe", recipe.name.toString());
         }
         return nbt;
     }
@@ -125,7 +125,7 @@ public class TileIntegrationTable extends TileLaserTableBase {
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        if (nbt.hasKey("recipe")) {
+        if (nbt.contains("recipe")) {
             recipe = lookupRecipe(nbt.getString("recipe"));
         } else {
             recipe = null;

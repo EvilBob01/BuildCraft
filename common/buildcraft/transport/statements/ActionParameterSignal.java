@@ -59,7 +59,7 @@ public class ActionParameterSignal implements IStatementParameter {
     }
 
     public static ActionParameterSignal readFromNbt(CompoundTag nbt) {
-        if (nbt.hasKey("color", Tag.TAG_ANY_NUMERIC)) {
+        if (nbt.contains("color", Tag.TAG_ANY_NUMERIC)) {
             return get(DyeColor.byMetadata(nbt.getByte("color")));
         }
         return EMPTY;
@@ -69,7 +69,7 @@ public class ActionParameterSignal implements IStatementParameter {
     public void writeToNbt(CompoundTag nbt) {
         DyeColor c = colour;
         if (c != null) {
-            nbt.setByte("color", (byte) c.getMetadata());
+            nbt.putByte("color", (byte) c.getMetadata());
         }
     }
 

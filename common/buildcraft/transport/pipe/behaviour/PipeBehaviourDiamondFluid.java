@@ -38,7 +38,7 @@ public class PipeBehaviourDiamondFluid extends PipeBehaviourDiamond {
                     ItemStack compareTo = filters.getStackInSlot(offset + i);
                     if (compareTo.isEmpty()) continue;
                     FluidStack target = FluidUtil.getFluidContained(compareTo);
-                    if (target == null || target.amount <= 0) {
+                    if (target == null || target.getAmount() <= 0) {
                         continue;
                     }
                     foundItem = true;

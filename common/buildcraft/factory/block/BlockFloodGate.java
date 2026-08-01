@@ -67,7 +67,7 @@ public class BlockFloodGate extends BlockBCTile_Neptune {
     @Override
     public boolean onBlockActivated(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand,
         Direction side, float hitX, float hitY, float hitZ) {
-        ItemStack heldItem = player.getHeldItem(hand);
+        ItemStack heldItem = player.getItemInHand(hand);
         if (heldItem.getItem() instanceof IToolWrench) {
             if (!world.isClientSide) {
                 if (side != Direction.UP) {

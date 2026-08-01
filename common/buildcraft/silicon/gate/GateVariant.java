@@ -44,9 +44,9 @@ public class GateVariant {
 
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setByte("logic", (byte) logic.ordinal());
-        nbt.setByte("material", (byte) material.ordinal());
-        nbt.setByte("modifier", (byte) modifier.ordinal());
+        nbt.putByte("logic", (byte) logic.ordinal());
+        nbt.putByte("material", (byte) material.ordinal());
+        nbt.putByte("modifier", (byte) modifier.ordinal());
         return nbt;
     }
 

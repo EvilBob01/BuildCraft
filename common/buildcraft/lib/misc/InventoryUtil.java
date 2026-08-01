@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -140,7 +140,7 @@ public class InventoryUtil {
     /** Adds the given {@link ItemStack} to the player's inventory, or drops it in front of them if their was not enough
      * room. */
     public static void addToPlayer(Player player, ItemStack stack) {
-        if (player.inventory.addItemStackToInventory(stack)) {
+        if (player.getInventory().add(stack)) {
             player.inventoryContainer.detectAndSendChanges();
         } else {
             player.dropItem(stack, false, false);

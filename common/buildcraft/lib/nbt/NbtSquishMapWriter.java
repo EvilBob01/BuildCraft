@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -208,7 +208,7 @@ class NbtSquishMapWriter {
 
     private void writeList(WrittenType type, ListTag list, DataOutput to) throws IOException {
         boolean pack = shouldPackList(list);
-        if (debug) log("\n  List tag count = " + list.tagCount() + ", writing it " + (pack ? "PACKED" : "NORMAL"));
+        if (debug) log("\n  List tag count = " + list.size() + ", writing it " + (pack ? "PACKED" : "NORMAL"));
         if (pack) {
             writeListPacked(type, to, list);
         } else {
@@ -220,11 +220,11 @@ class NbtSquishMapWriter {
         if (packList != null) return packList;
         profiler.startSection("should_pack");
         TIntHashSet indexes = new TIntHashSet();
-        for (int i = 0; i < list.tagCount(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             indexes.add(map.indexOfTag(list.get(i)));
         }
         profiler.endSection();
-        return indexes.size() * 2 < list.tagCount();
+        return indexes.size() * 2 < list.size();
     }
 
     private void writeCompound(WrittenType type, CompoundTag compound, DataOutput to) throws IOException {
@@ -235,7 +235,7 @@ class NbtSquishMapWriter {
         writeVarInt(to, compound.getSize());
         for (String key : compound.getKeySet()) {
             profiler.startSection("entry");
-            Tag nbt = compound.getTag(key);
+            Tag nbt = compound.get(key);
             profiler.startSection("index_value");
             int index = map.indexOfTag(nbt);
             profiler.endSection();
@@ -252,11 +252,11 @@ class NbtSquishMapWriter {
     private void writeListNormal(WrittenType type, DataOutput to, ListTag list) throws IOException {
         profiler.startSection("list_normal");
         to.writeByte(NbtSquishConstants.COMPLEX_LIST);
-        writeVarInt(to, list.tagCount());
-        for (int i = 0; i < list.tagCount(); i++) {
+        writeVarInt(to, list.size());
+        for (int i = 0; i < list.size(); i++) {
             profiler.startSection("entry");
             if (i % 100 == 0) {
-                if (debug) log("\n   List items " + i + " to " + Math.min(i + 99, list.tagCount()));
+                if (debug) log("\n   List items " + i + " to " + Math.min(i + 99, list.size()));
             }
             profiler.startSection("index");
             int index = map.indexOfTag(list.get(i));
@@ -272,9 +272,9 @@ class NbtSquishMapWriter {
         to.writeByte(NbtSquishConstants.COMPLEX_LIST_PACKED);
         profiler.startSection("header");
         profiler.startSection("init");
-        int[] data = new int[list.tagCount()];
+        int[] data = new int[list.size()];
         TIntIntHashMap indexes = new TIntIntHashMap();
-        for (int i = 0; i < list.tagCount(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             profiler.startSection("entry");
             profiler.startSection("index");
             int index = map.indexOfTag(list.get(i));

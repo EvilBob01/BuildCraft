@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -29,11 +30,7 @@ import buildcraft.core.client.BuildCraftLaserManager;
 public class VolumeSubCache extends MarkerSubCache<VolumeConnection> {
     public VolumeSubCache(Level world) {
         super(world, MarkerCache.CACHES.indexOf(VolumeCache.INSTANCE));
-        VolumeSavedData data = (VolumeSavedData) world.getPerWorldStorage().getOrLoadData(VolumeSavedData.class, VolumeSavedData.NAME);
-        if (data == null) {
-            data = new VolumeSavedData();
-            world.getPerWorldStorage().setData(VolumeSavedData.NAME, data);
-        }
+        VolumeSavedData data = ((ServerLevel) world).getDataStorage().computeIfAbsent(VolumeSavedData.factory(), VolumeSavedData.NAME);
         data.loadInto(this);
     }
 

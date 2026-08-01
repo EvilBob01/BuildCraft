@@ -77,17 +77,17 @@ public class ZoneChunk {
     }
 
     public void writeToNBT(CompoundTag nbt) {
-        nbt.setBoolean("fullSet", fullSet);
+        nbt.putBoolean("fullSet", fullSet);
 
         if (property != null) {
-            nbt.setByteArray("bits", property.toByteArray());
+            nbt.putByteArray("bits", property.toByteArray());
         }
     }
 
     public void readFromNBT(CompoundTag nbt) {
         fullSet = nbt.getBoolean("fullSet");
 
-        if (nbt.hasKey("bits")) {
+        if (nbt.contains("bits")) {
             property = BitSet.valueOf(nbt.getByteArray("bits"));
         }
     }

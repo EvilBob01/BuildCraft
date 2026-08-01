@@ -11,8 +11,12 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 
 /** Special {@link FriendlyByteBuf} class that provides methods specific to "offset" reading and writing - like writing a
  * single bit to the stream, and auto-compacting it with similar bits into a single byte. */
@@ -291,5 +295,20 @@ public class PacketBufferBC extends FriendlyByteBuf {
             array[i] = readByte();
         }
         return new String(array, Charsets.UTF_8);
+    }
+
+    /** Reads an {@link ItemStack} from this buffer using the 1.21.1 registry-aware stream codec. */
+    public ItemStack readItemStack() {
+        RegistryFriendlyByteBuf rbuf = new RegistryFriendlyByteBuf(this,
+            RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+        return ItemStack.OPTIONAL_STREAM_CODEC.decode(rbuf);
+    }
+
+    /** Writes an {@link ItemStack} to this buffer using the 1.21.1 registry-aware stream codec. */
+    public PacketBufferBC writeItemStack(ItemStack stack) {
+        RegistryFriendlyByteBuf rbuf = new RegistryFriendlyByteBuf(this,
+            RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(rbuf, stack);
+        return this;
     }
 }

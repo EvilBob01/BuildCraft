@@ -1,4 +1,4 @@
-package buildcraft.energy.client.render;
+﻿package buildcraft.energy.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -28,7 +28,7 @@ public class RenderDynamoMJ extends FastTESR<TileDynamoMJ> {
         MutableQuad[] quads = BCEnergyModels.getMjDynamoQuads(engine, partialTicks);
         profiler.endStartSection("render");
         MutableQuad copy = new MutableQuad(0, null);
-        int lightc = engine.getWorld().getCombinedLight(engine.getPos(), 0);
+        int lightc = engine.getLevel().getCombinedLight(engine.getBlockPos(), 0);
         int light_block = (lightc >> 4) & 15;
         int light_sky = (lightc >> 20) & 15;
         for (MutableQuad q : quads) {

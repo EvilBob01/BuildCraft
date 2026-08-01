@@ -73,7 +73,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
 
     public PipeBehaviourWoodDiamond(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        filters.deserializeNBT(nbt.getCompoundTag("filters"));
+        filters.deserializeNBT(nbt.getCompound("filters"));
         filterMode = FilterMode.get(nbt.getByte("mode"));
         currentFilter = nbt.getByte("currentFilter") % filters.getSlots();
         filterValid = !filters.extract(StackFilter.ALL, 1, 1, true).isEmpty();
@@ -82,9 +82,9 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("filters", filters.serializeNBT());
-        nbt.setByte("mode", (byte) filterMode.ordinal());
-        nbt.setByte("currentFilter", (byte) currentFilter);
+        nbt.put("filters", filters.serializeNBT());
+        nbt.putByte("mode", (byte) filterMode.ordinal());
+        nbt.putByte("currentFilter", (byte) currentFilter);
         return nbt;
     }
 
@@ -120,7 +120,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                 return false;
             }
         }
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             BCTransportGuis.PIPE_DIAMOND_WOOD.openGui(player, pipe.getHolder().getPipePos());
         }
         return true;
@@ -187,14 +187,14 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                     return extracted;
                 }
 
-                if (extracted == null || extracted.amount <= 0) {
+                if (extracted == null || extracted.getAmount() <= 0) {
                     for (int i = 0; i < filters.getSlots(); i++) {
                         ItemStack stack = filters.getStackInSlot(i);
                         if (stack.isEmpty()) {
                             continue;
                         }
                         extracted = flow.tryExtractFluid(millibuckets, dir, FluidUtil.getFluidContained(stack), simulate);
-                        if (extracted != null && extracted.amount > 0) {
+                        if (extracted != null && extracted.getAmount() > 0) {
                             return extracted;
                         }
                     }

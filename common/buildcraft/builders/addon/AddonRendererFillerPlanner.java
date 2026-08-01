@@ -44,7 +44,7 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
                     )
                 )
             )
-            .filter(player.world::isAirBlock)
+            .filter(player.level()::isAirBlock)
             .map(BlockPos.MutableBlockPos::toImmutable)
             .collect(Collectors.toCollection(ArrayList::new));
         Minecraft.getInstance().mcProfiler.endSection();

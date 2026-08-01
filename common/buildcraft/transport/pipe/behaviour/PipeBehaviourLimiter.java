@@ -44,13 +44,13 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
 
     public PipeBehaviourLimiter(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        limitShift = MathUtil.clamp(nbt.getInteger("limitShift"), 0, MAX_SHIFT);
+        limitShift = MathUtil.clamp(nbt.getInt("limitShift"), 0, MAX_SHIFT);
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setInteger("limitShift", limitShift);
+        nbt.putInt("limitShift", limitShift);
         return nbt;
     }
 
@@ -101,7 +101,7 @@ public class PipeBehaviourLimiter extends PipeBehaviour {
             return false;
         }
 
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             EntityUtil.activateWrench(player, trace);
             limitShift++;
             if (limitShift > MAX_SHIFT) {

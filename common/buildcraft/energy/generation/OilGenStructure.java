@@ -1,4 +1,4 @@
-package buildcraft.energy.generation;
+﻿package buildcraft.energy.generation;
 
 import java.util.function.Predicate;
 
@@ -55,7 +55,7 @@ public abstract class OilGenStructure {
     }
 
     public static void setOil(Level world, BlockPos pos) {
-        world.setBlock(pos, BCEnergyFluids.crudeOil[0].getBlock().getDefaultState(), 2);
+        world.setBlock(pos, BCEnergyFluids.crudeOil[0].getBlock().defaultBlockState(), 2);
     }
 
     public enum ReplaceType {
@@ -282,7 +282,7 @@ public abstract class OilGenStructure {
         }
 
         public void generate(Level world, int count) {
-            BlockState state = BCCoreBlocks.spring.getDefaultState();
+            BlockState state = BCCoreBlocks.spring.defaultBlockState();
             state = state.withProperty(BlockSpring.SPRING_TYPE, EnumSpring.OIL);
             world.setBlock(pos, state);
             BlockEntity tile = world.getBlockEntity(pos);

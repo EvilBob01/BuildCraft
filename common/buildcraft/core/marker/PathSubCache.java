@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import buildcraft.lib.client.render.laser.LaserData_BC8.LaserType;
 import buildcraft.lib.marker.MarkerCache;
@@ -22,11 +23,7 @@ import buildcraft.core.client.BuildCraftLaserManager;
 public class PathSubCache extends MarkerSubCache<PathConnection> {
     public PathSubCache(Level world) {
         super(world, MarkerCache.CACHES.indexOf(PathCache.INSTANCE));
-        PathSavedData data = (PathSavedData) world.getPerWorldStorage().getOrLoadData(PathSavedData.class, PathSavedData.NAME);
-        if (data == null) {
-            data = new PathSavedData();
-            world.getPerWorldStorage().setData(PathSavedData.NAME, data);
-        }
+        PathSavedData data = ((ServerLevel) world).getDataStorage().computeIfAbsent(PathSavedData.factory(), PathSavedData.NAME);
         data.loadInto(this);
     }
 

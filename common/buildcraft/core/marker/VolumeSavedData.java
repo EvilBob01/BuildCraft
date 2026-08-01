@@ -6,19 +6,27 @@ package buildcraft.core.marker;
 
 import java.util.List;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import buildcraft.lib.marker.MarkerSavedData;
 
 public class VolumeSavedData extends MarkerSavedData<VolumeSubCache, VolumeConnection> {
     public static final String NAME = "buildcraft_marker_volume";
 
-    public VolumeSavedData(String name) {
-        super(name);
+    public VolumeSavedData() {}
+
+    public static VolumeSavedData load(CompoundTag nbt, HolderLookup.Provider registries) {
+        VolumeSavedData instance = new VolumeSavedData();
+        instance.loadFromNBT(nbt);
+        return instance;
     }
 
-    public VolumeSavedData() {
-        this(NAME);
+    public static SavedData.Factory<VolumeSavedData> factory() {
+        return new SavedData.Factory<>(VolumeSavedData::new, VolumeSavedData::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
     }
 
     public void loadInto(VolumeSubCache subCache) {

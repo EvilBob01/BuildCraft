@@ -35,7 +35,7 @@ public class FillerType extends StatementType<IFillerPattern> {
     @Override
     public CompoundTag writeToNbt(IFillerPattern slot) {
         CompoundTag nbt = new CompoundTag();
-        nbt.setString("kind", slot.getUniqueTag());
+        nbt.putString("kind", slot.getUniqueTag());
         return nbt;
     }
 

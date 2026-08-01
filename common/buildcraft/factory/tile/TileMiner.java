@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -123,7 +123,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
             }
             for (int y = pos.getY() - 1; y > newY; y--) {
                 BlockPos blockPos = new BlockPos(pos.getX(), y, pos.getZ());
-                world.setBlock(blockPos, BCFactoryBlocks.tube.getDefaultState());
+                world.setBlock(blockPos, BCFactoryBlocks.tube.defaultBlockState());
             }
             currentLength = wantedLength = newLength;
             sendNetworkUpdate(NET_WANTED_Y);
@@ -152,8 +152,8 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     protected void migrateOldNBT(int version, CompoundTag nbt) {
         super.migrateOldNBT(version, nbt);
         if (version == BCVersion.BEFORE_RECORDS.dataVersion || version == BCVersion.v7_2_0_pre_12.dataVersion) {
-            CompoundTag oldBattery = nbt.getCompoundTag("battery");
-            int energy = oldBattery.getInteger("energy");
+            CompoundTag oldBattery = nbt.getCompound("battery");
+            int energy = oldBattery.getInt("energy");
             battery.extractPower(0, Integer.MAX_VALUE);
             battery.addPower(energy * 100, false);
         }
@@ -163,27 +163,27 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
         if (currentPos != null) {
-            nbt.setTag("currentPos", NBTUtil.createPosTag(currentPos));
+            nbt.put("currentPos", NBTUtil.createPosTag(currentPos));
         }
-        nbt.setInteger("wantedLength", wantedLength);
-        nbt.setInteger("progress", progress);
-        nbt.setTag("battery", battery.serializeNBT());
+        nbt.putInt("wantedLength", wantedLength);
+        nbt.putInt("progress", progress);
+        nbt.put("battery", battery.serializeNBT());
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        if (nbt.hasKey("currentPos")) {
-            currentPos = NBTUtil.getPosFromTag(nbt.getCompoundTag("currentPos"));
+        if (nbt.contains("currentPos")) {
+            currentPos = NBTUtil.getPosFromTag(nbt.getCompound("currentPos"));
         }
-        wantedLength = nbt.getInteger("wantedLength");
-        progress = nbt.getInteger("progress");
+        wantedLength = nbt.getInt("wantedLength");
+        progress = nbt.getInt("progress");
         // TODO: remove in next version
-        if (nbt.hasKey("mj_battery")) {
-            nbt.setTag("battery", nbt.getTag("mj_battery"));
+        if (nbt.contains("mj_battery")) {
+            nbt.put("battery", nbt.get("mj_battery"));
         }
-        battery.deserializeNBT(nbt.getCompoundTag("battery"));
+        battery.deserializeNBT(nbt.getCompound("battery"));
     }
 
     // Networking

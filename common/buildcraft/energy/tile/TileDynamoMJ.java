@@ -97,29 +97,29 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setTag("currentDirection", NBTUtilBC.writeEnum(currentDirection));
-        nbt.setBoolean("isRedstonePowered", isRedstonePowered);
-        nbt.setDouble("heat", heat);
-        nbt.setFloat("progress", progress);
-        nbt.setInteger("progressPart", progressPart);
-        nbt.setInteger("currentRF", currentRF);
-        nbt.setTag("mj", mjBattery.serializeNBT());
+        nbt.put("currentDirection", NBTUtilBC.writeEnum(currentDirection));
+        nbt.putBoolean("isRedstonePowered", isRedstonePowered);
+        nbt.putDouble("heat", heat);
+        nbt.putFloat("progress", progress);
+        nbt.putInt("progressPart", progressPart);
+        nbt.putInt("currentRF", currentRF);
+        nbt.put("mj", mjBattery.serializeNBT());
         return nbt;
     }
 
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
-        currentDirection = NBTUtilBC.readEnum(nbt.getTag("currentDirection"), Direction.class);
+        currentDirection = NBTUtilBC.readEnum(nbt.get("currentDirection"), Direction.class);
         if (currentDirection == null) {
             currentDirection = Direction.UP;
         }
         isRedstonePowered = nbt.getBoolean("isRedstonePowered");
         heat = nbt.getDouble("heat");
         progress = nbt.getFloat("progress");
-        progressPart = nbt.getInteger("progressPart");
-        currentRF = nbt.getInteger("currentRF");
-        mjBattery.deserializeNBT(nbt.getCompoundTag("mj"));
+        progressPart = nbt.getInt("progressPart");
+        currentRF = nbt.getInt("currentRF");
+        mjBattery.deserializeNBT(nbt.getCompound("mj"));
     }
 
     @Override
@@ -550,7 +550,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     public boolean onActivated(
         Player player, InteractionHand hand, Direction side, float hitX, float hitY, float hitZ
     ) {
-        ItemStack current = player.getHeldItem(hand).copy();
+        ItemStack current = player.getItemInHand(hand).copy();
         if (super.onActivated(player, hand, side, hitX, hitY, hitZ)) {
             return true;
         }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -269,7 +269,7 @@ public class PipeWireRenderer {
     }
 
     public static void renderWires(TilePipeHolder pipe, double x, double y, double z, BufferBuilder bb) {
-        int combinedLight = pipe.getWorld().getCombinedLight(pipe.getPipePos(), 0);
+        int combinedLight = pipe.getLevel().getCombinedLight(pipe.getPipePos(), 0);
         int skyLight = combinedLight >> 16 & 0xFFFF;
         int blockLight = combinedLight & 0xFFFF;
         RenderHelper.disableStandardItemLighting();

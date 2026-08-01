@@ -40,7 +40,7 @@ public class StatementTypeParam extends StatementType<IStatementParameter> {
         CompoundTag nbt = new CompoundTag();
         if (slot != null) {
             slot.writeToNbt(nbt);
-            nbt.setString("kind", slot.getUniqueTag());
+            nbt.putString("kind", slot.getUniqueTag());
         }
         return nbt;
     }

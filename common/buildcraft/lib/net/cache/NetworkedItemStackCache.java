@@ -35,7 +35,7 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
                 if (o == null || o.isEmpty()) {
                     return 0;
                 }
-                return Objects.hash(o.getItem(), o.getTagCompound());
+                return Objects.hash(o.getItem(), o.getTag());
             }
 
             @Override

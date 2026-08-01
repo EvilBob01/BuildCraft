@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -65,7 +65,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         float alpha) {
         super.render(tile, x, y, z, partialTicks, destroyStage, alpha);
 
-        BlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getLevel().getBlockState(tile.getBlockPos());
         if (state.getBlock() != BCFactoryBlocks.distiller) {
             return;
         }
@@ -74,7 +74,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         profiler.startSection("bc");
         profiler.startSection("distiller");
 
-        int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), 0);
+        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
         Direction face = state.getValue(BlockBCBase_Neptune.PROP_FACING);
         TankRenderSizes sizes = TANK_SIZES.get(face);
 

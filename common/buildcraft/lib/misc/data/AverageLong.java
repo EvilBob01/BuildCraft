@@ -67,7 +67,7 @@ public class AverageLong {
             ints[i * 2] = (int) val;
             ints[i * 2 + 1] = (int) (val >>> 32);
         }
-        nbt.setIntArray(subTag, ints);
+        nbt.putIntArray(subTag, ints);
     }
 
     public void readFromNbt(CompoundTag nbt, String subTag) {

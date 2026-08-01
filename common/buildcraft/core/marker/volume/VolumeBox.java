@@ -53,34 +53,34 @@ public class VolumeBox {
         this.world = world;
         id = nbt.getUniqueId("id");
         box = new Box();
-        box.initialize(nbt.getCompoundTag("box"));
-        player = nbt.hasKey("player") ? NBTUtil.getUUIDFromTag(nbt.getCompoundTag("player")) : null;
-        oldPlayer = nbt.hasKey("oldPlayer") ? NBTUtil.getUUIDFromTag(nbt.getCompoundTag("oldPlayer")) : null;
-        if (nbt.hasKey("held")) {
-            held = NBTUtil.getPosFromTag(nbt.getCompoundTag("held"));
+        box.initialize(nbt.getCompound("box"));
+        player = nbt.contains("player") ? NBTUtil.getUUIDFromTag(nbt.getCompound("player")) : null;
+        oldPlayer = nbt.contains("oldPlayer") ? NBTUtil.getUUIDFromTag(nbt.getCompound("oldPlayer")) : null;
+        if (nbt.contains("held")) {
+            held = NBTUtil.getPosFromTag(nbt.getCompound("held"));
         }
         dist = nbt.getDouble("dist");
-        if (nbt.hasKey("oldMin")) {
-            oldMin = NBTUtil.getPosFromTag(nbt.getCompoundTag("oldMin"));
+        if (nbt.contains("oldMin")) {
+            oldMin = NBTUtil.getPosFromTag(nbt.getCompound("oldMin"));
         }
-        if (nbt.hasKey("oldMax")) {
-            oldMax = NBTUtil.getPosFromTag(nbt.getCompoundTag("oldMax"));
+        if (nbt.contains("oldMax")) {
+            oldMax = NBTUtil.getPosFromTag(nbt.getCompound("oldMax"));
         }
-        NBTUtilBC.readCompoundList(nbt.getTag("addons")).forEach(addonsEntryTag -> {
+        NBTUtilBC.readCompoundList(nbt.get("addons")).forEach(addonsEntryTag -> {
             Class<? extends Addon> addonClass =
                 AddonsRegistry.INSTANCE.getClassByName(new ResourceLocation(addonsEntryTag.getString("addonClass")));
             try {
                 Addon addon = addonClass.newInstance();
                 addon.volumeBox = this;
-                addon.loadAdditional(addonsEntryTag.getCompoundTag("addonData"));
-                EnumAddonSlot slot = NBTUtilBC.readEnum(addonsEntryTag.getTag("slot"), EnumAddonSlot.class);
+                addon.loadAdditional(addonsEntryTag.getCompound("addonData"));
+                EnumAddonSlot slot = NBTUtilBC.readEnum(addonsEntryTag.get("slot"), EnumAddonSlot.class);
                 addons.put(slot, addon);
                 addon.postReadFromNbt();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        NBTUtilBC.readCompoundList(nbt.getTag("locks")).map(lockTag -> {
+        NBTUtilBC.readCompoundList(nbt.get("locks")).map(lockTag -> {
             Lock lock = new Lock();
             lock.loadAdditional(lockTag);
             return lock;
@@ -170,38 +170,38 @@ public class VolumeBox {
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.setUniqueId("id", id);
-        nbt.setTag("box", this.box.saveAdditional());
+        nbt.put("box", this.box.saveAdditional());
         if (player != null) {
-            nbt.setTag("player", NBTUtil.createUUIDTag(player));
+            nbt.put("player", NBTUtil.createUUIDTag(player));
         }
         if (oldPlayer != null) {
-            nbt.setTag("oldPlayer", NBTUtil.createUUIDTag(oldPlayer));
+            nbt.put("oldPlayer", NBTUtil.createUUIDTag(oldPlayer));
         }
         if (held != null) {
-            nbt.setTag("held", NBTUtil.createPosTag(held));
+            nbt.put("held", NBTUtil.createPosTag(held));
         }
-        nbt.setDouble("dist", dist);
+        nbt.putDouble("dist", dist);
         if (oldMin != null) {
-            nbt.setTag("oldMin", NBTUtil.createPosTag(oldMin));
+            nbt.put("oldMin", NBTUtil.createPosTag(oldMin));
         }
         if (oldMax != null) {
-            nbt.setTag("oldMax", NBTUtil.createPosTag(oldMax));
+            nbt.put("oldMax", NBTUtil.createPosTag(oldMax));
         }
-        nbt.setTag(
+        nbt.put(
             "addons",
             NBTUtilBC.writeCompoundList(
                 addons.entrySet().stream().map(entry -> {
                     CompoundTag addonsEntryTag = new CompoundTag();
-                    addonsEntryTag.setTag("slot", NBTUtilBC.writeEnum(entry.getKey()));
-                    addonsEntryTag.setString(
+                    addonsEntryTag.put("slot", NBTUtilBC.writeEnum(entry.getKey()));
+                    addonsEntryTag.putString(
                         "addonClass",
                         AddonsRegistry.INSTANCE.getNameByClass(entry.getValue().getClass()).toString()
                     );
-                    addonsEntryTag.setTag("addonData", entry.getValue().saveAdditional(new CompoundTag()));
+                    addonsEntryTag.put("addonData", entry.getValue().saveAdditional(new CompoundTag()));
                     return addonsEntryTag;
                 })
             ));
-        nbt.setTag("locks", NBTUtilBC.writeCompoundList(locks.stream().map(Lock::writeToNBT)));
+        nbt.put("locks", NBTUtilBC.writeCompoundList(locks.stream().map(Lock::writeToNBT)));
         return nbt;
     }
 

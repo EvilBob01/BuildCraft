@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
@@ -67,26 +66,23 @@ public class TriggerFluidContainerLevel extends BCStatement implements ITriggerE
         if (parameters != null && parameters.length >= 1 && parameters[0] != null && !parameters[0].getItemStack() .isEmpty()) {
             searchedFluid = FluidUtil.getFluidContained(parameters[0].getItemStack());
             if (searchedFluid != null) {
-                searchedFluid.amount = 1;
+                searchedFluid.setAmount(1);
             }
         }
 
-        IFluidTankProperties[] tankPropertiesArray = handler.getTankProperties();
-        if (tankPropertiesArray == null || tankPropertiesArray.length == 0) {
+        int tankCount = handler.getTanks();
+        if (tankCount == 0) {
             return false;
         }
 
-        for (IFluidTankProperties tankProperties : tankPropertiesArray) {
-            if (tankProperties == null) {
-                continue;
-            }
-            FluidStack fluid = tankProperties.getContents();
-            if (fluid == null) {
-                return searchedFluid == null || handler.fill(searchedFluid, false) > 0;
+        for (int i = 0; i < tankCount; i++) {
+            FluidStack fluid = handler.getFluidInTank(i);
+            if (fluid.isEmpty()) {
+                return searchedFluid == null || handler.fill(searchedFluid, IFluidHandler.FluidAction.SIMULATE) > 0;
             }
 
             if (searchedFluid == null || searchedFluid.isFluidEqual(fluid)) {
-                float percentage = fluid.amount / (float) tankProperties.getCapacity();
+                float percentage = fluid.getAmount() / (float) handler.getTankCapacity(i);
                 return percentage < type.level;
             }
         }

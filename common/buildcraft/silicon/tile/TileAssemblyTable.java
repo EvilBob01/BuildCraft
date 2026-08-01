@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -205,12 +205,12 @@ public class TileAssemblyTable extends TileLaserTableBase {
         ListTag recipesStatesTag = new ListTag();
         recipesStates.forEach((instruction, state) -> {
             CompoundTag entryTag = new CompoundTag();
-            entryTag.setString("recipe", instruction.recipe.builtInRegistryHolder().key().location().toString());
-            entryTag.setTag("output", instruction.output.serializeNBT());
-            entryTag.setInteger("state", state.ordinal());
+            entryTag.putString("recipe", instruction.recipe.builtInRegistryHolder().key().location().toString());
+            entryTag.put("output", instruction.output.serializeNBT());
+            entryTag.putInt("state", state.ordinal());
             recipesStatesTag.appendTag(entryTag);
         });
-        nbt.setTag("recipes_states", recipesStatesTag);
+        nbt.put("recipes_states", recipesStatesTag);
         return nbt;
     }
 
@@ -218,14 +218,14 @@ public class TileAssemblyTable extends TileLaserTableBase {
     public void readFromNBT(CompoundTag nbt) {
         super.loadAdditional(nbt);
         recipesStates.clear();
-        ListTag recipesStatesTag = nbt.getTagList("recipes_states", Tag.TAG_COMPOUND);
-        for (int i = 0; i < recipesStatesTag.tagCount(); i++) {
+        ListTag recipesStatesTag = nbt.getList("recipes_states", Tag.TAG_COMPOUND);
+        for (int i = 0; i < recipesStatesTag.size(); i++) {
             CompoundTag entryTag = recipesStatesTag.getCompoundTagAt(i);
             String name = entryTag.getString("recipe");
-            if (entryTag.hasKey("output")) {
-                AssemblyInstruction instruction = lookupRecipe(name, new ItemStack(entryTag.getCompoundTag("output")));
+            if (entryTag.contains("output")) {
+                AssemblyInstruction instruction = lookupRecipe(name, new ItemStack(entryTag.getCompound("output")));
                 if (instruction != null)
-                    recipesStates.put(instruction, EnumAssemblyRecipeState.values()[entryTag.getInteger("state")]);
+                    recipesStates.put(instruction, EnumAssemblyRecipeState.values()[entryTag.getInt("state")]);
             }
         }
     }

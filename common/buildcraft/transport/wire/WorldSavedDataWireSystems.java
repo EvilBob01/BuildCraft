@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -20,13 +20,15 @@ import com.google.common.base.Predicates;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.storage.MapStorage;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.datafix.DataFixTypes;
 
 import net.minecraft.nbt.Tag;
 
@@ -38,7 +40,7 @@ import buildcraft.api.transport.pluggable.PipePluggable;
 
 import buildcraft.lib.net.MessageManager;
 
-public class WorldSavedDataWireSystems extends WorldSavedData {
+public class WorldSavedDataWireSystems extends SavedData {
     public static final String DATA_NAME = "buildcraft_wire_systems";
     public Level world;
     public final Map<WireSystem, Boolean> wireSystems = new HashMap<>();
@@ -50,12 +52,22 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
 
     private final Map<WireSystem.WireElement, List<WireSystem>> elementsToWireSystemsIndex = new HashMap<>();
 
-    public WorldSavedDataWireSystems() {
-        super(DATA_NAME);
+    public WorldSavedDataWireSystems() {}
+
+    public static WorldSavedDataWireSystems load(CompoundTag nbt, HolderLookup.Provider registries) {
+        WorldSavedDataWireSystems instance = new WorldSavedDataWireSystems();
+        instance.wireSystems.clear();
+        instance.elementsToWireSystemsIndex.clear();
+        ListTag entriesList = nbt.getList("entries", Tag.TAG_COMPOUND);
+        for(int i = 0; i < entriesList.size(); i++) {
+            CompoundTag entry = entriesList.getCompoundTagAt(i);
+            instance.addWireSystem(new WireSystem(entry.getCompound("wireSystem")), entry.getBoolean("powered"));
+        }
+        return instance;
     }
 
-    public WorldSavedDataWireSystems(String name) {
-        super(name);
+    public static SavedData.Factory<WorldSavedDataWireSystems> factory() {
+        return new SavedData.Factory<>(WorldSavedDataWireSystems::new, WorldSavedDataWireSystems::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
     }
 
     public void markStructureChanged() {
@@ -178,7 +190,7 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
             }
         });
         if(structureChanged || !changedSystems.isEmpty()) {
-            markDirty();
+            setDirty();
         }
         structureChanged = false;
         changedSystems.clear();
@@ -186,40 +198,23 @@ public class WorldSavedDataWireSystems extends WorldSavedData {
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
         ListTag entriesList = new ListTag();
         wireSystems.forEach((wireSystem, powered) -> {
             CompoundTag entry = new CompoundTag();
-            entry.setTag("wireSystem", wireSystem.saveAdditional());
-            entry.setBoolean("powered", powered);
+            entry.put("wireSystem", wireSystem.saveAdditional());
+            entry.putBoolean("powered", powered);
             entriesList.appendTag(entry);
         });
-        nbt.setTag("entries", entriesList);
+        nbt.put("entries", entriesList);
         return nbt;
-    }
-
-    @Override
-    public void readFromNBT(CompoundTag nbt) {
-        wireSystems.clear();
-        this.elementsToWireSystemsIndex.clear();
-
-        ListTag entriesList = nbt.getTagList("entries", Tag.TAG_COMPOUND);
-        for(int i = 0; i < entriesList.tagCount(); i++) {
-            CompoundTag entry = entriesList.getCompoundTagAt(i);
-            this.addWireSystem(new WireSystem(entry.getCompoundTag("wireSystem")), entry.getBoolean("powered"));
-        }
     }
 
     public static WorldSavedDataWireSystems get(Level world) {
         if(world.isClientSide) {
             throw new UnsupportedOperationException("Attempted to get WorldSavedDataWireSystems on the client!");
         }
-        MapStorage storage = world.getPerWorldStorage();
-        WorldSavedDataWireSystems instance = (WorldSavedDataWireSystems) storage.getOrLoadData(WorldSavedDataWireSystems.class, DATA_NAME);
-        if (instance == null) {
-            instance = new WorldSavedDataWireSystems();
-            storage.setData(DATA_NAME, instance);
-        }
+        WorldSavedDataWireSystems instance = ((ServerLevel) world).getDataStorage().computeIfAbsent(factory(), DATA_NAME);
         instance.world = world;
         return instance;
     }

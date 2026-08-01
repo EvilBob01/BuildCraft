@@ -37,12 +37,12 @@ public class FluidUtilBC {
     public static void pushFluidAround(BlockGetter world, BlockPos pos, Tank tank) {
         FluidStack potential = tank.drain(tank.getFluidAmount(), false);
         int drained = 0;
-        if (potential == null || potential.amount <= 0) {
+        if (potential == null || potential.getAmount() <= 0) {
             return;
         }
         FluidStack working = potential.copy();
         for (Direction side : Direction.VALUES) {
-            if (potential.amount <= 0) {
+            if (potential.getAmount() <= 0) {
                 break;
             }
             BlockEntity target = world.getBlockEntity(pos.offset(side));
@@ -55,13 +55,13 @@ public class FluidUtilBC {
 
                 if (used > 0) {
                     drained += used;
-                    potential.amount -= used;
+                    potential.setAmount(potential.getAmount() - used);
                 }
             }
         }
         if (drained > 0) {
             FluidStack actuallyDrained = tank.drain(drained, true);
-            if (actuallyDrained == null || actuallyDrained.amount != drained) {
+            if (actuallyDrained == null || actuallyDrained.getAmount() != drained) {
                 String strWorking = StringUtilBC.fluidToString(working);
                 String strActual = StringUtilBC.fluidToString(actuallyDrained);
                 throw new IllegalStateException("Bad tank! Could drain " + strWorking + " but only drained " + strActual
@@ -76,7 +76,7 @@ public class FluidUtilBC {
             boolean found = false;
             for (FluidStack stack : stacks) {
                 if (stack.isFluidEqual(toAdd)) {
-                    stack.amount += toAdd.amount;
+                    stack.setAmount(stack.getAmount() + toAdd.getAmount());
                     found = true;
                 }
             }
@@ -88,7 +88,7 @@ public class FluidUtilBC {
     }
 
     public static boolean areFluidStackEqual(FluidStack a, FluidStack b) {
-        return (a == null && b == null) || (a != null && a.isFluidEqual(b) && a.amount == b.amount);
+        return (a == null && b == null) || (a != null && a.isFluidEqual(b) && a.getAmount() == b.getAmount());
     }
 
     public static boolean areFluidsEqual(Fluid a, Fluid b) {
@@ -126,14 +126,14 @@ public class FluidUtilBC {
             return null;
         }
         FluidStack toDrain = new FluidStack(toDrainPotential, accepted);
-        if (accepted < toDrainPotential.amount) {
+        if (accepted < toDrainPotential.getAmount()) {
             toDrainPotential = from.drain(toDrain, false);
-            if (toDrainPotential == null || toDrainPotential.amount < accepted) {
+            if (toDrainPotential == null || toDrainPotential.getAmount() < accepted) {
                 return null;
             }
         }
         FluidStack drained = from.drain(toDrain.copy(), true);
-        if (drained == null || toDrain.amount != drained.amount || !toDrain.isFluidEqual(drained)) {
+        if (drained == null || toDrain.getAmount() != drained.getAmount() || !toDrain.isFluidEqual(drained)) {
             String detail = "(To Drain = " + StringUtilBC.fluidToString(toDrain);
             detail += ",\npotential drain = " + StringUtilBC.fluidToString(toDrainPotential) + ")";
             detail += ",\nactually drained = " + StringUtilBC.fluidToString(drained) + ")";
@@ -151,11 +151,11 @@ public class FluidUtilBC {
 
     public static boolean onTankActivated(Player player, BlockPos pos, InteractionHand hand,
         IFluidHandler fluidHandler) {
-        ItemStack held = player.getHeldItem(hand);
+        ItemStack held = player.getItemInHand(hand);
         if (held.isEmpty()) {
             return false;
         }
-        boolean replace = !player.capabilities.isCreativeMode;
+        boolean replace = !player.getAbilities().instabuild;
         boolean single = held.getCount() == 1;
         IFluidHandlerItem flItem;
         if (replace && single) {
@@ -171,7 +171,7 @@ public class FluidUtilBC {
         if (flItem == null) {
             return false;
         }
-        Level world = player.world;
+        Level world = player.level();
         if (world.isClientSide) {
             return true;
         }

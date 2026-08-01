@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -17,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -54,10 +54,10 @@ public class SchematicBlockPipe implements ISchematicBlock {
         try {
             ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
             PipeDefinition definition = PipeRegistry.INSTANCE.loadDefinition(
-                tileNbt.getCompoundTag("pipe").getString("def")
+                tileNbt.getCompound("pipe").getString("def")
             );
             DyeColor color = NBTUtilBC.readEnum(
-                tileNbt.getCompoundTag("pipe").getTag("col"),
+                tileNbt.getCompound("pipe").get("col"),
                 DyeColor.class
             );
             Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(definition);
@@ -92,7 +92,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
     @SuppressWarnings("Duplicates")
     @Override
     public boolean build(Level world, BlockPos blockPos) {
-        if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.getDefaultState(), 11)) {
+        if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 11)) {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
                 tileEntity.setWorld(world);
@@ -109,7 +109,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
     @SuppressWarnings("Duplicates")
     @Override
     public boolean buildWithoutChecks(Level world, BlockPos blockPos) {
-        if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.getDefaultState(), 0)) {
+        if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 0)) {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
                 tileEntity.setWorld(world);
@@ -131,14 +131,14 @@ public class SchematicBlockPipe implements ISchematicBlock {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag("tileNbt", tileNbt);
-        nbt.setTag("tileRotation", NBTUtilBC.writeEnum(tileRotation));
+        nbt.put("tileNbt", tileNbt);
+        nbt.put("tileRotation", NBTUtilBC.writeEnum(tileRotation));
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
-        tileNbt = nbt.getCompoundTag("tileNbt");
-        tileRotation = NBTUtilBC.readEnum(nbt.getTag("tileRotation"), Rotation.class);
+        tileNbt = nbt.getCompound("tileNbt");
+        tileRotation = NBTUtilBC.readEnum(nbt.get("tileRotation"), Rotation.class);
     }
 }

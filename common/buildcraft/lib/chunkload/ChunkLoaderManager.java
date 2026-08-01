@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -52,14 +52,14 @@ public class ChunkLoaderManager {
         if (ticket == null) {
             ticket = ForgeChunkManager.requestTicket(
                 BCLib.INSTANCE,
-                tile.getWorld(),
+                tile.getLevel(),
                 ForgeChunkManager.Type.NORMAL
             );
             if (ticket == null) {
-                BCLog.logger.warn("[lib.chunkloading] Failed to chunkload " + tile.getClass().getName() + " at " + tile.getPos());
+                BCLog.logger.warn("[lib.chunkloading] Failed to chunkload " + tile.getClass().getName() + " at " + tile.getBlockPos());
                 return;
             }
-            ticket.getModData().setTag("location", NBTUtilBC.writeBlockPos(tile.getPos()));
+            ticket.getModData().put("location", NBTUtilBC.writeBlockPos(tile.getBlockPos()));
             TICKETS.put(wPos, ticket);
         }
         Set<ChunkPos> chunks = getChunksToLoad(tile);
@@ -78,7 +78,7 @@ public class ChunkLoaderManager {
     public static <T extends BlockEntity & IChunkLoadingTile> Set<ChunkPos> getChunksToLoad(T tile) {
         Set<ChunkPos> chunksToLoad = tile.getChunksToLoad();
         Set<ChunkPos> chunkPoses = new HashSet<>(chunksToLoad != null ? chunksToLoad : Collections.emptyList());
-        chunkPoses.add(new ChunkPos(tile.getPos()));
+        chunkPoses.add(new ChunkPos(tile.getBlockPos()));
         return chunkPoses;
     }
 
@@ -86,7 +86,7 @@ public class ChunkLoaderManager {
         TICKETS.clear();
         if (BCLibConfig.chunkLoadingLevel != BCLibConfig.ChunkLoaderLevel.NONE) {
             for (ForgeChunkManager.Ticket ticket : tickets) {
-                BlockPos pos = NBTUtilBC.readBlockPos(ticket.getModData().getTag("location"));
+                BlockPos pos = NBTUtilBC.readBlockPos(ticket.getModData().get("location"));
                 if (pos == null) {
                     ForgeChunkManager.releaseTicket(ticket);
                     continue;

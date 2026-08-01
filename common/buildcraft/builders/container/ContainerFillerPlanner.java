@@ -35,7 +35,7 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
         super(player);
         Pair<VolumeBox, EnumAddonSlot> selectingVolumeBoxAndSlot = EnumAddonSlot.getSelectingVolumeBoxAndSlot(
             player,
-            BCCoreProxy.getProxy().getVolumeBoxes(player.world)
+            BCCoreProxy.getProxy().getVolumeBoxes(player.level())
         );
         addon = Optional.ofNullable(selectingVolumeBoxAndSlot.getLeft())
             .map(volumeBox -> volumeBox.addons.get(selectingVolumeBoxAndSlot.getRight()))
@@ -72,7 +72,7 @@ public class ContainerFillerPlanner extends ContainerBC_Neptune implements ICont
     @Override
     public void valuesChanged() {
         addon.updateBuildingInfo();
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             WorldSavedDataVolumeBoxes.get(getPlayer().world).setChanged();
         }
     }

@@ -47,7 +47,7 @@ public enum PatternParameterRotation implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag nbt) {
-        nbt.setByte("d", (byte) rotationCount);
+        nbt.putByte("d", (byte) rotationCount);
     }
 
     @Override

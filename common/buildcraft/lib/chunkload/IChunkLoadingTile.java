@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -37,7 +37,7 @@ public interface IChunkLoadingTile {
      *         chunkloaded. */
     @Nullable
     default Set<ChunkPos> getChunksToLoad() {
-        BlockPos pos = ((BlockEntity) this).getPos();
+        BlockPos pos = ((BlockEntity) this).getBlockPos();
         Set<ChunkPos> chunkPoses = new HashSet<>(4);
         for (Direction face : Direction.HORIZONTALS) {
             chunkPoses.add(new ChunkPos(pos.offset(face)));

@@ -72,7 +72,7 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     @Override
     public CompoundTag writeToNBT(CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.setBoolean("showSignals", showSignals);
+        nbt.putBoolean("showSignals", showSignals);
         return nbt;
     }
 

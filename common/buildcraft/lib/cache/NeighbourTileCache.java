@@ -1,4 +1,4 @@
-package buildcraft.lib.cache;
+﻿package buildcraft.lib.cache;
 
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
@@ -48,11 +48,11 @@ public class NeighbourTileCache implements ITileCache {
     }
 
     private boolean canUseCache() {
-        Level w = tile.getWorld();
+        Level w = tile.getLevel();
         if (tile.isInvalid() || w == null) {
             return false;
         }
-        BlockPos tPos = tile.getPos();
+        BlockPos tPos = tile.getBlockPos();
         if (!tPos.equals(lastSeenTilePos)) {
             lastSeenTilePos = tPos.toImmutable();
             cachedTiles.clear();
@@ -79,7 +79,7 @@ public class NeighbourTileCache implements ITileCache {
             if (oTile == null || oTile.isInvalid()) {
                 cachedTiles.remove(offset);
             } else {
-                Level w = tile.getWorld();
+                Level w = tile.getLevel();
                 // Unfortunately tile.isInvalid is false even when it is unloaded
                 if (w == null || !w.isBlockLoaded(lastSeenTilePos.offset(offset))) {
                     cachedTiles.remove(offset);
@@ -94,7 +94,7 @@ public class NeighbourTileCache implements ITileCache {
         if (tile instanceof TileBC_Neptune) {
             chunk = ((TileBC_Neptune) tile).getChunk(offsetPos);
         } else {
-            chunk = ChunkUtil.getChunk(tile.getWorld(), offsetPos, true);
+            chunk = ChunkUtil.getChunk(tile.getLevel(), offsetPos, true);
         }
         BlockState state = chunk.getBlockState(offsetPos);
         if (!state.getBlock().hasTileEntity(state)) {
@@ -103,7 +103,7 @@ public class NeighbourTileCache implements ITileCache {
             return new TileCacheRet(null);
         }
 
-        BlockEntity offsetTile = tile.getWorld().getBlockEntity(offsetPos);
+        BlockEntity offsetTile = tile.getLevel().getBlockEntity(offsetPos);
         if (offsetTile != null) {
             cachedTiles.put(offset, new WeakReference<>(offsetTile));
         }

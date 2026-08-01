@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -32,7 +32,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -252,7 +252,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
         world.profiler.startSection("prepare block");
         BlockState newBlockState = blockState;
         if (placeBlock != blockState.getBlock()) {
-            newBlockState = placeBlock.getDefaultState();
+            newBlockState = placeBlock.defaultBlockState();
             for (Property<?> property : blockState.getPropertyKeys()) {
                 if (newBlockState.getPropertyKeys().contains(property)) {
                     newBlockState = BlockUtil.copyProperty(
@@ -267,7 +267,7 @@ public class SchematicBlockDefault implements ISchematicBlock {
             newBlockState = BlockUtil.copyProperty(
                 property,
                 newBlockState,
-                placeBlock.getDefaultState()
+                placeBlock.defaultBlockState()
             );
         }
         world.profiler.endSection();
@@ -292,11 +292,11 @@ public class SchematicBlockDefault implements ISchematicBlock {
                     .orElse(null);
                 CompoundTag newTileNbt = new CompoundTag();
                 tileNbt.getKeySet().stream()
-                    .map(key -> Pair.of(key, tileNbt.getTag(key)))
-                    .forEach(kv -> newTileNbt.setTag(kv.getKey(), kv.getValue()));
-                newTileNbt.setInteger("x", blockPos.getX());
-                newTileNbt.setInteger("y", blockPos.getY());
-                newTileNbt.setInteger("z", blockPos.getZ());
+                    .map(key -> Pair.of(key, tileNbt.get(key)))
+                    .forEach(kv -> newTileNbt.put(kv.getKey(), kv.getValue()));
+                newTileNbt.putInt("x", blockPos.getX());
+                newTileNbt.putInt("y", blockPos.getY());
+                newTileNbt.putInt("z", blockPos.getZ());
                 world.profiler.endSection();
                 world.profiler.startSection("place tile");
                 BlockEntity tileEntity = BlockEntity.create(
@@ -326,11 +326,11 @@ public class SchematicBlockDefault implements ISchematicBlock {
             if (tileNbt != null && blockState.getBlock().hasTileEntity(blockState)) {
                 CompoundTag newTileNbt = new CompoundTag();
                 tileNbt.getKeySet().stream()
-                    .map(key -> Pair.of(key, tileNbt.getTag(key)))
-                    .forEach(kv -> newTileNbt.setTag(kv.getKey(), kv.getValue()));
-                newTileNbt.setInteger("x", blockPos.getX());
-                newTileNbt.setInteger("y", blockPos.getY());
-                newTileNbt.setInteger("z", blockPos.getZ());
+                    .map(key -> Pair.of(key, tileNbt.get(key)))
+                    .forEach(kv -> newTileNbt.put(kv.getKey(), kv.getValue()));
+                newTileNbt.putInt("x", blockPos.getX());
+                newTileNbt.putInt("y", blockPos.getY());
+                newTileNbt.putInt("z", blockPos.getZ());
                 BlockEntity tileEntity = BlockEntity.create(world, newTileNbt);
                 if (tileEntity != null) {
                     tileEntity.setWorld(world);
@@ -355,15 +355,15 @@ public class SchematicBlockDefault implements ISchematicBlock {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setTag(
+        nbt.put(
             "requiredBlockOffsets",
             NBTUtilBC.writeCompoundList(
                 requiredBlockOffsets.stream()
                     .map(NBTUtil::createPosTag)
             )
         );
-        nbt.setTag("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
-        nbt.setTag(
+        nbt.put("blockState", NBTUtil.writeBlockState(new CompoundTag(), blockState));
+        nbt.put(
             "ignoredProperties",
             NBTUtilBC.writeStringList(
                 ignoredProperties.stream()
@@ -371,18 +371,18 @@ public class SchematicBlockDefault implements ISchematicBlock {
             )
         );
         if (tileNbt != null) {
-            nbt.setTag("tileNbt", tileNbt);
+            nbt.put("tileNbt", tileNbt);
         }
-        nbt.setTag("tileRotation", NBTUtilBC.writeEnum(tileRotation));
-        nbt.setString("placeBlock", Block.REGISTRY.getNameForObject(placeBlock).toString());
-        nbt.setTag(
+        nbt.put("tileRotation", NBTUtilBC.writeEnum(tileRotation));
+        nbt.putString("placeBlock", Block.REGISTRY.getNameForObject(placeBlock).toString());
+        nbt.put(
             "updateBlockOffsets",
             NBTUtilBC.writeCompoundList(
                 updateBlockOffsets.stream()
                     .map(NBTUtil::createPosTag)
             )
         );
-        nbt.setTag(
+        nbt.put(
             "canBeReplacedWithBlocks",
             NBTUtilBC.writeStringList(
                 canBeReplacedWithBlocks.stream()
@@ -395,11 +395,11 @@ public class SchematicBlockDefault implements ISchematicBlock {
 
     @Override
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
-        NBTUtilBC.readCompoundList(nbt.getTag("requiredBlockOffsets"))
+        NBTUtilBC.readCompoundList(nbt.get("requiredBlockOffsets"))
             .map(NBTUtil::getPosFromTag)
             .forEach(requiredBlockOffsets::add);
-        blockState = NBTUtil.readBlockState(nbt.getCompoundTag("blockState"));
-        NBTUtilBC.readStringList(nbt.getTag("ignoredProperties"))
+        blockState = NBTUtil.readBlockState(nbt.getCompound("blockState"));
+        NBTUtilBC.readStringList(nbt.get("ignoredProperties"))
             .map(propertyName ->
                 blockState.getPropertyKeys().stream()
                     .filter(property -> property.getName().equals(propertyName))
@@ -407,15 +407,15 @@ public class SchematicBlockDefault implements ISchematicBlock {
                     .orElse(null)
             )
             .forEach(ignoredProperties::add);
-        if (nbt.hasKey("tileNbt")) {
-            tileNbt = nbt.getCompoundTag("tileNbt");
+        if (nbt.contains("tileNbt")) {
+            tileNbt = nbt.getCompound("tileNbt");
         }
-        tileRotation = NBTUtilBC.readEnum(nbt.getTag("tileRotation"), Rotation.class);
+        tileRotation = NBTUtilBC.readEnum(nbt.get("tileRotation"), Rotation.class);
         placeBlock = Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("placeBlock")));
-        NBTUtilBC.readCompoundList(nbt.getTag("updateBlockOffsets"))
+        NBTUtilBC.readCompoundList(nbt.get("updateBlockOffsets"))
             .map(NBTUtil::getPosFromTag)
             .forEach(updateBlockOffsets::add);
-        NBTUtilBC.readStringList(nbt.getTag("canBeReplacedWithBlocks"))
+        NBTUtilBC.readStringList(nbt.get("canBeReplacedWithBlocks"))
             .map(ResourceLocation::new)
             .map(Block.REGISTRY::getObject)
             .forEach(canBeReplacedWithBlocks::add);

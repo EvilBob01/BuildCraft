@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -28,7 +28,7 @@ public class RenderProgrammingTable extends FastTESR<TileProgrammingTable_Neptun
         Minecraft.getInstance().mcProfiler.startSection("programming");
 
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMapBlocks().registerSprite(new ResourceLocation("blocks/glass_white"));
-        int combinedLight = tile.getWorld().getCombinedLight(tile.getPos(), 0);
+        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
         int light1 = combinedLight >> 16 & 65535;
         int light2 = combinedLight & 65535;
         buffer.pos(x + 4 / 16D, y + 9 / 16D, z + 4 / 16D).color(255, 255, 255, 255).tex(sprite.getInterpolatedU(4), sprite.getInterpolatedV(4)).lightmap(light1, light2).endVertex();

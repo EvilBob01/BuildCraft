@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -17,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.api.distmarker.Dist;
@@ -126,9 +126,9 @@ public final class ListHandler {
         public static Line fromNBT(CompoundTag data) {
             Line line = new Line();
 
-            if (data != null && data.hasKey("st")) {
-                ListTag l = data.getTagList("st", 10);
-                for (int i = 0; i < l.tagCount(); i++) {
+            if (data != null && data.contains("st")) {
+                ListTag l = data.getList("st", 10);
+                for (int i = 0; i < l.size(); i++) {
                     line.stacks.set(i, new ItemStack(l.getCompoundTagAt(i)));
                 }
 
@@ -150,10 +150,10 @@ public final class ListHandler {
                 }
                 stackList.appendTag(stack);
             }
-            data.setTag("st", stackList);
-            data.setBoolean("Fp", precise);
-            data.setBoolean("Ft", byType);
-            data.setBoolean("Fm", byMaterial);
+            data.put("st", stackList);
+            data.putBoolean("Fp", precise);
+            data.putBoolean("Ft", byType);
+            data.putBoolean("Fm", byMaterial);
             return data;
         }
 
@@ -222,7 +222,7 @@ public final class ListHandler {
     }
 
     public static boolean hasItems(@Nonnull ItemStack stack) {
-        if (!stack.hasTagCompound()) return false;
+        if (!stack.hasTag()) return false;
         for (Line l : getLines(stack)) {
             if (l.hasItems()) return true;
         }
@@ -230,7 +230,7 @@ public final class ListHandler {
     }
 
     public static boolean isDefault(@Nonnull ItemStack stack) {
-        if (!stack.hasTagCompound()) return true;
+        if (!stack.hasTag()) return true;
         for (Line l : getLines(stack)) {
             if (!l.isDefault()) return false;
         }
@@ -239,9 +239,9 @@ public final class ListHandler {
 
     public static Line[] getLines(@Nonnull ItemStack item) {
         CompoundTag data = NBTUtilBC.getItemData(item);
-        if (data.hasKey("written") && data.hasKey("lines")) {
-            ListTag list = data.getTagList("lines", 10);
-            Line[] lines = new Line[list.tagCount()];
+        if (data.contains("written") && data.contains("lines")) {
+            ListTag list = data.getList("lines", 10);
+            Line[] lines = new Line[list.size()];
             for (int i = 0; i < lines.length; i++) {
                 lines[i] = Line.fromNBT(list.getCompoundTagAt(i));
             }
@@ -267,13 +267,13 @@ public final class ListHandler {
 
         if (hasLine) {
             CompoundTag data = NBTUtilBC.getItemData(stackList);
-            data.setBoolean("written", true);
+            data.putBoolean("written", true);
             ListTag lineList = new ListTag();
             for (Line saving : lines) {
                 lineList.appendTag(saving.toNBT());
             }
-            data.setTag("lines", lineList);
-        } else if (stackList.hasTagCompound()) {
+            data.put("lines", lineList);
+        } else if (stackList.hasTag()) {
             CompoundTag data = NBTUtilBC.getItemData(stackList);
             // No non-default lines, we can remove the old NBT data
             data.removeTag("written");
@@ -287,9 +287,9 @@ public final class ListHandler {
 
     public static boolean matches(@Nonnull ItemStack stackList, @Nonnull ItemStack item) {
         CompoundTag data = NBTUtilBC.getItemData(stackList);
-        if (data.hasKey("written") && data.hasKey("lines")) {
-            ListTag list = data.getTagList("lines", 10);
-            for (int i = 0; i < list.tagCount(); i++) {
+        if (data.contains("written") && data.contains("lines")) {
+            ListTag list = data.getList("lines", 10);
+            for (int i = 0; i < list.size(); i++) {
                 Line line = Line.fromNBT(list.getCompoundTagAt(i));
                 if (line.matches(item)) {
                     return true;

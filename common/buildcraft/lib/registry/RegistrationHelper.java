@@ -64,7 +64,7 @@ public final class RegistrationHelper {
         event.register(Registries.BLOCK, helper -> {
             for (Block block : blocks) {
                 if (block instanceof BlockBCBase_Neptune bcBlock && !bcBlock.id.isEmpty()) {
-                    String regName = TagManager.getTag(bcBlock.id, EnumTagType.REGISTRY_NAME);
+                    String regName = TagManager.get(bcBlock.id, EnumTagType.REGISTRY_NAME);
                     helper.register(ResourceLocation.parse(regName), block);
                 }
             }
@@ -75,7 +75,7 @@ public final class RegistrationHelper {
         event.register(Registries.ITEM, helper -> {
             for (Item item : items) {
                 if (item instanceof IItemBuildCraft bcItem && !bcItem.id().isEmpty()) {
-                    String regName = TagManager.getTag(bcItem.id(), EnumTagType.REGISTRY_NAME);
+                    String regName = TagManager.get(bcItem.id(), EnumTagType.REGISTRY_NAME);
                     helper.register(ResourceLocation.parse(regName), item);
                 }
             }
@@ -218,7 +218,7 @@ public final class RegistrationHelper {
     }
 
     public <T extends BlockEntity> void registerTile(Class<T> clazz, String id, Block... validBlocks) {
-        String regName = TagManager.getTag(id, EnumTagType.REGISTRY_NAME);
+        String regName = TagManager.get(id, EnumTagType.REGISTRY_NAME);
         blockEntities.add(new BlockEntityEntry<>(ResourceLocation.parse(regName), clazz, validBlocks));
     }
 

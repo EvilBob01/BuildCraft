@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -21,7 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
 
@@ -63,7 +63,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
     public ItemStack createItemStack(FacadeInstance state) {
         ItemStack item = new ItemStack(this);
         CompoundTag nbt = NBTUtilBC.getItemData(item);
-        nbt.setTag("facade", state.writeToNbt());
+        nbt.put("facade", state.writeToNbt());
         return item;
     }
 
@@ -75,19 +75,19 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
             return FacadeInstance.createSingle(FacadeStateManager.previewState, false);
         }
 
-        if (!nbt.hasKey("facade") && nbt.hasKey("states")) {
-            ListTag states = nbt.getTagList("states", Tag.TAG_COMPOUND);
-            if (states.tagCount() > 0) {
+        if (!nbt.contains("facade") && nbt.contains("states")) {
+            ListTag states = nbt.getList("states", Tag.TAG_COMPOUND);
+            if (states.size() > 0) {
                 // Only migrate if we actually have a facade to migrate.
                 boolean isHollow = states.getCompoundTagAt(0).getBoolean("isHollow");
                 CompoundTag tagFacade = new CompoundTag();
-                tagFacade.setBoolean("isHollow", isHollow);
-                tagFacade.setTag("states", states);
-                nbt.setTag("facade", tagFacade);
+                tagFacade.putBoolean("isHollow", isHollow);
+                tagFacade.put("states", states);
+                nbt.put("facade", tagFacade);
             }
         }
 
-        return FacadeInstance.readFromNbt(nbt.getCompoundTag("facade"));
+        return FacadeInstance.readFromNbt(nbt.getCompound("facade"));
     }
 
     @Nonnull

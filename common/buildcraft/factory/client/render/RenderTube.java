@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -33,9 +33,9 @@ public class RenderTube extends FastTESR<TileMiner> {
             return;
         }
 
-        double tubeY = tile.getPos().getY() - tile.getLength(partialTicks);
+        double tubeY = tile.getBlockPos().getY() - tile.getLength(partialTicks);
 
-        BlockPos from = tile.getPos();
+        BlockPos from = tile.getBlockPos();
         buffer.setTranslation(x - from.getX(), y - from.getY(), z - from.getZ());
 
         Vec3 start = new Vec3(from.getX() + 0.5, from.getY(), from.getZ() + 0.5);

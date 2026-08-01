@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2017 SpaceToad and the BuildCraft team
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/
@@ -29,7 +29,7 @@ public class SpringPopulate {
     @SubscribeEvent
     public void populate(PopulateChunkEvent.Post event) {
 
-        Level world = event.getWorld();
+        Level world = event.getLevel();
         Random rand = event.getRand();
         int chunkX = event.getChunkX();
         int chunkZ = event.getChunkZ();
@@ -73,7 +73,7 @@ public class SpringPopulate {
             // Handle flat bedrock maps
             int y = i > 0 ? i : i - 1;
 
-            BlockState springState = BCCoreBlocks.spring.getDefaultState();
+            BlockState springState = BCCoreBlocks.spring.defaultBlockState();
             springState = springState.withProperty(BuildCraftProperties.SPRING_TYPE, EnumSpring.WATER);
 
             world.setBlock(new BlockPos(posX, y, posZ), springState);
@@ -82,7 +82,7 @@ public class SpringPopulate {
                 if (world.isAirBlock(new BlockPos(posX, j, posZ))) {
                     break;
                 } else {
-                    world.setBlock(new BlockPos(posX, j, posZ), Blocks.WATER.getDefaultState());
+                    world.setBlock(new BlockPos(posX, j, posZ), Blocks.WATER.defaultBlockState());
                 }
             }
 

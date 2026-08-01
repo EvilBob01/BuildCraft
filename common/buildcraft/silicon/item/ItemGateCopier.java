@@ -50,7 +50,7 @@ public class ItemGateCopier extends ItemBC_Neptune {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (world.isClientSide) {
             return new ActionResult<>(InteractionResult.PASS, stack);
         }
@@ -78,10 +78,11 @@ public class ItemGateCopier extends ItemBC_Neptune {
     }
 
     public static CompoundTag getCopiedGateData(ItemStack stack) {
-        return stack.getSubCompound(NBT_DATA);
+        CompoundTag tag = stack.getTag();
+        return (tag != null && tag.contains(NBT_DATA)) ? tag.getCompound(NBT_DATA) : null;
     }
 
     public static void setCopiedGateData(ItemStack stack, CompoundTag nbt) {
-        NBTUtilBC.getItemData(stack).setTag(NBT_DATA, nbt);
+        NBTUtilBC.getItemData(stack).put(NBT_DATA, nbt);
     }
 }

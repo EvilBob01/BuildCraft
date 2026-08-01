@@ -37,12 +37,12 @@ public class FullStatement<S extends IStatement> implements IReference<S> {
     // NBT
 
     public void readFromNbt(CompoundTag nbt) {
-        statement = type.readFromNbt(nbt.getCompoundTag("s"));
+        statement = type.readFromNbt(nbt.getCompound("s"));
         if (statement == null) {
             Arrays.fill(params, null);
         } else {
             for (int p = 0; p < params.length; p++) {
-                CompoundTag pNbt = nbt.getCompoundTag(Integer.toString(p));
+                CompoundTag pNbt = nbt.getCompound(Integer.toString(p));
                 params[p] = StatementTypeParam.INSTANCE.readFromNbt(pNbt);
             }
         }
@@ -51,11 +51,11 @@ public class FullStatement<S extends IStatement> implements IReference<S> {
     public CompoundTag writeToNbt() {
         CompoundTag nbt = new CompoundTag();
         if (statement != null) {
-            nbt.setTag("s", type.writeToNbt(statement));
+            nbt.put("s", type.writeToNbt(statement));
             for (int p = 0; p < params.length; p++) {
                 IStatementParameter param = params[p];
                 if (param != null) {
-                    nbt.setTag(Integer.toString(p), StatementTypeParam.INSTANCE.writeToNbt(param));
+                    nbt.put(Integer.toString(p), StatementTypeParam.INSTANCE.writeToNbt(param));
                 }
             }
         }

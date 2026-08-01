@@ -148,13 +148,13 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
 
     public PluggableGate(PluggableDefinition def, IPipeHolder holder, Direction side, CompoundTag nbt) {
         super(def, holder, side);
-        logic = new GateLogic(this, nbt.getCompoundTag("data"));
+        logic = new GateLogic(this, nbt.getCompound("data"));
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.setTag("data", logic.writeToNbt());
+        nbt.put("data", logic.writeToNbt());
         return nbt;
     }
 
@@ -238,7 +238,7 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
 
     @Override
     public boolean onPluggableActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ) {
-        if (!player.world.isClientSide) {
+        if (!player.level().isClientSide) {
             if (interactWithCopier(player, player.getHeldItemMainhand())) {
                 return true;
             }
