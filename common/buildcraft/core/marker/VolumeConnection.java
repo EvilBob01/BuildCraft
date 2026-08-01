@@ -46,7 +46,7 @@ public class VolumeConnection extends MarkerConnection<VolumeConnection> {
         Direction directOffset = PositionUtil.getDirectFacingOffset(from, to);
         if (directOffset == null) return false;
         for (int i = 1; i <= BCCoreConfig.markerMaxDistance; i++) {
-            BlockPos offset = from.offset(directOffset, i);
+            BlockPos offset = from.relative(directOffset, i);
             if (offset.equals(to)) return true;
             if (subCache.hasLoadedOrUnloadedMarker(offset)) return false;
         }

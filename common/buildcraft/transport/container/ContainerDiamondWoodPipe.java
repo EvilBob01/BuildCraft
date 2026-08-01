@@ -37,7 +37,7 @@ public class ContainerDiamondWoodPipe extends ContainerPipe {
         addFullPlayerInventory(79);
 
         for (int i = 0; i < 9; i++) {
-            addSlotToContainer(new SlotPhantom(filterInv, i, 8 + i * 18, 18));
+            addSlot(new SlotPhantom(filterInv, i, 8 + i * 18, 18));
         }
     }
 

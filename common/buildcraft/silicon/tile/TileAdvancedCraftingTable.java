@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.net.MessageContext;
@@ -26,6 +26,10 @@ import buildcraft.lib.tile.craft.WorkbenchCrafting;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAutoCraft {
     private static final long POWER_REQ = 500 * MjAPI.MJ;
 
@@ -36,7 +40,8 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
 
     public ItemStack resultClient = ItemStack.EMPTY;
 
-    public TileAdvancedCraftingTable() {
+    public TileAdvancedCraftingTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         invBlueprint = itemManager.addInvHandler("blueprint", 3 * 3, EnumAccess.PHANTOM);
         invMaterials = itemManager.addInvHandler("materials", 5 * 3, EnumAccess.INSERT, EnumPipePart.VALUES);
         invResults = itemManager.addInvHandler("result", 3 * 3, EnumAccess.EXTRACT, EnumPipePart.VALUES);
@@ -99,7 +104,7 @@ public class TileAdvancedCraftingTable extends TileLaserTableBase implements IAu
 
     }
 
-    public InventoryCrafting getWorkbenchCrafting() {
+    public CraftingContainer getWorkbenchCrafting() {
         return crafting;
     }
 

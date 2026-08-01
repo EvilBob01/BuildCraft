@@ -1,10 +1,10 @@
 package buildcraft.api.items;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.IFluidTank;
 
 public class FluidItemDrops {
 

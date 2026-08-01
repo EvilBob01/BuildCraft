@@ -23,7 +23,7 @@ public enum EnumRedstoneChipset implements IStringSerializable {
             return ItemStack.EMPTY;
         }
 
-        return new ItemStack(chipset, stackSize, ordinal());
+        return new ItemStack(chipset, stackSize);
     }
 
     public ItemStack getStack() {

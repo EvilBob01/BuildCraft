@@ -7,7 +7,7 @@
 package buildcraft.transport.stripes;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.ItemHoe;
+import net.minecraft.world.item.ItemHoe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
@@ -33,7 +33,7 @@ public enum StripesHandlerHoe implements IStripesHandlerItem {
             return false;
         }
 
-        pos = pos.offset(direction);
+        pos = pos.relative(direction);
         if (stack.onItemUse(
                 player,
                 world,

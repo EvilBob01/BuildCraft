@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
-import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.neoforged.fml.common.event.FMLInterModComms;
 
 public final class FacadeAPI {
     public static final String IMC_MOD_TARGET = "buildcraftsilicon";

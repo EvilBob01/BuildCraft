@@ -1,8 +1,10 @@
 package buildcraft.energy.blocks;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
@@ -22,8 +24,8 @@ import buildcraft.energy.tile.TileDynamoMJ;
 
 public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotationHandler {
 
-    public BlockDynamoMJ(Material material, String id) {
-        super(material, id);
+    public BlockDynamoMJ(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -49,8 +51,6 @@ public class BlockDynamoMJ extends BlockBCTile_Neptune implements ICustomRotatio
         return false;
     }
 
-    @Override
-    @Deprecated
     public BlockFaceShape getBlockFaceShape(BlockGetter world, BlockState state, BlockPos pos, Direction side) {
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileDynamoMJ) {

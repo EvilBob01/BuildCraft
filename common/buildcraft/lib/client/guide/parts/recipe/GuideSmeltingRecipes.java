@@ -36,7 +36,7 @@ public enum GuideSmeltingRecipes implements IStackRecipes {
         Map<ItemStack, ItemStack> recipes, old = FurnaceRecipes.instance().getSmeltingList();
         recipes = new TreeMap<>(Comparator.comparing(ItemStack::getDisplayName));
         recipes.putAll(old);
-        if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+        if (stack.getId() == OreDictionary.WILDCARD_VALUE) {
             List<GuidePartFactory> list = new ArrayList<>();
             for (Entry<ItemStack, ItemStack> recipe : recipes.entrySet()) {
                 if (StackUtil.doesEitherStackMatch(stack, StackUtil.asNonNull(recipe.getValue()))//

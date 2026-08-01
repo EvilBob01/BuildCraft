@@ -35,12 +35,14 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.world.Explosion;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.minecraft.nbt.Tag;
+import buildcraft.lib.net.IMessage;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -138,7 +140,8 @@ public abstract class TileBC_Neptune extends BlockEntity
         }
     });
 
-    public TileBC_Neptune() {
+    public TileBC_Neptune(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addProvider(itemManager);
     }
 
@@ -198,7 +201,7 @@ public abstract class TileBC_Neptune extends BlockEntity
                     .blockPosToString(getBlockPos()) + ")"
             );
         }
-        return BlockUtil.getBlockEntity(getLevel(), getBlockPos().offset(offset), true);
+        return getLevel().getBlockEntity(getBlockPos().relative(offset));
     }
 
     /** @param offset The position of the {@link BlockEntity} to retrieve, <i>relative</i> to this
@@ -219,7 +222,7 @@ public abstract class TileBC_Neptune extends BlockEntity
                     .blockPosToString(getBlockPos()) + ")"
             );
         }
-        return BlockUtil.getBlockEntity(level, pos, true);
+        return level.getBlockEntity(pos);
     }
 
     public final LevelChunk getContainingChunk() {
@@ -293,9 +296,7 @@ public abstract class TileBC_Neptune extends BlockEntity
         tileCache.invalidate();
     }
 
-    @Override
     public void onChunkUnload() {
-        super.onChunkUnload();
         chunkCache.invalidate();
         tileCache.invalidate();
     }
@@ -364,7 +365,7 @@ public abstract class TileBC_Neptune extends BlockEntity
     protected void onSlotChange(IItemHandlerModifiable handler, int slot, @Nonnull ItemStack before,
         @Nonnull ItemStack after) {
         if (level.isLoaded(worldPosition)) {
-            if (getCurrentState().hasComparatorInputOverride()) {
+            if (getCurrentState().hasAnalogOutputSignal()) {
                 setChanged();
             } else {
                 markChunkDirty();
@@ -688,12 +689,12 @@ public abstract class TileBC_Neptune extends BlockEntity
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.loadAdditional(nbt, registries);
         migrateOldNBT(nbt.getInt("data-version"), nbt);
-        deltaManager.loadAdditional(nbt.getCompound("deltas"));
+        deltaManager.loadAdditional(nbt.getCompound("deltas"), registries);
         if (nbt.contains("owner")) {
-            owner = NbtUtils.readGameProfileFromNBT(nbt.getCompound("owner"));
+            owner = NbtUtils.readGameProfile(nbt.getCompound("owner"));
         }
         if (nbt.contains("items", Tag.TAG_COMPOUND)) {
-            itemManager.deserializeNBT(nbt.getCompound("items"));
+            itemManager.deserializeNBT(registries, nbt.getCompound("items"));
         }
         if (nbt.contains("tanks", Tag.TAG_COMPOUND)) {
             tankManager.deserializeNBT(nbt.getCompound("tanks"));
@@ -715,11 +716,11 @@ public abstract class TileBC_Neptune extends BlockEntity
     protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         nbt.putInt("data-version", BCVersion.CURRENT.dataVersion);
-        nbt.put("deltas", deltaManager.saveAdditional());
+        nbt.put("deltas", deltaManager.writeToNBT());
         if (owner != null && owner.isComplete() && owner != FakePlayerProvider.NULL_PROFILE) {
             nbt.put("owner", NbtUtils.writeGameProfile(new CompoundTag(), owner));
         }
-        CompoundTag items = itemManager.serializeNBT();
+        CompoundTag items = itemManager.serializeNBT(registries);
         if (!items.isEmpty()) {
             nbt.put("items", items);
         }

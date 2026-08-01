@@ -9,7 +9,7 @@ package buildcraft.transport.item;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +31,7 @@ public class ItemWire extends ItemBC_Neptune {
     @Override
     public void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         for (int i = 0; i < 16; i++) {
-            subItems.add(new ItemStack(this, 1, i));
+            subItems.add(new ItemStack(this, 1));
         }
     }
 
@@ -39,13 +39,13 @@ public class ItemWire extends ItemBC_Neptune {
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (DyeColor color : DyeColor.values()) {
-            addVariant(variants, color.getMetadata(), color.getName());
+            addVariant(variants, color.getId(), color.getName());
         }
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byMetadata(stack.getMetadata())) + " " + super.getItemStackDisplayName(stack);
+        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byId(stack.getId())) + " " + super.getItemStackDisplayName(stack);
     }
 
     @Override

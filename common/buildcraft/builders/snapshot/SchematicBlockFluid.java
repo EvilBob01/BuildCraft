@@ -7,6 +7,7 @@
 package buildcraft.builders.snapshot;
 
 import java.util.Arrays;
+import net.minecraft.world.level.material.Fluid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,8 +54,8 @@ public class SchematicBlockFluid implements ISchematicBlock {
     @Nonnull
     @Override
     public Set<BlockPos> getRequiredBlockOffsets() {
-        return Stream.concat(Arrays.stream(Direction.HORIZONTALS), Stream.of(Direction.DOWN))
-            .map(Direction::getDirectionVec)
+        return Stream.concat(Arrays.stream(Direction.Plane.HORIZONTAL.stream().toArray(Direction[]::new)), Stream.of(Direction.DOWN))
+            .map(Direction::getNormal)
             .map(BlockPos::new)
             .collect(Collectors.toSet());
     }
@@ -63,7 +64,7 @@ public class SchematicBlockFluid implements ISchematicBlock {
     @Override
     public List<FluidStack> computeRequiredFluids() {
         return Optional.ofNullable(BlockUtil.getFluidWithoutFlowing(blockState))
-            .map(fluid -> new FluidStack(fluid, Fluid.BUCKET_VOLUME))
+            .map(fluid -> new FluidStack(fluid, FluidType.BUCKET_VOLUME))
             .map(Collections::singletonList)
             .orElseGet(Collections::emptyList);
     }
@@ -90,12 +91,12 @@ public class SchematicBlockFluid implements ISchematicBlock {
         }
         if (world.setBlock(blockPos, blockState, 11)) {
             Stream.concat(
-                Stream.of(Direction.VALUES)
-                    .map(Direction::getDirectionVec)
+                Stream.of(Direction.values())
+                    .map(Direction::getNormal)
                     .map(BlockPos::new),
                 Stream.of(BlockPos.ORIGIN)
             )
-                .map(blockPos::add)
+                .map(blockPos::offset)
                 .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, blockState.getBlock(), false));
             return true;
         }

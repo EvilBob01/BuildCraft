@@ -25,7 +25,7 @@ import buildcraft.lib.misc.AdvancementUtil;
 import buildcraft.lib.misc.SoundUtil;
 
 public class ItemWrench_Neptune extends ItemBC_Neptune implements IToolWrench {
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftcore:wrenched");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftcore:wrenched");
 
     public ItemWrench_Neptune(String id) {
         super(id);

@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonToggle;
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.RecipeBookPage;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.stats.RecipeBook;
 
@@ -22,7 +22,7 @@ public class GuiRecipeBookPhantom extends GuiRecipeBook {
     private static final Field FIELD_GUI_BOOK;
     private static final Field FIELD_BUTTON_TOGGLE;
 
-    public final Consumer<IRecipe> recipeSetter;
+    public final Consumer<Recipe> recipeSetter;
     private boolean wasFilteringCraftable;
 
     // Unfortunately we have to use reflection in order to replace the necessary fields :(
@@ -59,7 +59,7 @@ public class GuiRecipeBookPhantom extends GuiRecipeBook {
         }
     }
 
-    public GuiRecipeBookPhantom(Consumer<IRecipe> recipeSetter) throws ReflectiveOperationException {
+    public GuiRecipeBookPhantom(Consumer<Recipe> recipeSetter) throws ReflectiveOperationException {
         this.recipeSetter = recipeSetter;
         FIELD_GUI_BOOK.set(this, new RecipeBookPagePhantom(this));
         // Filtering craftable is really strange with phantom inventories
@@ -77,7 +77,7 @@ public class GuiRecipeBookPhantom extends GuiRecipeBook {
     }
 
     @Override
-    public void initVisuals(boolean someBoolean, InventoryCrafting invCrafting) {
+    public void initVisuals(boolean someBoolean, CraftingContainer invCrafting) {
         // Remove the craftable toggle button: we can always craft everything (as we can only create ghosts)
         super.initVisuals(someBoolean, invCrafting);
         try {

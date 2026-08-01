@@ -7,6 +7,7 @@
 package buildcraft.silicon;
 
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.Block;
 
 import buildcraft.api.enums.EnumLaserTableType;
 

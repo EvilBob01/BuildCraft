@@ -100,7 +100,7 @@ public enum BCModules implements IBuildCraftMod {
     }
 
     public ResourceLocation createLocation(String path) {
-        return new ResourceLocation(getModId(), path);
+        return ResourceLocation.fromNamespaceAndPath(getModId(), path);
     }
 
     public ModelResourceLocation createModelLocation(String path, String variant) {

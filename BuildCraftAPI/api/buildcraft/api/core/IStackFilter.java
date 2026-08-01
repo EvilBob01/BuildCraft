@@ -7,7 +7,7 @@ package buildcraft.api.core;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 /** This interface provides a convenient means of dealing with entire classes of items without having to specify each
  * item individually. */

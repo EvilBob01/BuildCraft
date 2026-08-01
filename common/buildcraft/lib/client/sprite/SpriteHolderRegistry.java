@@ -62,7 +62,7 @@ public class SpriteHolderRegistry {
     }
 
     public static SpriteHolder getHolder(String location) {
-        return getHolder(new ResourceLocation(location));
+        return getHolder(ResourceLocation.parse(location));
     }
 
     public static void onTextureStitchPre(TextureMap map) {

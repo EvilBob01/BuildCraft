@@ -112,7 +112,7 @@ public class HashUtil {
 
     private static void writeStableCompound(CompoundTag nbt, DataOutput out) throws IOException {
         TreeMap<String, Tag> entries = new TreeMap<>();
-        for (String key : nbt.getKeySet()) {
+        for (String key : nbt.getAllKeys()) {
             entries.put(key, nbt.get(key));
         }
         for (String key : entries.keySet()) {

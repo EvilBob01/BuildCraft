@@ -72,8 +72,8 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
 
     @Override
     public void renderTileEntityFast(@Nonnull TileMiningWell tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("miner");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("miner");
 
         buffer.setTranslation(x, y, z);
         Direction facing = Direction.NORTH;
@@ -105,7 +105,7 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
             }
         }
 
-        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos().offset(facing), 0);
+        int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos().relative(facing), 0);
         LED_POWER.center.lighti(combinedLight);
         LED_STATUS.center.lighti(combinedLight);
 
@@ -126,8 +126,8 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
 
         tubeRenderer.renderTileEntityFast(tile, x, y, z, partialTicks, destroyStage, partial, buffer);
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.Locale;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
 import net.neoforged.api.distmarker.Dist;
@@ -39,7 +39,7 @@ public class ItemPlastic extends ItemBlockBCMulti {
     @OnlyIn(Dist.CLIENT)
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         for (DyeColor colour : DyeColor.values()) {
-            addVariant(variants, colour.getMetadata(), colour.getName());
+            addVariant(variants, colour.getId(), colour.getName());
         }
     }
 }

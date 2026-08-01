@@ -2,7 +2,8 @@ package buildcraft.silicon.plug;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;

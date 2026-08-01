@@ -6,6 +6,7 @@
 
 package buildcraft.transport.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +22,8 @@ import buildcraft.transport.BCTransportGuis;
 import buildcraft.transport.tile.TileFilteredBuffer;
 
 public class BlockFilteredBuffer extends BlockBCTile_Neptune {
-    public BlockFilteredBuffer(Material material, String id) {
-        super(material, id);
+    public BlockFilteredBuffer(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

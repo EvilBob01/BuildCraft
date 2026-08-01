@@ -138,12 +138,12 @@ public enum GuideManager implements IResourceManagerReloadListener {
     private void reload0(IResourceManager resourceManager) {
         Profiler prof = new Profiler();
         prof.profilingEnabled = DEBUG;
-        prof.startSection("root");
-        prof.startSection("reload");
+        prof.push("root");
+        prof.push("reload");
         Stopwatch watch = Stopwatch.createStarted();
 
         GuideGroupManager.get("lols", "hi");
-        prof.startSection("book_registry");
+        prof.push("book_registry");
         GuideBookRegistry.INSTANCE.reload();
         prof.endStartSection("page_registry");
         GuidePageRegistry.INSTANCE.reload();
@@ -201,15 +201,15 @@ public enum GuideManager implements IResourceManagerReloadListener {
 
         prof.endStartSection("contents_page");
         generateContentsPage(prof);
-        prof.endSection();
+        prof.pop();
 
         watch.stop();
         long time = watch.elapsed(TimeUnit.MICROSECONDS);
         int p = entries.size();
         int a = pages.size();
         int e = p - a;
-        prof.endSection();
-        prof.endSection();
+        prof.pop();
+        prof.pop();
         if (prof.profilingEnabled) {
             BCLog.logger.info("[lib.guide] " + pageLinksAdded.size() + " search terms");
             BCLog.logger.info(
@@ -227,11 +227,11 @@ public enum GuideManager implements IResourceManagerReloadListener {
         main_iteration: for (Entry<ResourceLocation, PageEntry<?>> mapEntry : GuidePageRegistry.INSTANCE
             .getReloadableEntryMap().entrySet()) {
             ResourceLocation entryKey = mapEntry.getKey();
-            String domain = entryKey.getResourceDomain();
-            String path = "compat/buildcraft/guide/" + lang + "/" + entryKey.getResourcePath();
+            String domain = entryKey.getNamespace();
+            String path = "compat/buildcraft/guide/" + lang + "/" + entryKey.getPath();
 
             for (Entry<String, IPageLoader> entry : PAGE_LOADERS.entrySet()) {
-                ResourceLocation fLoc = new ResourceLocation(domain, path + "." + entry.getKey());
+                ResourceLocation fLoc = ResourceLocation.fromNamespaceAndPath(domain, path + "." + entry.getKey());
 
                 try (IProfilerSection s = p.start("get_resource"); InputStream stream = resourceManager.getResource(
                     fLoc
@@ -269,7 +269,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
     }
 
     private void generateContentsPage(Profiler prof) {
-        prof.startSection("clear");
+        prof.push("clear");
         objectsAdded.clear();
         contents.clear();
         prof.endStartSection("setup");
@@ -294,9 +294,9 @@ public enum GuideManager implements IResourceManagerReloadListener {
             if (entryFactory != null) {
                 objectsAdded.add(entry.getBasicValue());
                 PageLinkNormal pageLink = new PageLinkNormal(line, true, entry.getTooltip(), entryFactory);
-                prof.startSection("add_child");
+                prof.push("add_child");
                 addChild(entry.book, entry.typeTags, pageLink);
-                prof.endSection();
+                prof.pop();
             }
         }
 
@@ -315,7 +315,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         final IEntryLinkConsumer adder = (tags, page) -> {
             assert tags.domain == null;
             assert tags.subType == null;
-            prof.startSection("add_child");
+            prof.push("add_child");
             if (pageLinksAdded.add(page)) {
                 quickSearcher.add(page, page.getSearchName());
             }
@@ -330,12 +330,12 @@ public enum GuideManager implements IResourceManagerReloadListener {
             } else {
                 throw new IllegalStateException("Unknown node type " + subNode.getClass());
             }
-            prof.endSection();
+            prof.pop();
         };
         for (PageValueType<?> type : GuidePageRegistry.INSTANCE.types.values()) {
-            prof.startSection(type.getClass().getName().replace('.', '/'));
+            prof.push(type.getClass().getName().replace('.', '/'));
             type.iterateAllDefault(adder, prof);
-            prof.endSection();
+            prof.pop();
         }
 
         prof.endStartSection("generate_quick_search");
@@ -347,7 +347,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
                 node.sort();
             }
         }
-        prof.endSection();
+        prof.pop();
     }
 
     private void genTypeMap(GuideBook book) {

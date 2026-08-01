@@ -26,7 +26,7 @@ public class MatrixUtil {
 
     static {
         ImmutableMap.Builder<Direction, Matrix4f> builder = ImmutableMap.builder();
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             Matrix4f mat = new Matrix4f();
             mat.setIdentity();
 
@@ -39,12 +39,12 @@ public class MatrixUtil {
             m2.setIdentity();
 
             if (face.getAxis() == Axis.Y) {
-                AxisAngle4f axisAngle = new AxisAngle4f(0, 0, 1, (float) Math.PI * 0.5f * -face.getFrontOffsetY());
+                AxisAngle4f axisAngle = new AxisAngle4f(0, 0, 1, (float) Math.PI * 0.5f * -face.getStepY());
                 m2.setRotation(axisAngle);
                 mat.mul(m2);
 
                 m2.setIdentity();
-                m2.setRotation(new AxisAngle4f(1, 0, 0, (float) Math.PI * (1 + face.getFrontOffsetY() * 0.5f)));
+                m2.setRotation(new AxisAngle4f(1, 0, 0, (float) Math.PI * (1 + face.getStepY() * 0.5f)));
                 mat.mul(m2);
             } else {
                 int ang;

@@ -6,6 +6,7 @@
 
 package buildcraft.robotics.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -22,8 +23,8 @@ import buildcraft.robotics.RoboticsGuis;
 import buildcraft.robotics.tile.TileZonePlanner;
 
 public class BlockZonePlanner extends BlockBCTile_Neptune implements IBlockWithFacing {
-    public BlockZonePlanner(Material material, String id) {
-        super(material, id);
+    public BlockZonePlanner(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

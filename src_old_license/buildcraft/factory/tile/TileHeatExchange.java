@@ -1,4 +1,4 @@
-package buildcraft.factory.tile;
+﻿package buildcraft.factory.tile;
 
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -143,7 +143,7 @@ public class TileHeatExchange extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.heatExchangeBlock) return;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         TileEntity tile = worldObj.getTileEntity(getPos().offset(exportDir));
         if (!(tile instanceof IPipeTile)) return;
         if (!(tile instanceof IFluidHandler)) return;
@@ -367,3 +367,4 @@ public class TileHeatExchange extends TileBuildCraft implements IFluidHandler, I
         return false;
     }
 }
+

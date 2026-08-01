@@ -42,7 +42,7 @@ public class ActionPipeDirection extends BCStatement implements IActionInternal 
 
     @Override
     public IStatement rotateLeft() {
-        Direction face = direction.getAxis() == Axis.Y ? direction : direction.rotateY();
+        Direction face = direction.getAxis() == Axis.Y ? direction : direction.getClockWise();
         return BCTransportStatements.ACTION_PIPE_DIRECTION[face.ordinal()];
     }
 
@@ -65,3 +65,4 @@ public class ActionPipeDirection extends BCStatement implements IActionInternal 
         return BCTransportStatements.ACTION_PIPE_DIRECTION;
     }
 }
+

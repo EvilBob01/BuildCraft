@@ -8,7 +8,7 @@ package buildcraft.lib.misc;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.SoundType;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.DyeColor;

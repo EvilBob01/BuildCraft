@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -37,7 +38,7 @@ import buildcraft.factory.tile.TileHeatExchange;
 
 public class BlockHeatExchange extends BlockBCTile_Neptune implements ICustomPipeConnection, IBlockWithFacing {
 
-    public enum EnumExchangePart implements IStringSerializable {
+    public enum EnumExchangePart implements StringRepresentable {
         START,
         MIDDLE,
         END;
@@ -55,8 +56,8 @@ public class BlockHeatExchange extends BlockBCTile_Neptune implements ICustomPip
     public static final Property<Boolean> PROP_CONNECTED_LEFT = PropertyBool.create("connected_left");
     public static final Property<Boolean> PROP_CONNECTED_RIGHT = PropertyBool.create("connected_right");
 
-    public BlockHeatExchange(Material material, String id) {
-        super(material, id);
+    public BlockHeatExchange(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -82,22 +83,22 @@ public class BlockHeatExchange extends BlockBCTile_Neptune implements ICustomPip
                 part = EnumExchangePart.MIDDLE;
             }
             Direction thisFacing = state.getValue(PROP_FACING);
-            state = state.withProperty(PROP_PART, part);
-            state = state.withProperty(PROP_CONNECTED_Y, false);
+            state = state.setValue(PROP_PART, part);
+            state = state.setValue(PROP_CONNECTED_Y, false);
 
-            boolean connectLeft = doesNeighbourConnect(world, pos, thisFacing, thisFacing.rotateY());
-            state = state.withProperty(PROP_CONNECTED_LEFT, connectLeft);
+            boolean connectLeft = doesNeighbourConnect(world, pos, thisFacing, thisFacing.getClockWise());
+            state = state.setValue(PROP_CONNECTED_LEFT, connectLeft);
 
-            boolean connectRight = doesNeighbourConnect(world, pos, thisFacing, thisFacing.rotateYCCW());
-            state = state.withProperty(PROP_CONNECTED_RIGHT, connectRight);
+            boolean connectRight = doesNeighbourConnect(world, pos, thisFacing, thisFacing.getCounterClockWise());
+            state = state.setValue(PROP_CONNECTED_RIGHT, connectRight);
         }
-        state = state.withProperty(PROP_CONNECTED_Y, false);
+        state = state.setValue(PROP_CONNECTED_Y, false);
         return state;
     }
 
     private static boolean doesNeighbourConnect(BlockGetter world, BlockPos pos, Direction thisFacing,
         Direction dir) {
-        BlockState neighbour = world.getBlockState(pos.offset(dir));
+        BlockState neighbour = world.getBlockState(pos.relative(dir));
         if (neighbour.getBlock() == BCFactoryBlocks.heatExchange) {
             return neighbour.getValue(PROP_FACING) == thisFacing;
         }
@@ -150,3 +151,4 @@ public class BlockHeatExchange extends BlockBCTile_Neptune implements ICustomPip
         return 0;
     }
 }
+

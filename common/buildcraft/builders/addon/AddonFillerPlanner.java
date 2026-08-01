@@ -90,7 +90,6 @@ public class AddonFillerPlanner extends Addon implements ISingleAddon, IFillerSt
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         nbt.put("patternStatement", patternStatement.writeToNbt());
         nbt.putBoolean("inverted", inverted);
-        return nbt;
     }
 
     @Override

@@ -96,7 +96,7 @@ public class TankManager extends ForwardingList<Tank> implements IFluidHandlerAd
         if (resource == null) {
             return null;
         }
-        FluidStack draining = new FluidStack(resource, 0);
+        FluidStack draining = resource.copyWithAmount(0);
         int left = resource.getAmount();
         for (Tank tank : getDrainOrderTanks()) {
             if (!draining.isFluidEqual(tank.getFluid())) {
@@ -143,13 +143,13 @@ public class TankManager extends ForwardingList<Tank> implements IFluidHandlerAd
                 continue;
             }
             if (draining == null) {
-                FluidStack drained = tank.drain(maxDrain, doDrain);
+                FluidStack drained = tank.drain(maxDrain, doDrain ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE);
                 if (drained != null && drained.getAmount() > 0) {
                     draining = drained;
                     maxDrain -= drained.getAmount();
                 }
             } else if (draining.isFluidEqual(tank.getFluid())) {
-                FluidStack drained = tank.drain(maxDrain, doDrain);
+                FluidStack drained = tank.drain(maxDrain, doDrain ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE);
                 if (drained != null && drained.getAmount() > 0) {
                     draining.setAmount(draining.getAmount() + drained.getAmount());
                     maxDrain -= drained.getAmount();

@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -15,8 +16,8 @@ import buildcraft.lib.registry.TagManager;
 import buildcraft.lib.registry.TagManager.EnumTagType;
 
 public class BlockEngine_BC8 extends BlockEngineBase_BC8<EnumEngineType> {
-    public BlockEngine_BC8(Material material, String id) {
-        super(material, id);
+    public BlockEngine_BC8(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

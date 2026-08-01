@@ -6,6 +6,7 @@
 
 package buildcraft.lib.misc;
 
+import net.minecraft.world.level.material.Fluid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,6 @@ import net.minecraft.world.level.Level;
 
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -41,11 +41,11 @@ public class FluidUtilBC {
             return;
         }
         FluidStack working = potential.copy();
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : Direction.values()) {
             if (potential.getAmount() <= 0) {
                 break;
             }
-            BlockEntity target = world.getBlockEntity(pos.offset(side));
+            BlockEntity target = world.getBlockEntity(pos.relative(side));
             if (target == null) {
                 continue;
             }
@@ -60,7 +60,7 @@ public class FluidUtilBC {
             }
         }
         if (drained > 0) {
-            FluidStack actuallyDrained = tank.drain(drained, true);
+            FluidStack actuallyDrained = tank.drain(drained, IFluidHandler.FluidAction.EXECUTE);
             if (actuallyDrained == null || actuallyDrained.getAmount() != drained) {
                 String strWorking = StringUtilBC.fluidToString(working);
                 String strActual = StringUtilBC.fluidToString(actuallyDrained);
@@ -113,10 +113,10 @@ public class FluidUtilBC {
         }
         FluidStack toDrainPotential;
         if (from instanceof IFluidHandlerAdv) {
-            IFluidFilter filter = f -> to.fill(f, false) > 0;
+            IFluidFilter filter = f -> to.fill(f, IFluidHandler.FluidAction.SIMULATE) > 0;
             toDrainPotential = ((IFluidHandlerAdv) from).drain(filter, max, false);
         } else {
-            toDrainPotential = from.drain(max, false);
+            toDrainPotential = from.drain(max, IFluidHandler.FluidAction.SIMULATE);
         }
         if (toDrainPotential == null) {
             return null;
@@ -125,9 +125,9 @@ public class FluidUtilBC {
         if (accepted <= 0) {
             return null;
         }
-        FluidStack toDrain = new FluidStack(toDrainPotential, accepted);
+        FluidStack toDrain = toDrainPotential.copyWithAmount(accepted);
         if (accepted < toDrainPotential.getAmount()) {
-            toDrainPotential = from.drain(toDrain, false);
+            toDrainPotential = from.drain(toDrain, IFluidHandler.FluidAction.SIMULATE);
             if (toDrainPotential == null || toDrainPotential.getAmount() < accepted) {
                 return null;
             }
@@ -141,7 +141,7 @@ public class FluidUtilBC {
             detail += ",\nIFluidHandler (to) = " + to.getClass() + "(" + to + ")";
             throw new IllegalStateException("Drained fluid did not equal expected fluid!\n" + detail);
         }
-        int actuallyAccepted = to.fill(drained, true);
+        int actuallyAccepted = to.fill(drained, IFluidHandler.FluidAction.EXECUTE);
         if (actuallyAccepted != accepted) {
             String detail = "(actually accepted = " + actuallyAccepted + ", accepted = " + accepted + ")";
             throw new IllegalStateException("Mismatched IFluidHandler implementations!\n" + detail);
@@ -159,14 +159,14 @@ public class FluidUtilBC {
         boolean single = held.getCount() == 1;
         IFluidHandlerItem flItem;
         if (replace && single) {
-            flItem = FluidUtil.getFluidHandler(held);
+            flItem = FluidUtil.getFluidHandler(held).orElse(null);
         } else {
             // replace and not single - need a copy and count set to 1
             // not replace and single - need a copy, does not need change of count but it should be ok
             // not replace and not single - need a copy count set to 1
             ItemStack copy = held.copy();
             copy.setCount(1);
-            flItem = FluidUtil.getFluidHandler(copy);
+            flItem = FluidUtil.getFluidHandler(copy).orElse(null);
         }
         if (flItem == null) {
             return false;

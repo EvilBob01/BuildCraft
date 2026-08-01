@@ -196,7 +196,7 @@ public class ColourUtil {
         }
         if (BCLibConfig.useColouredLabels) {
             ChatFormatting formatColour = convertColourToTextFormat(colour);
-            return COLOUR_SPECIAL_START + Integer.toHexString(colour.getMetadata())//
+            return COLOUR_SPECIAL_START + Integer.toHexString(colour.getId())//
                 + getTextFormatForBlack(formatColour) + LocaleUtil.localizeColour(colour) + ChatFormatting.RESET;
         }
         return LocaleUtil.localizeColour(colour);

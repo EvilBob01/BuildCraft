@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 /** Provides a way of registering complex recipes without needing to register every possible variant. If you want the

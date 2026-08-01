@@ -39,12 +39,12 @@ public class WireNode {
     }
 
     public WireNode offset(Direction face) {
-        int nx = (part.x == AxisDirection.POSITIVE ? 1 : 0) + face.getFrontOffsetX();
-        int ny = (part.y == AxisDirection.POSITIVE ? 1 : 0) + face.getFrontOffsetY();
-        int nz = (part.z == AxisDirection.POSITIVE ? 1 : 0) + face.getFrontOffsetZ();
+        int nx = (part.x == AxisDirection.POSITIVE ? 1 : 0) + face.getStepX();
+        int ny = (part.y == AxisDirection.POSITIVE ? 1 : 0) + face.getStepY();
+        int nz = (part.z == AxisDirection.POSITIVE ? 1 : 0) + face.getStepZ();
         EnumWirePart nPart = EnumWirePart.get(nx, ny, nz);
         if (nx < 0 || ny < 0 || nz < 0 || nx > 1 || ny > 1 || nz > 1) {
-            return new WireNode(pos.offset(face), nPart);
+            return new WireNode(pos.relative(face), nPart);
         } else {
             return new WireNode(pos, nPart);
         }
@@ -53,7 +53,7 @@ public class WireNode {
     public Map<Direction, WireNode> getAllPossibleConnections() {
         Map<Direction, WireNode> map = new EnumMap<>(Direction.class);
 
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             map.put(face, offset(face));
         }
         return map;

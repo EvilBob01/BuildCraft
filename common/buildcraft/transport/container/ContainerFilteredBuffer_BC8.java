@@ -21,7 +21,7 @@ public class ContainerFilteredBuffer_BC8 extends ContainerBCTile<TileFilteredBuf
 
         for (int i = 0; i < 9; i++) {
             // Filtered Buffer filter slots
-            addSlotToContainer(new SlotPhantom(tile.invFilter, i, 8 + i * 18, 27) {
+            addSlot(new SlotPhantom(tile.invFilter, i, 8 + i * 18, 27) {
                 @Override
                 public TextureAtlasSprite getBackgroundSprite() {
                     return BCTransportSprites.EMPTY_FILTERED_BUFFER_SLOT.getSprite();
@@ -33,7 +33,7 @@ public class ContainerFilteredBuffer_BC8 extends ContainerBCTile<TileFilteredBuf
                 }
             });
             // Filtered Buffer inventory slots
-            addSlotToContainer(new SlotBase(tile.invMain, i, 8 + i * 18, 61));
+            addSlot(new SlotBase(tile.invMain, i, 8 + i * 18, 61));
         }
     }
 }

@@ -4,59 +4,43 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.block;
 
-// TODO (Phase 8): This file's ~30 vanilla net.minecraft.block.Block* imports (BlockAnvil,
-// BlockDoor, BlockStairs, BlockChest, BlockHopper, BlockFurnace, etc.) all moved to
-// net.minecraft.world.level.block.<Name>Block in 1.21.1, but the rotation-handler logic below
-// also relies on old BlockState/property APIs (e.g. BlockLever.EnumOrientation, BlockDirectional,
-// BlockHorizontal, block.state.BlockFaceShape) that were restructured, not just renamed. This
-// needs a deliberate rewrite rather than a mechanical import fix; left untouched to avoid
-// introducing subtly-wrong rotation behavior under time pressure.
-
-import java.util.function.Function;
 import java.util.function.Predicate;
 
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.BannerBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.BlockBanner;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockCocoa;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockEndRod;
-import net.minecraft.block.BlockEnderChest;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.block.BlockGlazedTerracotta;
-import net.minecraft.block.BlockHopper;
-import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.BlockLadder;
-import net.minecraft.block.BlockLever;
-import net.minecraft.block.BlockLever.EnumOrientation;
-import net.minecraft.block.BlockObserver;
-import net.minecraft.block.BlockPistonBase;
-import net.minecraft.block.BlockPumpkin;
-import net.minecraft.block.BlockRedstoneDiode;
-import net.minecraft.block.BlockShulkerBox;
-import net.minecraft.block.BlockSkull;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockStandingSign;
-import net.minecraft.block.BlockTorch;
-import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.block.BlockTripWireHook;
-import net.minecraft.block.BlockWallSign;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CarvedPumpkinBlock;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.DiodeBlock;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.EndRodBlock;
+import net.minecraft.world.level.block.EnderChestBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.FurnaceBlock;
+import net.minecraft.world.level.block.GlazedTerracottaBlock;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.ObserverBlock;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.TripWireHookBlock;
+import net.minecraft.world.level.block.WallBannerBlock;
+import net.minecraft.world.level.block.WallSignBlock;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import buildcraft.api.blocks.CustomRotationHelper;
 import buildcraft.api.blocks.ICustomRotationHandler;
@@ -64,10 +48,7 @@ import buildcraft.api.blocks.ICustomRotationHandler;
 import buildcraft.lib.misc.collect.OrderedEnumMap;
 
 public class VanillaRotationHandlers {
-    /* Player friendly rotations- these only rotate through sides that are touching (only 90 degree changes, in any
-     * axis), rather than jumping around. */
     public static final OrderedEnumMap<Direction> ROTATE_HORIZONTAL, ROTATE_FACING, ROTATE_TORCH, ROTATE_HOPPER;
-    public static final OrderedEnumMap<EnumOrientation> ROTATE_LEVER;
 
     static {
         Direction e = Direction.EAST, w = Direction.WEST;
@@ -77,52 +58,32 @@ public class VanillaRotationHandlers {
         ROTATE_FACING = new OrderedEnumMap<>(Direction.class, e, s, d, w, n, u);
         ROTATE_TORCH = new OrderedEnumMap<>(Direction.class, e, s, w, n, u);
         ROTATE_HOPPER = new OrderedEnumMap<>(Direction.class, e, s, w, n, d);
-
-        EnumOrientation[] leverFaces = new EnumOrientation[8];
-        int index = 0;
-        for (Direction face : ROTATE_FACING.getOrder()) {
-            if (face == Direction.DOWN) {
-                leverFaces[index++] = EnumOrientation.DOWN_Z;
-                leverFaces[index++] = EnumOrientation.DOWN_X;
-            } else if (face == Direction.UP) {
-                leverFaces[index++] = EnumOrientation.UP_Z;
-                leverFaces[index++] = EnumOrientation.UP_X;
-            } else {
-                leverFaces[index++] = EnumOrientation.forFacings(face, null);
-            }
-        }
-        ROTATE_LEVER = new OrderedEnumMap<>(EnumOrientation.class, leverFaces);
     }
 
     public static void fmlInit() {
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockButton.class, VanillaRotationHandlers::rotateButton);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockTripWireHook.class, VanillaRotationHandlers::rotateTripWireHook);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockDoor.class, VanillaRotationHandlers::rotateDoor);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockPistonBase.class, VanillaRotationHandlers::rotatePiston);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockLever.class, VanillaRotationHandlers::rotateLever);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockShulkerBox.class, VanillaRotationHandlers::rotateShulkerBox);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockDispenser.class, getHandlerFreely(BlockDispenser.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockObserver.class, getHandlerFreely(BlockObserver.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockEndRod.class, getHandlerFreely(BlockEndRod.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockFenceGate.class, getHandlerHorizontalFreely(BlockFenceGate.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockRedstoneDiode.class, getHandlerHorizontalFreely(BlockRedstoneDiode.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockPumpkin.class, getHandlerHorizontalFreely(BlockPumpkin.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockGlazedTerracotta.class, getHandlerHorizontalFreely(BlockGlazedTerracotta.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockAnvil.class, getHandlerHorizontalFreely(BlockAnvil.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockEnderChest.class, getHandlerHorizontalFreely(BlockEnderChest.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockFurnace.class, getHandlerHorizontalFreely(BlockFurnace.class));
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockCocoa.class, VanillaRotationHandlers::rotateCocoa);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockTorch.class, VanillaRotationHandlers::rotateTorch);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockLadder.class, VanillaRotationHandlers::rotateLadder);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockHopper.class, VanillaRotationHandlers::rotateHopper);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockChest.class, VanillaRotationHandlers::rotateChest);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockTrapDoor.class, VanillaRotationHandlers::rotateTrapDoor);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockStairs.class, VanillaRotationHandlers::rotateStairs);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockSkull.class, VanillaRotationHandlers::rotateSkull);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockBanner.BlockBannerHanging.class, VanillaRotationHandlers::rotateHangingBanner);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockWallSign.class, VanillaRotationHandlers::rotateWallSign);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockBanner.BlockBannerStanding.class, VanillaRotationHandlers::rotateStandingBanner);
-        CustomRotationHelper.INSTANCE.registerHandlerForAll(BlockStandingSign.class, VanillaRotationHandlers::rotateStandingSign);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(ButtonBlock.class, VanillaRotationHandlers::rotateButton);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(TripWireHookBlock.class, VanillaRotationHandlers::rotateTripWireHook);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(DoorBlock.class, VanillaRotationHandlers::rotateDoor);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(PistonBaseBlock.class, VanillaRotationHandlers::rotatePiston);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(ShulkerBoxBlock.class, VanillaRotationHandlers::rotateShulkerBox);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(DispenserBlock.class, getHandlerFreely(DispenserBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(ObserverBlock.class, getHandlerFreely(ObserverBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(EndRodBlock.class, getHandlerFreely(EndRodBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(FenceGateBlock.class, getHandlerHorizontalFreely(FenceGateBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(DiodeBlock.class, getHandlerHorizontalFreely(DiodeBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(CarvedPumpkinBlock.class, getHandlerHorizontalFreely(CarvedPumpkinBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(GlazedTerracottaBlock.class, getHandlerHorizontalFreely(GlazedTerracottaBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(AnvilBlock.class, getHandlerHorizontalFreely(AnvilBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(EnderChestBlock.class, getHandlerHorizontalFreely(EnderChestBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(FurnaceBlock.class, getHandlerHorizontalFreely(FurnaceBlock.class));
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(LadderBlock.class, VanillaRotationHandlers::rotateLadder);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(HopperBlock.class, VanillaRotationHandlers::rotateHopper);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(ChestBlock.class, VanillaRotationHandlers::rotateChest);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(TrapDoorBlock.class, VanillaRotationHandlers::rotateTrapDoor);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(StairBlock.class, VanillaRotationHandlers::rotateStairs);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(BannerBlock.class, VanillaRotationHandlers::rotateStandingBanner);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(WallBannerBlock.class, VanillaRotationHandlers::rotateHangingBanner);
+        CustomRotationHelper.INSTANCE.registerHandlerForAll(WallSignBlock.class, VanillaRotationHandlers::rotateWallSign);
     }
 
     public static <T> int getOrdinal(T side, T[] array) {
@@ -133,151 +94,114 @@ public class VanillaRotationHandlers {
     }
 
     private static InteractionResult rotateDoor(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockDoor) {
+        if (state.getBlock() instanceof DoorBlock) {
             BlockPos upperPos, lowerPos;
             BlockState upperState, lowerState;
 
-            if (state.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.UPPER) {
+            if (state.getValue(DoorBlock.HALF) == DoubleBlockHalf.UPPER) {
                 upperPos = pos;
                 upperState = state;
-                lowerPos = upperPos.down();
+                lowerPos = upperPos.below();
                 lowerState = world.getBlockState(lowerPos);
-                if (!(lowerState.getBlock() instanceof BlockDoor)) {
+                if (!(lowerState.getBlock() instanceof DoorBlock)) {
                     return InteractionResult.PASS;
                 }
             } else {
                 lowerPos = pos;
                 lowerState = state;
-                upperPos = lowerPos.up();
+                upperPos = lowerPos.above();
                 upperState = world.getBlockState(upperPos);
-                if (!(upperState.getBlock() instanceof BlockDoor)) {
+                if (!(upperState.getBlock() instanceof DoorBlock)) {
                     return InteractionResult.PASS;
                 }
             }
 
-            if (lowerState.getValue(BlockDoor.FACING) == ROTATE_HORIZONTAL.get(0)) {
-                BlockDoor.EnumHingePosition hinge = upperState.getValue(BlockDoor.HINGE);
-                if (hinge == BlockDoor.EnumHingePosition.LEFT) {
-                    hinge = BlockDoor.EnumHingePosition.RIGHT;
+            if (lowerState.getValue(DoorBlock.FACING) == ROTATE_HORIZONTAL.get(0)) {
+                DoorHingeSide hinge = upperState.getValue(DoorBlock.HINGE);
+                if (hinge == DoorHingeSide.LEFT) {
+                    hinge = DoorHingeSide.RIGHT;
                 } else {
-                    hinge = BlockDoor.EnumHingePosition.LEFT;
+                    hinge = DoorHingeSide.LEFT;
                 }
-                world.setBlock(upperPos, upperState.withProperty(BlockDoor.HINGE, hinge));
+                world.setBlock(upperPos, upperState.setValue(DoorBlock.HINGE, hinge), 3);
             }
 
-            return rotateOnce(world, lowerPos, lowerState, BlockTrapDoor.FACING, ROTATE_HORIZONTAL);
+            return rotateOnce(world, lowerPos, lowerState, DoorBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateButton(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockButton) {
-            return rotateEnumFacing(world, pos, state, BlockButton.FACING, ROTATE_FACING);
+        if (state.getBlock() instanceof ButtonBlock) {
+            return rotateOnce(world, pos, state, ButtonBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateTripWireHook(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockTripWireHook) {
-            return rotateEnumFacing(world, pos, state, BlockTripWireHook.FACING, ROTATE_HORIZONTAL);
+        if (state.getBlock() instanceof TripWireHookBlock) {
+            return rotateOnce(world, pos, state, TripWireHookBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotatePiston(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockPistonBase) {
-            boolean extended = state.getValue(BlockPistonBase.EXTENDED);
+        if (state.getBlock() instanceof PistonBaseBlock) {
+            boolean extended = state.getValue(PistonBaseBlock.EXTENDED);
             if (extended) return InteractionResult.FAIL;
-            return rotateOnce(world, pos, state, BlockDirectional.FACING, ROTATE_FACING);
-        }
-        return InteractionResult.PASS;
-    }
-
-    private static InteractionResult rotateLever(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockLever) {
-            return rotateAnyTypeAuto(world, pos, state, BlockLever.FACING, ROTATE_LEVER, EnumOrientation::getFacing);
+            return rotateOnce(world, pos, state, DirectionalBlock.FACING, ROTATE_FACING);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateHopper(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockHopper) {
-            return rotateOnce(world, pos, state, BlockHopper.FACING, ROTATE_HOPPER);
+        if (state.getBlock() instanceof HopperBlock) {
+            return rotateOnce(world, pos, state, HopperBlock.FACING, ROTATE_HOPPER);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateShulkerBox(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockShulkerBox) {
-            return rotateOnce(world, pos, state, BlockShulkerBox.FACING, ROTATE_FACING);
+        if (state.getBlock() instanceof ShulkerBoxBlock) {
+            return rotateOnce(world, pos, state, ShulkerBoxBlock.FACING, ROTATE_FACING);
         }
         return InteractionResult.PASS;
     }
 
     private static ICustomRotationHandler getHandlerFreely(Class<? extends Block> blockClass) {
-        return (world, pos, state, sideWrenched) -> rotateFreely(world, pos, state, sideWrenched, blockClass);
+        return (world, pos, state, sideWrenched) -> rotateFreely(world, pos, state, blockClass);
     }
 
-    private static InteractionResult rotateFreely(Level world, BlockPos pos, BlockState state, Direction sideWrenched, Class<? extends Block> blockClass) {
+    private static InteractionResult rotateFreely(Level world, BlockPos pos, BlockState state, Class<? extends Block> blockClass) {
         if (blockClass.isInstance(state.getBlock())) {
-            return rotateOnce(world, pos, state, BlockDirectional.FACING, ROTATE_FACING);
+            return rotateOnce(world, pos, state, DirectionalBlock.FACING, ROTATE_FACING);
         }
         return InteractionResult.PASS;
     }
 
     private static ICustomRotationHandler getHandlerHorizontalFreely(Class<? extends Block> blockClass) {
-        return (world, pos, state, sideWrenched) -> rotateHorizontalFreely(world, pos, state, sideWrenched, blockClass);
+        return (world, pos, state, sideWrenched) -> rotateHorizontalFreely(world, pos, state, blockClass);
     }
 
-    private static InteractionResult rotateHorizontalFreely(Level world, BlockPos pos, BlockState state, Direction sideWrenched, Class<? extends Block> blockClass) {
+    private static InteractionResult rotateHorizontalFreely(Level world, BlockPos pos, BlockState state, Class<? extends Block> blockClass) {
         if (blockClass.isInstance(state.getBlock())) {
-            return rotateOnce(world, pos, state, BlockHorizontal.FACING, ROTATE_HORIZONTAL);
-        }
-        return InteractionResult.PASS;
-    }
-
-    private static InteractionResult rotateCocoa(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockCocoa) {
-            return rotateAnyTypeManual(world, pos, state, BlockCocoa.FACING, ROTATE_HORIZONTAL, toTry -> ((BlockCocoa) state.getBlock()).canBlockStay(world, pos, state.withProperty(BlockCocoa.FACING, toTry)));
+            return rotateOnce(world, pos, state, HorizontalDirectionalBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateLadder(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockLadder) {
-            Predicate<Direction> tester = toTry -> {
-                BlockPos offsetPos = pos.offset(toTry.getOpposite());
-                BlockState offsetState = world.getBlockState(offsetPos);
-                return !offsetState.canProvidePower() && offsetState.getBlockFaceShape(world, offsetPos, toTry) == BlockFaceShape.SOLID && !BlockBCBase_Neptune.isExceptBlockForAttachWithPiston(offsetState.getBlock());
-            };
-            return rotateAnyTypeManual(world, pos, state, BlockLadder.FACING, ROTATE_HORIZONTAL, tester);
-        }
-        return InteractionResult.PASS;
-    }
-
-    private static InteractionResult rotateTorch(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockTorch) {
-            Predicate<Direction> tester = toTry -> {
-                BlockPos offsetPos = pos.offset(toTry.getOpposite());
-                BlockState offsetState = world.getBlockState(offsetPos);
-
-                if (toTry == Direction.UP && offsetState.getBlock().canPlaceTorchOnTop(state, world, offsetPos)) {
-                    return true;
-                } else if (toTry != Direction.UP && toTry != Direction.DOWN) {
-                    return offsetState.getBlockFaceShape(world, offsetPos, toTry) == BlockFaceShape.SOLID && !BlockBCBase_Neptune.isExceptBlockForAttachWithPiston(offsetState.getBlock());
-                }
-                return false;
-            };
-            return rotateAnyTypeManual(world, pos, state, BlockTorch.FACING, ROTATE_TORCH, tester);
+        if (state.getBlock() instanceof LadderBlock) {
+            return rotateOnce(world, pos, state, LadderBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateChest(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockChest) {
+        if (state.getBlock() instanceof ChestBlock) {
             BlockPos otherPos = null;
             for (Direction facing : Direction.Plane.HORIZONTAL) {
-                BlockPos candidate = pos.offset(facing);
+                BlockPos candidate = pos.relative(facing);
                 if (world.getBlockState(candidate).getBlock() == state.getBlock()) {
                     otherPos = candidate;
                     break;
@@ -286,164 +210,86 @@ public class VanillaRotationHandlers {
 
             if (otherPos != null) {
                 BlockState otherState = world.getBlockState(otherPos);
-                Direction facing = state.getValue(BlockChest.FACING);
-                if (otherState.getValue(BlockChest.FACING) == facing) {
-                    world.setBlock(pos, state.withProperty(BlockChest.FACING, facing.getOpposite()));
-                    world.setBlock(otherPos, otherState.withProperty(BlockChest.FACING, facing.getOpposite()));
+                Direction facing = state.getValue(ChestBlock.FACING);
+                if (otherState.getValue(ChestBlock.FACING) == facing) {
+                    world.setBlock(pos, state.setValue(ChestBlock.FACING, facing.getOpposite()), 3);
+                    world.setBlock(otherPos, otherState.setValue(ChestBlock.FACING, facing.getOpposite()), 3);
                     return InteractionResult.SUCCESS;
                 }
             }
 
-            return rotateOnce(world, pos, state, BlockChest.FACING, ROTATE_HORIZONTAL);
+            return rotateOnce(world, pos, state, ChestBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateTrapDoor(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockTrapDoor) {
-
-            if (state.getValue(BlockTrapDoor.FACING) == ROTATE_HORIZONTAL.get(0)) {
-                BlockTrapDoor.DoorHalf half = state.getValue(BlockTrapDoor.HALF);
-                if (half == BlockTrapDoor.DoorHalf.TOP) {
-                    half = BlockTrapDoor.DoorHalf.BOTTOM;
-                } else {
-                    half = BlockTrapDoor.DoorHalf.TOP;
-                }
-                state = state.withProperty(BlockTrapDoor.HALF, half);
+        if (state.getBlock() instanceof TrapDoorBlock) {
+            if (state.getValue(TrapDoorBlock.FACING) == ROTATE_HORIZONTAL.get(0)) {
+                Half half = state.getValue(TrapDoorBlock.HALF);
+                half = half == Half.TOP ? Half.BOTTOM : Half.TOP;
+                state = state.setValue(TrapDoorBlock.HALF, half);
             }
-
-            return rotateOnce(world, pos, state, BlockTrapDoor.FACING, ROTATE_HORIZONTAL);
+            return rotateOnce(world, pos, state, TrapDoorBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateStairs(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockStairs) {
-
-            if (state.getValue(BlockStairs.FACING) == ROTATE_HORIZONTAL.get(0)) {
-                BlockStairs.EnumHalf half = state.getValue(BlockStairs.HALF);
-                if (half == BlockStairs.EnumHalf.TOP) {
-                    half = BlockStairs.EnumHalf.BOTTOM;
-                } else {
-                    half = BlockStairs.EnumHalf.TOP;
-                }
-                state = state.withProperty(BlockStairs.HALF, half);
+        if (state.getBlock() instanceof StairBlock) {
+            if (state.getValue(StairBlock.FACING) == ROTATE_HORIZONTAL.get(0)) {
+                Half half = state.getValue(StairBlock.HALF);
+                half = half == Half.TOP ? Half.BOTTOM : Half.TOP;
+                state = state.setValue(StairBlock.HALF, half);
             }
-
-            return rotateOnce(world, pos, state, BlockStairs.FACING, ROTATE_HORIZONTAL);
-        }
-        return InteractionResult.PASS;
-    }
-
-    private static InteractionResult rotateSkull(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockSkull) {
-
-            if (state.getValue(BlockSkull.FACING).getAxis().isVertical()) {
-                BlockEntity tile = world.getBlockEntity(pos);
-                if (tile instanceof TileEntitySkull) {
-                    TileEntitySkull tileSkull = (TileEntitySkull) tile;
-
-                    int rot = ObfuscationReflectionHelper.getPrivateValue(TileEntitySkull.class, tileSkull, "skullRotation", "field_" + "145910_i");
-                    rot = (rot + 1) % 16;
-
-                    tileSkull.setSkullRotation(rot);
-                    tileSkull.setChanged();
-                    world.sendBlockUpdated(pos, state, state, 3);
-
-                    return InteractionResult.SUCCESS;
-                }
-                return InteractionResult.PASS;
-            }
-
-            return rotateOnce(world, pos, state, BlockSkull.FACING, ROTATE_HORIZONTAL);
+            return rotateOnce(world, pos, state, StairBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateHangingBanner(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockBanner.BlockBannerHanging) {
-            return rotateAnyTypeManual(world, pos, state, BlockBanner.FACING, ROTATE_HORIZONTAL, toTry -> world.getBlockState(pos.offset(toTry.getOpposite())).getMaterial().isSolid());
+        if (state.getBlock() instanceof WallBannerBlock) {
+            return rotateOnce(world, pos, state, WallBannerBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateWallSign(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockWallSign) {
-            return rotateAnyTypeManual(world, pos, state, BlockWallSign.FACING, ROTATE_HORIZONTAL, toTry -> world.getBlockState(pos.offset(toTry.getOpposite())).getMaterial().isSolid());
+        if (state.getBlock() instanceof WallSignBlock) {
+            return rotateOnce(world, pos, state, WallSignBlock.FACING, ROTATE_HORIZONTAL);
         }
         return InteractionResult.PASS;
     }
 
     private static InteractionResult rotateStandingBanner(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockBanner.BlockBannerStanding) {
-            world.setBlock(pos, state.withProperty(BlockBanner.ROTATION, (state.getValue(BlockBanner.ROTATION) + 1) % 16));
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
-    }
-
-    private static InteractionResult rotateStandingSign(Level world, BlockPos pos, BlockState state, Direction sideWrenched) {
-        if (state.getBlock() instanceof BlockStandingSign) {
-            world.setBlock(pos, state.withProperty(BlockStandingSign.ROTATION, (state.getValue(BlockStandingSign.ROTATION) + 1) % 16));
+        if (state.getBlock() instanceof BannerBlock) {
+            world.setBlock(pos, state.setValue(BannerBlock.ROTATION, (state.getValue(BannerBlock.ROTATION) + 1) % 16), 3);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }
 
     public static InteractionResult rotateEnumFacing(Level world, BlockPos pos, BlockState state, Property<Direction> prop, OrderedEnumMap<Direction> possible) {
-        return rotateAnyTypeAuto(world, pos, state, prop, possible, f -> f);
+        return rotateOnce(world, pos, state, prop, possible);
     }
 
-    public static <E extends Enum<E> & Comparable<E>> InteractionResult rotateOnce
-        //@formatter:off
-    (
-        Level world,
-        BlockPos pos,
-        BlockState state,
-        Property<E> prop,
-        OrderedEnumMap<E> possible
-    )
-    //@formatter:on
-    {
+    public static <E extends Enum<E> & Comparable<E>> InteractionResult rotateOnce(
+        Level world, BlockPos pos, BlockState state, Property<E> prop, OrderedEnumMap<E> possible
+    ) {
         E current = state.getValue(prop);
         current = possible.next(current);
-        world.setBlock(pos, state.withProperty(prop, current));
+        world.setBlock(pos, state.setValue(prop, current), 3);
         return InteractionResult.SUCCESS;
     }
 
-    public static <E extends Enum<E> & Comparable<E>> InteractionResult rotateAnyTypeAuto
-        //@formatter:off
-    (
-        Level world,
-        BlockPos pos,
-        BlockState state,
-        Property<E> prop,
-        OrderedEnumMap<E> possible,
-        Function<E, Direction> mapper
-    )
-    //@formatter:on
-    {
-        Predicate<E> tester = toTry -> state.getBlock().canPlaceBlockOnSide(world, pos, mapper.apply(toTry));
-        return rotateAnyTypeManual(world, pos, state, prop, possible, tester);
-    }
-
-    public static <E extends Enum<E> & Comparable<E>> InteractionResult rotateAnyTypeManual
-        //@formatter:off
-    (
-        Level world,
-        BlockPos pos,
-        BlockState state,
-        Property<E> prop,
-        OrderedEnumMap<E> possible,
-        Predicate<E> canPlace
-    )
-    //@formatter:on
-    {
+    public static <E extends Enum<E> & Comparable<E>> InteractionResult rotateAnyTypeManual(
+        Level world, BlockPos pos, BlockState state, Property<E> prop, OrderedEnumMap<E> possible, Predicate<E> canPlace
+    ) {
         E current = state.getValue(prop);
         for (int i = possible.getOrderLength(); i > 1; i--) {
             current = possible.next(current);
             if (canPlace.test(current)) {
-                world.setBlock(pos, state.withProperty(prop, current));
+                world.setBlock(pos, state.setValue(prop, current), 3);
                 return InteractionResult.SUCCESS;
             }
         }

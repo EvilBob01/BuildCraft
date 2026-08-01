@@ -46,12 +46,12 @@ public class StatementParameterDirection implements IStatementParameter {
     @OnlyIn(Dist.CLIENT)
     public void registerIcons(TextureMap map) {
         sprites = new TextureAtlasSprite[] {
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_down")),
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_up")),
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_north")),
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_south")),
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_west")),
-            map.registerSprite(new ResourceLocation("buildcraftcore:triggers/trigger_dir_east"))
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_down")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_up")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_north")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_south")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_west")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_east"))
         };
     }
 
@@ -100,7 +100,7 @@ public class StatementParameterDirection implements IStatementParameter {
 //    @Override
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         if (nbt.contains("direction")) {
-            direction = Direction.VALUES[nbt.getByte("direction")];
+            direction = Direction.values()[nbt.getByte("direction")];
         } else {
             direction = null;
         }
@@ -140,7 +140,7 @@ public class StatementParameterDirection implements IStatementParameter {
         StatementParameterDirection d = new StatementParameterDirection();
         Direction dir = d.getDirection();
         if (dir != null && dir.getAxis() != Axis.Y) {
-            d.direction = dir.rotateY();
+            d.direction = dir.getClockWise();
         }
         return d;
     }
@@ -150,11 +150,12 @@ public class StatementParameterDirection implements IStatementParameter {
         IStatementParameter[] possible = new IStatementParameter[7];
         for (EnumPipePart part : EnumPipePart.VALUES) {
             if (part.face == direction) {
-                possible[part.getIndex()] = this;
+                possible[part.get3DDataValue()] = this;
             } else {
-                possible[part.getIndex()] = new StatementParameterDirection(part.face);
+                possible[part.get3DDataValue()] = new StatementParameterDirection(part.face);
             }
         }
         return possible;
     }
 }
+

@@ -111,7 +111,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         }
         if (amount > 0) {
             ItemStack stack = new ItemStack(this);
-            setFluid(stack, new FluidStack(fluid, amount));
+            setFluid(stack, fluid.copyWithAmount(amount));
             toDrop.add(stack);
         }
     }
@@ -168,7 +168,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
                 return null;
             }
             int toDrain = Math.min(maxDrain, fluid.getAmount());
-            FluidStack f = new FluidStack(fluid, toDrain);
+            FluidStack f = fluid.copyWithAmount(toDrain);
             if (action.execute()) {
                 fluid.setAmount(fluid.getAmount() - toDrain);
                 if (fluid.getAmount() <= 0) {

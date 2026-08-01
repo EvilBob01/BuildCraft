@@ -24,25 +24,25 @@ public class RenderFiller extends FastTESR<TileFiller> {
     @Override
     public void renderTileEntityFast(TileFiller tile, double x, double y, double z, float partialTicks,
         int destroyStage, float partial, BufferBuilder bb) {
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("filler");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("filler");
 
-        Minecraft.getInstance().mcProfiler.startSection("main");
+        Minecraft.getInstance().mcProfiler.push("main");
         if (tile.getBuilder() != null) {
             RenderSnapshotBuilder.render(tile.getBuilder(), tile.getLevel(), tile.getBlockPos(), x, y, z, partialTicks, bb);
         }
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
 
-        Minecraft.getInstance().mcProfiler.startSection("box");
+        Minecraft.getInstance().mcProfiler.push("box");
         if (tile.markerBox) {
             bb.setTranslation(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
             LaserBoxRenderer.renderLaserBoxDynamic(tile.box, BuildCraftLaserManager.STRIPES_WRITE, bb, true);
             bb.setTranslation(0, 0, 0);
         }
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     @Override

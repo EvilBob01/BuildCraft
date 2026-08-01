@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -67,7 +67,7 @@ public class ItemGateCopier extends ItemBC_Neptune {
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
         nbt.removeTag(NBT_DATA);
         if (nbt.hasNoTags()) {
-            stack.setTagCompound(null);
+            stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
@@ -78,7 +78,7 @@ public class ItemGateCopier extends ItemBC_Neptune {
     }
 
     public static CompoundTag getCopiedGateData(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = NBTUtilBC.getTag(stack);
         return (tag != null && tag.contains(NBT_DATA)) ? tag.getCompound(NBT_DATA) : null;
     }
 

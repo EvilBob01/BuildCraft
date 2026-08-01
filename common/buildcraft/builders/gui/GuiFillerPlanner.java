@@ -14,7 +14,7 @@ import buildcraft.builders.container.ContainerFillerPlanner;
 import buildcraft.builders.filler.FillerStatementContext;
 
 public class GuiFillerPlanner extends GuiBC8<ContainerFillerPlanner> {
-    private static final ResourceLocation LOCATION = new ResourceLocation("buildcraftbuilders:gui/filler_planner.json");
+    private static final ResourceLocation LOCATION = ResourceLocation.parse("buildcraftbuilders:gui/filler_planner.json");
     private static final SpriteDelegate SPRITE_PATTERN = new SpriteDelegate();
 
     public GuiFillerPlanner(ContainerFillerPlanner container) {

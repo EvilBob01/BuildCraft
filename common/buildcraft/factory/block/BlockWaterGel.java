@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,23 +14,26 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Set;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.block.SoundType;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.Direction;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 import buildcraft.lib.misc.SoundUtil;
@@ -37,7 +41,7 @@ import buildcraft.lib.misc.SoundUtil;
 import buildcraft.factory.BCFactoryItems;
 
 public class BlockWaterGel extends BlockBCBase_Neptune {
-    public enum GelStage implements IStringSerializable {
+    public enum GelStage implements StringRepresentable {
         SPREAD_0(0.3f, true, 3),
         SPREAD_1(0.4f, true, 3),
         SPREAD_2(0.6f, true, 3),
@@ -54,21 +58,18 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
         public final float hardness;
 
         GelStage(float pitch, boolean spreading, float hardness) {
-            this.soundType = new SoundType(//
-                SoundType.SLIME.volume, //
-                pitch, //
-                SoundEvents.BLOCK_SLIME_BREAK, //
-                SoundEvents.BLOCK_SLIME_STEP, //
-                SoundEvents.BLOCK_SLIME_PLACE, //
-                SoundEvents.BLOCK_SLIME_HIT, //
-                SoundEvents.BLOCK_SLIME_FALL//
-            );
+            this.soundType = new SoundType(1.0f, pitch,
+                SoundEvents.SLIME_BLOCK_BREAK,
+                SoundEvents.SLIME_BLOCK_STEP,
+                SoundEvents.SLIME_BLOCK_PLACE,
+                SoundEvents.SLIME_BLOCK_HIT,
+                SoundEvents.SLIME_BLOCK_FALL);
             this.spreading = spreading;
             this.hardness = hardness;
         }
 
         @Override
-        public String getName() {
+        public String getSerializedName() {
             return modelName;
         }
 
@@ -93,47 +94,36 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
         }
     }
 
-    public static final PropertyEnum<GelStage> PROP_STAGE = PropertyEnum.create("stage", GelStage.class);
+    public static final EnumProperty<GelStage> PROP_STAGE = EnumProperty.create("stage", GelStage.class);
 
-    public BlockWaterGel(Material material, String id) {
-        super(material, id);
-        setSoundType(SoundType.SLIME);
+    public BlockWaterGel(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     // BlockState
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, PROP_STAGE);
-    }
-
-    @Override
-    public BlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(PROP_STAGE, GelStage.fromMeta(meta & 7));
-    }
-
-    @Override
-    public int getMetaFromState(BlockState state) {
-        return state.getValue(PROP_STAGE).getMeta();
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(PROP_STAGE);
     }
 
     // Logic
 
     @Override
-    public void updateTick(Level world, BlockPos pos, BlockState state, Random rand) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
         GelStage stage = state.getValue(PROP_STAGE);
         GelStage next = stage.next();
-        BlockState nextState = state.withProperty(PROP_STAGE, next);
+        BlockState nextState = state.setValue(PROP_STAGE, next);
         if (stage.spreading) {
             Deque<BlockPos> openQueue = new ArrayDeque<>();
             Set<BlockPos> seenSet = new HashSet<>();
             List<BlockPos> changeable = new ArrayList<>();
             List<Direction> faces = new ArrayList<>();
-            Collections.addAll(faces, Direction.VALUES);
+            Collections.addAll(faces, Direction.values());
             Collections.shuffle(faces);
             seenSet.add(pos);
             for (Direction face : faces) {
-                openQueue.add(pos.offset(face));
+                openQueue.add(pos.relative(face));
             }
             Collections.shuffle(faces);
             int tries = 0;
@@ -144,13 +134,13 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
                 boolean water = isWater(world, test);
                 boolean spreadable = water || canSpread(world, test);
 
-                if (water && world.getBlockState(test).getValue(BlockLiquid.LEVEL) == 0) {
+                if (water && world.getBlockState(test).getValue(LiquidBlock.LEVEL) == 0) {
                     changeable.add(test);
                 }
                 if (spreadable) {
                     Collections.shuffle(faces);
                     for (Direction face : faces) {
-                        BlockPos n = test.offset(face);
+                        BlockPos n = test.relative(face);
                         if (seenSet.add(n)) {
                             openQueue.add(n);
                         }
@@ -159,18 +149,18 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
                 tries++;
             }
             final int time = next.spreading ? 200 : 400;
-            if (changeable.size() == 3 || world.rand.nextDouble() < 0.5) {
+            if (changeable.size() == 3 || world.getRandom().nextDouble() < 0.5) {
                 for (BlockPos p : changeable) {
-                    world.setBlock(p, nextState);
+                    world.setBlock(p, nextState, 3);
                     world.scheduleTick(p, this, rand.nextInt(150) + time);
                 }
-                world.setBlock(pos, nextState);
+                world.setBlock(pos, nextState, 3);
                 SoundUtil.playBlockPlace(world, pos);
             }
             world.scheduleTick(pos, this, rand.nextInt(150) + time);
         } else if (stage != next) {
             if (notTouchingWater(world, pos)) {
-                world.setBlock(pos, nextState);
+                world.setBlock(pos, nextState, 3);
                 world.scheduleTick(pos, this, rand.nextInt(150) + 400);
             } else {
                 world.scheduleTick(pos, this, rand.nextInt(150) + 600);
@@ -179,8 +169,8 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
     }
 
     private static boolean notTouchingWater(Level world, BlockPos pos) {
-        for (Direction face : Direction.VALUES) {
-            if (isWater(world, pos.offset(face))) {
+        for (Direction face : Direction.values()) {
+            if (isWater(world, pos.relative(face))) {
                 return false;
             }
         }
@@ -203,29 +193,8 @@ public class BlockWaterGel extends BlockBCBase_Neptune {
     // Misc
 
     @Override
-    public SoundType getSoundType(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, Entity entity) {
         GelStage stage = state.getValue(PROP_STAGE);
         return stage.soundType;
-    }
-
-    @Override
-    public float getBlockHardness(BlockState state, Level world, BlockPos pos) {
-        GelStage stage = state.getValue(PROP_STAGE);
-        return stage.hardness;
-    }
-
-    @Override
-    public Item getItemDropped(BlockState state, Random rand, int fortune) {
-        return BCFactoryItems.gelledWater;
-    }
-
-    @Override
-    public int quantityDropped(BlockState state, int fortune, Random random) {
-        GelStage stage = state.getValue(PROP_STAGE);
-        if (stage.spreading) {
-            return random.nextInt(2) + 1;
-        } else {
-            return 1;
-        }
     }
 }

@@ -8,7 +8,10 @@ package buildcraft.lib.tile;
 
 import java.util.List;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import buildcraft.api.tiles.IDebuggable;
 
@@ -17,6 +20,11 @@ import buildcraft.lib.marker.MarkerConnection;
 import buildcraft.lib.marker.MarkerSubCache;
 
 public abstract class TileMarker<C extends MarkerConnection<C>> extends TileBC_Neptune implements IDebuggable {
+
+    public TileMarker(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
     public abstract MarkerCache<? extends MarkerSubCache<C>> getCache();
 
     public MarkerSubCache<C> getLocalCache() {

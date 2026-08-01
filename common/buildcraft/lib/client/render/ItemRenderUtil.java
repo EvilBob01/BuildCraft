@@ -38,7 +38,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.ReportedException;
 import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -136,8 +136,8 @@ public class ItemRenderUtil {
             CrashReportCategory category = report.makeCategory("Item being rendered");
             category.addCrashSection("Stack Count", stackCount);
             category.addDetail("Item Class", () -> "" + stack.getItem().getClass());
-            category.addDetail("Item ID", () -> "" + ForgeRegistries.ITEMS.getKey(stack.getItem()));
-            category.addDetail("Item Meta", () -> "" + stack.getMetadata());
+            category.addDetail("Item ID", () -> "" + BuiltInRegistries.ITEM.getKey(stack.getItem()));
+            category.addDetail("Item Meta", () -> "" + stack.getId());
             category.addDetail("Item NBT", () -> "" + stack.getTag());
             throw new ReportedException(report);
         }
@@ -225,8 +225,8 @@ public class ItemRenderUtil {
             if (regName == null) {
                 seed = 127;
             } else {
-                int regNameSeed = regName.getResourceDomain().hashCode() ^ regName.getResourcePath().hashCode();
-                seed = (regNameSeed & 0x7F_FF_FF_FF) | (((long) stack.getMetadata()) << 32);
+                int regNameSeed = regName.getNamespace().hashCode() ^ regName.getPath().hashCode();
+                seed = (regNameSeed & 0x7F_FF_FF_FF) | (((long) stack.getId()) << 32);
             }
         }
         modelOffsetRandom.setSeed(seed);

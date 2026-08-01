@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
 
 import buildcraft.lib.net.MessageContext;
@@ -30,6 +32,7 @@ import buildcraft.lib.misc.StackUtil;
 import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.net.MessageManager;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -94,7 +97,8 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
     public final DeltaInt deltaProgressOutput = deltaManager.addDelta("progressOutput", EnumNetworkVisibility.GUI_ONLY);
     public ZonePlan[] layers = new ZonePlan[16];
 
-    public TileZonePlanner() {
+    public TileZonePlanner(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         for (int i = 0; i < layers.length; i++) {
             layers[i] = new ZonePlan();
         }
@@ -150,7 +154,6 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
             layer.saveAdditional(layerCompound);
             nbt.put("layer_" + i, layerCompound);
         }
-        return nbt;
     }
 
     @Override
@@ -200,7 +203,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
 
                 ZonePlan zonePlan = new ZonePlan();
                 zonePlan.loadAdditional(invInputMapLocation.getStackInSlot(0).getTag());
-                layers[BCCoreItems.paintbrush.getBrushFromStack(invInputPaintbrush.getStackInSlot(0)).colour.getMetadata()] = zonePlan.getWithOffset(-worldPosition.getX(), -worldPosition.getZ());
+                layers[BCCoreItems.paintbrush.getBrushFromStack(invInputPaintbrush.getStackInSlot(0)).colour.getId()] = zonePlan.getWithOffset(-worldPosition.getX(), -worldPosition.getZ());
                 invInputMapLocation.setStackInSlot(0, StackUtil.EMPTY);
                 invInputResult.setStackInSlot(0, new ItemStack(BCCoreItems.mapLocation));
                 this.setChanged();
@@ -224,7 +227,7 @@ public class TileZonePlanner extends TileBC_Neptune implements ITickable, IDebug
                     return;
                 }
 
-                ItemMapLocation.setZone(invOutputMapLocation.getStackInSlot(0), layers[BCCoreItems.paintbrush.getBrushFromStack(invOutputPaintbrush.getStackInSlot(0)).colour.getMetadata()]
+                ItemMapLocation.setZone(invOutputMapLocation.getStackInSlot(0), layers[BCCoreItems.paintbrush.getBrushFromStack(invOutputPaintbrush.getStackInSlot(0)).colour.getId()]
                     .getWithOffset(worldPosition.getX(), worldPosition.getZ()));
                 invOutputResult.setStackInSlot(0, invOutputMapLocation.getStackInSlot(0));
                 invOutputMapLocation.setStackInSlot(0, StackUtil.EMPTY);

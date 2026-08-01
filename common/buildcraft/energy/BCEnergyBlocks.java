@@ -7,6 +7,7 @@
 package buildcraft.energy;
 
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.Block;
 
 import buildcraft.api.enums.EnumEngineType;
 import buildcraft.api.enums.EnumSpring;

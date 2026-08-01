@@ -18,7 +18,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.world.level.block.entity.TileEntitySkull;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.render.ISprite;
@@ -28,7 +28,7 @@ import buildcraft.lib.client.sprite.SpriteRaw;
 
 public class SpriteUtil {
 
-    private static final ResourceLocation LOCATION_SKIN_LOADING = new ResourceLocation("skin:loading");
+    private static final ResourceLocation LOCATION_SKIN_LOADING = ResourceLocation.parse("skin:loading");
     private static final Map<GameProfile, GameProfile> CACHED = new HashMap<>();
 
     public static void bindBlockTextureMap() {
@@ -36,7 +36,7 @@ public class SpriteUtil {
     }
 
     public static void bindTexture(String identifier) {
-        bindTexture(new ResourceLocation(identifier));
+        bindTexture(ResourceLocation.parse(identifier));
     }
 
     public static void bindTexture(ResourceLocation identifier) {
@@ -46,7 +46,7 @@ public class SpriteUtil {
     /** Transforms the given {@link ResourceLocation}, adding ".png" to the end and prepending that
      * {@link ResourceLocation#getResourcePath()} with "textures/", just like what {@link TextureMap} does. */
     public static ResourceLocation transformLocation(ResourceLocation location) {
-        return new ResourceLocation(location.getResourceDomain(), "textures/" + location.getResourcePath() + ".png");
+        return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "textures/" + location.getPath() + ".png");
     }
 
     @Nullable

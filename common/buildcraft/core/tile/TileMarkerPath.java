@@ -7,6 +7,8 @@ package buildcraft.core.tile;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import buildcraft.api.core.IPathProvider;
 
@@ -16,6 +18,10 @@ import buildcraft.core.marker.PathCache;
 import buildcraft.core.marker.PathConnection;
 
 public class TileMarkerPath extends TileMarker<PathConnection> implements IPathProvider {
+
+    public TileMarkerPath(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     public ImmutableList<BlockPos> getPath() {

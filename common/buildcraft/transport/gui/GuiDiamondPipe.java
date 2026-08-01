@@ -7,7 +7,7 @@
 package buildcraft.transport.gui;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.inventory.IInventory;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.neoforge.items.IItemHandler;
@@ -21,8 +21,8 @@ import buildcraft.transport.container.ContainerDiamondPipe;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourDiamond;
 
 public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("buildcrafttransport:textures/gui/filter.png");
-    private static final ResourceLocation TEXTURE_CB = new ResourceLocation("buildcrafttransport:textures/gui/filter_cb.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.parse("buildcrafttransport:textures/gui/filter.png");
+    private static final ResourceLocation TEXTURE_CB = ResourceLocation.parse("buildcrafttransport:textures/gui/filter_cb.png");
     private static final int SIZE_X = 175, SIZE_Y = 225;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_GUI_CB = new GuiIcon(TEXTURE_CB, 0, 0, SIZE_X, SIZE_Y);
@@ -32,7 +32,7 @@ public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
 
     public GuiDiamondPipe(Player player, PipeBehaviourDiamond pipe) {
         super(new ContainerDiamondPipe(player, pipe));
-        this.playerInventory = player.inventory;
+        this.playerInventory = player.getInventory();
         this.filterInventory = pipe.filters;
         xSize = SIZE_X;
         ySize = SIZE_Y;

@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class IntegrationRecipe {

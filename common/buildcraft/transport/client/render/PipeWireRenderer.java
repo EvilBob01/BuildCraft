@@ -96,7 +96,7 @@ public class PipeWireRenderer {
         uvs.maxU = (off + 1) / 16f;
         uvs.minV = 0;
         uvs.maxV = 1 / 16f;
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             quads[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
         }
         return quads;
@@ -143,9 +143,9 @@ public class PipeWireRenderer {
                 az ? 2.99 / 32 : 1 / 32.0 //
             );
             center = new Vec3(//
-                ax ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetX()) : (between.xy ? cU : cL), //
-                ay ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetY()) : ((ax ? between.xy : between.yz) ? cU : cL), //
-                az ? (0.5 + 6.505 / 16 * between.to.getFrontOffsetZ()) : (between.yz ? cU : cL) //
+                ax ? (0.5 + 6.505 / 16 * between.to.getStepX()) : (between.xy ? cU : cL), //
+                ay ? (0.5 + 6.505 / 16 * between.to.getStepY()) : ((ax ? between.xy : between.yz) ? cU : cL), //
+                az ? (0.5 + 6.505 / 16 * between.to.getStepZ()) : (between.yz ? cU : cL) //
             );
         }
 
@@ -158,7 +158,7 @@ public class PipeWireRenderer {
         Tuple3f centerFloat = VecUtil.convertFloat(center);
         Tuple3f radiusFloat = VecUtil.convertFloat(radius);
 
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (face.getAxis() == between.mainAxis) {
                 continue;
             }

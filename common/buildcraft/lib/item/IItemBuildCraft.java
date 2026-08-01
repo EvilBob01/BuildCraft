@@ -6,10 +6,9 @@ package buildcraft.lib.item;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.Item;
 
-import net.minecraftforge.client.model.ModelLoader;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -32,31 +31,20 @@ public interface IItemBuildCraft {
         // no-op: see TODO above
     }
 
-    /** Sets up all of the model information for this item. This is called multiple times, and you *must* make sure that
-     * you add all the same values each time. Use {@link #addVariant(TIntObjectHashMap, int, String)} to help get
-     * everything correct. */
+    /** Sets up all of the model information for this item. Phase 7 (rendering) stub — model registration
+     * is handled via data providers in 1.21.1, not ModelLoader.setCustomModelResourceLocation. */
     @OnlyIn(Dist.CLIENT)
     default void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
-        addVariant(variants, 0, "");
+        // TODO Phase 7: port to NeoForge 1.21.1 model provider system
     }
 
     default void addVariant(TIntObjectHashMap<ModelResourceLocation> variants, int meta, String suffix) {
-        String tag = TagManager.get(id(), EnumTagType.MODEL_LOCATION);
-        variants.put(meta, new ModelResourceLocation(tag + suffix, "inventory"));
+        // TODO Phase 7: port to NeoForge 1.21.1 model provider system
     }
 
     @OnlyIn(Dist.CLIENT)
     default void registerVariants() {
-        Item thisItem = (Item) this;
-        TIntObjectHashMap<ModelResourceLocation> variants = new TIntObjectHashMap<>();
-        addModelVariants(variants);
-        for (int key : variants.keys()) {
-            ModelResourceLocation variant = variants.get(key);
-            if (RegistryConfig.DEBUG) {
-                BCLog.logger.info("[lib.registry][" + thisItem.builtInRegistryHolder().key().location() + "] Registering a variant " + variant
-                    + " for damage " + key);
-            }
-            ModelLoader.setCustomModelResourceLocation(thisItem, key, variant);
-        }
+        // TODO Phase 7 (rendering): ModelLoader.setCustomModelResourceLocation removed in NeoForge 1.21.1;
+        // model registration needs to move to a RegisterClientReloadListenersEvent / model provider.
     }
 }

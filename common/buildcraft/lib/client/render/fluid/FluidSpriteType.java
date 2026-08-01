@@ -7,6 +7,7 @@
 package buildcraft.lib.client.render.fluid;
 
 import net.neoforged.neoforge.fluids.FluidType;
+import net.minecraft.world.level.material.Fluid;
 
 /** Determines what sprite should be used for rendering fluids. */
 public enum FluidSpriteType {

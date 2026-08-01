@@ -8,10 +8,10 @@ package buildcraft.core.item;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.world.inventory.EntityEquipmentSlot;
+import net.minecraft.world.item.ItemArmor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.DamageSource;
 

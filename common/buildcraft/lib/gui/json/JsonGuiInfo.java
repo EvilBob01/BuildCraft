@@ -45,7 +45,7 @@ public class JsonGuiInfo extends JsonVariableObject {
 
         if (json.has("parent")) {
             String parent = GsonHelper.getString(json, "parent");
-            ResourceLocation location = new ResourceLocation(parent + ".json");
+            ResourceLocation location = ResourceLocation.parse(parent + ".json");
             try (InputStreamReader reader = loadHistory.startLoading(location)) {
                 JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
                 JsonGuiInfo info = new JsonGuiInfo(obj, fnCtx, loadHistory);

@@ -6,6 +6,7 @@
 
 package buildcraft.builders.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 
 import net.minecraft.world.level.material.MapColor;
@@ -29,9 +30,9 @@ import buildcraft.builders.tile.TileFiller;
 public class BlockFiller extends BlockBCTile_Neptune implements IBlockWithFacing {
     // public static final Property<EnumFillerPattern> PATTERN = BuildCraftProperties.FILLER_PATTERN;
 
-    public BlockFiller(Material material, String id) {
-        super(material, id);
-        // setDefaultState(getDefaultState().withProperty(PATTERN, EnumFillerPattern.NONE));
+    public BlockFiller(BlockBehaviour.Properties props, String id) {
+        super(props, id);
+        // setDefaultState(getDefaultState().setValue(PATTERN, EnumFillerPattern.NONE));
     }
 
     // BlockState
@@ -47,7 +48,7 @@ public class BlockFiller extends BlockBCTile_Neptune implements IBlockWithFacing
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFiller) {
             TileFiller filler = (TileFiller) tile;
-            // return state.withProperty(PATTERN, EnumFillerPattern.NONE); // FIXME
+            // return state.setValue(PATTERN, EnumFillerPattern.NONE); // FIXME
         }
         return state;
     }

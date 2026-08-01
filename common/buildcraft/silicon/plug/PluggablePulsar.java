@@ -107,7 +107,7 @@ public class PluggablePulsar extends PipePluggable {
         VariableInfoObject<Direction> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
         infoSide.cacheType = CacheType.ALWAYS;
         infoSide.setIsComplete = true;
-        infoSide.possibleValues.addAll(Arrays.asList(Direction.VALUES));
+        infoSide.possibleValues.addAll(Arrays.asList(Direction.values()));
 
         VariableInfoDouble infoStage = MODEL_VAR_INFO.createInfoDouble(MODEL_STAGE);
         infoStage.cacheType = CacheType.IN_SET;

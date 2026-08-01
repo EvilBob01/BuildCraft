@@ -32,11 +32,11 @@ public class ContainerElectronicLibrary extends ContainerBCTile<TileElectronicLi
         super(player, tile);
         addFullPlayerInventory(138);
 
-        addSlotToContainer(new SlotOutput(tile.invDownOut, 0, 175, 57));
-        addSlotToContainer(new SlotBase(tile.invDownIn, 0, 219, 57));
+        addSlot(new SlotOutput(tile.invDownOut, 0, 175, 57));
+        addSlot(new SlotBase(tile.invDownIn, 0, 219, 57));
 
-        addSlotToContainer(new SlotBase(tile.invUpIn, 0, 175, 79));
-        addSlotToContainer(new SlotOutput(tile.invUpOut, 0, 219, 79));
+        addSlot(new SlotBase(tile.invUpIn, 0, 175, 79));
+        addSlot(new SlotOutput(tile.invUpOut, 0, 219, 79));
     }
 
     @Override

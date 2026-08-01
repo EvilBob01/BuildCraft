@@ -8,7 +8,7 @@ package buildcraft.silicon.item;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
@@ -37,12 +37,12 @@ public class ItemRedstoneChipset extends ItemBC_Neptune {
     @Override
     public void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         for (EnumRedstoneChipset type : EnumRedstoneChipset.values()) {
-            subItems.add(new ItemStack(this, 1, type.ordinal()));
+            subItems.add(new ItemStack(this, 1));
         }
     }
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return "item.redstone_" + EnumRedstoneChipset.values()[stack.getMetadata()].getName() + "_chipset";
+        return "item.redstone_" + EnumRedstoneChipset.values()[stack.getId()].getName() + "_chipset";
     }
 }

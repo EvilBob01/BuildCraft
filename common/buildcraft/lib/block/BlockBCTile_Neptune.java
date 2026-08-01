@@ -4,12 +4,13 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,8 +25,8 @@ import net.minecraft.world.level.Level;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 public abstract class BlockBCTile_Neptune extends BlockBCBase_Neptune {
-    public BlockBCTile_Neptune(Material material, String id) {
-        super(material, id);
+    public BlockBCTile_Neptune(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

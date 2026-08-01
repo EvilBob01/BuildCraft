@@ -6,6 +6,7 @@
  */
 package buildcraft.lib.fluid;
 
+import net.minecraft.world.level.material.Fluid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -21,11 +22,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.ChatFormatting;
 
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidTypeTank;
-import net.neoforged.neoforge.fluids.FluidTypeUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -244,7 +245,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
             return null;
         } else {
             FluidStack stackBase = clientFluid.get();
-            return new FluidStack(stackBase, clientAmount);
+            return stackBase.copyWithAmount(clientAmount);
         }
     }
 
@@ -321,7 +322,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
             }
         }
         // Now try to drain the fluid into the item
-        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(copy);
+        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(copy).orElse(null);
         if (fluidHandler == null) return stack;
         FluidStack drained = drain(capacity, IFluidHandler.FluidAction.SIMULATE);
         if (drained == null || drained.getAmount() <= 0) return stack;
@@ -354,7 +355,7 @@ public class Tank extends FluidTank implements IFluidHandlerAdv {
      * @param stack The stack to map. This will ALWAYS have an {@link ItemStack#getCount()} of 1.
      * @param space The maximum amount of fluid that can be accepted by this tank. */
     protected FluidGetResult map(ItemStack stack, int space) {
-        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack.copy());
+        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(stack.copy().orElse(null));
         if (fluidHandler == null) return null;
         FluidStack drained = fluidHandler.drain(space, IFluidHandler.FluidAction.EXECUTE);
         if (drained == null || drained.getAmount() <= 0) return null;

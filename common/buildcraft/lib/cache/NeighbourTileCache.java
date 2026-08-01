@@ -81,14 +81,14 @@ public class NeighbourTileCache implements ITileCache {
             } else {
                 Level w = tile.getLevel();
                 // Unfortunately tile.isInvalid is false even when it is unloaded
-                if (w == null || !w.isLoaded(lastSeenTilePos.offset(offset))) {
+                if (w == null || !w.isLoaded(lastSeenTilePos.relative(offset))) {
                     cachedTiles.remove(offset);
                 } else {
                     return new TileCacheRet(oTile);
                 }
             }
         }
-        BlockPos offsetPos = lastSeenTilePos.offset(offset);
+        BlockPos offsetPos = lastSeenTilePos.relative(offset);
 
         LevelChunk chunk;
         if (tile instanceof TileBC_Neptune) {

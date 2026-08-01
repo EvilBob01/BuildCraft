@@ -1,4 +1,4 @@
-package buildcraft.factory.tile;
+﻿package buildcraft.factory.tile;
 
 import java.util.List;
 import io.netty.buffer.ByteBuf;
@@ -133,7 +133,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         TileEntity tile = worldObj.getTileEntity(getPos().offset(exportDir));
         if (!(tile instanceof IPipeTile)) return;
         if (!(tile instanceof IFluidHandler)) return;
@@ -190,7 +190,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return 0;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         if (exportDir.getOpposite() != from) return 0;
 
         if (BuildcraftRecipeRegistry.complexRefinery.getHeatableRegistry().getRecipeForInput(resource) == null) return 0;
@@ -202,7 +202,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return null;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         if (exportDir != from) return null;
 
         if (!canDrain(from, resource.getFluid())) return null;
@@ -215,7 +215,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return null;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         if (exportDir != from) return null;
 
         return out.drain(maxDrain, doDrain);
@@ -226,7 +226,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return false;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         if (exportDir.getOpposite() != from) return false;
 
         return in.fill(new FluidStack(fluid, 1), false) == 1;
@@ -237,7 +237,7 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         IBlockState state = worldObj.getBlockState(getPos());
         if (state == null || state.getBlock() != BuildCraftFactory.energyHeaterBlock) return false;
         EnumFacing curFace = state.getValue(BlockBuildCraftBase.FACING_PROP);
-        EnumFacing exportDir = curFace.rotateYCCW();
+        EnumFacing exportDir = curFace.getCounterClockWise();
         if (exportDir != from) return false;
 
         return out.drain(1, false) != null;
@@ -330,3 +330,4 @@ public class TileEnergyHeater extends TileBuildCraft implements IFluidHandler, I
         return false;
     }
 }
+

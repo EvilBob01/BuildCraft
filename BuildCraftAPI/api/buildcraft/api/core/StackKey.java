@@ -5,6 +5,7 @@
 package buildcraft.api.core;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,19 +31,19 @@ public final class StackKey {
     }
 
     public static StackKey stack(Item item, int amount, int damage) {
-        return new StackKey(new ItemStack(item, amount, damage));
+        return new StackKey(new ItemStack(item, amount));
     }
 
     public static StackKey stack(Block block, int amount, int damage) {
-        return new StackKey(new ItemStack(block, amount, damage));
+        return new StackKey(new ItemStack(block, amount));
     }
 
     public static StackKey stack(Item item) {
-        return new StackKey(new ItemStack(item, 1, 0));
+        return new StackKey(new ItemStack(item, 1));
     }
 
     public static StackKey stack(Block block) {
-        return new StackKey(new ItemStack(block, 1, 0));
+        return new StackKey(new ItemStack(block, 1));
     }
 
     public static StackKey stack(ItemStack itemStack) {
@@ -80,7 +81,7 @@ public final class StackKey {
             }
         }
         if (fluidStack != null) {
-            if (!fluidStack.isFluidEqual(k.fluidStack) || fluidStack.amount != k.fluidStack.amount) {
+            if (!fluidStack.isFluidEqual(k.fluidStack) || fluidStack.getAmount() != k.fluidStack.getAmount()) {
                 return false;
             }
         }
@@ -98,7 +99,7 @@ public final class StackKey {
         result = 31 * result + 7;
         if (fluidStack != null) {
             result = 31 * result + fluidStack.getFluid().getName().hashCode();
-            result = 31 * result + fluidStack.amount;
+            result = 31 * result + fluidStack.getAmount();
             result = 31 * result + objectHashCode(fluidStack.tag);
         }
         return result;

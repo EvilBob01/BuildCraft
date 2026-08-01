@@ -34,7 +34,7 @@ public enum DebugRenderHelper implements IDetachedRenderer {
         Tuple3f center = new Point3f(0.5f, 0.5f, 0.5f);
         Tuple3f radius = new Point3f(0.25f, 0.25f, 0.25f);
 
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             MutableQuad quad = ModelUtil.createFace(face, center, radius, null);
             quad.lightf(1, 1);
             smallCuboid[face.ordinal()] = quad;
@@ -59,7 +59,7 @@ public enum DebugRenderHelper implements IDetachedRenderer {
 
     public static void renderAABB(BufferBuilder bb, AABB aabb, int colour) {
         bb.setTranslation(0, 0, 0);
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             MutableQuad quad = ModelUtil.createFace(
                 face,
                 new Point3f(

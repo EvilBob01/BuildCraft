@@ -16,10 +16,11 @@ import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -117,7 +118,8 @@ public class TileFiller extends TileBC_Neptune
     private BuildingInfo buildingInfo;
     public TemplateBuilder builder = new TemplateBuilder(this);
 
-    public TileFiller() {
+    public TileFiller(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addProvider(new MjCapabilityHelper(new MjBatteryReceiver(battery)));
         caps.addCapabilityInstance(TilesAPI.CAP_CONTROLLABLE, this, EnumPipePart.VALUES);
     }
@@ -130,7 +132,7 @@ public class TileFiller extends TileBC_Neptune
         }
         BlockState blockState = level.getBlockState(worldPosition);
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(level);
-        BlockPos offsetPos = worldPosition.offset(blockState.getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite());
+        BlockPos offsetPos = worldPosition.relative(blockState.getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite());
         VolumeBox volumeBox = volumeBoxes.getVolumeBoxAt(offsetPos);
         BlockEntity tile = level.getBlockEntity(offsetPos);
         if (volumeBox != null) {
@@ -346,13 +348,12 @@ public class TileFiller extends TileBC_Neptune
         nbt.put("mode", NBTUtilBC.writeEnum(mode));
         nbt.put("box", box.saveAdditional());
         if (addon != null) {
-            nbt.setUniqueId("addonVolumeBoxId", addon.volumeBox.id);
+            nbt.putUUID("addonVolumeBoxId", addon.volumeBox.id);
             nbt.put("addonSlot", NBTUtilBC.writeEnum(addon.getSlot()));
         }
         nbt.putBoolean("markerBox", markerBox);
         nbt.put("patternStatement", patternStatement.writeToNbt());
         Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.put("builder", builder.serializeNBT()));
-        return nbt;
     }
 
     @Override
@@ -367,7 +368,7 @@ public class TileFiller extends TileBC_Neptune
         box.initialize(nbt.getCompound("box"));
         if (nbt.contains("addonSlot")) {
             addon = (AddonFillerPlanner) WorldSavedDataVolumeBoxes.get(level)
-                .getVolumeBoxFromId(nbt.getUniqueId("addonVolumeBoxId"))
+                .getVolumeBoxFromId(nbt.getUUID("addonVolumeBoxId"))
                 .addons
                 .get(NBTUtilBC.readEnum(nbt.get("addonSlot"), EnumAddonSlot.class));
         }

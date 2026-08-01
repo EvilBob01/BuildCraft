@@ -6,6 +6,8 @@
 
 package buildcraft.energy.tile;
 
+import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
 import java.io.IOException;
 
@@ -45,6 +47,10 @@ import buildcraft.lib.net.PacketBufferBC;
 
 import buildcraft.energy.BCEnergyGuis;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     public static final int MAX_FLUID = 10_000;
 
@@ -75,7 +81,8 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
     private double residueAmount = 0;
     private IFuel currentFuel;
 
-    public TileEngineIron_BC8() {
+    public TileEngineIron_BC8(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         tankManager.addAll(tankFuel, tankCoolant, tankResidue);
 
         // TODO: Auto list of example fuels!
@@ -100,7 +107,6 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
         nbt.putInt("penaltyCooling", penaltyCooling);
         nbt.putDouble("burnTime", burnTime);
         nbt.putDouble("residueAmount", residueAmount);
-        return nbt;
     }
 
     @Override
@@ -213,7 +219,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                                 residueAmount += residueFluid.getAmount() / 1000.0;
                                 if (residueAmount >= 1) {
                                     residueFluid.setAmount(Mth.floor(residueAmount));
-                                    residueAmount -= tankResidue.fill(residueFluid, true);
+                                    residueAmount -= tankResidue.fill(residueFluid, IFluidHandler.FluidAction.EXECUTE);
                                 } else if (tankResidue.getFluid() == null) {
                                     residueFluid.setAmount(0);
                                     tankResidue.setFluid(residueFluid);
@@ -271,7 +277,7 @@ public class TileEngineIron_BC8 extends TileEngineBase_BC8 {
                                 float cooling = coolPerMb;
                                 // cooling /= getBiomeTempScalar();
                                 coolingBuffer += coolantAmount * cooling;
-                                tankCoolant.drain(coolantAmount, true);
+                                tankCoolant.drain(coolantAmount, IFluidHandler.FluidAction.EXECUTE);
                             }
                         }
                     }

@@ -65,7 +65,7 @@ public class TemplateBuilder extends SnapshotBuilder<ITileForTemplateBuilder> {
             tile.getOwner(),
             tile.getBuilderPos()
         );
-        fakePlayer.setHeldItem(fakePlayer.getActiveHand(), placeTask.items.get(0));
+        fakePlayer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, placeTask.items.get(0));
         return TemplateApi.templateRegistry.handle(
             tile.getWorldBC(),
             placeTask.pos,

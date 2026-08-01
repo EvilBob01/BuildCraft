@@ -6,7 +6,7 @@
 
 package buildcraft.lib.list;
 
-import net.minecraft.item.ItemFood;
+import net.minecraft.world.item.ItemFood;
 
 import net.neoforged.neoforge.common.Tags;
 

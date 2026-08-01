@@ -117,7 +117,7 @@ public class NbtSquishMap {
         } else if (nbt instanceof CompoundTag) {
             CompoundTag compound = (CompoundTag) nbt;
             if (!complex.contains(compound)) {
-                for (String key : compound.getKeySet()) {
+                for (String key : compound.getAllKeys()) {
                     if (!strings.contains(key)) {
                         strings.add(key);
                     }
@@ -194,32 +194,32 @@ public class NbtSquishMap {
             throw new IndexOutOfBoundsException(index + " was less than 0!");
         }
         if (index < bytes.size()) {
-            return new ByteTag(bytes.get(index));
+            return ByteTag.valueOf(bytes.get(index));
         }
         index -= bytes.size();
 
         if (index < shorts.size()) {
-            return new ShortTag(shorts.get(index));
+            return ShortTag.valueOf(shorts.get(index));
         }
         index -= shorts.size();
 
         if (index < ints.size()) {
-            return new IntTag(ints.get(index));
+            return IntTag.valueOf(ints.get(index));
         }
         index -= ints.size();
 
         if (index < longs.size()) {
-            return new LongTag(longs.get(index));
+            return LongTag.valueOf(longs.get(index));
         }
         index -= longs.size();
 
         if (index < floats.size()) {
-            return new FloatTag(floats.get(index));
+            return FloatTag.valueOf(floats.get(index));
         }
         index -= floats.size();
 
         if (index < doubles.size()) {
-            return new DoubleTag(doubles.get(index));
+            return DoubleTag.valueOf(doubles.get(index));
         }
         index -= doubles.size();
 
@@ -234,7 +234,7 @@ public class NbtSquishMap {
         index -= intArrays.size();
 
         if (index < strings.size()) {
-            return new StringTag(strings.get(index));
+            return StringTag.valueOf(strings.get(index));
         }
         index -= strings.size();
 

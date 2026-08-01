@@ -246,18 +246,18 @@ public class BoxIterator implements Iterator<BlockPos> {
 
         if (!invert) {
             if (valueA != boundA) {
-                current = pos.offset(a.getOpposite());
+                current = pos.relative(a.getOpposite());
                 return;
             }
 
             if (valueB != boundB) {
-                current = pos.offset(b.getOpposite());
+                current = pos.relative(b.getOpposite());
                 current = VecUtil.replaceValue(current, a.getAxis(), VecUtil.getValue(min, max, a));
                 return;
             }
 
             if (valueC != boundC) {
-                current = pos.offset(c.getOpposite());
+                current = pos.relative(c.getOpposite());
                 current = VecUtil.replaceValue(current, a.getAxis(), VecUtil.getValue(min, max, a));
                 current = VecUtil.replaceValue(current, b.getAxis(), VecUtil.getValue(min, max, b));
                 return;
@@ -292,12 +292,12 @@ public class BoxIterator implements Iterator<BlockPos> {
         boundC = VecUtil.getValue(max, min, c);
 
         if (valueA != boundA) {
-            current = pos.offset(order.first.getOpposite());
+            current = pos.relative(order.first.getOpposite());
         } else if (valueB != boundB) {
-            current = pos.offset(order.second.getOpposite());
+            current = pos.relative(order.second.getOpposite());
             order = order.invertFirst();
         } else if (valueC != boundC) {
-            current = pos.offset(order.third.getOpposite());
+            current = pos.relative(order.third.getOpposite());
             order = order.invertFirst();
             order = order.invertSecond();
         } else {

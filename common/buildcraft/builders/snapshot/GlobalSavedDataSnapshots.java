@@ -29,7 +29,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.lib.misc.data.SingleCache;

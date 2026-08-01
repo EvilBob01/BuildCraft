@@ -104,7 +104,7 @@ public class JsonVariableModel extends JsonVariableObject {
         if (obj.has("parent")) {
             String parentName = GsonHelper.getString(obj, "parent");
             parentName += ".json";
-            ResourceLocation from = new ResourceLocation(parentName);
+            ResourceLocation from = ResourceLocation.parse(parentName);
             JsonVariableModel parent;
             try {
                 parent = deserialize(from, fnCtx, ctx);
@@ -178,7 +178,7 @@ public class JsonVariableModel extends JsonVariableObject {
                 // its somewhere else in the map so we don't need to register it twice
                 continue;
             }
-            ResourceLocation textureLoc = new ResourceLocation(location);
+            ResourceLocation textureLoc = ResourceLocation.parse(location);
             toRegisterSprites.add(textureLoc);
             // Allow transitive deps
             ReloadSource srcSprite = new ReloadSource(SpriteUtil.transformLocation(textureLoc), SourceType.SPRITE);

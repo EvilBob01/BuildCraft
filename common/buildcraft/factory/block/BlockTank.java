@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 
 import net.minecraft.world.level.material.MapColor;
@@ -35,8 +36,8 @@ public class BlockTank extends BlockBCTile_Neptune implements ICustomPipeConnect
     private static final Property<Boolean> JOINED_BELOW = BuildCraftProperties.JOINED_BELOW;
     private static final AABB BOUNDING_BOX = new AABB(2 / 16D, 0 / 16D, 2 / 16D, 14 / 16D, 16 / 16D, 14 / 16D);
 
-    public BlockTank(Material material, String id) {
-        super(material, id);
+    public BlockTank(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -74,13 +75,13 @@ public class BlockTank extends BlockBCTile_Neptune implements ICustomPipeConnect
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean shouldSideBeRendered(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
-        return side.getAxis() != Axis.Y || !(world.getBlockState(pos.offset(side)).getBlock() instanceof ITankBlockConnector);
+        return side.getAxis() != Axis.Y || !(world.getBlockState(pos.relative(side)).getBlock() instanceof ITankBlockConnector);
     }
 
     @Override
     public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
         boolean isTankBelow = world.getBlockState(pos.down()).getBlock() instanceof ITankBlockConnector;
-        return state.withProperty(JOINED_BELOW, isTankBelow);
+        return state.setValue(JOINED_BELOW, isTankBelow);
     }
 
     @Override

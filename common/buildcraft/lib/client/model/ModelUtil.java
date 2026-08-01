@@ -107,7 +107,7 @@ public class ModelUtil {
     public static MutableQuad createFace(Direction face, Tuple3f center, Tuple3f radius, UvFaceData uvs) {
         Point3f[] points = getPointsForFace(face, center, radius);
         return createFace(face, points, uvs).normalf(
-            face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ()
+            face.getStepX(), face.getStepY(), face.getStepZ()
         );
     }
 
@@ -174,7 +174,7 @@ public class ModelUtil {
     public static Point3f[] getPointsForFace(Direction face, Tuple3f center, Tuple3f radius) {
         Point3f centerOfFace = new Point3f(center);
         Point3f faceAdd = new Point3f(
-            face.getFrontOffsetX() * radius.x, face.getFrontOffsetY() * radius.y, face.getFrontOffsetZ() * radius.z
+            face.getStepX() * radius.x, face.getStepY() * radius.y, face.getStepZ() * radius.z
         );
         centerOfFace.add(faceAdd);
         Vector3f faceRadius = new Vector3f(radius);

@@ -19,7 +19,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.neoforged.fml.client.FMLClientHandler;
 
 import buildcraft.lib.BCLibConfig;
 
@@ -53,24 +53,24 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
         // MAPPING: func_194340_a: Profiler.startSection
         p.func_194340_a(getClass()::getSimpleName);
         if (needsSwapping) {
-            p.startSection("copy");
+            p.push("copy");
             current.copyFrom(this);
-            p.endSection();
+            p.pop();
         }
         if (current.hasAnimationMetadata() && BCLibConfig.enableAnimatedSprites) {
-            p.startSection("update");
-            p.startSection(getIconName());
+            p.push("update");
+            p.push(getIconName());
             current.updateAnimation();
-            p.endSection();
-            p.endSection();
+            p.pop();
+            p.pop();
         } else if (needsSwapping) {
-            p.startSection("swap");
+            p.push("swap");
             TextureUtil.uploadTextureMipmap(current.getFrameTextureData(0), current.getIconWidth(),
                 current.getIconHeight(), current.getOriginX(), current.getOriginY(), false, false);
-            p.endSection();
+            p.pop();
         }
         needsSwapping = false;
-        p.endSection();
+        p.pop();
     }
 
     public boolean swapWith(TextureAtlasSprite other) {
@@ -106,7 +106,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
     public static TextureAtlasSprite loadSprite(IResourceManager manager, String name, ResourceLocation location,
         boolean careIfMissing) {
         // Load the initial variant
-        TextureAtlasSprite sprite = makeAtlasSprite(new ResourceLocation(name));
+        TextureAtlasSprite sprite = makeAtlasSprite(ResourceLocation.parse(name));
         try {
             // Copied almost directly from TextureMap.
             PngSizeInfo pngsizeinfo = PngSizeInfo.makeFromResource(manager.getResource(location));

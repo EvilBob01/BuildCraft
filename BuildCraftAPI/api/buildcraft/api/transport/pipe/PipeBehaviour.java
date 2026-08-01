@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.neoforge.capabilities.BlockCapability;

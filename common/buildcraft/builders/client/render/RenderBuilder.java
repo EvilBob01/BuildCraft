@@ -31,12 +31,12 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
 
     @Override
     public void renderTileEntityFast(@Nonnull TileBuilder tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("builder");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("builder");
 
         buffer.setTranslation(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
-        Minecraft.getInstance().mcProfiler.startSection("box");
+        Minecraft.getInstance().mcProfiler.push("box");
         Box box = tile.getBox();
         LaserBoxRenderer.renderLaserBoxDynamic(box, BuildCraftLaserManager.STRIPES_WRITE, buffer, true);
 
@@ -47,8 +47,8 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
             BlockPos last = null;
             for (BlockPos p : path) {
                 if (last != null) {
-                    Vec3 from = new Vec3(last).add(VecUtil.VEC_HALF);
-                    Vec3 to = new Vec3(p).add(VecUtil.VEC_HALF);
+                    Vec3 from = new Vec3(last.getX(), last.getY(), last.getZ()).add(VecUtil.VEC_HALF);
+                    Vec3 to = new Vec3(p.getX(), p.getY(), p.getZ()).add(VecUtil.VEC_HALF);
                     Vec3 one = offset(from, to);
                     Vec3 two = offset(to, from);
                     LaserData_BC8 data = new LaserData_BC8(BuildCraftLaserManager.STRIPES_WRITE_DIRECTION, one, two, 1 / 16.1);
@@ -58,7 +58,7 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
             }
         }
 
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
 
         buffer.setTranslation(0, 0, 0);
 
@@ -66,8 +66,8 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
             RenderSnapshotBuilder.render(tile.getBuilder(), tile.getLevel(), tile.getBlockPos(), x, y, z, partialTicks, buffer);
         }
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     private static Vec3 offset(Vec3 from, Vec3 to) {

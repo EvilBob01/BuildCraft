@@ -1,4 +1,4 @@
-package buildcraft.builders.schematics;
+﻿package buildcraft.builders.schematics;
 
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.properties.PropertyBool;
@@ -15,10 +15,11 @@ public class SchematicVine extends SchematicBlock {
         IBlockState newState = state;
         for (EnumFacing oldFace : EnumFacing.HORIZONTALS) {
             PropertyBool oldProp = BlockVine.getPropertyFor(oldFace);
-            EnumFacing newFace = oldFace.rotateY();
+            EnumFacing newFace = oldFace.getClockWise();
             PropertyBool newProp = BlockVine.getPropertyFor(newFace);
             newState = newState.withProperty(newProp, state.getValue(oldProp));
         }
         state = newState;
     }
 }
+

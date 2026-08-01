@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -33,8 +34,8 @@ import buildcraft.silicon.tile.TileProgrammingTable_Neptune;
 public class BlockLaserTable extends BlockBCTile_Neptune implements ILaserTargetBlock {
     private final EnumLaserTableType type;
 
-    public BlockLaserTable(EnumLaserTableType type, Material material, String id) {
-        super(material, id);
+    public BlockLaserTable(EnumLaserTableType type, BlockBehaviour.Properties props, String id) {
+        super(props, id);
         this.type = type;
     }
 

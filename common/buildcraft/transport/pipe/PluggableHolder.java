@@ -63,7 +63,7 @@ public final class PluggableHolder {
         }
         String id = nbt.getString("id");
         CompoundTag data = nbt.getCompound("data");
-        ResourceLocation identifier = new ResourceLocation(id);
+        ResourceLocation identifier = ResourceLocation.parse(id);
         PluggableDefinition def = PipeApi.pluggableRegistry.getDefinition(identifier);
         if (def == null) {
             BCLog.logger.warn("Unknown pluggable id '" + id + "'");
@@ -105,7 +105,7 @@ public final class PluggableHolder {
     }
 
     private void readCreateInternal(FriendlyByteBuf buffer) throws InvalidInputDataException {
-        ResourceLocation identifier = new ResourceLocation(buffer.readString(256));
+        ResourceLocation identifier = ResourceLocation.parse(buffer.readString(256));
         PluggableDefinition def = PipeApi.pluggableRegistry.getDefinition(identifier);
         if (def == null) {
             throw new InvalidInputDataException("Unknown remote pluggable \"" + identifier + "\"");

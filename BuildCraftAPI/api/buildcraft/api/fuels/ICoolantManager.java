@@ -5,6 +5,7 @@
 package buildcraft.api.fuels;
 
 import java.util.Collection;
+import net.minecraft.world.level.material.Fluid;
 
 import net.minecraft.world.item.ItemStack;
 

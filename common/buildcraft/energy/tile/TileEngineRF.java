@@ -42,6 +42,10 @@ import buildcraft.lib.tile.item.StackInsertionFunction;
 import buildcraft.core.BCCoreItems;
 import buildcraft.energy.BCEnergyGuis;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileEngineRF extends TileEngineBase_BC8 {
     public static final int MAX_RF = 10_000;
     public static final double HEAT_RATE = 0.06;
@@ -57,7 +61,8 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     int currentRF;
     public final ItemHandlerSimple invUpgrades;
 
-    public TileEngineRF() {
+    public TileEngineRF(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addCapabilityInstance(Capabilities.EnergyStorage.BLOCK, new Rf(), EnumPipePart.VALUES);
         invUpgrades = itemManager.addInvHandler("upgrades", 4, this::isValidUpgrade, StackInsertionFunction.getInsertionFunction(1), EnumAccess.NONE);
     }
@@ -68,7 +73,6 @@ public class TileEngineRF extends TileEngineBase_BC8 {
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         nbt.putInt("currentRF", currentRF);
-        return nbt;
     }
 
     @Override

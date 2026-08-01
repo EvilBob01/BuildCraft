@@ -1,6 +1,7 @@
 package buildcraft.api.core;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.level.material.Fluid;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;

@@ -5,6 +5,7 @@
 package buildcraft.factory.block;
 
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.CreativeModeTab;
@@ -30,18 +31,18 @@ public class BlockPlastic extends BlockBCBase_Neptune {
     @Override
     public int getMetaFromState(BlockState state) {
         DyeColor colour = state.getValue(BuildCraftProperties.BLOCK_COLOR);
-        return colour.getMetadata();
+        return colour.getId();
     }
 
     @Override
     public BlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_COLOR, DyeColor.byMetadata(meta));
+        return getDefaultState().setValue(BuildCraftProperties.BLOCK_COLOR, DyeColor.byId(meta));
     }
 
     @Override
     public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
         for (DyeColor dye : DyeColor.values()) {
-            list.add(new ItemStack(this, 1, dye.getMetadata()));
+            list.add(new ItemStack(this, 1));
         }
     }
 }

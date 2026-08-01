@@ -20,10 +20,10 @@ public class RenderDynamoMJ extends FastTESR<TileDynamoMJ> {
         BufferBuilder vb
     ) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("bc");
-        profiler.startSection("engine");
+        profiler.push("bc");
+        profiler.push("engine");
 
-        profiler.startSection("compute");
+        profiler.push("compute");
         vb.setTranslation(x, y, z);
         MutableQuad[] quads = BCEnergyModels.getMjDynamoQuads(engine, partialTicks);
         profiler.endStartSection("render");
@@ -39,9 +39,9 @@ public class RenderDynamoMJ extends FastTESR<TileDynamoMJ> {
         }
         vb.setTranslation(0, 0, 0);
 
-        profiler.endSection();
-        profiler.endSection();
-        profiler.endSection();
+        profiler.pop();
+        profiler.pop();
+        profiler.pop();
     }
 
 }

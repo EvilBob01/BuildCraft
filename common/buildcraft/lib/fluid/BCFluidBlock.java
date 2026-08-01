@@ -6,6 +6,9 @@
 
 package buildcraft.lib.fluid;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
@@ -16,13 +19,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 
-import net.minecraftforge.fluids.BlockFluidClassic;
+import net.neoforged.neoforge.fluids.BlockFluidClassic;
 import net.neoforged.neoforge.fluids.FluidType;
 
 public class BCFluidBlock extends BlockFluidClassic {
     private boolean sticky = false;
 
-    public BCFluidBlock(Fluid fluid, Material material) {
+    public BCFluidBlock(Fluid fluid, BlockBehaviour.Properties props) {
         super(fluid, material);
         Boolean displaceWater = fluid.getDensity() > 1000;
         displacements.put(Blocks.WATER, displaceWater);
@@ -36,7 +39,7 @@ public class BCFluidBlock extends BlockFluidClassic {
     }
 
     @Override
-    public Boolean isEntityInsideMaterial(BlockGetter world, BlockPos pos, BlockState state, Entity entity, double yToTest, Material material, boolean testingHead) {
+    public Boolean isEntityInsideMaterial(BlockGetter world, BlockPos pos, BlockState state, Entity entity, double yToTest, BlockBehaviour.Properties props, boolean testingHead) {
         if (material == Block.Properties.of()) {
             return true;
         }

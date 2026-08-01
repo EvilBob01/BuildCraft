@@ -1,29 +1,19 @@
 package buildcraft.lib.command;
 
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
-public class CommandChangelog extends CommandBase {
-    @Override
-    public String getName() {
-        return "changelog";
-    }
+public class CommandChangelog {
 
-    @Override
-    public String getUsage(ICommandSender sender) {
-        return "command.buildcraft.buildcraft.changelog.help";
-    }
-
-    @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        sender.sendMessage(new TextComponentString("TODO: Implement this!"));
+    public static LiteralArgumentBuilder<CommandSourceStack> register() {
+        return Commands.literal("changelog")
+            .requires(src -> src.hasPermission(0))
+            .executes(ctx -> {
+                ctx.getSource().sendSuccess(() -> Component.literal("TODO: Implement this!"), false);
+                return 1;
+            });
     }
 }

@@ -1,5 +1,6 @@
 package buildcraft.core.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
@@ -11,8 +12,8 @@ import buildcraft.core.tile.TilePowerConsumerTester;
 
 public class BlockPowerConsumerTester extends BlockBCTile_Neptune {
 
-    public BlockPowerConsumerTester(Material material, String id) {
-        super(material, id);
+    public BlockPowerConsumerTester(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

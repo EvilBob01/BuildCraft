@@ -44,13 +44,13 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
         List<AABB> boxes = new ArrayList<>(ClientArchitectTables.BOXES.keySet());
         boxes.sort(
             Comparator.<AABB>comparingDouble(bb ->
-                bb.getCenter().distanceTo(player.getPositionVector())
+                bb.getCenter().distanceTo(player.position())
             ).reversed()
         );
         List<BlockPos> poses = new ArrayList<>(ClientArchitectTables.SCANNED_BLOCKS.keySet());
         poses.sort(
             Comparator.<BlockPos>comparingDouble(pos ->
-                new Vec3(pos).distanceTo(player.getPositionVector())
+                new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(player.position())
             ).reversed()
         );
 
@@ -109,9 +109,8 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             Minecraft.getInstance().renderEngine.bindTexture(
-                new ResourceLocation(
-                    "buildcraftbuilders",
-                    "textures/blocks/scan.png"
+                ResourceLocation.fromNamespaceAndPath(
+                    "buildcraftbuilders", "textures/blocks/scan.png"
                 )
             );
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -119,7 +118,7 @@ public enum RenderArchitectTables implements DetachedRenderer.IDetachedRenderer 
                 if (!bb.intersects(new AABB(pos))) {
                     continue;
                 }
-                for (Direction face : Direction.VALUES) {
+                for (Direction face : Direction.values()) {
                     ModelUtil.createFace(
                         face,
                         new Point3f(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F),

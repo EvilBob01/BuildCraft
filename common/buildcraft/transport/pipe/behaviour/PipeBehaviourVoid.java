@@ -6,6 +6,8 @@
 
 package buildcraft.transport.pipe.behaviour;
 
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import java.util.Arrays;
 
 import net.minecraft.nbt.CompoundTag;
@@ -46,9 +48,9 @@ public class PipeBehaviourVoid extends PipeBehaviour {
             SoundType soundType = SoundType.SLIME;
             final SoundEvent soundEvent;
             Fluid f = move.fluid.getFluid();
-            if (f == FluidRegistry.LAVA) {
+            if (f == Fluids.LAVA) {
                 soundEvent = SoundEvents.ITEM_BUCKET_EMPTY_LAVA;
-            } else if (f == FluidRegistry.WATER) {
+            } else if (f == Fluids.WATER) {
                 soundEvent = SoundEvents.ITEM_BUCKET_EMPTY;
             } else {
                 soundEvent = SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH;

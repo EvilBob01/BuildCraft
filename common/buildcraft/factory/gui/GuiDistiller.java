@@ -28,7 +28,7 @@ import buildcraft.factory.container.ContainerDistiller;
 
 public class GuiDistiller extends GuiBC8<ContainerDistiller> {
     private static final ResourceLocation TEXTURE_BASE
-        = new ResourceLocation("buildcraftfactory:textures/gui/distiller.png");
+        = ResourceLocation.parse("buildcraftfactory:textures/gui/distiller.png");
     private static final int SIZE_X = 176, SIZE_Y = 161;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_TANK_VERTICAL_OVERLAY = new GuiIcon(TEXTURE_BASE, 0, 161, 16, 38);
@@ -149,10 +149,10 @@ public class GuiDistiller extends GuiBC8<ContainerDistiller> {
                 ICON_OFF_VALID_INPUT.drawAt(RECT_OFF_VALID_INPUT.offset(mainGui.rootElement));
             }
 
-            boolean gasBlocking = currentGas != null && currentGas.amount >= container.tile.tankGasOut.getCapacity();
+            boolean gasBlocking = currentGas != null && currentGas.getAmount() >= container.tile.tankGasOut.getCapacity();
 
             if (!gasBlocking) {
-                if (currentGas == null || currentGas.amount <= 0) {
+                if (currentGas == null || currentGas.getAmount() <= 0) {
                     gasBlocking = false;
                 } else if (recipe != null && !recipe.outGas().isFluidEqual(currentGas)) {
                     gasBlocking = true;

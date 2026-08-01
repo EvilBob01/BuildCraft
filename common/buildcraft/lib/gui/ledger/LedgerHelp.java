@@ -50,7 +50,7 @@ public class LedgerHelp extends Ledger_Neptune {
         title = LocaleUtil.localize("gui.ledger.help");
         calculateMaxSize();
 
-        ResourceLocation id = new ResourceLocation("buildcraftlib:base");
+        ResourceLocation id = ResourceLocation.parse("buildcraftlib:base");
         setOpenProperty(GuiConfigManager.getOrAddBoolean(id, "ledger.help.is_open", false));
     }
 

@@ -285,7 +285,7 @@ public abstract class PipeEventItem extends PipeEvent {
                 }
                 last = current;
                 EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
-                for (Direction face : Direction.VALUES) {
+                for (Direction face : Direction.values()) {
                     if (allowed.contains(face)) {
                         if (priority[face.ordinal()] == current) {
                             set.add(face);

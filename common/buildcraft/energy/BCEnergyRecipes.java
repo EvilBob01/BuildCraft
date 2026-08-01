@@ -6,6 +6,8 @@
 
 package buildcraft.energy;
 
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,11 +27,11 @@ import buildcraft.lib.misc.MathUtil;
 public class BCEnergyRecipes {
     public static void init() {
 
-        BuildcraftFuelRegistry.coolant.addCoolant(FluidRegistry.WATER, 0.0023f);
+        BuildcraftFuelRegistry.coolant.addCoolant(Fluids.WATER, 0.0023f);
         BuildcraftFuelRegistry.coolant.addSolidCoolant(new ItemStack(Blocks.ICE),
-            new FluidStack(FluidRegistry.WATER, 1000), 1.5f);
+            new FluidStack(Fluids.WATER, 1000), 1.5f);
         BuildcraftFuelRegistry.coolant.addSolidCoolant(new ItemStack(Blocks.PACKED_ICE),
-            new FluidStack(FluidRegistry.WATER, 1000), 2f);
+            new FluidStack(Fluids.WATER, 1000), 2f);
 
         // Relative amounts of the fluid -- the amount of oil used in refining will return X amount of fluid
 
@@ -101,10 +103,10 @@ public class BCEnergyRecipes {
             addHeatExchange(BCEnergyFluids.fuelDense);
             addHeatExchange(BCEnergyFluids.oilResidue);
 
-            FluidStack water = new FluidStack(FluidRegistry.WATER, 10);
+            FluidStack water = new FluidStack(Fluids.WATER, 10);
             BuildcraftRecipeRegistry.refineryRecipes.addHeatableRecipe(water, null, 0, 1);
 
-            FluidStack lava = new FluidStack(FluidRegistry.LAVA, 5);
+            FluidStack lava = new FluidStack(Fluids.LAVA, 5);
             BuildcraftRecipeRegistry.refineryRecipes.addCoolableRecipe(lava, null, 4, 2);
         }
     }

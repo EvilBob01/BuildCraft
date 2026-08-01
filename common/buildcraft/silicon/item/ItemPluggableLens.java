@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -94,7 +94,7 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     @Override
     protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         for (int i = 0; i < 34; i++) {
-            subItems.add(new ItemStack(this, 1, i));
+            subItems.add(new ItemStack(this, 1));
         }
     }
 

@@ -59,8 +59,8 @@ public class LaserBoxRenderer {
         boolean renderY = center ? box.size().getY() > 1 : true;
         boolean renderZ = center ? box.size().getZ() > 1 : true;
 
-        Vec3 min = new Vec3(box.min()).add(center ? VecUtil.VEC_HALF : Vec3.ZERO);
-        Vec3 max = new Vec3(box.max()).add(center ? VecUtil.VEC_HALF : VecUtil.VEC_ONE);
+        Vec3 min = new Vec3(box.min().getX(), box.min().getY(), box.min().getZ()).add(center ? VecUtil.VEC_HALF : Vec3.ZERO);
+        Vec3 max = new Vec3(box.max().getX(), box.max().getY(), box.max().getZ()).add(center ? VecUtil.VEC_HALF : VecUtil.VEC_ONE);
 
         List<LaserData_BC8> datas = new ArrayList<>();
 
@@ -122,8 +122,8 @@ public class LaserBoxRenderer {
     private static LaserData_BC8 makeLaser(LaserType type, Vec3 min, Vec3 max, Axis axis) {
         Direction faceForMin = VecUtil.getFacing(axis, true);
         Direction faceForMax = VecUtil.getFacing(axis, false);
-        Vec3 one = min.add(new Vec3(faceForMin.getDirectionVec()).scale(1 / 16D));
-        Vec3 two = max.add(new Vec3(faceForMax.getDirectionVec()).scale(1 / 16D));
+        Vec3 one = min.add(Vec3.atLowerCornerOf(faceForMin.getNormal()).scale(1 / 16D));
+        Vec3 two = max.add(Vec3.atLowerCornerOf(faceForMax.getNormal()).scale(1 / 16D));
         return new LaserData_BC8(type, one, two, RENDER_SCALE);
     }
 

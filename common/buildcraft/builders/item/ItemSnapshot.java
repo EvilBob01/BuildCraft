@@ -11,13 +11,13 @@ import java.util.Locale;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.level.Level;
 
@@ -41,21 +41,21 @@ public class ItemSnapshot extends ItemBC_Neptune {
     }
 
     public ItemStack getClean(EnumSnapshotType snapshotType) {
-        return new ItemStack(this, 1, EnumItemSnapshotType.get(snapshotType, false).ordinal());
+        return new ItemStack(this, 1);
     }
 
     public ItemStack getUsed(EnumSnapshotType snapshotType, Header header) {
         CompoundTag nbt = new CompoundTag();
         nbt.put("header", header.serializeNBT());
-        ItemStack stack = new ItemStack(this, 1, EnumItemSnapshotType.get(snapshotType, true).ordinal());
-        stack.setTagCompound(nbt);
+        ItemStack stack = new ItemStack(this, 1);
+        NBTUtilBC.setTag(stack, nbt);
         return stack;
     }
 
     public Header getHeader(ItemStack stack) {
         if (stack.getItem() instanceof ItemSnapshot) {
             if (EnumItemSnapshotType.getFromStack(stack).used) {
-                CompoundTag nbt = stack.getTag();
+                CompoundTag nbt = NBTUtilBC.getTag(stack);
                 if (nbt != null) {
                     if (nbt.contains("header", Tag.TAG_COMPOUND)) {
                         return new Header(nbt.getCompound("header"));
@@ -114,7 +114,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
         }
     }
 
-    public enum EnumItemSnapshotType implements IStringSerializable {
+    public enum EnumItemSnapshotType implements StringRepresentable {
         TEMPLATE_CLEAN(EnumSnapshotType.TEMPLATE, false),
         TEMPLATE_USED(EnumSnapshotType.TEMPLATE, true),
         BLUEPRINT_CLEAN(EnumSnapshotType.BLUEPRINT, false),
@@ -144,7 +144,7 @@ public class ItemSnapshot extends ItemBC_Neptune {
         }
 
         public static EnumItemSnapshotType getFromStack(ItemStack stack) {
-            return values()[Math.abs(stack.getMetadata()) % values().length];
+            return values()[Math.abs(stack.getId()) % values().length];
         }
     }
 }

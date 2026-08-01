@@ -89,14 +89,14 @@ public class BCEnergyConfig {
         largeOilGenProb = 0.04 / 100;
 
         excessiveBiomes.clear();
-        excessiveBiomes.add(new ResourceLocation(BCEnergy.MODID, "oil_desert"));
-        excessiveBiomes.add(new ResourceLocation(BCEnergy.MODID, "oil_ocean"));
+        excessiveBiomes.add(ResourceLocation.fromNamespaceAndPath(BCEnergy.MODID, "oil_desert"));
+        excessiveBiomes.add(ResourceLocation.fromNamespaceAndPath(BCEnergy.MODID, "oil_ocean"));
 
         surfaceDepositBiomes.clear();
 
         excludedBiomes.clear();
-        excludedBiomes.add(new ResourceLocation("minecraft", "hell"));
-        excludedBiomes.add(new ResourceLocation("minecraft", "sky"));
+        excludedBiomes.add(ResourceLocation.fromNamespaceAndPath("minecraft", "hell"));
+        excludedBiomes.add(ResourceLocation.fromNamespaceAndPath("minecraft", "sky"));
 
         excludedBiomesIsBlackList = true;
 

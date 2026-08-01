@@ -5,7 +5,8 @@ import java.util.Objects;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -37,9 +38,9 @@ public class FacadeBlockStateInfo implements IFacadeState {
         this.isTransparent = !state.isOpaqueCube();
         this.isVisible = !requiredStack.isEmpty();
         BlockGetter access = new SingleBlockAccess(state);
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : Direction.values()) {
             isSideSolid[side.ordinal()] = state.isSideSolid(access, BlockPos.ORIGIN, side);
-            blockFaceShape[side.ordinal()] = state.getBlockFaceShape(access, BlockPos.ORIGIN, side);
+            blockFaceShape[side.ordinal()] = state.isFaceSturdy(access, BlockPos.ORIGIN, side, SupportType.FULL) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
         }
     }
 

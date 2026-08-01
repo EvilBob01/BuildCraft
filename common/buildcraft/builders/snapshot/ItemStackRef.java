@@ -9,12 +9,16 @@ package buildcraft.builders.snapshot;
 import java.util.Objects;
 import java.util.Optional;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
+
+import buildcraft.lib.misc.NBTUtilBC;
 
 public class ItemStackRef {
     private final NbtRef<StringTag> item;
@@ -35,25 +39,23 @@ public class ItemStackRef {
     public ItemStack get(Tag nbt) {
         ItemStack itemStack = new ItemStack(
             Objects.requireNonNull(
-                Item.getByNameOrId(
-                    item
-                        .get(nbt)
-                        .orElseThrow(NullPointerException::new)
-                        .getString()
+                BuiltInRegistries.ITEM.getValue(
+                    ResourceLocation.parse(
+                        item
+                            .get(nbt)
+                            .orElseThrow(NullPointerException::new)
+                            .getString()
+                    )
                 )
             ),
             Optional.ofNullable(amount)
                 .flatMap(ref -> ref.get(nbt))
                 .map(IntTag::getInt)
-                .orElse(1),
-            Optional.ofNullable(meta)
-                .flatMap(ref -> ref.get(nbt))
-                .map(IntTag::getInt)
-                .orElse(0)
+                .orElse(1)
         );
         Optional.ofNullable(tagCompound)
             .flatMap(ref -> ref.get(nbt))
-            .ifPresent(itemStack::setTagCompound);
+            .ifPresent(tag -> NBTUtilBC.setTag(itemStack, tag));
         return itemStack;
     }
 }

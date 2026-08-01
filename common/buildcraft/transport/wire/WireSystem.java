@@ -99,8 +99,8 @@ public final class WireSystem {
         WireNode node = new WireNode(element.blockPos, element.wirePart);
 
         List<WireElement> list = new ArrayList<>();
-        for (Direction face : Direction.VALUES) {
-            WireNode oNode = node.offset(face);
+        for (Direction face : Direction.values()) {
+            WireNode oNode = node.relative(face);
             // equality check is fine here -- WireNode.offset returns the same blockpos (identity wise) if its the same
             if (oNode.pos == node.pos || canWireConnect(holder, face)) {
                 list.add(new WireElement(oNode.pos, oNode.part));
@@ -171,7 +171,7 @@ public final class WireSystem {
                             wireSystems.getWireSystemsWithElement(element).stream().filter(wireSystem -> wireSystem != this && wireSystem.color == colorButFinal).forEach(wireSystems::removeWireSystem);
                             elementBuilder.add(element);
                             queue.addAll(getConnectedElementsOfElement(wireSystems.world, element));
-                            Arrays.stream(Direction.VALUES).forEach(side -> queue.add(new WireElement(element.blockPos, side)));
+                            Arrays.stream(Direction.values()).forEach(side -> queue.add(new WireElement(element.blockPos, side)));
                         }
                     } else if (element.type == WireElement.Type.EMITTER_SIDE) {
                         if (holder.getPluggable(element.emitterSide) instanceof IWireEmitter) {
@@ -231,7 +231,7 @@ public final class WireSystem {
         ListTag elementsList = new ListTag();
         elements.stream().map(WireElement::writeToNBT).forEach(elementsList::appendTag);
         nbt.put("elements", elementsList);
-        nbt.putInt("color", color.getMetadata());
+        nbt.putInt("color", color.getId());
         return nbt;
     }
 
@@ -240,7 +240,7 @@ public final class WireSystem {
         ListTag elementsList = nbt.getList("elements", Tag.TAG_COMPOUND);
         //noinspection UnstableApiUsage
         elements = IntStream.range(0, elementsList.size()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
-        color = DyeColor.byMetadata(nbt.getInt("color"));
+        color = DyeColor.byId(nbt.getInt("color"));
 
         this.cachedHashCode = this.computeHashCode();
         this.cachedWiresHashCode = this.computeCachedWiresHashCode();
@@ -341,7 +341,7 @@ public final class WireSystem {
                 buf.writeInt(wirePart.ordinal());
             } else if (type == Type.EMITTER_SIDE) {
                 assert emitterSide != null;
-                buf.writeInt(emitterSide.getIndex());
+                buf.writeInt(emitterSide.get3DDataValue());
             }
         }
 
@@ -354,7 +354,7 @@ public final class WireSystem {
                 nbt.putInt("wirePart", wirePart.ordinal());
             } else if (type == Type.EMITTER_SIDE) {
                 assert emitterSide != null;
-                nbt.putInt("emitterSide", emitterSide.getIndex());
+                nbt.putInt("emitterSide", emitterSide.get3DDataValue());
             }
             return nbt;
         }

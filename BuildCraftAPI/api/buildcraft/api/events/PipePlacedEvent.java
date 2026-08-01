@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Event;
 
 public class PipePlacedEvent extends Event {
     public Player player;

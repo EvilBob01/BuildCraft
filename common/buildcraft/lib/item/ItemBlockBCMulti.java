@@ -8,7 +8,7 @@ package buildcraft.lib.item;
 
 import java.util.function.Function;
 
-import net.minecraft.item.ItemMultiTexture;
+import net.minecraft.world.item.ItemMultiTexture;
 import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
@@ -26,7 +26,7 @@ public class ItemBlockBCMulti extends ItemBlockBC_Neptune {
 
     public ItemBlockBCMulti(BlockBCBase_Neptune block, final String[] namesByMeta) {
         this(block, stack -> {
-            int meta = stack.getMetadata();
+            int meta = stack.getId();
             if (meta < 0 || meta >= namesByMeta.length) meta = 0;
             return namesByMeta[meta];
         });

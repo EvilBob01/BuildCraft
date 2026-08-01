@@ -67,7 +67,7 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
 
         @Override
         public BlockState getBlockState() {
-            return Blocks.DISPENSER.defaultBlockState().withProperty(DispenserBlock.FACING, side);
+            return Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, side);
         }
 
         @SuppressWarnings("unchecked")

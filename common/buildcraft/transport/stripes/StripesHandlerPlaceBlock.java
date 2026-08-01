@@ -28,13 +28,13 @@ public enum StripesHandlerPlaceBlock implements IStripesHandlerItem {
         if (!(stack.getItem() instanceof BlockItem)) {
             return false;
         }
-        if (!world.isEmptyBlock(pos.offset(direction))) {
+        if (!world.isEmptyBlock(pos.relative(direction))) {
             return false;
         }
         stack.getItem().onItemUse(
             player,
             world,
-            pos.offset(direction),
+            pos.relative(direction),
             InteractionHand.MAIN_HAND,
             direction,
             0.5f,

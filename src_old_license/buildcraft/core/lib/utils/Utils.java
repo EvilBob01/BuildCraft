@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -691,10 +691,10 @@ public final class Utils {
             if (pos.getY() < lowestY) {
                 closest.clear();
                 closest.add(pos);
-                closestDist = pos.distanceSq(hint);
+                closestDist = pos.distSqr(hint);
                 lowestY = pos.getY();
             } else {
-                double dist = pos.distanceSq(hint);
+                double dist = pos.distSqr(hint);
                 if (dist - 1 > closestDist) continue;
                 if (dist + 1 < closestDist) {
                     closest.clear();

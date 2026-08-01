@@ -39,8 +39,8 @@ public interface IChunkLoadingTile {
     default Set<ChunkPos> getChunksToLoad() {
         BlockPos pos = ((BlockEntity) this).getBlockPos();
         Set<ChunkPos> chunkPoses = new HashSet<>(4);
-        for (Direction face : Direction.HORIZONTALS) {
-            chunkPoses.add(new ChunkPos(pos.offset(face)));
+        for (Direction face : Direction.Plane.HORIZONTAL.stream().toArray(Direction[]::new)) {
+            chunkPoses.add(new ChunkPos(pos.relative(face)));
         }
         return chunkPoses;
     }

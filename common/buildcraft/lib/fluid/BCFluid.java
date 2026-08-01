@@ -7,6 +7,7 @@
 package buildcraft.lib.fluid;
 
 import net.minecraft.block.material.MapColor;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.neoforge.fluids.FluidType;

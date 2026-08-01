@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -22,8 +23,8 @@ import buildcraft.factory.tile.TileAutoWorkbenchFluids;
 
 public class BlockAutoWorkbenchFluids extends BlockBCTile_Neptune {
 
-    public BlockAutoWorkbenchFluids(Material material, String id) {
-        super(material, id);
+    public BlockAutoWorkbenchFluids(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

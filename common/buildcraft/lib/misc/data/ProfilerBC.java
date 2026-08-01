@@ -17,21 +17,21 @@ public class ProfilerBC {
     private final Profiler profiler;
 
     public ProfilerBC(Profiler profiler) {
-        this.profiler = profiler;
+        this.getProfiler() = profiler;
     }
 
     public IProfilerSection start(String name) {
-        profiler.startSection(name);
+        profiler.push(name);
         return profiler::endSection;
     }
 
     public IProfilerSection start(String... names) {
         for (String s : names) {
-            profiler.startSection(s);
+            profiler.push(s);
         }
         return () -> {
             for (int i = 0; i < names.length; i++) {
-                profiler.endSection();
+                profiler.pop();
             }
         };
     }

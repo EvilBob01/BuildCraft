@@ -1,30 +1,30 @@
 /* Copyright (c) 2016 SpaceToad and the BuildCraft team
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinWorldEvent;
-import net.neoforged.neoforge.event.level.WorldEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -53,62 +53,60 @@ public enum BCLibEventDist {
     INSTANCE;
 
     @SubscribeEvent
-    public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
+    public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof ServerPlayer) {
             ServerPlayer playerMP = (ServerPlayer) entity;
-            // Delay sending join messages to player as it makes it work when in single-player
             MessageUtil.doDelayedServer(() -> MarkerCache.onPlayerJoinWorld(playerMP));
         }
     }
 
     @SubscribeEvent
-    public static void onWorldUnload(WorldEvent.Unload event) {
-        MarkerCache.onWorldUnload(event.getLevel());
-        if (event.getLevel() instanceof ServerLevel) {
-            FakePlayerProvider.INSTANCE.unloadWorld((ServerLevel) event.getLevel());
+    public static void onWorldUnload(LevelEvent.Unload event) {
+        if (event.getLevel() instanceof Level level) {
+            MarkerCache.onWorldUnload(level);
+        }
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            FakePlayerProvider.INSTANCE.unloadWorld(serverLevel);
         }
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onReloadFinish(EventBuildCraftReload.FinishLoad event) {
-        // Note: when you need to add server-side listeners the client listeners need to be moved to BCLibProxy
         GuideManager.INSTANCE.onRegistryReload(event);
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void onConnectToServer(ClientConnectedToServerEvent event) {
+    public static void onConnectToServer(ClientPlayerNetworkEvent.LoggingIn event) {
         BuildCraftObjectCaches.onClientJoinServer();
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void textureStitchPre(TextureStitchEvent.Pre event) {
+    public static void textureStitchPre(TextureAtlasStitchedEvent event) {
         ReloadManager.INSTANCE.preReloadResources();
-        TextureMap map = event.getMap();
-        SpriteHolderRegistry.onTextureStitchPre(map);
-        ModelHolderRegistry.onTextureStitchPre(map);
+        SpriteHolderRegistry.onTextureStitchPre(event.getAtlas());
+        ModelHolderRegistry.onTextureStitchPre(event.getAtlas());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @OnlyIn(Dist.CLIENT)
-    public static void textureStitchPreLow(TextureStitchEvent.Pre event) {
-        FluidRenderer.onTextureStitchPre(event.getMap());
+    public static void textureStitchPreLow(TextureAtlasStitchedEvent event) {
+        FluidRenderer.onTextureStitchPre(event.getAtlas());
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void textureStitchPost(TextureStitchEvent.Post event) {
-        TextureMap map = event.getMap();
+    public static void textureStitchPost(TextureAtlasStitchedEvent event) {
         SpriteHolderRegistry.onTextureStitchPost();
-        FluidRenderer.onTextureStitchPost(event.getMap());
+        FluidRenderer.onTextureStitchPost(event.getAtlas());
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void modelBake(ModelBakeEvent event) {
+    public static void modelBake(ModelEvent.BakingCompleted event) {
         SpriteHolderRegistry.exportTextureMap();
         LaserRenderer_BC8.clearModels();
         ModelHolderRegistry.onModelBake();
@@ -117,41 +115,37 @@ public enum BCLibEventDist {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void renderWorldLast(RenderWorldLastEvent event) {
+    public static void renderWorldLast(RenderLevelStageEvent event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
-        float partialTicks = event.getPartialTicks();
+        float partialTicks = event.getPartialTick().getGameTimeDeltaPartialTick(true);
 
         DetachedRenderer.INSTANCE.renderWorldLastEvent(player, partialTicks);
     }
 
     @SubscribeEvent
-    public static void serverTick(ServerTickEvent event) {
-        if (event.phase == Phase.END) {
-            BCAdvDebugging.INSTANCE.onServerPostTick();
-            MessageUtil.postServerTick();
-        }
+    public static void serverTick(ServerTickEvent.Post event) {
+        BCAdvDebugging.INSTANCE.onServerPostTick();
+        MessageUtil.postServerTick();
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void clientTick(ClientTickEvent event) {
-        if (event.phase == Phase.END) {
-            BuildCraftObjectCaches.onClientTick();
-            MessageUtil.postClientTick();
-            Minecraft mc = Minecraft.getInstance();
-            EntityPlayerSP player = mc.player;
-            if (player != null && ItemDebugger.isShowDebugInfo(player)) {
-                BlockHitResult mouseOver = mc.objectMouseOver;
-                if (mouseOver != null) {
-                    IDebuggable debuggable = ClientDebuggables.getDebuggableObject(mouseOver);
-                    if (debuggable instanceof BlockEntity) {
-                        BlockEntity tile = (BlockEntity) debuggable;
-                        MessageManager.sendToServer(new MessageDebugRequest(tile.getBlockPos(), mouseOver.sideHit));
-                    } else if (debuggable instanceof Entity) {
-                        // TODO: Support entities!
-                    }
+    public static void clientTick(ClientTickEvent.Post event) {
+        BuildCraftObjectCaches.onClientTick();
+        MessageUtil.postClientTick();
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player != null && ItemDebugger.isShowDebugInfo(player)) {
+            HitResult hitResult = mc.hitResult;
+            if (hitResult instanceof BlockHitResult mouseOver) {
+                IDebuggable debuggable = ClientDebuggables.getDebuggableObject(mouseOver);
+                if (debuggable instanceof BlockEntity) {
+                    BlockEntity tile = (BlockEntity) debuggable;
+                    MessageManager.sendToServer(new MessageDebugRequest(tile.getBlockPos(), mouseOver.getDirection()));
+                } else if (debuggable instanceof Entity) {
+                    // TODO: Support entities!
                 }
             }
         }

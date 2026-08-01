@@ -18,6 +18,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -35,6 +37,7 @@ import buildcraft.lib.migrate.BCVersion;
 import buildcraft.lib.misc.LocaleUtil;
 import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 import buildcraft.core.BCCoreConfig;
@@ -56,7 +59,8 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     protected boolean isComplete = false;
     protected final MjBattery battery = new MjBattery(getBatteryCapacity());
 
-    public TileMiner() {
+    public TileMiner(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addProvider(new MjCapabilityHelper(createMjReceiver()));
         caps.addCapabilityInstance(TilesAPI.CAP_HAS_WORK, () -> !isComplete, EnumPipePart.VALUES);
     }
@@ -94,7 +98,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     @Override
     public void onLoad() {
         super.onLoad();
-        offset = level.rand.nextInt(10);
+        offset = level.getRandom().nextInt(10);
     }
 
     @Override
@@ -124,7 +128,7 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
             }
             for (int y = worldPosition.getY() - 1; y > newY; y--) {
                 BlockPos blockPos = new BlockPos(worldPosition.getX(), y, worldPosition.getZ());
-                level.setBlock(blockPos, BCFactoryBlocks.tube.defaultBlockState());
+                level.setBlock(blockPos, BCFactoryBlocks.tube.defaultBlockState(), 3);
             }
             currentLength = wantedLength = newLength;
             sendNetworkUpdate(NET_WANTED_Y);
@@ -164,19 +168,18 @@ public abstract class TileMiner extends TileBC_Neptune implements ITickable, IDe
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         if (currentPos != null) {
-            nbt.put("currentPos", NbtUtils.createPosTag(currentPos));
+            nbt.put("currentPos", NbtUtils.writeBlockPos(currentPos));
         }
         nbt.putInt("wantedLength", wantedLength);
         nbt.putInt("progress", progress);
         nbt.put("battery", battery.serializeNBT());
-        return nbt;
     }
 
     @Override
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.loadAdditional(nbt, registries);
         if (nbt.contains("currentPos")) {
-            currentPos = NbtUtils.getPosFromTag(nbt.getCompound("currentPos"));
+            currentPos = NbtUtils.readBlockPos(nbt, "currentPos").orElse(BlockPos.ZERO);
         }
         wantedLength = nbt.getInt("wantedLength");
         progress = nbt.getInt("progress");

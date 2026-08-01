@@ -11,7 +11,7 @@ public class DelegateFontRenderer extends FontRenderer {
     public final FontRenderer delegate;
 
     public DelegateFontRenderer(FontRenderer delegate) {
-        super(Minecraft.getInstance().gameSettings, new ResourceLocation("textures/font/ascii.png"),
+        super(Minecraft.getInstance().gameSettings, ResourceLocation.parse("textures/font/ascii.png"),
             Minecraft.getInstance().renderEngine, delegate.getUnicodeFlag());
         this.delegate = delegate;
     }

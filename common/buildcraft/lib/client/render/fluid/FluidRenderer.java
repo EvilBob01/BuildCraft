@@ -6,6 +6,7 @@
 
 package buildcraft.lib.client.render.fluid;
 
+import net.minecraft.world.level.material.Fluid;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -185,7 +186,7 @@ public class FluidRenderer {
     public static void renderFluid(
         FluidSpriteType type, FluidStack fluid, int cap, Vec3 min, Vec3 max, BufferBuilder bbIn, boolean[] sideRender
     ) {
-        renderFluid(type, fluid, fluid == null ? 0 : fluid.amount, cap, min, max, bbIn, sideRender);
+        renderFluid(type, fluid, fluid == null ? 0 : fluid.getAmount(), cap, min, max, bbIn, sideRender);
     }
 
     /** Render's a fluid cuboid to the given vertex buffer. The cube shouldn't cross over any {@literal 0->1} boundary
@@ -209,7 +210,7 @@ public class FluidRenderer {
             return;
         }
         Profiler prof = Minecraft.getInstance().mcProfiler;
-        prof.startSection("fluid");
+        prof.push("fluid");
         if (sideRender == null) {
             sideRender = DEFAULT_FACES;
         }
@@ -320,7 +321,7 @@ public class FluidRenderer {
         sprite = null;
         texmap = null;
         bb = null;
-        prof.endSection();
+        prof.pop();
     }
 
     public static TextureAtlasSprite getFluidSprite(FluidSpriteType type, FluidStack fluid) {
@@ -491,7 +492,7 @@ public class FluidRenderer {
         }
 
         public TankSize shrink(double x, double y, double z) {
-            return new TankSize(min.addVector(x, y, z), max.subtract(x, y, z));
+            return new TankSize(min.add(x, y, z), max.subtract(x, y, z));
         }
 
         public TankSize shink(Vec3 by) {

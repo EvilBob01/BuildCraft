@@ -9,14 +9,14 @@ package buildcraft.lib.misc;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class RegistryUtil {
     public static boolean isRegistered(Block block) {
-        return ForgeRegistries.BLOCKS.containsValue(block);
+        return BuiltInRegistries.BLOCK.getKey(block) != null;
     }
 
     public static boolean isRegistered(Item item) {
-        return ForgeRegistries.ITEMS.containsValue(item);
+        return BuiltInRegistries.ITEM.getKey(item) != null;
     }
 }

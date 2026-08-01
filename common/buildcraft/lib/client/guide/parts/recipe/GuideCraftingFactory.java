@@ -47,7 +47,7 @@ public class GuideCraftingFactory implements GuidePartFactory {
     }
 
     public static GuidePartFactory create(@Nonnull ItemStack stack) {
-        for (IRecipe recipe : ForgeRegistries.RECIPES) {
+        for (Recipe recipe : ForgeRegistries.RECIPES) {
             if (OreDictionary.itemMatches(stack, StackUtil.asNonNull(recipe.getRecipeOutput()), false)) {
                 GuidePartFactory val = getFactory(recipe);
                 if (val != null) {
@@ -61,7 +61,7 @@ public class GuideCraftingFactory implements GuidePartFactory {
         return null;
     }
 
-    public static GuidePartFactory getFactory(IRecipe recipe) {
+    public static GuidePartFactory getFactory(Recipe recipe) {
         ItemStack output = recipe.getRecipeOutput();
         NonNullList<Ingredient> input = recipe.getIngredients();
         if (input == null || input.isEmpty() || output.isEmpty()) {

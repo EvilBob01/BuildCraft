@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -26,8 +27,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.factory.tile.TileDistiller_BC8;
 
 public class BlockDistiller extends BlockBCTile_Neptune implements IBlockWithFacing {
-    public BlockDistiller(Material material, String id) {
-        super(material, id);
+    public BlockDistiller(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

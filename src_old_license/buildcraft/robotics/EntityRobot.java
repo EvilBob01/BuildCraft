@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -1356,7 +1356,7 @@ public class EntityRobot extends EntityRobotBase implements IEntityAdditionalSpa
     /** Tries to receive items in parameters, return items that are left after the operation. */
     @Override
     public ItemStack receiveItem(TileEntity tile, ItemStack stack) {
-        if (currentDockingStation != null && currentDockingStation.index().subtract(tile.getPos()).distanceSq(BlockPos.ORIGIN) == 1 && mainAI != null) {
+        if (currentDockingStation != null && currentDockingStation.index().subtract(tile.getPos()).distSqr(BlockPos.ORIGIN) == 1 && mainAI != null) {
 
             return mainAI.getActiveAI().receiveItem(stack);
         } else {
@@ -1526,3 +1526,4 @@ public class EntityRobot extends EntityRobotBase implements IEntityAdditionalSpa
         }
     }
 }
+

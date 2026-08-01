@@ -7,6 +7,7 @@
 package buildcraft.builders.tile;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.material.Fluid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,11 +19,13 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -82,7 +85,7 @@ public class TileBuilder extends TileBC_Neptune
     public static final IdAllocator IDS = TileBC_Neptune.IDS.makeChild("builder");
     public static final int NET_CAN_EXCAVATE = IDS.allocId("CAN_EXCAVATE");
     public static final int NET_SNAPSHOT_TYPE = IDS.allocId("SNAPSHOT_TYPE");
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftbuilders:paving_the_way");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftbuilders:paving_the_way");
 
     public final ItemHandlerSimple invSnapshot =
         itemManager
@@ -114,9 +117,10 @@ public class TileBuilder extends TileBC_Neptune
 
     private boolean isDone = false;
 
-    public TileBuilder() {
+    public TileBuilder(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         for (int i = 1; i <= 4; i++) {
-            tankManager.add(new Tank("tank" + i, Fluid.BUCKET_VOLUME * 8, this) {
+            tankManager.add(new Tank("tank" + i, FluidType.BUCKET_VOLUME * 8, this) {
                 @Override
                 protected void onContentsChanged() {
                     super.onContentsChanged();
@@ -211,7 +215,7 @@ public class TileBuilder extends TileBC_Neptune
                 basePoses.addAll(PositionUtil.getAllOnPath(path.get(i - 1), path.get(i)));
             }
         } else {
-            basePoses.add(worldPosition.offset(level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite()));
+            basePoses.add(worldPosition.relative(level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING).getOpposite()));
         }
     }
 
@@ -223,7 +227,7 @@ public class TileBuilder extends TileBC_Neptune
     public void onPlacedBy(LivingEntity placer, ItemStack stack) {
         super.onPlacedBy(placer, stack);
         Direction facing = level.getBlockState(worldPosition).getValue(BlockBCBase_Neptune.PROP_FACING);
-        BlockEntity inFront = level.getBlockEntity(worldPosition.offset(facing.getOpposite()));
+        BlockEntity inFront = level.getBlockEntity(worldPosition.relative(facing.getOpposite()));
         if (inFront instanceof IPathProvider) {
             IPathProvider provider = (IPathProvider) inFront;
             ImmutableList<BlockPos> copiedPath = ImmutableList.copyOf(provider.getPath());
@@ -240,7 +244,7 @@ public class TileBuilder extends TileBC_Neptune
         level.getProfiler().push("main");
         level.getProfiler().push("power");
         battery.tick(getLevel(), getBlockPos());
-        level.profiler.endStartSection("builder");
+        level.getProfiler().endStartSection("builder");
         SnapshotBuilder<?> builder = getBuilder();
         if (builder != null) {
             isDone = builder.tick();
@@ -256,7 +260,7 @@ public class TileBuilder extends TileBC_Neptune
                 }
             }
         }
-        level.profiler.endStartSection("net_update");
+        level.getProfiler().endStartSection("net_update");
         sendNetworkUpdate(NET_RENDER_DATA); // FIXME
         level.getProfiler().pop();
         level.getProfiler().pop();
@@ -352,13 +356,12 @@ public class TileBuilder extends TileBC_Neptune
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         if (path != null) {
-            nbt.put("path", NBTUtilBC.writeCompoundList(path.stream().map(NbtUtils::createPosTag)));
+            nbt.put("path", NBTUtilBC.writeCompoundList(path.stream().map(NBTUtilBC::writePosTag)));
         }
-        nbt.put("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NbtUtils::createPosTag)));
+        nbt.put("basePoses", NBTUtilBC.writeCompoundList(basePoses.stream().map(NBTUtilBC::writePosTag)));
         nbt.putBoolean("canExcavate", canExcavate);
         nbt.put("rotation", NBTUtilBC.writeEnum(rotation));
         Optional.ofNullable(getBuilder()).ifPresent(builder -> nbt.put("builder", builder.serializeNBT()));
-        return nbt;
     }
 
     @Override
@@ -366,9 +369,9 @@ public class TileBuilder extends TileBC_Neptune
         super.loadAdditional(nbt, registries);
         if (nbt.contains("path")) {
             path =
-                NBTUtilBC.readCompoundList(nbt.get("path")).map(NbtUtils::getPosFromTag).collect(Collectors.toList());
+                NBTUtilBC.readCompoundList(nbt.get("path")).map(NBTUtilBC::getPosFromTag).collect(Collectors.toList());
         }
-        basePoses = NBTUtilBC.readCompoundList(nbt.get("basePoses")).map(NbtUtils::getPosFromTag)
+        basePoses = NBTUtilBC.readCompoundList(nbt.get("basePoses")).map(NBTUtilBC::getPosFromTag)
             .collect(Collectors.toList());
         canExcavate = nbt.getBoolean("canExcavate");
         rotation = NBTUtilBC.readEnum(nbt.get("rotation"), Rotation.class);

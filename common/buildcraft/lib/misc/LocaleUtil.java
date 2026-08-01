@@ -18,7 +18,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 import net.minecraft.util.text.translation.I18n;
 
-import net.minecraftforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.IFluidTank;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;

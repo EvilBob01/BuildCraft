@@ -6,6 +6,7 @@
 
 package buildcraft.lib.client.guide.parts.recipe;
 
+import net.minecraft.world.item.crafting.Recipe;
 import java.util.Arrays;
 
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +42,7 @@ public class GuideAssemblyFactory implements GuidePartFactory {
     }
 
     // public static GuideAssemblyFactory create(@Nonnull ItemStack stack) {
-    // for (IRecipe recipe : CraftingManager.getInstance().getRecipeList()) {
+    // for (Recipe recipe : CraftingManager.getInstance().getRecipeList()) {
     // if (OreDictionary.itemMatches(stack, StackUtil.asNonNull(recipe.getRecipeOutput()), false)) {
     // GuideAssemblyFactory val = getFactory(recipe);
     // if (val != null) {
@@ -55,7 +56,7 @@ public class GuideAssemblyFactory implements GuidePartFactory {
     // return null;
     // }
 
-    // public static GuideAssemblyFactory getFactory(IRecipe recipe) {
+    // public static GuideAssemblyFactory getFactory(Recipe recipe) {
     // GuideAssemblyFactory val = null;
     // if (recipe instanceof ShapedRecipes) {
     // ShapedRecipes shaped = (ShapedRecipes) recipe;
@@ -108,7 +109,7 @@ public class GuideAssemblyFactory implements GuidePartFactory {
     // return val;
     // }
 
-    // private static ItemStack[][] getStackSizeArray(IRecipe recipe) {
+    // private static ItemStack[][] getStackSizeArray(Recipe recipe) {
     // if (recipe instanceof ShapedRecipes) {
     // return new ItemStack[((ShapedRecipes) recipe).recipeWidth][((ShapedRecipes) recipe).recipeHeight];
     // } else if (recipe instanceof ShapedOreRecipe) {

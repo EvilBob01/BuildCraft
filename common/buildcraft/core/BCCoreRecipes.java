@@ -6,9 +6,10 @@
  */
 package buildcraft.core;
 
+import net.minecraft.world.item.crafting.Recipe;
 /** TODO (Phase 8 — see ROADMAP.md): all in-code recipe registration below was written for the 1.12.2
  * legacy recipe system (meta-based {@code ItemStack} constructors, {@code ShapelessOreRecipe}, and a
- * non-generic {@code RegistryEvent<IRecipe>}), none of which exist in 1.21.1. Recipes are now data-driven
+ * non-generic {@code RegistryEvent<Recipe>}), none of which exist in 1.21.1. Recipes are now data-driven
  * via JSON in {@code buildcraft_resources/data/<modid>/recipe/}. This class is stubbed to a no-op until
  * that conversion happens. */
 public class BCCoreRecipes {

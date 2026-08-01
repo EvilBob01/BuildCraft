@@ -9,7 +9,7 @@ package buildcraft.transport.stripes;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResult;
@@ -32,9 +32,9 @@ public enum StripesHandlerEntityInteract implements IStripesHandlerItem {
                           ItemStack stack,
                           Player player,
                           IStripesActivator activator) {
-        List<LivingEntity> entities = world.getEntitiesWithinAABB(
+        List<LivingEntity> entities = world.getEntitiesOfClass(
             LivingEntity.class,
-            new AABB(pos.offset(direction))
+            new AABB(pos.relative(direction))
         );
         Collections.shuffle(entities);
         for (LivingEntity entity : entities) {

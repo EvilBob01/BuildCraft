@@ -109,7 +109,7 @@ public class ModelHolderStatic extends ModelHolder {
                         break;
                     }
                 } else {
-                    toRegisterSprites.add(new ResourceLocation(lookup));
+                    toRegisterSprites.add(ResourceLocation.parse(lookup));
                 }
                 if (ModelHolderRegistry.DEBUG) {
                     BCLog.logger.info("[lib.model.holder]  - " + lookup);

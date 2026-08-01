@@ -86,7 +86,7 @@ public class GuiElementStatementDrag implements IMenuElement {
                 if (dragging instanceof StatementWrapper) {
                     EnumPipePart part = ((StatementWrapper) dragging).sourcePart;
                     if (part != EnumPipePart.CENTER) {
-                        background = background.offset(0, (1 + part.getIndex()) * 18);
+                        background = background.offset(0, (1 + part.get3DDataValue()) * 18);
                     }
                 }
                 background.drawAt(x, y);

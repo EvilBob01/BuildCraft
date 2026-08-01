@@ -136,7 +136,7 @@ public class ContainerGate extends ContainerPipe {
                 int numTriggers = buffer.readInt();
                 int numActions = buffer.readInt();
                 for (int i = 0; i < numTriggers; i++) {
-                    String tag = buffer.readString(256);
+                    String tag = buffer.readString();
                     EnumPipePart part = buffer.readEnumValue(EnumPipePart.class);
                     TriggerWrapper wrapper = TriggerWrapper.wrap(StatementManager.statements.get(tag), part.face);
                     if (gate.isValidTrigger(wrapper)) {
@@ -144,7 +144,7 @@ public class ContainerGate extends ContainerPipe {
                     }
                 }
                 for (int i = 0; i < numActions; i++) {
-                    String tag = buffer.readString(256);
+                    String tag = buffer.readString();
                     EnumPipePart part = buffer.readEnumValue(EnumPipePart.class);
                     ActionWrapper wrapper = ActionWrapper.wrap(StatementManager.statements.get(tag), part.face);
                     if (gate.isValidAction(wrapper)) {

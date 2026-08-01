@@ -135,7 +135,7 @@ public class GuiElementStatementSource<S extends IGuiSlot> implements IInteracti
         if (guiSlot instanceof StatementWrapper) {
             EnumPipePart part = ((StatementWrapper) guiSlot).sourcePart;
             if (part != EnumPipePart.CENTER) {
-                background = background.offset(0, (1 + part.getIndex()) * 18);
+                background = background.offset(0, (1 + part.get3DDataValue()) * 18);
             }
         }
         background.drawAt(x, y);

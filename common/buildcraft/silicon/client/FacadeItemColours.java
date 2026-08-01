@@ -18,7 +18,7 @@ public enum FacadeItemColours implements IItemColor {
         FacadePhasedState state = states.getCurrentStateForStack();
         int colour = -1;
         ResourceLocation id = state.stateInfo.state.getBlock().builtInRegistryHolder().key().location();
-        if (id != null && "wildnature".equals(id.getResourceDomain())) {
+        if (id != null && "wildnature".equals(id.getNamespace())) {
             // Fixes https://github.com/BuildCraft/BuildCraft/issues/4435
             // (Basically wildnature doesn't handle the null world+position correctly)
             // (But instead of throwing an NPE they pass invalid values to "ColourizerGrass")

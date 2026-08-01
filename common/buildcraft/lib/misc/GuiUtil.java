@@ -294,8 +294,8 @@ public class GuiUtil {
     }
 
     public static void drawFluid(IGuiArea position, FluidStack fluid, int capacity) {
-        if (fluid == null || fluid.amount <= 0) return;
-        drawFluid(position, fluid, fluid.amount, capacity);
+        if (fluid == null || fluid.getAmount() <= 0) return;
+        drawFluid(position, fluid, fluid.getAmount(), capacity);
     }
 
     public static void drawFluid(IGuiArea position, FluidStack fluid, int amount, int capacity) {

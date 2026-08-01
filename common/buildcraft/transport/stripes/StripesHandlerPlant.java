@@ -26,7 +26,7 @@ public enum StripesHandlerPlant implements IStripesHandlerItem {
                           ItemStack stack,
                           Player player,
                           IStripesActivator activator) {
-        return CropManager.plantCrop(world, player, stack, pos.offset(direction).down())
-            || CropManager.plantCrop(world, player, stack, pos.offset(direction));
+        return CropManager.plantCrop(world, player, stack, pos.relative(direction).down())
+            || CropManager.plantCrop(world, player, stack, pos.relative(direction));
     }
 }

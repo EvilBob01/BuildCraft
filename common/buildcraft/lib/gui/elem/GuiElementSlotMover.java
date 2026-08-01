@@ -1,6 +1,6 @@
 package buildcraft.lib.gui.elem;
 
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.Slot;
 
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;
 import buildcraft.lib.gui.BuildCraftGui;

@@ -20,33 +20,33 @@ import buildcraft.api.enums.EnumPowerStage;
 import buildcraft.api.enums.EnumSpring;
 
 public final class BuildCraftProperties {
-    public static final Property<Direction> BLOCK_FACING = PropertyEnum.create("facing", Direction.class, Direction.Plane.HORIZONTAL.facings());
-    public static final Property<Direction> BLOCK_FACING_6 = PropertyEnum.create("facing", Direction.class);
+    public static final Property<Direction> BLOCK_FACING = EnumProperty.create("facing", Direction.class, d -> d.getAxis().isHorizontal());
+    public static final Property<Direction> BLOCK_FACING_6 = EnumProperty.create("facing", Direction.class);
 
-    public static final Property<DyeColor> BLOCK_COLOR = PropertyEnum.create("color", DyeColor.class);
-    public static final Property<EnumSpring> SPRING_TYPE = PropertyEnum.create("type", EnumSpring.class);
-    public static final Property<EnumEngineType> ENGINE_TYPE = PropertyEnum.create("type", EnumEngineType.class);
-    public static final Property<EnumLaserTableType> LASER_TABLE_TYPE = PropertyEnum.create("type", EnumLaserTableType.class);
-    public static final Property<EnumMachineState> MACHINE_STATE = PropertyEnum.create("state", EnumMachineState.class);
-    public static final Property<EnumPowerStage> ENERGY_STAGE = PropertyEnum.create("stage", EnumPowerStage.class);
-    public static final Property<EnumOptionalSnapshotType> SNAPSHOT_TYPE = PropertyEnum.create("snapshot_type", EnumOptionalSnapshotType.class);
-    public static final Property<EnumDecoratedBlock> DECORATED_BLOCK = PropertyEnum.create("decoration_type", EnumDecoratedBlock.class);
+    public static final Property<DyeColor> BLOCK_COLOR = EnumProperty.create("color", DyeColor.class);
+    public static final Property<EnumSpring> SPRING_TYPE = EnumProperty.create("type", EnumSpring.class);
+    public static final Property<EnumEngineType> ENGINE_TYPE = EnumProperty.create("type", EnumEngineType.class);
+    public static final Property<EnumLaserTableType> LASER_TABLE_TYPE = EnumProperty.create("type", EnumLaserTableType.class);
+    public static final Property<EnumMachineState> MACHINE_STATE = EnumProperty.create("state", EnumMachineState.class);
+    public static final Property<EnumPowerStage> ENERGY_STAGE = EnumProperty.create("stage", EnumPowerStage.class);
+    public static final Property<EnumOptionalSnapshotType> SNAPSHOT_TYPE = EnumProperty.create("snapshot_type", EnumOptionalSnapshotType.class);
+    public static final Property<EnumDecoratedBlock> DECORATED_BLOCK = EnumProperty.create("decoration_type", EnumDecoratedBlock.class);
 
-    public static final Property<Integer> GENERIC_PIPE_DATA = PropertyInteger.create("pipe_data", 0, 15);
-    public static final Property<Integer> LED_POWER = PropertyInteger.create("led_power", 0, 3);
+    public static final Property<Integer> GENERIC_PIPE_DATA = IntegerProperty.create("pipe_data", 0, 15);
+    public static final Property<Integer> LED_POWER = IntegerProperty.create("led_power", 0, 3);
 
-    public static final Property<Boolean> JOINED_BELOW = PropertyBool.create("joined_below");
-    public static final Property<Boolean> MOVING = PropertyBool.create("moving");
-    public static final Property<Boolean> LED_DONE = PropertyBool.create("led_done");
-    public static final Property<Boolean> ACTIVE = PropertyBool.create("active");
-    public static final Property<Boolean> VALID = PropertyBool.create("valid");
+    public static final Property<Boolean> JOINED_BELOW = BooleanProperty.create("joined_below");
+    public static final Property<Boolean> MOVING = BooleanProperty.create("moving");
+    public static final Property<Boolean> LED_DONE = BooleanProperty.create("led_done");
+    public static final Property<Boolean> ACTIVE = BooleanProperty.create("active");
+    public static final Property<Boolean> VALID = BooleanProperty.create("valid");
 
-    public static final Property<Boolean> CONNECTED_UP = PropertyBool.create("connected_up");
-    public static final Property<Boolean> CONNECTED_DOWN = PropertyBool.create("connected_down");
-    public static final Property<Boolean> CONNECTED_EAST = PropertyBool.create("connected_east");
-    public static final Property<Boolean> CONNECTED_WEST = PropertyBool.create("connected_west");
-    public static final Property<Boolean> CONNECTED_NORTH = PropertyBool.create("connected_north");
-    public static final Property<Boolean> CONNECTED_SOUTH = PropertyBool.create("connected_south");
+    public static final Property<Boolean> CONNECTED_UP = BooleanProperty.create("connected_up");
+    public static final Property<Boolean> CONNECTED_DOWN = BooleanProperty.create("connected_down");
+    public static final Property<Boolean> CONNECTED_EAST = BooleanProperty.create("connected_east");
+    public static final Property<Boolean> CONNECTED_WEST = BooleanProperty.create("connected_west");
+    public static final Property<Boolean> CONNECTED_NORTH = BooleanProperty.create("connected_north");
+    public static final Property<Boolean> CONNECTED_SOUTH = BooleanProperty.create("connected_south");
 
     public static final Map<Direction, Property<Boolean>> CONNECTED_MAP;
 
@@ -83,3 +83,4 @@ public final class BuildCraftProperties {
     /** Deactivate constructor */
     private BuildCraftProperties() {}
 }
+

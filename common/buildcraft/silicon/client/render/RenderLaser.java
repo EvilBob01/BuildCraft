@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.world.inventory.EntityEquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
@@ -34,8 +34,8 @@ public class RenderLaser extends FastTESR<TileLaser> {
     public void renderTileEntityFast(@Nonnull TileLaser tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
 
         if (BCSiliconConfig.renderLaserBeams || isPlayerWearingGoggles()) {
-            Minecraft.getInstance().mcProfiler.startSection("bc");
-            Minecraft.getInstance().mcProfiler.startSection("laser");
+            Minecraft.getInstance().mcProfiler.push("bc");
+            Minecraft.getInstance().mcProfiler.push("laser");
 
             buffer.setTranslation(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
@@ -44,20 +44,20 @@ public class RenderLaser extends FastTESR<TileLaser> {
                 if (avg > 200_000) {
                     avg += 200_000;
                     Direction side = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(BuildCraftProperties.BLOCK_FACING_6);
-                    Vec3 offset = new Vec3(0.5, 0.5, 0.5).add(new Vec3(side.getDirectionVec()).scale(4 / 16D));
+                    Vec3 offset = new Vec3(0.5, 0.5, 0.5).add(Vec3.atLowerCornerOf(side.getNormal()).scale(4 / 16D));
                     int index = (int) (avg * MAX_POWER / tile.getMaxPowerPerTick());
                     if (index > MAX_POWER) {
                         index = MAX_POWER;
                     }
-                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3(tile.getBlockPos()).offset(offset), tile.laserPos, 1 / 16D);
+                    LaserData_BC8 laser = new LaserData_BC8(BuildCraftLaserManager.POWERS[index], new Vec3(tile.getBlockPos().getX(), tile.getBlockPos().getY(), tile.getBlockPos().getZ()).add(offset), tile.laserPos, 1 / 16D);
                     LaserRenderer_BC8.renderLaserDynamic(laser, buffer);
                 }
             }
 
             buffer.setTranslation(0, 0, 0);
 
-            Minecraft.getInstance().mcProfiler.endSection();
-            Minecraft.getInstance().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.pop();
+            Minecraft.getInstance().mcProfiler.pop();
         }
     }
 

@@ -87,14 +87,14 @@ public class MiniChunkGraph {
 
         public void requestAllConnected(Level world) {
             // Request all first, and THEN wait for all of them.
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 if (!neighbours.containsKey(face)) {
-                    MiniChunkCache.requestGraph(world, min.offset(face, 16));
+                    MiniChunkCache.requestGraph(world, min.relative(face, 16));
                 }
             }
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 if (!neighbours.containsKey(face)) {
-                    MiniChunkCache.requestAndWait(world, min.offset(face, 16));
+                    MiniChunkCache.requestAndWait(world, min.relative(face, 16));
                 }
             }
         }

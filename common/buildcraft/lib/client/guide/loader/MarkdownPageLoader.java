@@ -75,7 +75,7 @@ public enum MarkdownPageLoader implements IPageLoaderText {
                 // Use oredict
                 meta = OreDictionary.WILDCARD_VALUE;
             }
-            stack = new ItemStack(stack.getItem(), stack.getCount(), meta);
+            stack = new ItemStack(stack.getItem(), stack.getCount());
         } catch (NumberFormatException nfe) {
             return new OptionallyDisabled<>(args[2] + " was not a valid number: " + nfe.getLocalizedMessage());
         }
@@ -86,7 +86,7 @@ public enum MarkdownPageLoader implements IPageLoaderText {
 
         String nbtString = args[3];
         try {
-            stack.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
+            NBTUtilBC.setTag(stack, JsonToNBT.getTagFromJson(nbtString));
         } catch (NBTException e) {
             return new OptionallyDisabled<>(nbtString + " was not a valid nbt tag: " + e.getLocalizedMessage());
         }
@@ -96,7 +96,7 @@ public enum MarkdownPageLoader implements IPageLoaderText {
     @Override
     public GuidePageFactory loadPage(BufferedReader reader, ResourceLocation name, PageEntry<?> entry, Profiler prof)
         throws IOException {
-        prof.startSection("md");
+        prof.push("md");
         StringBuilder replaced = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
@@ -107,7 +107,7 @@ public enum MarkdownPageLoader implements IPageLoaderText {
         }
 
         BufferedReader nReader = new BufferedReader(new StringReader(replaced.toString()));
-        prof.endSection();
+        prof.pop();
         return XmlPageLoader.INSTANCE.loadPage(nReader, name, entry, prof);
     }
 

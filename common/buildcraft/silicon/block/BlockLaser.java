@@ -6,6 +6,7 @@
 
 package buildcraft.silicon.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
@@ -17,8 +18,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.silicon.tile.TileLaser;
 
 public class BlockLaser extends BlockBCTile_Neptune implements IBlockWithFacing {
-    public BlockLaser(Material material, String id) {
-        super(material, id);
+    public BlockLaser(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

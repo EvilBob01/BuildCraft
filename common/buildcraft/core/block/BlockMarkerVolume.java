@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.Random;
 
 import net.minecraft.world.level.block.Block;
@@ -22,8 +23,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.core.tile.TileMarkerVolume;
 
 public class BlockMarkerVolume extends BlockMarkerBase {
-    public BlockMarkerVolume(Material material, String id) {
-        super(material, id);
+    public BlockMarkerVolume(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

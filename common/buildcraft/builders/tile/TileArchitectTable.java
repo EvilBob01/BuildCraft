@@ -18,10 +18,11 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +53,7 @@ import buildcraft.lib.misc.data.BoxIterator;
 import buildcraft.lib.misc.data.EnumAxisOrder;
 import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -78,7 +80,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     public static final int NET_BOX = IDS.allocId("BOX");
     @SuppressWarnings("WeakerAccess")
     public static final int NET_SCAN = IDS.allocId("SCAN");
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftbuilders:architect");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftbuilders:architect");
 
     public final ItemHandlerSimple invSnapshotIn = itemManager.addInvHandler(
         "in",
@@ -110,6 +112,10 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         DeltaManager.EnumNetworkVisibility.GUI_ONLY
     );
 
+    public TileArchitectTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
     @Override
     public IdAllocator getIdAllocator() {
         return IDS;
@@ -123,7 +129,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         }
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(level);
         BlockState blockState = level.getBlockState(worldPosition);
-        BlockPos offsetPos = worldPosition.offset(blockState.getValue(BlockArchitectTable.PROP_FACING).getOpposite());
+        BlockPos offsetPos = worldPosition.relative(blockState.getValue(BlockArchitectTable.PROP_FACING).getOpposite());
         VolumeBox volumeBox = volumeBoxes.getVolumeBoxAt(offsetPos);
         BlockEntity tile = level.getBlockEntity(offsetPos);
         if (volumeBox != null) {
@@ -154,8 +160,8 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         } else {
             isValid = false;
             BlockState state = level.getBlockState(worldPosition);
-            state = state.withProperty(BlockArchitectTable.PROP_VALID, Boolean.FALSE);
-            level.setBlock(worldPosition, state);
+            state = state.setValue(BlockArchitectTable.PROP_VALID, Boolean.FALSE);
+            level.setBlock(worldPosition, state, 3);
         }
     }
 
@@ -253,7 +259,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
     }
 
     private void scanEntities() {
-        level.getEntitiesWithinAABB(Entity.class, box.getBoundingBox()).stream()
+        level.getEntitiesOfClass(Entity.class, box.getBoundingBox()).stream()
             .map(entity ->
                 SchematicEntityManager.getSchematicEntity(new SchematicEntityContext(
                     world,
@@ -275,7 +281,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         Snapshot snapshot = Snapshot.create(snapshotType);
         snapshot.size = box.size();
         snapshot.facing = facing;
-        snapshot.offset = box.min().subtract(worldPosition.offset(facing.getOpposite()));
+        snapshot.offset = box.min().subtract(worldPosition.relative(facing.getOpposite()));
         if (snapshot instanceof Template) {
             ((Template) snapshot).data = templateScannedBlocks;
         }
@@ -357,7 +363,6 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
         nbt.put("snapshotType", NBTUtilBC.writeEnum(snapshotType));
         nbt.putBoolean("isValid", isValid);
         nbt.putString("name", name);
-        return nbt;
     }
 
     @Override

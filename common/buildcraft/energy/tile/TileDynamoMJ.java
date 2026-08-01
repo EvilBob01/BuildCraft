@@ -8,12 +8,14 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -43,6 +45,7 @@ import buildcraft.lib.misc.collect.OrderedEnumMap;
 import buildcraft.lib.misc.data.ModelVariableData;
 import buildcraft.lib.mj.MjBatteryReceiver;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -84,7 +87,8 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
     /** The model variables, used to keep track of the various state-based variables. */
     public final ModelVariableData clientModelData = new ModelVariableData();
 
-    public TileDynamoMJ() {
+    public TileDynamoMJ(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         mjBattery = new MjBattery(MAX_MJ);
         mjConnector = new MjBatteryReceiver(mjBattery);
         mjCaps = new MjCapabilityHelper(mjConnector);
@@ -105,7 +109,6 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
         nbt.putInt("progressPart", progressPart);
         nbt.putInt("currentRF", currentRF);
         nbt.put("mj", mjBattery.serializeNBT());
-        return nbt;
     }
 
     @Override

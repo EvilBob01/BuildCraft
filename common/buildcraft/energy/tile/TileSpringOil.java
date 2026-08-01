@@ -26,7 +26,7 @@ import buildcraft.core.tile.ITileOilSpring;
 // We don't extend TileBC here because we have no need of any of its functions.
 public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilSpring {
 
-    private static final ResourceLocation ADVANCEMENT_PUMP_LARGE_OIL_WELL = new ResourceLocation(
+    private static final ResourceLocation ADVANCEMENT_PUMP_LARGE_OIL_WELL = ResourceLocation.parse(
         "buildcraftfactory:black_gold"
     );
 
@@ -77,7 +77,6 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
             list.appendTag(info.writeToNbt());
         }
         nbt.put("pumpProgress", list);
-        return nbt;
     }
 
     @Override
@@ -114,7 +113,6 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
             nbt.put("profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
             nbt.putLong("lastPumpTick", lastPumpTick);
             nbt.putInt("sourcesPumped", sourcesPumped);
-            return nbt;
         }
     }
 }

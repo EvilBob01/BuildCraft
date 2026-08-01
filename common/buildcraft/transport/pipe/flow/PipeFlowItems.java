@@ -327,7 +327,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
             holder, this, reachCenter.colour, reachCenter.from, reachCenter.getStack()
         );
         sideCheck.disallow(reachCenter.from);
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (item.tried.contains(face) || !pipe.isConnected(face)) {
                 sideCheck.disallow(face);
             }
@@ -492,15 +492,15 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         Level world = holder.getPipeWorld();
         BlockPos pos = holder.getPipePos();
 
-        double x = pos.getX() + 0.5 + motion.getFrontOffsetX() * 0.5;
-        double y = pos.getY() + 0.5 + motion.getFrontOffsetY() * 0.5;
-        double z = pos.getZ() + 0.5 + motion.getFrontOffsetZ() * 0.5;
+        double x = pos.getX() + 0.5 + motion.getStepX() * 0.5;
+        double y = pos.getY() + 0.5 + motion.getStepY() * 0.5;
+        double z = pos.getZ() + 0.5 + motion.getStepZ() * 0.5;
         speed += 0.01;
         speed *= 2;
         ItemEntity ent = new ItemEntity(world, x, y, z, stack);
-        ent.motionX = motion.getFrontOffsetX() * speed;
-        ent.motionY = motion.getFrontOffsetY() * speed;
-        ent.motionZ = motion.getFrontOffsetZ() * speed;
+        ent.motionX = motion.getStepX() * speed;
+        ent.motionY = motion.getStepY() * speed;
+        ent.motionZ = motion.getStepZ() * speed;
 
         PipeEventItem.Drop drop = new PipeEventItem.Drop(holder, this, ent);
         holder.fireEvent(drop);

@@ -2,7 +2,7 @@ package buildcraft.lib.gui.json;
 
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.Slot;
 
 import buildcraft.lib.expression.FunctionContext;
 import buildcraft.lib.expression.api.IExpressionNode.INodeBoolean;

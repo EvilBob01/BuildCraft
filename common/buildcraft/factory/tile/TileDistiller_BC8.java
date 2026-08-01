@@ -6,6 +6,7 @@
 package buildcraft.factory.tile;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.material.Fluid;
 import java.io.IOException;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.BlockPos;
 
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -52,6 +55,7 @@ import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.misc.data.ModelVariableData;
 import buildcraft.lib.mj.MjBatteryReceiver;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 import buildcraft.core.BCCoreConfig;
@@ -80,9 +84,9 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
 
     public static final long MAX_MJ_PER_TICK = 6 * MjAPI.MJ;
 
-    public final Tank tankIn = new Tank("in", 4 * Fluid.BUCKET_VOLUME, this, this::isDistillableFluid);
-    public final Tank tankGasOut = new Tank("gasOut", 4 * Fluid.BUCKET_VOLUME, this);
-    public final Tank tankLiquidOut = new Tank("liquidOut", 4 * Fluid.BUCKET_VOLUME, this);
+    public final Tank tankIn = new Tank("in", 4 * FluidType.BUCKET_VOLUME, this, this::isDistillableFluid);
+    public final Tank tankGasOut = new Tank("gasOut", 4 * FluidType.BUCKET_VOLUME, this);
+    public final Tank tankLiquidOut = new Tank("liquidOut", 4 * FluidType.BUCKET_VOLUME, this);
 
     private final MjBattery mjBattery = new MjBattery(1024 * MjAPI.MJ);
 
@@ -102,7 +106,8 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
 
     private long powerAvgClient;
 
-    public TileDistiller_BC8() {
+    public TileDistiller_BC8(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         tankIn.setCanDrain(false);
         tankGasOut.setCanFill(false);
         tankLiquidOut.setCanFill(false);
@@ -152,7 +157,6 @@ public class TileDistiller_BC8 extends TileBC_Neptune implements ITickable, IDeb
         nbt.put("battery", mjBattery.serializeNBT());
         nbt.putLong("distillPower", distillPower);
         powerAvg.writeToNbt(nbt, "powerAvg");
-        return nbt;
     }
 
     @Override

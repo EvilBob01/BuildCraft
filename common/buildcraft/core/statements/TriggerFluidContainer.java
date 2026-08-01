@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -65,7 +65,7 @@ public class TriggerFluidContainer extends BCStatement implements ITriggerExtern
             FluidStack searchedFluid = null;
 
             if (parameters != null && parameters.length >= 1 && parameters[0] != null && !parameters[0].getItemStack().isEmpty()) {
-                searchedFluid = FluidUtil.getFluidContained(parameters[0].getItemStack());
+                searchedFluid = FluidUtil.getFluidContained(parameters[0].getItemStack().orElse(null));
             }
 
             if (searchedFluid != null) {

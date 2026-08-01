@@ -73,7 +73,7 @@ public class PathSubCache extends MarkerSubCache<PathConnection> {
             if (pos.equals(from)) {
                 continue;
             }
-            if (pos.distanceSq(from) > maxLengthSquared) {
+            if (pos.distSqr(from) > maxLengthSquared) {
                 continue;
             }
             if (canConnect(from, pos) || canConnect(pos, from)) {
@@ -112,3 +112,4 @@ public class PathSubCache extends MarkerSubCache<PathConnection> {
         return false;
     }
 }
+

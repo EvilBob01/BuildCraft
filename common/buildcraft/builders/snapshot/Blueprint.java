@@ -65,7 +65,7 @@ public class Blueprint extends Snapshot {
         for (int z = 0; z < size.getZ(); z++) {
             for (int y = 0; y < size.getY(); y++) {
                 for (int x = 0; x < size.getX(); x++) {
-                    list.appendTag(new IntTag(data[posToIndex(x, y, z)]));
+                    list.appendTag(IntTag.valueOf(data[posToIndex(x, y, z)]));
                 }
             }
         }

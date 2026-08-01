@@ -73,10 +73,10 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     private static final AABB[] BOXES = new AABB[6];
 
     private static final ResourceLocation ADVANCEMENT_PLACE_GATE
-        = new ResourceLocation("buildcrafttransport:pipe_logic");
+        = ResourceLocation.parse("buildcrafttransport:pipe_logic");
 
     private static final ResourceLocation ADVANCEMENT_PLACE_ADV_GATE
-        = new ResourceLocation("buildcrafttransport:extended_logic");
+        = ResourceLocation.parse("buildcrafttransport:extended_logic");
 
     public final GateLogic logic;
 
@@ -91,12 +91,12 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
         double min = 5 / 16.0;
         double max = 11 / 16.0;
 
-        BOXES[Direction.DOWN.getIndex()] = new AABB(min, ll, min, max, lu, max);
-        BOXES[Direction.UP.getIndex()] = new AABB(min, ul, min, max, uu, max);
-        BOXES[Direction.NORTH.getIndex()] = new AABB(min, min, ll, max, max, lu);
-        BOXES[Direction.SOUTH.getIndex()] = new AABB(min, min, ul, max, max, uu);
-        BOXES[Direction.WEST.getIndex()] = new AABB(ll, min, min, lu, max, max);
-        BOXES[Direction.EAST.getIndex()] = new AABB(ul, min, min, uu, max, max);
+        BOXES[Direction.DOWN.get3DDataValue()] = new AABB(min, ll, min, max, lu, max);
+        BOXES[Direction.UP.get3DDataValue()] = new AABB(min, ul, min, max, uu, max);
+        BOXES[Direction.NORTH.get3DDataValue()] = new AABB(min, min, ll, max, max, lu);
+        BOXES[Direction.SOUTH.get3DDataValue()] = new AABB(min, min, ul, max, max, uu);
+        BOXES[Direction.WEST.get3DDataValue()] = new AABB(ll, min, min, lu, max, max);
+        BOXES[Direction.EAST.get3DDataValue()] = new AABB(ul, min, min, uu, max, max);
 
         MODEL_FUNC_CTX_STATIC = DefaultContexts.createWithAll();
         MODEL_MATERIAL = MODEL_FUNC_CTX_STATIC.putVariableString("material");
@@ -129,7 +129,7 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
         VariableInfoObject<Direction> infoSide = MODEL_VAR_INFO.createInfoObject(MODEL_SIDE);
         infoSide.cacheType = CacheType.ALWAYS;
         infoSide.setIsComplete = true;
-        Collections.addAll(infoSide.possibleValues, Direction.VALUES);
+        Collections.addAll(infoSide.possibleValues, Direction.values());
 
         VariableInfoBoolean infoIsOn = MODEL_VAR_INFO.createInfoBoolean(MODEL_IS_ON);
         infoIsOn.cacheType = CacheType.ALWAYS;
@@ -204,7 +204,7 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
 
     @Override
     public AABB getBoundingBox() {
-        return BOXES[side.getIndex()];
+        return BOXES[side.get3DDataValue()];
     }
 
     @Override
@@ -239,10 +239,10 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
     @Override
     public boolean onPluggableActivate(Player player, BlockHitResult trace, float hitX, float hitY, float hitZ) {
         if (!player.level().isClientSide) {
-            if (interactWithCopier(player, player.getHeldItemMainhand())) {
+            if (interactWithCopier(player, player.getMainHandItem())) {
                 return true;
             }
-            if (interactWithCopier(player, player.getHeldItemOffhand())) {
+            if (interactWithCopier(player, player.getOffhandItem())) {
                 return true;
             }
 

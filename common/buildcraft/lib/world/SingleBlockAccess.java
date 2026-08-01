@@ -43,7 +43,7 @@ public class SingleBlockAccess implements BlockGetter {
 
     @Override
     public boolean isAirBlock(BlockPos pos) {
-        return getBlockState(pos).getBlock().isAir(state, this, pos);
+        return getBlockState(pos).getBlock().isAir(state);
     }
 
     @Override

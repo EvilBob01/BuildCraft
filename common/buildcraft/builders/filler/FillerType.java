@@ -51,6 +51,6 @@ public class FillerType extends StatementType<IFillerPattern> {
 
     @Override
     public void writeToBuffer(PacketBufferBC buffer, IFillerPattern slot) {
-        buffer.writeString(slot.getUniqueTag());
+        buffer.writeUtf(slot.getUniqueTag());
     }
 }

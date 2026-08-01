@@ -55,8 +55,8 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         TankRenderSizes sizes = new TankRenderSizes(tankIn, tankGasOut, tankLiquidOut);
         for (int i = 0; i < 4; i++) {
             TANK_SIZES.put(face, sizes);
-            face = face.rotateY();
-            sizes = sizes.rotateY();
+            face = face.getClockWise();
+            sizes = sizes.getClockWise();
         }
     }
 
@@ -71,8 +71,8 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         }
 
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("bc");
-        profiler.startSection("distiller");
+        profiler.push("bc");
+        profiler.push("distiller");
 
         int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
         Direction face = state.getValue(BlockBCBase_Neptune.PROP_FACING);
@@ -90,8 +90,8 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
             bb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             bb.setTranslation(x, y, z);
 
-            profiler.startSection("model");
-            profiler.startSection("compute");
+            profiler.push("model");
+            profiler.push("compute");
             if (tile.clientModelData.hasNoNodes()) {
                 tile.clientModelData.setNodes(BCFactoryModels.DISTILLER.createTickableNodes());
             }
@@ -111,7 +111,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
                 copy.render(bb);
             }
 
-            profiler.endSection();
+            profiler.pop();
             profiler.endStartSection("fluid");
 
             renderTank(sizes.tankIn, tile.smoothedTankIn, combinedLight, partialTicks, bb);
@@ -127,21 +127,21 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         // gl state finish
         RenderHelper.enableStandardItemLighting();
 
-        profiler.endSection();
-        profiler.endSection();
-        profiler.endSection();
+        profiler.pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     public static void renderTank(TankSize size, FluidSmoother tank, int combinedLight, float partialTicks,
         BufferBuilder bb) {
         FluidStackInterp fluid = tank.getFluidForRender(partialTicks);
-        if (fluid == null || fluid.amount <= 0) {
+        if (fluid == null || fluid.getAmount() <= 0) {
             return;
         }
         int blockLight = fluid.fluid.getFluid().getLuminosity(fluid.fluid) & 0xF;
         combinedLight |= blockLight << 4;
         FluidRenderer.vertex.lighti(combinedLight);
-        FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid.fluid, fluid.amount, tank.getCapacity(), size.min,
+        FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid.fluid, fluid.getAmount(), tank.getCapacity(), size.min,
             size.max, bb, null);
     }
 
@@ -155,7 +155,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         }
 
         public TankRenderSizes rotateY() {
-            return new TankRenderSizes(tankIn.rotateY(), tankOutGas.rotateY(), tankOutLiquid.rotateY());
+            return new TankRenderSizes(tankIn.getClockWise(), tankOutGas.getClockWise(), tankOutLiquid.getClockWise());
         }
     }
 
@@ -172,7 +172,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         }
 
         public Size shrink(double by) {
-            return new Size(min.addVector(by, by, by), max.subtract(by, by, by));
+            return new Size(min.add(by, by, by), max.subtract(by, by, by));
         }
 
         public Size rotateY() {
@@ -190,3 +190,4 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
         }
     }
 }
+

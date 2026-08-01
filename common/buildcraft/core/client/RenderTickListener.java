@@ -67,7 +67,7 @@ public class RenderTickListener {
             { { 0.5, 0.9, 0.5 }, { 0.5, 1.2, 0.2 } }, // Forth arrow part (-Z)
         };
 
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             Matrix4f matrix = MatrixUtil.rotateTowardsFace(Direction.UP, face);
             Vec3[][] arr = new Vec3[5][2];
             for (int i = 0; i < 5; i++) {
@@ -141,12 +141,12 @@ public class RenderTickListener {
         if (player == null) {
             return;
         }
-        ItemStack mainHand = StackUtil.asNonNull(player.getHeldItemMainhand());
-        ItemStack offHand = StackUtil.asNonNull(player.getHeldItemOffhand());
+        ItemStack mainHand = StackUtil.asNonNull(player.getMainHandItem());
+        ItemStack offHand = StackUtil.asNonNull(player.getOffhandItem());
         WorldClient world = mc.world;
 
-        mc.mcProfiler.startSection("bc");
-        mc.mcProfiler.startSection("renderWorld");
+        mc.mcProfiler.push("bc");
+        mc.mcProfiler.push("renderWorld");
 
         DetachedRenderer.fromWorldOriginPre(player, partialTicks);
 
@@ -161,8 +161,8 @@ public class RenderTickListener {
 
         DetachedRenderer.fromWorldOriginPost();
 
-        mc.mcProfiler.endSection();
-        mc.mcProfiler.endSection();
+        mc.mcProfiler.pop();
+        mc.mcProfiler.pop();
     }
 
     private static void renderMapLocation(@Nonnull ItemStack stack) {
@@ -206,18 +206,18 @@ public class RenderTickListener {
 
     private static void renderMarkerConnector(WorldClient world, Player player) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("marker");
+        profiler.push("marker");
         for (MarkerCache<?> cache : MarkerCache.CACHES) {
-            profiler.startSection(cache.name);
+            profiler.push(cache.name);
             renderMarkerCache(player, cache.getSubCache(world));
-            profiler.endSection();
+            profiler.pop();
         }
-        profiler.endSection();
+        profiler.pop();
     }
 
     private static void renderMarkerCache(Player player, MarkerSubCache<?> cache) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("compute");
+        profiler.push("compute");
         Set<LaserData_BC8> toRender = new HashSet<>();
         for (final BlockPos a : cache.getAllMarkers()) {
             for (final BlockPos b : cache.getValidConnections(a)) {
@@ -247,7 +247,7 @@ public class RenderTickListener {
         for (LaserData_BC8 laser : toRender) {
             LaserRenderer_BC8.renderLaserStatic(laser);
         }
-        profiler.endSection();
+        profiler.pop();
     }
 
     private static boolean isLookingAt(BlockPos from, BlockPos to, Player player) {

@@ -23,11 +23,11 @@ import buildcraft.silicon.tile.TileProgrammingTable_Neptune;
 public class RenderProgrammingTable extends FastTESR<TileProgrammingTable_Neptune> {
     @Override
     public void renderTileEntityFast(@Nonnull TileProgrammingTable_Neptune tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("table");
-        Minecraft.getInstance().mcProfiler.startSection("programming");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("table");
+        Minecraft.getInstance().mcProfiler.push("programming");
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMapBlocks().registerSprite(new ResourceLocation("blocks/glass_white"));
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureMapBlocks().registerSprite(ResourceLocation.parse("blocks/glass_white"));
         int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
         int light1 = combinedLight >> 16 & 65535;
         int light2 = combinedLight & 65535;
@@ -36,8 +36,8 @@ public class RenderProgrammingTable extends FastTESR<TileProgrammingTable_Neptun
         buffer.pos(x + 12 / 16D, y + 9 / 16D, z + 12 / 16D).color(255, 255, 255, 255).tex(sprite.getInterpolatedU(12), sprite.getInterpolatedV(12)).lightmap(light1, light2).endVertex();
         buffer.pos(x + 4 / 16D, y + 9 / 16D, z + 12 / 16D).color(255, 255, 255, 255).tex(sprite.getInterpolatedU(4), sprite.getInterpolatedV(12)).lightmap(light1, light2).endVertex();
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 }

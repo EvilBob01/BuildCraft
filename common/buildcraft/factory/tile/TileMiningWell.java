@@ -6,6 +6,7 @@
 
 package buildcraft.factory.tile;
 
+import net.minecraft.world.level.material.Fluid;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
 import net.neoforged.neoforge.fluids.FluidType;
+
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import buildcraft.api.core.EnumPipePart;
 import buildcraft.api.core.SafeTimeTracker;
@@ -50,8 +53,8 @@ public class TileMiningWell extends TileMiner {
         }
     };
 
-    public TileMiningWell() {
-        super();
+    public TileMiningWell(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addCapabilityInstance(CapUtil.CAP_ITEM_TRANSACTOR, AutomaticProvidingTransactor.INSTANCE, EnumPipePart.VALUES);
     }
 

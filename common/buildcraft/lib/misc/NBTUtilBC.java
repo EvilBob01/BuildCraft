@@ -27,9 +27,9 @@ import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.phys.Vec3;
-
-import net.minecraft.nbt.Tag;
 
 import buildcraft.api.core.BCLog;
 
@@ -51,8 +51,8 @@ public final class NBTUtilBC {
         if (destination.getId() == Tag.TAG_COMPOUND && source.getId() == Tag.TAG_COMPOUND) {
             CompoundTag result = new CompoundTag();
             for (String key : Sets.union(
-                ((CompoundTag) destination).getKeySet(),
-                ((CompoundTag) source).getKeySet()
+                ((CompoundTag) destination).getAllKeys(),
+                ((CompoundTag) source).getAllKeys()
             )) {
                 if (!((CompoundTag) source).contains(key)) {
                     result.put(key, ((CompoundTag) destination).get(key));
@@ -79,12 +79,31 @@ public final class NBTUtilBC {
         if (stack.isEmpty()) {
             return new CompoundTag();
         }
-        CompoundTag nbt = stack.getTag();
-        if (nbt == null) {
-            nbt = new CompoundTag();
-            stack.setTagCompound(nbt);
+        CustomData existing = stack.get(DataComponents.CUSTOM_DATA);
+        if (existing == null) {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag()));
+            existing = stack.get(DataComponents.CUSTOM_DATA);
         }
-        return nbt;
+        return existing.getUnsafe();
+    }
+
+    @Nullable
+    public static CompoundTag getTag(@Nonnull ItemStack stack) {
+        if (stack.isEmpty()) return null;
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null ? data.getUnsafe() : null;
+    }
+
+    public static boolean hasTag(@Nonnull ItemStack stack) {
+        return !stack.isEmpty() && stack.has(DataComponents.CUSTOM_DATA);
+    }
+
+    public static void setTag(@Nonnull ItemStack stack, @Nullable CompoundTag nbt) {
+        if (nbt == null || nbt.isEmpty()) {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        } else {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
+        }
     }
 
     public static IntArrayTag writeBlockPos(BlockPos pos) {
@@ -146,9 +165,9 @@ public final class NBTUtilBC {
 
     public static ListTag writeVec3d(Vec3 vec3) {
         ListTag list = new ListTag();
-        list.appendTag(new DoubleTag(vec3.x));
-        list.appendTag(new DoubleTag(vec3.y));
-        list.appendTag(new DoubleTag(vec3.z));
+        list.add(DoubleTag.valueOf(vec3.x));
+        list.add(DoubleTag.valueOf(vec3.y));
+        list.add(DoubleTag.valueOf(vec3.z));
         return list;
     }
 
@@ -161,16 +180,16 @@ public final class NBTUtilBC {
     }
 
     public static Vec3 readVec3d(ListTag list) {
-        return new Vec3(list.getDoubleAt(0), list.getDoubleAt(1), list.getDoubleAt(2));
+        return new Vec3(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 
     private static final String NULL_ENUM_STRING = "_NULL";
 
     public static <E extends Enum<E>> Tag writeEnum(E value) {
         if (value == null) {
-            return new StringTag(NULL_ENUM_STRING);
+            return StringTag.valueOf(NULL_ENUM_STRING);
         }
-        return new StringTag(value.name());
+        return StringTag.valueOf(value.name());
     }
 
     public static <E extends Enum<E>> E readEnum(Tag nbt, Class<E> clazz) {
@@ -204,7 +223,7 @@ public final class NBTUtilBC {
     public static Tag writeDoubleArray(double[] data) {
         ListTag list = new ListTag();
         for (double d : data) {
-            list.appendTag(new DoubleTag(d));
+            list.add(DoubleTag.valueOf(d));
         }
         return list;
     }
@@ -214,7 +233,7 @@ public final class NBTUtilBC {
         if (tag instanceof ListTag) {
             ListTag list = (ListTag) tag;
             for (int i = 0; i < list.size() && i < intendedLength; i++) {
-                arr[i] = list.getDoubleAt(i);
+                arr[i] = list.getDouble(i);
             }
         }
         return arr;
@@ -236,7 +255,7 @@ public final class NBTUtilBC {
         }
         byte[] bytes = bitset.toByteArray();
         if (bytes.length == 1) {
-            return new ByteTag(bytes[0]);
+            return ByteTag.valueOf(bytes[0]);
         } else {
             return new ByteArrayTag(bytes);
         }
@@ -266,7 +285,7 @@ public final class NBTUtilBC {
 
     public static ListTag writeCompoundList(Stream<CompoundTag> stream) {
         ListTag list = new ListTag();
-        stream.forEach(list::appendTag);
+        stream.forEach(list::add);
         return list;
     }
 
@@ -277,12 +296,13 @@ public final class NBTUtilBC {
         if (!(list instanceof ListTag)) {
             throw new IllegalArgumentException();
         }
-        return IntStream.range(0, ((ListTag) list).size()).mapToObj(((ListTag) list)::getCompoundTagAt);
+        ListTag lt = (ListTag) list;
+        return IntStream.range(0, lt.size()).mapToObj(lt::getCompound);
     }
 
     public static ListTag writeStringList(Stream<String> stream) {
         ListTag list = new ListTag();
-        stream.map(StringTag::new).forEach(list::appendTag);
+        stream.map(StringTag::valueOf).forEach(list::add);
         return list;
     }
 
@@ -293,6 +313,19 @@ public final class NBTUtilBC {
         if (!(list instanceof ListTag)) {
             throw new IllegalArgumentException();
         }
-        return IntStream.range(0, ((ListTag) list).size()).mapToObj(((ListTag) list)::getStringTagAt);
+        ListTag lt = (ListTag) list;
+        return IntStream.range(0, lt.size()).mapToObj(lt::getString);
+    }
+
+    public static CompoundTag writePosTag(BlockPos pos) {
+        CompoundTag nbt = new CompoundTag();
+        nbt.putInt("x", pos.getX());
+        nbt.putInt("y", pos.getY());
+        nbt.putInt("z", pos.getZ());
+        return nbt;
+    }
+
+    public static BlockPos getPosFromTag(CompoundTag nbt) {
+        return new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"));
     }
 }

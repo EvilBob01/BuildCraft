@@ -76,9 +76,9 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
     @Override
     public void render(TileQuarry tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("bc");
-        profiler.startSection("quarry");
-        profiler.startSection("setup");
+        profiler.push("bc");
+        profiler.push("quarry");
+        profiler.push("setup");
 
         SpriteUtil.bindBlockTextureMap();
         RenderHelper.disableStandardItemLighting();
@@ -98,11 +98,11 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
         final BlockPos max = tile.frameBox.max();
 
 
-        profiler.endSection();
+        profiler.pop();
         if (tile.frameBox.isInitialized()) {
             double yOffset = 1 + 4 / 16D;
 
-            profiler.startSection("laser");
+            profiler.push("laser");
             if (tile.currentTask != null && tile.currentTask instanceof TileQuarry.TaskBreakBlock) {
                 TileQuarry.TaskBreakBlock taskBreakBlock = (TileQuarry.TaskBreakBlock) tile.currentTask;
                 BlockPos pos = taskBreakBlock.breakPos;
@@ -164,11 +164,11 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
             } else {
                 LaserBoxRenderer.renderLaserBoxStatic(tile.frameBox, BuildCraftLaserManager.STRIPES_WRITE, true);
             }
-            profiler.endSection();
+            profiler.pop();
         }
 
         GlStateManager.popMatrix();
-        profiler.startSection("items");
+        profiler.push("items");
 
         if (tile.frameBox.isInitialized() && false) {
             TileQuarry.TaskAddFrame currentTask = (TileQuarry.TaskAddFrame) tile.currentTask;
@@ -184,7 +184,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 double xProgress = -1;
                 double zProgress = -1;
                 Direction side = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(BuildCraftProperties.BLOCK_FACING).getOpposite();
-                BlockPos firstPos = tile.getBlockPos().offset(side);
+                BlockPos firstPos = tile.getBlockPos().relative(side);
                 switch (side) {
                     case SOUTH:
                         if (firstPos.getX() == min.getX()) {
@@ -243,9 +243,9 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
         }
         RenderHelper.enableStandardItemLighting();
 
-        profiler.endSection();
-        profiler.endSection();
-        profiler.endSection();
+        profiler.pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     @Override

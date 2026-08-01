@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.builders.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 
 import net.minecraft.world.level.material.MapColor;
@@ -29,9 +30,9 @@ public class BlockArchitectTable extends BlockBCTile_Neptune implements IBlockWi
 
     private static final int META_VALID_INDEX = 4;
 
-    public BlockArchitectTable(Material material, String id) {
-        super(material, id);
-        setDefaultState(getDefaultState().withProperty(PROP_VALID, Boolean.TRUE));
+    public BlockArchitectTable(BlockBehaviour.Properties props, String id) {
+        super(props, id);
+        setDefaultState(getDefaultState().setValue(PROP_VALID, Boolean.TRUE));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class BlockArchitectTable extends BlockBCTile_Neptune implements IBlockWi
     @Override
     public BlockState getStateFromMeta(int meta) {
         BlockState state = super.getStateFromMeta(meta);
-        state = state.withProperty(PROP_VALID, (meta & META_VALID_INDEX) == 0);
+        state = state.setValue(PROP_VALID, (meta & META_VALID_INDEX) == 0);
         return state;
     }
 

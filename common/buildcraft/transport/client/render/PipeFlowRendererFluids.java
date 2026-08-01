@@ -7,6 +7,7 @@
 package buildcraft.transport.client.render;
 
 import java.util.Arrays;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import org.lwjgl.opengl.GL11;
 
@@ -52,10 +53,10 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
         }
 
         Profiler prof = Minecraft.getInstance().mcProfiler;
-        prof.startSection("calc");
+        prof.push("calc");
 
         boolean[] sides = new boolean[6];
-        Arrays.fill(sides, true);
+        Arrays.fill(sides, IFluidHandler.FluidAction.EXECUTE);
 
         double[] amounts = flow.getAmountsForRender(partialTicks);
         Vec3[] offsets = flow.getOffsetsForRender(partialTicks);
@@ -76,9 +77,9 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
             boolean vertical = flow.pipe.isConnected(gas ? Direction.DOWN : Direction.UP);
 
             prof.endStartSection("build");
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 double size = ((Pipe) flow.pipe).getConnectedDist(face);
-                double amount = amounts[face.getIndex()];
+                double amount = amounts[face.get3DDataValue()];
                 if (face.getAxis() != Axis.Y) {
                     horizontal |= flow.pipe.isConnected(face) && amount > 0;
                 }
@@ -93,9 +94,9 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
                     radius = new Vec3(perc * 0.24, radius.y, perc * 0.24);
                 }
 
-                Vec3 offset = offsets[face.getIndex()];
+                Vec3 offset = offsets[face.get3DDataValue()];
                 if (offset == null) offset = Vec3.ZERO;
-                center = center.offset(offset);
+                center = center.add(offset);
                 fluidBuffer.setTranslation(x - offset.x, y - offset.y, z - offset.z);
 
                 Vec3 min = center.subtract(radius);
@@ -109,11 +110,11 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
                 }
             }
 
-            double amount = amounts[EnumPipePart.CENTER.getIndex()];
+            double amount = amounts[EnumPipePart.CENTER.get3DDataValue()];
 
             double horizPos = 0.26;
 
-            Vec3 offset = offsets[EnumPipePart.CENTER.getIndex()];
+            Vec3 offset = offsets[EnumPipePart.CENTER.get3DDataValue()];
             if (offset == null) offset = Vec3.ZERO;
             fluidBuffer.setTranslation(x - offset.x, y - offset.y, z - offset.z);
 
@@ -121,8 +122,8 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
                 Vec3 min = new Vec3(0.26, 0.26, 0.26);
                 Vec3 max = new Vec3(0.74, 0.74, 0.74);
 
-                min = min.offset(offset);
-                max = max.offset(offset);
+                min = min.add(offset);
+                max = max.add(offset);
 
                 FluidRenderer.renderFluid(FluidSpriteType.FROZEN, forRender, amount, flow.capacity, min, max,
                     fluidBuffer, sides);
@@ -140,8 +141,8 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
 
                 Vec3 min = new Vec3(minXZ, yMin, minXZ);
                 Vec3 max = new Vec3(maxXZ, yMax, maxXZ);
-                min = min.offset(offset);
-                max = max.offset(offset);
+                min = min.add(offset);
+                max = max.add(offset);
 
                 FluidRenderer.renderFluid(FluidSpriteType.FROZEN, forRender, 1, 1, min, max, fluidBuffer, sides);
             }
@@ -161,7 +162,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
         RenderHelper.enableStandardItemLighting();
 
         FluidRenderer.vertex.lighti(0xF, 0xF);
-        prof.endSection();
+        prof.pop();
 
     }
 }

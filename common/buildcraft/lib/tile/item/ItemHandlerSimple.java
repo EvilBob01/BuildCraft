@@ -267,6 +267,11 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
     }
 
     @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return canSet(slot, stack);
+    }
+
+    @Override
     public int getSlotLimit(int slot) {
         return 64;
     }

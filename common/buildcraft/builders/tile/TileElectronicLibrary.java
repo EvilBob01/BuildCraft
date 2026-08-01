@@ -21,6 +21,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -36,6 +39,7 @@ import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.nbt.NbtSquisher;
 import buildcraft.lib.net.MessageManager;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -90,6 +94,10 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
     public final DeltaInt deltaProgressDown = deltaManager.addDelta("progressDown", DeltaManager.EnumNetworkVisibility.GUI_ONLY);
     public final DeltaInt deltaProgressUp = deltaManager.addDelta("progressUp", DeltaManager.EnumNetworkVisibility.GUI_ONLY);
     private final Map<Pair<UUID, Snapshot.Key>, List<byte[]>> upSnapshotsParts = new HashMap<>();
+
+    public TileElectronicLibrary(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     protected void onSlotChange(IItemHandlerModifiable handler, int slot, @Nonnull ItemStack before, @Nonnull ItemStack after) {
@@ -236,7 +244,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
 
                             @Override
                             public void write(int b) throws IOException {
-                                buf[worldPosition ++] = (byte) b;
+                                buf[pos++] = (byte) b;
                                 if (pos >= buf.length) {
                                     write(false);
                                     buf = new byte[buf.length];
@@ -250,7 +258,7 @@ public class TileElectronicLibrary extends TileBC_Neptune implements ITickable {
                                     return;
                                 }
                                 closed = true;
-                                buf = Arrays.copyOf(buf, worldPosition);
+                                buf = Arrays.copyOf(buf, pos);
                                 pos = 0;
                                 write(true);
                             }

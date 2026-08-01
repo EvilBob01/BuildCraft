@@ -13,9 +13,9 @@ import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -35,8 +35,8 @@ import buildcraft.lib.registry.TagManager;
 import buildcraft.silicon.container.ContainerAdvancedCraftingTable;
 
 public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTable> implements IRecipeShownListener {
-    private static final ResourceLocation TEXTURE_BASE = new ResourceLocation("buildcraftsilicon:textures/gui/advanced_crafting_table.png");
-    private static final ResourceLocation VANILLA_CRAFTING_TABLE = new ResourceLocation("textures/gui/container/crafting_table.png");
+    private static final ResourceLocation TEXTURE_BASE = ResourceLocation.parse("buildcraftsilicon:textures/gui/advanced_crafting_table.png");
+    private static final ResourceLocation VANILLA_CRAFTING_TABLE = ResourceLocation.parse("textures/gui/container/crafting_table.png");
     private static final int SIZE_X = 176, SIZE_Y = 241;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_PROGRESS = new GuiIcon(TEXTURE_BASE, SIZE_X, 0, 4, 70);
@@ -62,7 +62,7 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
         mainGui.shownElements.add(new LedgerHelp(mainGui, true));
     }
 
-    private void sendRecipe(IRecipe recipe) {
+    private void sendRecipe(Recipe recipe) {
         List<ItemStack> stacks = new ArrayList<>(9);
 
         int maxX = recipe instanceof IShapedRecipe ? ((IShapedRecipe) recipe).getRecipeWidth() : 3;
@@ -108,7 +108,7 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
         super.initGui();
         widthTooNarrow = this.width < SIZE_X + 176;
         if (recipeBook != null) {
-            InventoryCrafting invCraft = container.tile.getWorkbenchCrafting();
+            CraftingContainer invCraft = container.tile.getWorkbenchCrafting();
             recipeBook.func_194303_a(width, height, mc, widthTooNarrow, invCraft);
             guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
             recipeButton =

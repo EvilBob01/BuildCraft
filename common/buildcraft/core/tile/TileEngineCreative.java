@@ -29,9 +29,17 @@ import buildcraft.lib.engine.TileEngineBase_BC8;
 import buildcraft.lib.misc.MathUtil;
 import buildcraft.lib.net.PacketBufferBC;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileEngineCreative extends TileEngineBase_BC8 {
     public static final long[] outputs = { 1, 2, 4, 8, 16, 32, 64, 128, 256 };
     public int currentOutputIndex = 0;
+
+    public TileEngineCreative(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     public void writePayload(int id, PacketBufferBC buffer, Dist side) {
@@ -136,7 +144,6 @@ public class TileEngineCreative extends TileEngineBase_BC8 {
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         nbt.putInt("currentOutputIndex", currentOutputIndex);
-        return nbt;
     }
 
     @Override

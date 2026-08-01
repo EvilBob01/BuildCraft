@@ -35,7 +35,7 @@ public class TransactorEntityArrow implements IItemExtractable {
 
         ItemStack stack = EntityUtil.getArrowStack(entity);
         if (!simulate) {
-            entity.setDead();
+            entity.discard();
         }
         return stack;
     }

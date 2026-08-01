@@ -63,11 +63,11 @@ public class BoundingBoxUtil {
     }
 
     public static AABB makeFrom(Vec3 from, Vec3 to, double radius) {
-        return makeFrom(from, to).grow(radius);
+        return makeFrom(from, to).inflate(radius);
     }
 
     public static AABB makeAround(Vec3 around, double radius) {
-        return new AABB(around.x, around.y, around.z, around.x, around.y, around.z).grow(radius);
+        return new AABB(around.x, around.y, around.z, around.x, around.y, around.z).inflate(radius);
     }
 
     public static AABB makeFrom(BlockPos pos, @Nullable IBox box, @Nullable Collection<BlockPos> additional) {
@@ -84,8 +84,8 @@ public class BoundingBoxUtil {
 
     /** Creates a box that extrudes from the specified face of the given block position. */
     public static AABB extrudeFace(BlockPos pos, Direction face, double depth) {
-        Vec3 from = new Vec3(pos);
-        Vec3 to = new Vec3(pos).addVector(1, 1, 1);
+        Vec3 from = new Vec3(pos.getX(), pos.getY(), pos.getZ());
+        Vec3 to = new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(1, 1, 1);
 
         Axis axis = face.getAxis();
         if (face.getAxisDirection() == AxisDirection.POSITIVE) {

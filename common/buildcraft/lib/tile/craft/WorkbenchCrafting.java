@@ -6,17 +6,21 @@
 
 package buildcraft.lib.tile.craft;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.NonNullList;
@@ -30,44 +34,120 @@ import buildcraft.lib.misc.ItemStackKey;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
 
-public class WorkbenchCrafting extends InventoryCrafting {
+public class WorkbenchCrafting implements CraftingContainer {
     enum EnumRecipeType {
         INGREDIENTS,
         EXACT_STACKS;
     }
 
-    public static final Container CONTAINER_EVENT_HANDLER = new ContainerNullEventHandler();
-
     private final BlockEntity tile;
     private final ItemHandlerSimple invBlueprint;
     private final ItemHandlerSimple invMaterials;
     private final ItemHandlerSimple invResult;
+    private final NonNullList<ItemStack> items;
+    private final int width;
+    private final int height;
     private boolean isBlueprintDirty = true;
     private boolean areMaterialsDirty = true;
     private boolean cachedHasRequirements = false;
 
     @Nullable
-    private IRecipe currentRecipe;
+    private CraftingRecipe currentRecipe;
     private ItemStack assumedResult = ItemStack.EMPTY;
 
     private EnumRecipeType recipeType = null;
 
     public WorkbenchCrafting(int width, int height, TileBC_Neptune tile, ItemHandlerSimple invBlueprint,
         ItemHandlerSimple invMaterials, ItemHandlerSimple invResult) {
-        super(CONTAINER_EVENT_HANDLER, width, height);
+        this.width = width;
+        this.height = height;
+        this.items = NonNullList.withSize(width * height, ItemStack.EMPTY);
         this.tile = tile;
         this.invBlueprint = invBlueprint;
-        if (invBlueprint.getSlots() < this.getSizeInventory()) {
+        if (invBlueprint.getSlots() < this.getContainerSize()) {
             throw new IllegalArgumentException("Passed blueprint has a smaller size than width * height! ( expected "
-                + getSizeInventory() + ", got " + invBlueprint.getSlots() + ")");
+                + getContainerSize() + ", got " + invBlueprint.getSlots() + ")");
         }
         this.invMaterials = invMaterials;
         this.invResult = invResult;
     }
 
+    // CraftingContainer / Container interface implementation
+
     @Override
-    public ItemStack getStackInSlot(int index) {
-        return isBlueprintDirty ? invBlueprint.getStackInSlot(index) : super.getStackInSlot(index);
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public List<ItemStack> getItems() {
+        return items;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return items.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack item : items) {
+            if (!item.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getItem(int index) {
+        return isBlueprintDirty ? invBlueprint.getStackInSlot(index) : items.get(index);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        return ContainerHelper.removeItem(items, slot, amount);
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(items, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        items.set(slot, stack);
+    }
+
+    @Override
+    public void setChanged() {
+        // no-op: changes tracked via onInventoryChange
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return false;
+    }
+
+    @Override
+    public void clearContent() {
+        items.replaceAll(stack -> ItemStack.EMPTY);
+    }
+
+    @Override
+    public void fillStackedContents(StackedContents contents) {
+        for (ItemStack item : items) {
+            contents.accountSimpleStack(item);
+        }
+    }
+
+    // Build a CraftingInput snapshot from current item storage for recipe matching
+    private CraftingInput toCraftingInput() {
+        List<ItemStack> copy = new ArrayList<>(items);
+        return CraftingInput.of(width, height, copy);
     }
 
     public ItemStack getAssumedResult() {
@@ -93,7 +173,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
                 assumedResult = ItemStack.EMPTY;
                 recipeType = null;
             } else {
-                assumedResult = currentRecipe.getCraftingResult(this);
+                assumedResult = currentRecipe.assemble(toCraftingInput(), tile.getLevel().registryAccess());
                 NonNullList<Ingredient> ingredients = currentRecipe.getIngredients();
                 if (ingredients.isEmpty()) {
                     recipeType = EnumRecipeType.EXACT_STACKS;
@@ -136,7 +216,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     /** Attempts to craft a single item. Assumes that {@link #canCraft()} has been called in the same tick, without any
      * modifications happening to the
-     * 
+     *
      * @return True if the crafting happened, false otherwise. *
      * @throws IllegalStateException if {@link #canCraft()} hasn't been called before, or something changed in the
      *             meantime. */
@@ -158,8 +238,8 @@ public class WorkbenchCrafting extends InventoryCrafting {
     }
 
     private boolean hasExactStacks() {
-        TObjectIntMap<ItemStackKey> required = new TObjectIntHashMap<>(getSizeInventory());
-        for (int s = 0; s < getSizeInventory(); s++) {
+        TObjectIntMap<ItemStackKey> required = new TObjectIntHashMap<>(getContainerSize());
+        for (int s = 0; s < getContainerSize(); s++) {
             ItemStack req = invBlueprint.getStackInSlot(s);
             if (!req.isEmpty()) {
                 int count = req.getCount();
@@ -190,7 +270,7 @@ public class WorkbenchCrafting extends InventoryCrafting {
         clearInventory();
 
         // Step 2
-        for (int s = 0; s < getSizeInventory(); s++) {
+        for (int s = 0; s < getContainerSize(); s++) {
             ItemStack bpt = invBlueprint.getStackInSlot(s);
             if (!bpt.isEmpty()) {
                 ItemStack stack = invMaterials.extract(new ArrayStackFilter(bpt), 1, 1, false);
@@ -198,18 +278,19 @@ public class WorkbenchCrafting extends InventoryCrafting {
                     clearInventory();
                     return false;
                 }
-                setInventorySlotContents(s, stack);
+                setItem(s, stack);
             }
         }
 
         // Step 3
         // Some recipes (for example vanilla fireworks) require calling
-        // matches before calling getCraftingResult, as they store the
-        // result of matches for getCraftingResult and getResult.
-        if (!currentRecipe.matches(this, tile.getLevel())) {
+        // matches before calling assemble, as they store the
+        // result of matches for assemble and getResult.
+        CraftingInput input = toCraftingInput();
+        if (!currentRecipe.matches(input, tile.getLevel())) {
             return false;
         }
-        ItemStack result = currentRecipe.getCraftingResult(this);
+        ItemStack result = currentRecipe.assemble(input, tile.getLevel().registryAccess());
         if (result.isEmpty()) {
             // what?
             clearInventory();
@@ -219,23 +300,23 @@ public class WorkbenchCrafting extends InventoryCrafting {
         if (!leftover.isEmpty()) {
             InventoryUtil.addToBestAcceptor(tile.getLevel(), tile.getBlockPos(), null, leftover);
         }
-        NonNullList<ItemStack> remainingStacks = currentRecipe.getRemainingItems(this);
+        NonNullList<ItemStack> remainingStacks = currentRecipe.getRemainingItems(input);
         for (int s = 0; s < remainingStacks.size(); s++) {
-            ItemStack inSlot = getStackInSlot(s);
+            ItemStack inSlot = getItem(s);
             ItemStack remaining = remainingStacks.get(s);
 
             if (!inSlot.isEmpty()) {
-                decrStackSize(s, 1);
-                inSlot = getStackInSlot(s);
+                removeItem(s, 1);
+                inSlot = getItem(s);
             }
 
             if (!remaining.isEmpty()) {
                 if (inSlot.isEmpty()) {
-                    setInventorySlotContents(s, remaining);
-                } else if (ItemStack.areItemsEqual(inSlot, remaining)
-                    && ItemStack.areItemStackTagsEqual(inSlot, remaining)) {
+                    setItem(s, remaining);
+                } else if (ItemStack.isSameItem(inSlot, remaining)
+                    && ItemStack.isSameItemSameComponents(inSlot, remaining)) {
                     remaining.grow(inSlot.getCount());
-                    setInventorySlotContents(s, remaining);
+                    setItem(s, remaining);
                 } else {
                     leftover = invMaterials.insert(remaining, false, false);
                     if (!leftover.isEmpty()) {
@@ -247,8 +328,8 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
         // Step 4
         // Some ingredients really need to be removed (like empty buckets)
-        for (int s = 0; s < getSizeInventory(); s++) {
-            ItemStack inSlot = super.removeStackFromSlot(s);
+        for (int s = 0; s < getContainerSize(); s++) {
+            ItemStack inSlot = removeItemNoUpdate(s);
             if (!inSlot.isEmpty()) {
                 leftover = invMaterials.insert(inSlot, false, false);
                 if (!leftover.isEmpty()) {
@@ -261,28 +342,16 @@ public class WorkbenchCrafting extends InventoryCrafting {
 
     /** @return True if this inventory is now clear, false otherwise. */
     private boolean clearInventory() {
-        for (int s = 0; s < getSizeInventory(); s++) {
-            ItemStack inSlot = super.getStackInSlot(s);
+        for (int s = 0; s < getContainerSize(); s++) {
+            ItemStack inSlot = items.get(s);
             if (!inSlot.isEmpty()) {
                 ItemStack leftover = invMaterials.insert(inSlot, false, false);
-                decrStackSize(s, inSlot.getCount() - (leftover.isEmpty() ? 0 : leftover.getCount()));
+                removeItem(s, inSlot.getCount() - (leftover.isEmpty() ? 0 : leftover.getCount()));
                 if (!leftover.isEmpty()) {
                     return false;
                 }
             }
         }
         return true;
-    }
-
-    static class ContainerNullEventHandler extends Container {
-        @Override
-        public boolean canInteractWith(Player playerIn) {
-            return false;
-        }
-
-        @Override
-        public void onCraftMatrixChanged(IInventory inventoryIn) {
-            // NO-OP
-        }
     }
 }

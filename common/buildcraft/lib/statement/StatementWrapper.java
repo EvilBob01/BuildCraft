@@ -125,7 +125,7 @@ public abstract class StatementWrapper implements IStatement, Comparable<Stateme
     @Override
     public int compareTo(StatementWrapper o) {
         if (sourcePart != o.sourcePart) {
-            return Integer.compare(o.sourcePart.getIndex(), sourcePart.getIndex());
+            return Integer.compare(o.sourcePart.get3DDataValue(), sourcePart.get3DDataValue());
         }
         if (delegate == o.delegate) {
             return 0;

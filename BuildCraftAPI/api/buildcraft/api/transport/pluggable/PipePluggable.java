@@ -6,7 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;

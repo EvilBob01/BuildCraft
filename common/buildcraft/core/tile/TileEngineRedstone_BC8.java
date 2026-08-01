@@ -15,11 +15,17 @@ import buildcraft.lib.engine.EngineConnector;
 import buildcraft.lib.engine.TileEngineBase_BC8;
 import buildcraft.lib.misc.AdvancementUtil;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileEngineRedstone_BC8 extends TileEngineBase_BC8 {
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftcore:free_power");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftcore:free_power");
     private boolean givenAdvancement = false;
 
-    public TileEngineRedstone_BC8() {}
+    public TileEngineRedstone_BC8(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Nonnull
     @Override

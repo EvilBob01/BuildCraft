@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,8 @@ import buildcraft.factory.tile.TileChute;
 public class BlockChute extends BlockBCTile_Neptune implements IBlockWithFacing {
     public static final Map<Direction, Property<Boolean>> CONNECTED_MAP = BuildCraftProperties.CONNECTED_MAP;
 
-    public BlockChute(Material material, String id) {
-        super(material, id);
+    public BlockChute(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -67,9 +68,9 @@ public class BlockChute extends BlockBCTile_Neptune implements IBlockWithFacing 
 
     @Override
     public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
-        for (Direction side : Direction.VALUES) {
-            state = state.withProperty(CONNECTED_MAP.get(side), side != state.getValue(getFacingProperty())
-                && TileChute.hasInventoryAtPosition(world, pos.offset(side), side));
+        for (Direction side : Direction.values()) {
+            state = state.setValue(CONNECTED_MAP.get(side), side != state.getValue(getFacingProperty())
+                && TileChute.hasInventoryAtPosition(world, pos.relative(side), side));
         }
         return state;
     }

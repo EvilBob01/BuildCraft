@@ -7,6 +7,7 @@
 package buildcraft.builders.snapshot;
 
 import java.util.Objects;
+import net.minecraft.world.level.material.Fluid;
 import java.util.Optional;
 
 import net.minecraft.nbt.Tag;
@@ -23,7 +24,7 @@ public class FluidStackRef {
 
     public FluidStackRef(NbtRef<StringTag> fluid, NbtRef<IntTag> amount) {
         this.fluid = fluid;
-        this.amount = amount;
+        this.getAmount() = amount;
     }
 
     public FluidStack get(Tag nbt) {
@@ -39,7 +40,7 @@ public class FluidStackRef {
             Optional.ofNullable(amount)
                 .flatMap(ref -> ref.get(nbt))
                 .map(IntTag::getInt)
-                .orElse(Fluid.BUCKET_VOLUME)
+                .orElse(FluidType.BUCKET_VOLUME)
         );
     }
 }

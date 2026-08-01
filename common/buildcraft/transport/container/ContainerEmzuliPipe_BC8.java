@@ -39,10 +39,10 @@ public class ContainerEmzuliPipe_BC8 extends ContainerPipe {
 
         addFullPlayerInventory(84);
 
-        addSlotToContainer(new SlotPhantom(filterInv, 0, 25, 21));
-        addSlotToContainer(new SlotPhantom(filterInv, 1, 25, 49));
-        addSlotToContainer(new SlotPhantom(filterInv, 2, 134, 21));
-        addSlotToContainer(new SlotPhantom(filterInv, 3, 134, 49));
+        addSlot(new SlotPhantom(filterInv, 0, 25, 21));
+        addSlot(new SlotPhantom(filterInv, 1, 25, 49));
+        addSlot(new SlotPhantom(filterInv, 2, 134, 21));
+        addSlot(new SlotPhantom(filterInv, 3, 134, 49));
 
         for (SlotIndex index : SlotIndex.VALUES) {
             createPaintWidget(index);

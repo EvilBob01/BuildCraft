@@ -47,7 +47,7 @@ import buildcraft.robotics.zone.ZonePlannerMapDataClient;
 import buildcraft.robotics.zone.ZonePlannerMapRenderer;
 
 public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
-    private static final ResourceLocation TEXTURE_BASE = new ResourceLocation("buildcraftrobotics:textures/gui/zone_planner.png");
+    private static final ResourceLocation TEXTURE_BASE = ResourceLocation.parse("buildcraftrobotics:textures/gui/zone_planner.png");
     private static final int SIZE_X = 256, SIZE_Y = 228;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_PROGRESS_INPUT = new GuiIcon(TEXTURE_BASE, 9, 228, 28, 9);
@@ -130,7 +130,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
         if (!canDrag) {
             if (lastSelected != null && getPaintbrushBrush() != null) {
-                bufferLayer = new ZonePlan(container.tile.layers[getPaintbrushBrush().colour.getMetadata()]);
+                bufferLayer = new ZonePlan(container.tile.layers[getPaintbrushBrush().colour.getId()]);
                 if (selectionStartXZ != null && getPaintbrushBrush() != null && lastSelected != null) {
                     for (int x = Math.min(selectionStartXZ.getX(), lastSelected.getX());
                          x < Math.max(selectionStartXZ.getX(), lastSelected.getX());
@@ -169,8 +169,8 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
         super.mouseReleased(mouseX, mouseY, state);
         selectionStartXZ = null;
         if (getPaintbrushBrush() != null && bufferLayer != null) {
-            container.tile.layers[getPaintbrushBrush().colour.getMetadata()] = bufferLayer;
-            container.tile.sendLayerToServer(getPaintbrushBrush().colour.getMetadata());
+            container.tile.layers[getPaintbrushBrush().colour.getId()] = bufferLayer;
+            container.tile.sendLayerToServer(getPaintbrushBrush().colour.getId());
         }
         bufferLayer = null;
     }
@@ -417,11 +417,11 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
         GlStateManager.enableBlend();
 
         for (int i = 0; i < container.tile.layers.length; i++) {
-            if (getPaintbrushBrush() != null && getPaintbrushBrush().colour.getMetadata() != i) {
+            if (getPaintbrushBrush() != null && getPaintbrushBrush().colour.getId() != i) {
                 continue;
             }
             ZonePlan layer = container.tile.layers[i];
-            if (getPaintbrushBrush() != null && getPaintbrushBrush().colour.getMetadata() == i && bufferLayer != null) {
+            if (getPaintbrushBrush() != null && getPaintbrushBrush().colour.getId() == i && bufferLayer != null) {
                 layer = bufferLayer;
             }
             if (!layer.getChunkPoses().isEmpty()) {
@@ -456,7 +456,7 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                                 } else {
                                     continue;
                                 }
-                                int color = DyeColor.byMetadata(i).getColorValue();
+                                int color = DyeColor.byId(i).getColorValue();
                                 int r = (color >> 16) & 0xFF;
                                 int g = (color >> 8) & 0xFF;
                                 int b = (color >> 0) & 0xFF;

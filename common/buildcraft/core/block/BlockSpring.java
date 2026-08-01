@@ -7,9 +7,10 @@
 package buildcraft.core.block;
 
 import java.util.Random;
+import net.minecraft.world.level.block.Block;
 import java.util.function.Supplier;
 
-import net.minecraft.block.SoundType;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -40,7 +41,7 @@ public class BlockSpring extends BlockBCBase_Neptune {
 
         disableStats();
         setTickRandomly(true);
-        setDefaultState(getDefaultState().withProperty(SPRING_TYPE, EnumSpring.WATER));
+        setDefaultState(getDefaultState().setValue(SPRING_TYPE, EnumSpring.WATER));
     }
 
     // BlockState
@@ -58,9 +59,9 @@ public class BlockSpring extends BlockBCBase_Neptune {
     @Override
     public BlockState getStateFromMeta(int meta) {
         if (meta == EnumSpring.OIL.ordinal()) {
-            return getDefaultState().withProperty(SPRING_TYPE, EnumSpring.OIL);
+            return getDefaultState().setValue(SPRING_TYPE, EnumSpring.OIL);
         } else {
-            return getDefaultState().withProperty(SPRING_TYPE, EnumSpring.WATER);
+            return getDefaultState().setValue(SPRING_TYPE, EnumSpring.WATER);
         }
     }
 
@@ -69,7 +70,7 @@ public class BlockSpring extends BlockBCBase_Neptune {
     @Override
     public void getSubBlocks(CreativeModeTab tab, NonNullList<ItemStack> list) {
         for (EnumSpring type : EnumSpring.VALUES) {
-            list.add(new ItemStack(this, 1, type.ordinal()));
+            list.add(new ItemStack(this, 1));
         }
     }
 
@@ -120,7 +121,7 @@ public class BlockSpring extends BlockBCBase_Neptune {
         if (spring.chance != -1 && rand.nextInt(spring.chance) != 0) {
             return;
         }
-        world.setBlock(pos.up(), spring.liquidBlock);
+        world.setBlock(pos.up(), spring.liquidBlock, 3);
     }
 
     // Prevents updates on chunk generation

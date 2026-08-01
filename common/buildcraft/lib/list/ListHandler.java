@@ -222,7 +222,7 @@ public final class ListHandler {
     }
 
     public static boolean hasItems(@Nonnull ItemStack stack) {
-        if (!stack.hasTag()) return false;
+        if (!NBTUtilBC.hasTag(stack)) return false;
         for (Line l : getLines(stack)) {
             if (l.hasItems()) return true;
         }
@@ -230,7 +230,7 @@ public final class ListHandler {
     }
 
     public static boolean isDefault(@Nonnull ItemStack stack) {
-        if (!stack.hasTag()) return true;
+        if (!NBTUtilBC.hasTag(stack)) return true;
         for (Line l : getLines(stack)) {
             if (!l.isDefault()) return false;
         }
@@ -273,14 +273,14 @@ public final class ListHandler {
                 lineList.appendTag(saving.toNBT());
             }
             data.put("lines", lineList);
-        } else if (stackList.hasTag()) {
+        } else if (NBTUtilBC.hasTag(stackList)) {
             CompoundTag data = NBTUtilBC.getItemData(stackList);
             // No non-default lines, we can remove the old NBT data
             data.removeTag("written");
             data.removeTag("lines");
             if (data.hasNoTags()) {
                 // We can safely remove the
-                stackList.setTagCompound(null);
+                stackList.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
             }
         }
     }

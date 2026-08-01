@@ -86,12 +86,12 @@ public class ContainerList extends ContainerBC_Neptune {
 
     @Nonnull
     public ItemStack getListItemStack() {
-        ItemStack toTry = player.getHeldItemMainhand();
+        ItemStack toTry = player.getMainHandItem();
         if (!toTry.isEmpty() && toTry.getItem() instanceof ItemList_BC8) {
             return toTry;
         }
 
-        toTry = player.getHeldItemOffhand();
+        toTry = player.getOffhandItem();
         if (!toTry.isEmpty() && toTry.getItem() instanceof ItemList_BC8) {
             return toTry;
         }
@@ -141,7 +141,7 @@ public class ContainerList extends ContainerBC_Neptune {
                 int button = buffer.readUnsignedByte();
                 switchButton(lineIndex, button);
             } else if (id == ID_LABEL) {
-                setLabel(buffer.readString(1024));
+                setLabel(buffer.readString());
             }
         }
     }

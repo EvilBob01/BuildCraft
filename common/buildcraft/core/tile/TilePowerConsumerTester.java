@@ -6,6 +6,9 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReceiver;
@@ -14,6 +17,7 @@ import buildcraft.api.mj.MjCapabilityHelper;
 import buildcraft.api.tiles.IDebuggable;
 
 import buildcraft.lib.misc.LocaleUtil;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 public class TilePowerConsumerTester extends TileBC_Neptune implements IMjReceiver, ITickable, IDebuggable {
@@ -24,7 +28,8 @@ public class TilePowerConsumerTester extends TileBC_Neptune implements IMjReceiv
     private long lastTickReceived;
     private long totalReceived;
 
-    public TilePowerConsumerTester() {
+    public TilePowerConsumerTester(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addProvider(mjCaps);
     }
 
@@ -39,12 +44,11 @@ public class TilePowerConsumerTester extends TileBC_Neptune implements IMjReceiv
 
     @Override
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-        nbt = super.saveAdditional(nbt, registries);
+        super.saveAdditional(nbt, registries);
         nbt.putLong("last", lastReceived);
         nbt.putLong("nt", nextTickReceived);
         nbt.putLong("lt", lastTickReceived);
         nbt.putLong("total", totalReceived);
-        return nbt;
     }
 
     // ITickable

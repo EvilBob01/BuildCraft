@@ -51,7 +51,7 @@ public final class BuildCraftAPI {
     }
 
     public static ResourceLocation nameToResourceLocation(String name) {
-        if (name.indexOf(':') > 0) return new ResourceLocation(name);
+        if (name.indexOf(':') > 0) return ResourceLocation.parse(name);
         ModContainer modContainer = ModList.get().getModContainerById(BCLib.MODID).orElse(null);
         if (modContainer == null) {
             throw new IllegalStateException("Illegal recipe name " + name + ". Provide domain id to register it correctly.");

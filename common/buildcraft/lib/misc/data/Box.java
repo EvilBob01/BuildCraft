@@ -171,7 +171,7 @@ public class Box implements IBox {
     }
 
     public boolean contains(BlockPos i) {
-        return contains(new Vec3(i));
+        return contains(new Vec3(i.getX(), i.getY(), i.getZ()));
     }
 
     @Override
@@ -195,7 +195,7 @@ public class Box implements IBox {
     }
 
     public Vec3 centerExact() {
-        return new Vec3(size()).scale(0.5).add(new Vec3(min()));
+        return new Vec3(size().getX(), size().getY(), size().getZ()).scale(0.5).add(new Vec3(min().getX(), min().getY(), min().getZ()));
     }
 
     @Override
@@ -236,7 +236,7 @@ public class Box implements IBox {
 
     @Override
     public double distanceToSquared(BlockPos index) {
-        return closestInsideTo(index).distanceSq(index);
+        return closestInsideTo(index).distSqr(index);
     }
 
     public BlockPos closestInsideTo(BlockPos toTest) {
@@ -326,3 +326,4 @@ public class Box implements IBox {
         return Objects.hashCode(min, max);
     }
 }
+

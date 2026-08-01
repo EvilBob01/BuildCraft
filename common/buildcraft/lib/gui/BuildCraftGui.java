@@ -61,7 +61,7 @@ public class BuildCraftGui {
     public static final IVariableNodeBoolean isDebuggingShown;
 
     static {
-        ResourceLocation debugDef = new ResourceLocation("buildcraftlib", "base");
+        ResourceLocation debugDef = ResourceLocation.fromNamespaceAndPath("buildcraftlib", "base");
         isDebuggingShown = GuiConfigManager.getOrAddBoolean(debugDef, "debugging_is_shown", false);
         isDebuggingEnabled = GuiConfigManager.getOrAddBoolean(debugDef, "debugging_is_enabled", false);
     }

@@ -38,7 +38,7 @@ public enum StripesHandlerUse implements IStripesHandlerItem {
                 world,
                 player,
                 stack,
-                pos.offset(direction),
+                pos.relative(direction),
                 direction.getOpposite()
             );
     }

@@ -1,28 +1,20 @@
 package buildcraft.lib.command;
 
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 
 import buildcraft.lib.script.ReloadableRegistryManager;
 
-public class CommandReloadRegistries extends CommandBase {
+public class CommandReloadRegistries {
 
-    public CommandReloadRegistries() {}
-
-    @Override
-    public String getName() {
-        return "reload";
-    }
-
-    @Override
-    public String getUsage(ICommandSender sender) {
-        return "command.buildcraft.reload";
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        ReloadableRegistryManager.DATA_PACKS.reloadAll();
+    public static LiteralArgumentBuilder<CommandSourceStack> register() {
+        return Commands.literal("reload")
+            .requires(src -> src.hasPermission(2))
+            .executes(ctx -> {
+                ReloadableRegistryManager.DATA_PACKS.reloadAll();
+                return 1;
+            });
     }
 }

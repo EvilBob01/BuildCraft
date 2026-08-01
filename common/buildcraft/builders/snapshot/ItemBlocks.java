@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.item.ItemBlockSpecial;
+import net.minecraft.world.item.ItemBlockSpecial;
 
 public class ItemBlocks {
     private static final List<Item> LIST = new ArrayList<>();

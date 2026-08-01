@@ -171,7 +171,7 @@ public class BCTransportPipes {
         String[] diamondTextureSuffixes = new String[8];
         diamondTextureSuffixes[0] = "";
         diamondTextureSuffixes[7] = "_itemstack";
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             diamondTextureSuffixes[face.ordinal() + 1] = "_" + face.getName();
         }
 
@@ -255,7 +255,7 @@ public class BCTransportPipes {
         }
 
         public DefinitionBuilder id(String post) {
-            builder.identifier = new ResourceLocation("buildcrafttransport", post);
+            builder.identifier = ResourceLocation.fromNamespaceAndPath("buildcrafttransport", post);
             return this;
         }
 

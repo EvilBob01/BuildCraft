@@ -134,17 +134,17 @@ public abstract class Snapshot {
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.put("key", key.serializeNBT());
-        nbt.put("size", NbtUtils.createPosTag(size));
+        nbt.put("size", NbtUtils.writeBlockPos(size));
         nbt.put("facing", NBTUtilBC.writeEnum(facing));
-        nbt.put("offset", NbtUtils.createPosTag(offset));
+        nbt.put("offset", NbtUtils.writeBlockPos(offset));
         return nbt;
     }
 
     public void deserializeNBT(CompoundTag nbt) throws InvalidInputDataException {
         key = new Key(nbt.getCompound("key"));
-        size = NbtUtils.getPosFromTag(nbt.getCompound("size"));
+        size = NbtUtils.readBlockPos(nbt, "size").orElse(BlockPos.ZERO);
         facing = NBTUtilBC.readEnum(nbt.get("facing"), Direction.class);
-        offset = NbtUtils.getPosFromTag(nbt.getCompound("offset"));
+        offset = NbtUtils.readBlockPos(nbt, "offset").orElse(BlockPos.ZERO);
     }
 
     abstract public Snapshot copy();
@@ -257,7 +257,7 @@ public abstract class Snapshot {
         @SuppressWarnings("WeakerAccess")
         public Header(CompoundTag nbt) {
             key = new Key(nbt.getCompound("key"));
-            owner = nbt.getUniqueId("owner");
+            owner = nbt.getUUID("owner");
             created = new Date(nbt.getLong("created"));
             name = nbt.getString("name");
         }
@@ -273,7 +273,7 @@ public abstract class Snapshot {
         public CompoundTag serializeNBT() {
             CompoundTag nbt = new CompoundTag();
             nbt.put("key", key.serializeNBT());
-            nbt.setUniqueId("owner", owner);
+            nbt.putUUID("owner", owner);
             nbt.putLong("created", created.getTime());
             nbt.putString("name", name);
             return nbt;

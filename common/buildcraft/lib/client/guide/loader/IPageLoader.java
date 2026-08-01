@@ -16,5 +16,5 @@ import buildcraft.lib.client.guide.entry.PageEntry;
 import buildcraft.lib.client.guide.parts.GuidePageFactory;
 
 public interface IPageLoader {
-    GuidePageFactory loadPage(InputStream in, ResourceLocation name, PageEntry<?> entry, Profiler prof) throws IOException;
+    GuidePageFactory loadPage(InputStream in, ResourceLocation name, PageEntry<?> entry, ProfilerFiller prof) throws IOException;
 }

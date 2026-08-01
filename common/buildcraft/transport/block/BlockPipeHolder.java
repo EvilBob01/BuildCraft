@@ -6,6 +6,7 @@
 
 package buildcraft.transport.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -18,7 +19,8 @@ import io.netty.handler.codec.http2.Http2FrameLogger.Direction;
 
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
@@ -29,7 +31,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.DyeColor;
@@ -56,7 +58,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -106,10 +108,10 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     private static final AABB[] BOX_FACES = { BOX_DOWN, BOX_UP, BOX_NORTH, BOX_SOUTH, BOX_WEST, BOX_EAST };
 
     private static final ResourceLocation ADVANCEMENT_LOGIC_TRANSPORTATION
-        = new ResourceLocation("buildcrafttransport:logic_transportation");
+        = ResourceLocation.parse("buildcrafttransport:logic_transportation");
 
-    public BlockPipeHolder(Material material, String id) {
-        super(material, id);
+    public BlockPipeHolder(BlockBehaviour.Properties props, String id) {
+        super(props, id);
 
         setHardness(0.25f);
         setResistance(3.0f);
@@ -170,7 +172,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (pipe != null) {
             addCollisionBoxToList(pos, entityBox, collidingBoxes, BOX_CENTER);
             added = true;
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 float conSize = pipe.getConnectedDist(face);
                 if (conSize > 0) {
                     AABB aabb = BOX_FACES[face.ordinal()];
@@ -186,7 +188,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 }
             }
         }
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             PipePluggable pluggable = tile.getPluggable(face);
             if (pluggable != null) {
                 AABB bb = pluggable.getBoundingBox();
@@ -209,7 +211,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
     @Nullable
     public BlockHitResult rayTrace(Level world, BlockPos pos, Player player) {
-        Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
+        Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         double reachDistance = 5;
         if (player instanceof ServerPlayer) {
             reachDistance = ((ServerPlayer) player).interactionManager.getBlockReachDistance();
@@ -236,7 +238,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (pipe != null) {
             computed = true;
             best = computeTrace(best, pos, start, end, BOX_CENTER, 0);
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 float conSize = pipe.getConnectedDist(face);
                 if (conSize > 0) {
                     AABB aabb = BOX_FACES[face.ordinal()];
@@ -252,7 +254,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 }
             }
         }
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             PipePluggable pluggable = tile.getPluggable(face);
             if (pluggable != null) {
                 AABB bb = pluggable.getBoundingBox();
@@ -320,10 +322,10 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             return trace.sideHit;
         }
         if (trace.subHit <= 6) {
-            return Direction.VALUES[trace.subHit - 1];
+            return Direction.values()[trace.subHit - 1];
         }
         if (trace.subHit <= 6 + 6) {
-            return Direction.VALUES[trace.subHit - 1 - 6];
+            return Direction.values()[trace.subHit - 1 - 6];
         }
         return null;
     }
@@ -370,7 +372,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             aabb = BOX_FACES[part - 1];
             Pipe pipe = tile.getPipe();
             if (pipe != null) {
-                Direction face = Direction.VALUES[part - 1];
+                Direction face = Direction.values()[part - 1];
                 float conSize = pipe.getConnectedDist(face);
                 if (conSize > 0 && conSize != 0.25f) {
                     Vec3 center = VecUtil.offset(new Vec3(0.5, 0.5, 0.5), face, 0.25 + (conSize / 2));
@@ -382,7 +384,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 }
             }
         } else if (part < 1 + 6 + 6) {
-            Direction side = Direction.VALUES[part - 1 - 6];
+            Direction side = Direction.values()[part - 1 - 6];
             PipePluggable pluggable = tile.getPluggable(side);
             if (pluggable != null) {
                 aabb = pluggable.getBoundingBox();
@@ -415,13 +417,13 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 PipeDefinition def = pipe.getDefinition();
                 Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(def);
                 if (item != null) {
-                    int meta = pipe.getColour() == null ? 0 : pipe.getColour().getMetadata() + 1;
+                    int meta = pipe.getColour() == null ? 0 : pipe.getColour().getId() + 1;
                     return new ItemStack(item, 1, meta);
                 }
             }
         } else if (target.subHit <= 12) {
             int pluggableHit = target.subHit - 7;
-            Direction face = Direction.VALUES[pluggableHit];
+            Direction face = Direction.values()[pluggableHit];
             PipePluggable plug = tile.getPluggable(face);
             if (plug != null) {
                 return plug.getPickStack();
@@ -436,11 +438,9 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             }
 
             if (part != null && tile.wireManager.getColorOfPart(part) != null) {
-                return new ItemStack(BCTransportItems.wire, 1, tile.wireManager.getColorOfPart(part).getMetadata());
+                return new ItemStack(BCTransportItems.wire, 1);
             } else if (between != null && tile.wireManager.getColorOfPart(between.parts[0]) != null) {
-                return new ItemStack(
-                    BCTransportItems.wire, 1, tile.wireManager.getColorOfPart(between.parts[0]).getMetadata()
-                );
+                return new ItemStack(BCTransportItems.wire, 1);
             }
         }
         return ItemStack.EMPTY;
@@ -507,7 +507,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
                 );
             }
             if (wirePart != null && attachTile != null) {
-                DyeColor colour = DyeColor.byMetadata(held.getMetadata());
+                DyeColor colour = DyeColor.byId(held.getId());
                 boolean attached = attachTile.getWireManager().addPart(wirePart, colour);
                 attachTile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
                 if (attached) {
@@ -515,7 +515,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
                     boolean isNowConnected = false;
                     for (Direction dir : Direction.values()) {
-                        WireNode to = from.offset(dir);
+                        WireNode to = from.relative(dir);
                         if (to.pos == attachTile.getPipePos()) {
                             if (attachTile.getWireManager().getColorOfPart(to.part) == colour) {
                                 isNowConnected = true;
@@ -589,7 +589,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             }
             return false;
         } else if (part != null) {
-            toDrop.add(new ItemStack(BCTransportItems.wire, 1, tile.wireManager.getColorOfPart(part).getMetadata()));
+            toDrop.add(new ItemStack(BCTransportItems.wire, 1));
             tile.wireManager.removePart(part);
             if (!player.getAbilities().instabuild) {
                 InventoryUtil.dropAll(world, pos, toDrop);
@@ -597,12 +597,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             tile.scheduleNetworkUpdate(IPipeHolder.PipeMessageReceiver.WIRES);
             return false;
         } else if (between != null) {
-            toDrop.add(
-                new ItemStack(
-                    BCTransportItems.wire, between.to == null ? 2 : 1,
-                    tile.wireManager.getColorOfPart(between.parts[0]).getMetadata()
-                )
-            );
+            toDrop.add(new ItemStack(BCTransportItems.wire, between.to == null ? 2 : 1));
             if (between.to == null) {
                 tile.wireManager.removeParts(Arrays.asList(between.parts));
             } else {
@@ -615,7 +610,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
             return false;
         } else {
             toDrop.addAll(getDrops(world, pos, state, 0));
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 removePluggable(face, tile, NonNullList.create());
             }
         }
@@ -630,14 +625,14 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         NonNullList<ItemStack> toDrop, BlockGetter world, BlockPos pos, BlockState state, int fortune
     ) {
         TilePipeHolder tile = getPipe(world, pos, false);
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             PipePluggable pluggable = tile.getPluggable(face);
             if (pluggable != null) {
                 pluggable.addDrops(toDrop, fortune);
             }
         }
         for (DyeColor color : tile.wireManager.parts.values()) {
-            toDrop.add(new ItemStack(BCTransportItems.wire, 1, color.getMetadata()));
+            toDrop.add(new ItemStack(BCTransportItems.wire, 1));
         }
         Pipe pipe = tile.getPipe();
         if (pipe != null) {
@@ -648,9 +643,9 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     @Override
     public float getExplosionResistance(Level world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
         if (exploder != null) {
-            Vec3 subtract = exploder.getPositionVector().subtract(new Vec3(pos).add(VecUtil.VEC_HALF)).normalize();
-            Direction side = Arrays.stream(Direction.VALUES)
-                .min(Comparator.comparing(facing -> new Vec3(facing.getDirectionVec()).distanceTo(subtract)))
+            Vec3 subtract = exploder.position().subtract(new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(VecUtil.VEC_HALF)).normalize();
+            Direction side = Arrays.stream(Direction.values())
+                .min(Comparator.comparing(facing -> Vec3.atLowerCornerOf(facing.getNormal()).distanceTo(subtract)))
                 .orElseThrow(IllegalArgumentException::new);
             TilePipeHolder tile = getPipe(world, pos, true);
             if (tile != null) {
@@ -706,7 +701,6 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         return pluggable != null && pluggable.isSideSolid();
     }
 
-    @Override
     public BlockFaceShape getBlockFaceShape(BlockGetter world, BlockState state, BlockPos pos, Direction face) {
         TilePipeHolder tile = getPipe(world, pos, false);
         if (tile == null) {
@@ -1064,7 +1058,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         IExtendedBlockState extended = (IExtendedBlockState) state;
         TilePipeHolder tile = getPipe(world, pos, false);
         if (tile != null) {
-            extended = extended.withProperty(PROP_TILE, new WeakReference<>(tile));
+            extended = extended.setValue(PROP_TILE, new WeakReference<>(tile));
         }
         return extended;
     }

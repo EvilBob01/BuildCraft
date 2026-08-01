@@ -231,7 +231,7 @@ public abstract class OilGenStructure {
             for (int y = segment; y >= start.getY(); y--) {
                 worldTop = worldTop.down();
                 BlockState state = world.getBlockState(worldTop);
-                if (state.getBlock().isAir(state, world, worldTop)) {
+                if (state.getBlock().isAir(state)) {
                     continue;
                 }
                 if (BlockUtil.getFluidWithFlowing(state.getBlock()) != null) {
@@ -283,8 +283,8 @@ public abstract class OilGenStructure {
 
         public void generate(Level world, int count) {
             BlockState state = BCCoreBlocks.spring.defaultBlockState();
-            state = state.withProperty(BlockSpring.SPRING_TYPE, EnumSpring.OIL);
-            world.setBlock(pos, state);
+            state = state.setValue(BlockSpring.SPRING_TYPE, EnumSpring.OIL);
+            world.setBlock(pos, state, 3);
             BlockEntity tile = world.getBlockEntity(pos);
             TileSpringOil spring;
             if (tile instanceof TileSpringOil) {
@@ -294,7 +294,7 @@ public abstract class OilGenStructure {
                 spring = new TileSpringOil();
                 spring.setLevel(world);
                 spring.setPos(pos);
-                world.setBlockEntity(pos, spring);
+                world.setBlockEntity(spring);
             }
             spring.totalSources = count;
             if (BCLib.DEV) {

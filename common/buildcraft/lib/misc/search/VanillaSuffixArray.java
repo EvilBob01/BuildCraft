@@ -2,7 +2,7 @@ package buildcraft.lib.misc.search;
 
 import java.util.List;
 
-import net.minecraft.client.util.SuffixArray;
+import net.minecraft.util.SuffixArray;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 /** An implementation of {@link ISuffixArray} that delegates to a vanilla minecraft {@link SuffixArray}. */
@@ -23,7 +23,7 @@ public final class VanillaSuffixArray<T> implements ISuffixArray<T> {
     }
 
     @Override
-    public void generate(Profiler prof) {
+    public void generate(ProfilerFiller prof) {
         vanillaSuffixArray.generate();
     }
 

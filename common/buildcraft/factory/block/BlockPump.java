@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
@@ -16,8 +17,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.factory.tile.TilePump;
 
 public class BlockPump extends BlockBCTile_Neptune {
-    public BlockPump(Material material, String id) {
-        super(material, id);
+    public BlockPump(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.neoforged.bus.api.Event.Result;
 import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.enums.EnumSpring;
@@ -74,15 +74,15 @@ public class SpringPopulate {
             int y = i > 0 ? i : i - 1;
 
             BlockState springState = BCCoreBlocks.spring.defaultBlockState();
-            springState = springState.withProperty(BuildCraftProperties.SPRING_TYPE, EnumSpring.WATER);
+            springState = springState.setValue(BuildCraftProperties.SPRING_TYPE, EnumSpring.WATER);
 
-            world.setBlock(new BlockPos(posX, y, posZ), springState);
+            world.setBlock(new BlockPos(posX, y, posZ), springState, 3);
 
             for (int j = y + 2; j < world.getHeight(); j++) {
                 if (world.isEmptyBlock(new BlockPos(posX, j, posZ))) {
                     break;
                 } else {
-                    world.setBlock(new BlockPos(posX, j, posZ), Blocks.WATER.defaultBlockState());
+                    world.setBlock(new BlockPos(posX, j, posZ), Blocks.WATER.defaultBlockState(), 3);
                 }
             }
 

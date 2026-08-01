@@ -6,7 +6,7 @@
 
 package buildcraft.silicon.recipe;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.core.NonNullList;
@@ -28,7 +28,7 @@ import buildcraft.silicon.plug.FacadeInstance;
 import buildcraft.silicon.plug.FacadeStateManager;
 import buildcraft.transport.BCTransport;
 
-public enum FacadeSwapRecipe implements IRecipe, IRecipeViewable.IViewableGrid {
+public enum FacadeSwapRecipe implements Recipe, IRecipeViewable.IViewableGrid {
     INSTANCE;
 
     private static final int TIME_GAP = 500;
@@ -62,12 +62,12 @@ public enum FacadeSwapRecipe implements IRecipe, IRecipeViewable.IViewableGrid {
     }
 
     @Override
-    public boolean matches(InventoryCrafting inv, Level world) {
+    public boolean matches(CraftingContainer inv, Level world) {
         return !getCraftingResult(inv).isEmpty();
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack getCraftingResult(CraftingContainer inv) {
         ItemStack stackIn = StackUtil.EMPTY;
         for (int s = 0; s < inv.getSizeInventory(); s++) {
             ItemStack stack = inv.getStackInSlot(s);
@@ -93,7 +93,7 @@ public enum FacadeSwapRecipe implements IRecipe, IRecipeViewable.IViewableGrid {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
 
@@ -129,18 +129,18 @@ public enum FacadeSwapRecipe implements IRecipe, IRecipeViewable.IViewableGrid {
     }
 
     @Override
-    public IRecipe setRegistryName(ResourceLocation name) {
+    public Recipe setRegistryName(ResourceLocation name) {
         return this;
     }
 
     @Override
     public ResourceLocation getRegistryName() {
-        return new ResourceLocation(BCTransport.MODID, "facade_swap");
+        return ResourceLocation.fromNamespaceAndPath(BCTransport.MODID, "facade_swap");
     }
 
     @Override
-    public Class<IRecipe> getRegistryType() {
-        return IRecipe.class;
+    public Class<Recipe> getRegistryType() {
+        return Recipe.class;
     }
 
     @Override

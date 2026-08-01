@@ -10,6 +10,6 @@ import net.minecraft.world.level.Level;
 
 public class WorldUtil {
     public static boolean isWorldCreative(Level world) {
-        return world.getWorldInfo().getGameType().isCreative();
+        return world.getLevelData().getGameType().isCreative();
     }
 }

@@ -1,6 +1,7 @@
 package buildcraft.factory.client.render;
 
 import java.util.Arrays;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -54,8 +55,8 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         Direction face = Direction.EAST;
         for (int i = 0; i < 4; i++) {
             TANK_SIDES.put(face, sides);
-            face = face.rotateY();
-            sides = sides.rotateY();
+            face = face.getClockWise();
+            sides = sides.getClockWise();
         }
     }
 
@@ -68,7 +69,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         }
 
         public TankSideData rotateY() {
-            return new TankSideData(start.rotateY(), end.rotateY());
+            return new TankSideData(start.getClockWise(), end.getClockWise());
         }
     }
 
@@ -90,8 +91,8 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         }
 
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("bc");
-        profiler.startSection("heat_exchange");
+        profiler.push("bc");
+        profiler.push("heat_exchange");
 
         int combinedLight = tile.getLevel().getCombinedLight(tile.getBlockPos(), 0);
 
@@ -107,9 +108,9 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             bb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             bb.setTranslation(x, y, z);
 
-            profiler.startSection("tank");
+            profiler.push("tank");
 
-            Direction face = state.getValue(BlockBCBase_Neptune.PROP_FACING).rotateYCCW();
+            Direction face = state.getValue(BlockBCBase_Neptune.PROP_FACING).getCounterClockWise();
             TankSideData sideTank = TANK_SIDES.get(face);
 
             renderTank(TANK_BOTTOM, section.smoothedTankInput, combinedLight, partialTicks, bb);
@@ -146,11 +147,11 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
                     }
                     BlockPos diff = BlockPos.ORIGIN;
                     if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
-                        diff = diff.offset(face, middles + 1);
+                        diff = diff.relative(face, middles + 1);
                     }
                     double otherStart = flip ? p0 : p1 - length * progress;
                     double otherEnd = flip ? p0 + length * progress : p1;
-                    Vec3 vDiff = new Vec3(diff).addVector(x, y, z);
+                    Vec3 vDiff = new Vec3(diff.getX(), diff.getY(), diff.getZ()).add(x, y, z);
                     renderFlow(vDiff, face, bb, progressStart + 0.01, progressEnd - 0.01,
                         sectionEnd.smoothedTankInput.getFluidForRender(), 4, partialTicks);
                     renderFlow(vDiff, face.getOpposite(), bb, otherStart, otherEnd,
@@ -167,21 +168,21 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         // gl state finish
         RenderHelper.enableStandardItemLighting();
 
-        profiler.endSection();
-        profiler.endSection();
-        profiler.endSection();
+        profiler.pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     private static void renderTank(TankSize size, FluidSmoother tank, int combinedLight, float partialTicks,
         BufferBuilder bb) {
         FluidStackInterp fluid = tank.getFluidForRender(partialTicks);
-        if (fluid == null || fluid.amount <= 0) {
+        if (fluid == null || fluid.getAmount() <= 0) {
             return;
         }
         int blockLight = fluid.fluid.getFluid().getLuminosity(fluid.fluid) & 0xF;
         combinedLight |= blockLight << 4;
         FluidRenderer.vertex.lighti(combinedLight);
-        FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid.fluid, fluid.amount, tank.getCapacity(), size.min,
+        FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid.fluid, fluid.getAmount(), tank.getCapacity(), size.min,
             size.max, bb, null);
     }
 
@@ -193,7 +194,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             offset = -offset;
             face = face.getOpposite();
         }
-        Vec3 dirVec = new Vec3(face.getDirectionVec());
+        Vec3 dirVec = Vec3.atLowerCornerOf(face.getNormal());
         double ds = (point + 0.1) / 16.0;
         Vec3 vs = new Vec3(ds, ds, ds);
         Vec3 ve = new Vec3(1 - ds, 1 - ds, 1 - ds);
@@ -218,7 +219,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             vs = VecUtil.replaceValue(vs, face.getAxis(), s1);
             ve = VecUtil.replaceValue(ve, face.getAxis(), e1);
             boolean[] sides = new boolean[6];
-            Arrays.fill(sides, true);
+            Arrays.fill(sides, IFluidHandler.FluidAction.EXECUTE);
             if (s < i) {
                 sides[face.getOpposite().ordinal()] = false;
             }
@@ -235,3 +236,4 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
         return tile.isStart();
     }
 }
+

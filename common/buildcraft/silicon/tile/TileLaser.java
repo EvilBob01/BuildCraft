@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -48,6 +49,7 @@ import buildcraft.lib.misc.data.AverageLong;
 import buildcraft.lib.misc.data.Box;
 import buildcraft.lib.mj.MjBatteryReceiver;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 import buildcraft.silicon.BCSiliconBlocks;
@@ -68,8 +70,8 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
     private long averageClient;
     private final MjBattery battery;
 
-    public TileLaser() {
-        super();
+    public TileLaser(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         battery = new MjBattery(1024 * MjAPI.MJ);
         caps.addProvider(new MjCapabilityHelper(new MjBatteryReceiver(battery)));
     }
@@ -123,7 +125,7 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
             targetPos = null;
             return;
         }
-        targetPos = targetsNeedingPower.get(level.rand.nextInt(targetsNeedingPower.size()));
+        targetPos = targetsNeedingPower.get(level.getRandom().nextInt(targetsNeedingPower.size()));
     }
 
     private boolean isPowerNeededAt(BlockPos position) {
@@ -148,11 +150,10 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
 
     private void updateLaser() {
         if (targetPos != null) {
-            laserPos = new Vec3(targetPos)
-                .addVector(
-                    (5 + level.rand.nextInt(6) + 0.5) / 16D,
-                    9 / 16D,
-                    (5 + level.rand.nextInt(6) + 0.5) / 16D
+            laserPos = new Vec3(
+                    targetPos.getX() + (5 + level.getRandom().nextInt(6) + 0.5) / 16D,
+                    targetPos.getY() + 9 / 16D,
+                    targetPos.getZ() + (5 + level.getRandom().nextInt(6) + 0.5) / 16D
                 );
         } else {
             laserPos = null;
@@ -228,7 +229,6 @@ public class TileLaser extends TileBC_Neptune implements ITickable, IDebuggable,
             nbt.put("target_pos", NBTUtilBC.writeBlockPos(targetPos));
         }
         avgPower.writeToNbt(nbt, "average_power");
-        return nbt;
     }
 
     @Override

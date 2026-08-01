@@ -7,6 +7,7 @@
 package buildcraft.silicon;
 
 import java.io.BufferedReader;
+import net.minecraft.world.level.block.Block;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -34,16 +35,11 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.JsonContext;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.ModContainer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import buildcraft.api.BCItems;
 import buildcraft.api.core.BCLog;
 import buildcraft.api.enums.EnumEngineType;
@@ -74,7 +70,7 @@ public class BCSiliconRecipes {
     private static Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     @SubscribeEvent
-    public static void registerRecipes(RegisterEvent<IRecipe> event) {
+    public static void registerRecipes(RegisterEvent<Recipe> event) {
         if (BCSiliconItems.plugGate != null) {
             // You can craft some of the basic gate types in a normal crafting table
             RecipeBuilderShaped builder = new RecipeBuilderShaped();
@@ -90,14 +86,14 @@ public class BCSiliconRecipes {
             makeGateRecipe(builder, EnumGateMaterial.CLAY_BRICK, EnumGateModifier.NO_MODIFIER);
 
             builder.map('m', "ingotIron");
-            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER);
+            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER);
 
             builder.map('m', Items.NETHERBRICK);
             makeGateRecipe(builder, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.NO_MODIFIER);
 
             // Iron modifier addition
             GateVariant variant =
-                new GateVariant(EnumGateLogic.AND, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER);
+                new GateVariant(EnumGateLogic.AND, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER);
             ItemStack ironGateBase = BCSiliconItems.plugGate.getStack(variant);
             builder = new RecipeBuilderShaped();
             builder.add(" m ");
@@ -105,11 +101,11 @@ public class BCSiliconRecipes {
             builder.add(" m ");
             builder.map('g', ironGateBase);
 
-            builder.map('m', new ItemStack(Items.DYE, 1, DyeColor.BLUE.getDyeDamage()));
-            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.LAPIS);
+            builder.map('m', new ItemStack(Items.BLUE_DYE));
+            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.LAPIS);
 
             builder.map('m', Items.QUARTZ);
-            makeGateRecipe(builder, EnumGateBlock.Properties.of(), EnumGateModifier.QUARTZ);
+            makeGateRecipe(builder, EnumGateMaterial.IRON, EnumGateModifier.QUARTZ);
 
             // And Gate <-> Or Gate (shapeless)
             // TODO: Create a recipe class for this instead!
@@ -142,21 +138,21 @@ public class BCSiliconRecipes {
 
             Set<IngredientStack> input = new HashSet<>();
             input.add(new IngredientStack(Ingredient.fromStacks(redstoneEngine)));
-            input.add(new IngredientStack(CraftingHelper.getIngredient("ingotIron"), 2));
+            input.add(new IngredientStack(Ingredient.of(net.minecraft.world.item.Items.IRON_INGOT), 2));
             AssemblyRecipe recipe = new AssemblyRecipeBasic("plug_pulsar", 1000 * MjAPI.MJ, input, output);
             AssemblyRecipeRegistry.register(recipe);
         }
         if (BCSiliconItems.plugGate != null) {
             IngredientStack lapis = IngredientStack.of("gemLapis");
-            makeGateAssembly(20_000, EnumGateBlock.Properties.of(), EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.IRON);
+            makeGateAssembly(20_000, EnumGateMaterial.IRON, EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.IRON);
             makeGateAssembly(40_000, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.NO_MODIFIER,
                 EnumRedstoneChipset.IRON, IngredientStack.of(new ItemStack(Blocks.NETHER_BRICK)));
             makeGateAssembly(80_000, EnumGateMaterial.GOLD, EnumGateModifier.NO_MODIFIER, EnumRedstoneChipset.GOLD);
 
-            makeGateModifierAssembly(40_000, EnumGateBlock.Properties.of(), EnumGateModifier.LAPIS, lapis);
-            makeGateModifierAssembly(60_000, EnumGateBlock.Properties.of(), EnumGateModifier.QUARTZ,
+            makeGateModifierAssembly(40_000, EnumGateMaterial.IRON, EnumGateModifier.LAPIS, lapis);
+            makeGateModifierAssembly(60_000, EnumGateMaterial.IRON, EnumGateModifier.QUARTZ,
                 IngredientStack.of(EnumRedstoneChipset.QUARTZ.getStack()));
-            makeGateModifierAssembly(80_000, EnumGateBlock.Properties.of(), EnumGateModifier.DIAMOND,
+            makeGateModifierAssembly(80_000, EnumGateMaterial.IRON, EnumGateModifier.DIAMOND,
                 IngredientStack.of(EnumRedstoneChipset.DIAMOND.getStack()));
 
             makeGateModifierAssembly(80_000, EnumGateMaterial.NETHER_BRICK, EnumGateModifier.LAPIS, lapis);
@@ -186,18 +182,18 @@ public class BCSiliconRecipes {
 
         if (BCSiliconItems.plugFacade != null) {
             AssemblyRecipeRegistry.register(FacadeAssemblyRecipes.INSTANCE);
-            ForgeRegistries.RECIPES.register(FacadeSwapRecipe.INSTANCE);
+            // TODO Phase 8: ForgeRegistries.RECIPES removed in 1.21.1 // ForgeRegistries.RECIPES.register(FacadeSwapRecipe.INSTANCE);
         }
 
         if (BCSiliconItems.plugLens != null) {
             for (DyeColor colour : ColourUtil.COLOURS) {
-                String name = StringUtilBC.formatDirect("lens-regular-%s", colour.getUnlocalizedName());
+                String name = StringUtilBC.formatDirect("lens-regular-%s", colour.getName());
                 IngredientStack stainedGlass = IngredientStack.of("blockGlass" + ColourUtil.getName(colour));
                 ImmutableSet<IngredientStack> input = ImmutableSet.of(stainedGlass);
                 ItemStack output = BCSiliconItems.plugLens.getStack(colour, false);
                 AssemblyRecipeRegistry.register(new AssemblyRecipeBasic(name, 500 * MjAPI.MJ, input, output));
 
-                name = StringUtilBC.formatDirect("lens-filter-%s", colour.getUnlocalizedName());
+                name = StringUtilBC.formatDirect("lens-filter-%s", colour.getName());
                 output = BCSiliconItems.plugLens.getStack(colour, true);
                 input = ImmutableSet.of(stainedGlass, IngredientStack.of(new ItemStack(Blocks.IRON_BARS)));
                 AssemblyRecipeRegistry.register(new AssemblyRecipeBasic(name, 500 * MjAPI.MJ, input, output));
@@ -261,7 +257,7 @@ public class BCSiliconRecipes {
             );
         }
 
-        scanForJsonRecipes();
+        // scanForJsonRecipes(); // TODO: Phase 8 - JSON recipe scanning removed (uses removed Loader/JsonContext API)
     }
 
     private static void makeGateModifierAssembly(int multiplier, EnumGateMaterial material, EnumGateModifier modifier,
@@ -303,84 +299,11 @@ public class BCSiliconRecipes {
     }
 
     private static void scanForJsonRecipes() {
-        final boolean[] failed = { false };
-        for (ModContainer mod : Loader.instance().getActiveModList()) {
-            JsonContext ctx = new JsonContext(mod.getModId());
-            CraftingHelper.findFiles(mod, "assets/" + mod.getModId() + "/assembly_recipes_pre_mj", null, (root, file) -> {
-                try {
-                    readAndAddJsonRecipe(ctx, root, file);
-                    return true;
-                } catch (IOException io) {
-                    BCLog.logger.error("Couldn't read recipe " + root.relativize(file) + " from " + file, io);
-                    failed[0] = true;
-                    return true;
-                }
-            }, false, false);
-        }
-
-        Path configRoot = BCCoreConfig.configFolder.toPath().resolve("assembly_recipes_pre_mj");
-        if (!Files.isDirectory(configRoot)) {
-            try {
-                Files.createDirectory(configRoot);
-            } catch (IOException e) {
-                BCLog.logger.warn("[silicon.assembly] Unable to create the folder " + configRoot);
-                failed[0] = true;
-                return;
-            }
-        }
-
-        try {
-            JsonContext ctx = new JsonContext("_config");
-            Files.walkFileTree(configRoot, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    try {
-                        readAndAddJsonRecipe(ctx, configRoot, file);
-                    } catch (JsonParseException e) {
-                        e.printStackTrace();
-                        failed[0] = true;
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                        failed[0] = true;
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            BCLog.logger.warn("[silicon.assembly] Failed to walk the config folder " + configRoot, e);
-            failed[0] = false;
-        }
-
-        if (failed[0]) {
-            throw new IllegalStateException("Failed to read some assembly recipe files! Check the log for details");
-        }
+        // TODO: Phase 8 — reimplement using NeoForge 1.21.1 recipe loading (Loader/JsonContext removed)
     }
 
-    private static void readAndAddJsonRecipe(JsonContext ctx, Path root, Path file)
-        throws JsonParseException, IOException {
-        if (!file.toString().endsWith(".json")) {
-            return;
-        }
-
-        String name = root.relativize(file).toString().replace("\\", "/");
-        ResourceLocation key = new ResourceLocation(ctx.getModId(), name);
-        try (BufferedReader reader = Files.newBufferedReader(file)) {
-            JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-            if (json == null || json.isJsonNull()) throw new JsonSyntaxException("Json is null (empty file?)");
-
-            ItemStack output = CraftingHelper.getItemStack(json.getAsJsonObject("result"), ctx);
-            long powercost = json.get("MJ").getAsLong() * MjAPI.MJ;
-
-            ArrayList<IngredientStack> ingredients = new ArrayList<>();
-
-            json.getAsJsonArray("components").forEach(element -> {
-                JsonObject object = element.getAsJsonObject();
-                ingredients.add(new IngredientStack(CraftingHelper.getIngredient(object.get("ingredient"), ctx),
-                    GsonHelper.getInt(object, "amount", 1)));
-            });
-
-            AssemblyRecipeRegistry.REGISTRY.put(key,
-                new AssemblyRecipeBasic(key, powercost, ImmutableSet.copyOf(ingredients), output));
-        }
+    private static void readAndAddJsonRecipe(Object ctx, Path root, Path file)
+        throws java.io.IOException {
+        // TODO: Phase 8 — removed; uses CraftingHelper which was removed
     }
 }

@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +36,7 @@ import buildcraft.lib.misc.StackUtil;
 import buildcraft.core.BCCoreGuis;
 
 public class ItemList_BC8 extends ItemBC_Neptune implements IList {
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftcore:list");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftcore:list");
     public ItemList_BC8(String id) {
         super(id);
         setMaxStackSize(1);

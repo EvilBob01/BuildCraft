@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
@@ -17,8 +18,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.factory.tile.TileMiningWell;
 
 public class BlockMiningWell extends BlockBCTile_Neptune implements IBlockWithFacing {
-    public BlockMiningWell(Material material, String id) {
-        super(material, id);
+    public BlockMiningWell(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

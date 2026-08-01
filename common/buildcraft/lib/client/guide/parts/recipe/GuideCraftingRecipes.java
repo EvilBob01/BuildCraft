@@ -38,11 +38,11 @@ public enum GuideCraftingRecipes implements IStackRecipes {
 
     private static final boolean USE_INDEX = true;
 
-    private Map<Item, Set<IRecipe>> inputIndexMap, outputIndexMap;
+    private Map<Item, Set<Recipe>> inputIndexMap, outputIndexMap;
 
     @Override
     public List<GuidePartFactory> getUsages(@Nonnull ItemStack target) {
-        final Iterable<IRecipe> recipes;
+        final Iterable<Recipe> recipes;
         if (USE_INDEX) {
             generateInputIndex();
             recipes = inputIndexMap.get(target.getItem());
@@ -54,7 +54,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
         }
 
         List<GuidePartFactory> list = new ArrayList<>();
-        for (IRecipe recipe : recipes) {
+        for (Recipe recipe : recipes) {
             if (checkRecipeUses(recipe, target)) {
                 GuidePartFactory factory = GuideCraftingFactory.getFactory(recipe);
                 if (factory != null) {
@@ -75,26 +75,26 @@ public enum GuideCraftingRecipes implements IStackRecipes {
     private void generateInputIndex() {
         if (inputIndexMap == null) {
             inputIndexMap = new IdentityHashMap<>();
-            for (IRecipe recipe : ForgeRegistries.RECIPES) {
+            for (Recipe recipe : ForgeRegistries.RECIPES) {
                 generateInputIndex0(recipe);
             }
         }
     }
 
-    private void generateInputIndex0(IRecipe recipe) {
+    private void generateInputIndex0(Recipe recipe) {
         for (Ingredient ing : recipe.getIngredients()) {
             generateIngredientIndex(recipe, ing, inputIndexMap);
         }
     }
 
-    private static void generateIngredientIndex(IRecipe recipe, Ingredient ing, Map<Item, Set<IRecipe>> indexMap) {
+    private static void generateIngredientIndex(Recipe recipe, Ingredient ing, Map<Item, Set<Recipe>> indexMap) {
         for (ItemStack stack : ing.getMatchingStacks()) {
             appendIndex(stack, recipe, indexMap);
         }
     }
 
-    private static void appendIndex(ItemStack stack, IRecipe recipe, Map<Item, Set<IRecipe>> indexMap) {
-        Set<IRecipe> list = indexMap.get(stack.getItem());
+    private static void appendIndex(ItemStack stack, Recipe recipe, Map<Item, Set<Recipe>> indexMap) {
+        Set<Recipe> list = indexMap.get(stack.getItem());
         if (list == null) {
             list = new LinkedHashSet<>();
             indexMap.put(stack.getItem(), list);
@@ -102,7 +102,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
         list.add(recipe);
     }
 
-    private static boolean checkRecipeUses(IRecipe recipe, @Nonnull ItemStack target) {
+    private static boolean checkRecipeUses(Recipe recipe, @Nonnull ItemStack target) {
         NonNullList<Ingredient> ingrediants = recipe.getIngredients();
         if (ingrediants.isEmpty()) {
             if (recipe instanceof IRecipeViewable) {
@@ -134,7 +134,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
 
     @Override
     public List<GuidePartFactory> getRecipes(@Nonnull ItemStack target) {
-        final Iterable<IRecipe> recipes;
+        final Iterable<Recipe> recipes;
         if (USE_INDEX) {
             generateOutputIndex();
             recipes = outputIndexMap.get(target.getItem());
@@ -147,7 +147,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
         }
 
         List<GuidePartFactory> list = new ArrayList<>();
-        for (IRecipe recipe : recipes) {
+        for (Recipe recipe : recipes) {
             if (checkRecipeOutputs(recipe, target)) {
                 GuidePartFactory factory = GuideCraftingFactory.getFactory(recipe);
                 if (factory != null) {
@@ -161,13 +161,13 @@ public enum GuideCraftingRecipes implements IStackRecipes {
     private void generateOutputIndex() {
         if (outputIndexMap == null) {
             outputIndexMap = new IdentityHashMap<>();
-            for (IRecipe recipe : ForgeRegistries.RECIPES) {
+            for (Recipe recipe : ForgeRegistries.RECIPES) {
                 generateOutputIndex0(recipe);
             }
         }
     }
 
-    private void generateOutputIndex0(IRecipe recipe) {
+    private void generateOutputIndex0(Recipe recipe) {
         if (recipe instanceof IRecipeViewable) {
             ChangingItemStack changing = ((IRecipeViewable) recipe).getRecipeOutputs();
             for (ItemStackKey stack : changing.getOptions()) {
@@ -184,7 +184,7 @@ public enum GuideCraftingRecipes implements IStackRecipes {
         }
     }
 
-    private static boolean checkRecipeOutputs(IRecipe recipe, ItemStack target) {
+    private static boolean checkRecipeOutputs(Recipe recipe, ItemStack target) {
         if (recipe instanceof IRecipeViewable) {
             ChangingItemStack changing = ((IRecipeViewable) recipe).getRecipeOutputs();
             if (changing.matches(target)) {

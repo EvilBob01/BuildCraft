@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Cancelable;
+import net.neoforged.bus.api.Event;
 
 @Cancelable
 public class BlockPlacedDownEvent extends Event {

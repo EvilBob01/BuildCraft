@@ -41,8 +41,8 @@ public class VanillaPaintHandlers {
                 if (to == null) {
                     return InteractionResult.FAIL;
                 }
-                BlockState painted = dyed.defaultBlockState().withProperty(colourProp, to);
-                world.setBlock(pos, painted);
+                BlockState painted = dyed.defaultBlockState().setValue(colourProp, to);
+                world.setBlock(pos, painted, 3);
                 return InteractionResult.SUCCESS;
             } else if (state.getBlock() == dyed) {
                 if (to == state.getValue(colourProp)) {
@@ -51,9 +51,9 @@ public class VanillaPaintHandlers {
                 if (to == null) {
                     state = clear.defaultBlockState();
                 } else {
-                    state = state.withProperty(colourProp, to);
+                    state = state.setValue(colourProp, to);
                 }
-                world.setBlock(pos, state);
+                world.setBlock(pos, state, 3);
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.PASS;

@@ -27,7 +27,7 @@ import buildcraft.lib.misc.NBTUtilBC;
 
 public class ItemGuide extends ItemBC_Neptune {
     private static final String DEFAULT_BOOK = "buildcraftcore:main";
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftcore:guide");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftcore:guide");
     private static final String TAG_BOOK_NAME = "BookName";
 
     public ItemGuide(String id) {

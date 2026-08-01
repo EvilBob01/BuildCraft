@@ -7,7 +7,7 @@ package buildcraft.core.item;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import buildcraft.api.core.IEngineType;

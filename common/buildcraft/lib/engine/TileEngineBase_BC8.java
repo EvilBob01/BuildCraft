@@ -15,13 +15,14 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.biome.Biome;
 
@@ -48,6 +49,7 @@ import buildcraft.lib.misc.StringUtilBC;
 import buildcraft.lib.misc.collect.OrderedEnumMap;
 import buildcraft.lib.misc.data.ModelVariableData;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITickable, IDebuggable, IEngineLikeForLedger {
@@ -82,7 +84,9 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
 
     // Needed: Power stored
 
-    public TileEngineBase_BC8() {}
+    public TileEngineBase_BC8(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
@@ -107,7 +111,6 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
         nbt.putLong("power", power);
         nbt.putFloat("progress", progress);
         nbt.putInt("progressPart", progressPart);
-        return nbt;
     }
 
     @Override
@@ -427,7 +430,7 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
 
     /** Temp! This should be replaced with a tile buffer! */
     public ITileBuffer getTileBuffer(Direction side) {
-        BlockEntity tile = level.getBlockEntity(getBlockPos().offset(side));
+        BlockEntity tile = level.getBlockEntity(getBlockPos().relative(side));
         return () -> tile;
     }
 

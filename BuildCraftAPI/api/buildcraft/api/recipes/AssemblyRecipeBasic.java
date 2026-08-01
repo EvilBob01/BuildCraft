@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BuildCraftAPI;

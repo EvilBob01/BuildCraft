@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;

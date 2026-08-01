@@ -9,7 +9,7 @@ package buildcraft.lib.inventory.filter;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.level.block.entity.TileEntityFurnace;
 
 import buildcraft.api.core.IStackFilter;
 

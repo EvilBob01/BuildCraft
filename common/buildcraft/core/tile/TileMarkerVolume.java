@@ -12,13 +12,15 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -47,7 +49,8 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
 
     private boolean showSignals = false;
 
-    public TileMarkerVolume() {
+    public TileMarkerVolume(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addCapabilityInstance(TilesAPI.CAP_TILE_AREA_PROVIDER, this, EnumPipePart.VALUES);
     }
 
@@ -74,7 +77,6 @@ public class TileMarkerVolume extends TileMarker<VolumeConnection> implements IT
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         nbt.putBoolean("showSignals", showSignals);
-        return nbt;
     }
 
     @Override

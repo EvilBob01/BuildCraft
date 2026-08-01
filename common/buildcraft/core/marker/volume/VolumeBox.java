@@ -51,24 +51,24 @@ public class VolumeBox {
     public VolumeBox(Level world, CompoundTag nbt) {
         if (world == null) throw new NullPointerException("world");
         this.level = world;
-        id = nbt.getUniqueId("id");
+        id = nbt.getUUID("id");
         box = new Box();
         box.initialize(nbt.getCompound("box"));
         player = nbt.contains("player") ? NbtUtils.getUUIDFromTag(nbt.getCompound("player")) : null;
         oldPlayer = nbt.contains("oldPlayer") ? NbtUtils.getUUIDFromTag(nbt.getCompound("oldPlayer")) : null;
         if (nbt.contains("held")) {
-            held = NbtUtils.getPosFromTag(nbt.getCompound("held"));
+            held = NbtUtils.readBlockPos(nbt, "held").orElse(BlockPos.ZERO);
         }
         dist = nbt.getDouble("dist");
         if (nbt.contains("oldMin")) {
-            oldMin = NbtUtils.getPosFromTag(nbt.getCompound("oldMin"));
+            oldMin = NbtUtils.readBlockPos(nbt, "oldMin").orElse(BlockPos.ZERO);
         }
         if (nbt.contains("oldMax")) {
-            oldMax = NbtUtils.getPosFromTag(nbt.getCompound("oldMax"));
+            oldMax = NbtUtils.readBlockPos(nbt, "oldMax").orElse(BlockPos.ZERO);
         }
         NBTUtilBC.readCompoundList(nbt.get("addons")).forEach(addonsEntryTag -> {
             Class<? extends Addon> addonClass =
-                AddonsRegistry.INSTANCE.getClassByName(new ResourceLocation(addonsEntryTag.getString("addonClass")));
+                AddonsRegistry.INSTANCE.getClassByName(ResourceLocation.parse(addonsEntryTag.getString("addonClass")));
             try {
                 Addon addon = addonClass.newInstance();
                 addon.volumeBox = this;
@@ -169,7 +169,7 @@ public class VolumeBox {
 
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.setUniqueId("id", id);
+        nbt.putUUID("id", id);
         nbt.put("box", this.box.saveAdditional());
         if (player != null) {
             nbt.put("player", NbtUtils.createUUIDTag(player));
@@ -178,14 +178,14 @@ public class VolumeBox {
             nbt.put("oldPlayer", NbtUtils.createUUIDTag(oldPlayer));
         }
         if (held != null) {
-            nbt.put("held", NbtUtils.createPosTag(held));
+            nbt.put("held", NbtUtils.writeBlockPos(held));
         }
         nbt.putDouble("dist", dist);
         if (oldMin != null) {
-            nbt.put("oldMin", NbtUtils.createPosTag(oldMin));
+            nbt.put("oldMin", NbtUtils.writeBlockPos(oldMin));
         }
         if (oldMax != null) {
-            nbt.put("oldMax", NbtUtils.createPosTag(oldMax));
+            nbt.put("oldMax", NbtUtils.writeBlockPos(oldMax));
         }
         nbt.put(
             "addons",
@@ -231,7 +231,7 @@ public class VolumeBox {
         int count = buf.readInt();
         for (int i = 0; i < count; i++) {
             EnumAddonSlot slot = buf.readEnumValue(EnumAddonSlot.class);
-            ResourceLocation rl = new ResourceLocation(buf.readString(1024));
+            ResourceLocation rl = ResourceLocation.parse(buf.readString());
             Class<? extends Addon> addonClass = AddonsRegistry.INSTANCE.getClassByName(rl);
             try {
                 if (addonClass == null) {

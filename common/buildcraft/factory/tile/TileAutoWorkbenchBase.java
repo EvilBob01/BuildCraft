@@ -11,9 +11,12 @@ import java.util.Arrays;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
@@ -52,7 +55,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
 
     private static final long POWER_LOST = POWER_GEN_PASSIVE * 10;
 
-    private static final ResourceLocation ADVANCEMENT_AUTOCRAFT = new ResourceLocation("buildcraftfactory:lazy_crafting");
+    private static final ResourceLocation ADVANCEMENT_AUTOCRAFT = ResourceLocation.parse("buildcraftfactory:lazy_crafting");
 
     // TODO: Store output in the next slot!
     // (Can be used to differentiate between different recipes)
@@ -69,7 +72,8 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
 
     public ItemStack resultClient = ItemStack.EMPTY;
 
-    public TileAutoWorkbenchBase(int width, int height) {
+    public TileAutoWorkbenchBase(BlockEntityType<?> type, BlockPos pos, BlockState state, int width, int height) {
+        super(type, pos, state);
         int slots = width * height;
         invBlueprint = itemManager.addInvHandler("blueprint", slots, EnumAccess.PHANTOM);
         invMaterialFilter = itemManager.addInvHandler("material_filter", slots, EnumAccess.PHANTOM);
@@ -157,7 +161,7 @@ public abstract class TileAutoWorkbenchBase extends TileBC_Neptune
         return MathUtil.interp(partialTicks, powerStoredLast, powerStored) / POWER_REQUIRED;
     }
 
-    public InventoryCrafting getWorkbenchCrafting() {
+    public CraftingContainer getWorkbenchCrafting() {
         return crafting;
     }
 

@@ -20,7 +20,7 @@ public class HudSingleSchematic extends HudRenderer {
 
     @Override
     protected boolean shouldRender(Minecraft mc, EntityPlayerSP player) {
-        ItemStack stack = player.getHeldItemMainhand();
+        ItemStack stack = player.getMainHandItem();
         return false;
     }
 }

@@ -6,30 +6,31 @@
 
 package buildcraft.lib.misc;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-
-import net.neoforged.neoforge.registries.GameData;
 
 public final class CraftingUtil {
 
-    /**
-     * Deactivate constructor
-     */
     private CraftingUtil() {
     }
 
-    public static IRecipe findMatchingRecipe(InventoryCrafting par1InventoryCrafting, Level par2World) {
-            List<IRecipe> recipes = GameRegistry.findRegistry(IRecipe.class).getValues();
-            for (IRecipe recipe : recipes) {
-                if (recipe.matches(par1InventoryCrafting, par2World)) {
-                    return recipe;
-                }
-            }
-            return null;
-
+    public static CraftingRecipe findMatchingRecipe(CraftingContainer container, Level level) {
+        List<ItemStack> items = new ArrayList<>(container.getContainerSize());
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            items.add(container.getItem(i));
+        }
+        CraftingInput input = CraftingInput.of(container.getWidth(), container.getHeight(), items);
+        return level.getRecipeManager()
+            .getRecipeFor(RecipeType.CRAFTING, input, level)
+            .map(RecipeHolder::value)
+            .orElse(null);
     }
 }

@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -34,7 +34,7 @@ public class SchematicBed extends SchematicBlock {
     public void rotateLeft(IBuilderContext context) {
         IBlockState oldState = state;
         EnumFacing oldFacing = oldState.getValue(BlockBed.FACING);
-        state = oldState.withProperty(BlockBed.FACING, oldFacing.rotateY());
+        state = oldState.withProperty(BlockBed.FACING, oldFacing.getClockWise());
     }
 
     @Override
@@ -49,3 +49,4 @@ public class SchematicBed extends SchematicBlock {
         return state.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT;
     }
 }
+

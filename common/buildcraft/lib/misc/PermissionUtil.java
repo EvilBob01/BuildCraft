@@ -43,7 +43,7 @@ public class PermissionUtil {
 
     public static boolean hasPermission(Object type, Player attempting, PermissionBlock target) {
         // TODO: fire a forge block-break event if its a break event
-        if (attempting.getDistanceSq(target.pos) > MAX_INTERACT_DISTANCE_SQ) {
+        if (attempting.distanceToSqr(target.pos) > MAX_INTERACT_DISTANCE_SQ) {
             return false;
         }
 

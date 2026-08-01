@@ -36,8 +36,8 @@ public enum EnumPipePart implements IStringSerializable {
             nameMap.put(part.name(), part);
             if (part.face != null) facingMap.put(part.face, part);
         }
-        FACES = fromFacingArray(Direction.VALUES);
-        HORIZONTALS = fromFacingArray(Direction.HORIZONTALS);
+        FACES = fromFacingArray(Direction.values());
+        HORIZONTALS = fromFacingArray(Direction.Plane.HORIZONTAL.stream().toArray(Direction[]::new));
     }
 
     private static EnumPipePart[] fromFacingArray(Direction... faces) {
@@ -128,6 +128,6 @@ public enum EnumPipePart implements IStringSerializable {
     }
 
     public Tag writeToNBT() {
-        return new StringTag(name());
+        return StringTag.valueOf(name());
     }
 }

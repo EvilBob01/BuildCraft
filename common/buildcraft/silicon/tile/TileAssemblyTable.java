@@ -44,6 +44,10 @@ import buildcraft.lib.tile.item.ItemHandlerSimple;
 
 import buildcraft.silicon.EnumAssemblyRecipeState;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileAssemblyTable extends TileLaserTableBase {
     public static final IdAllocator IDS = TileBC_Neptune.IDS.makeChild("assembly_table");
     public static final int NET_RECIPE_STATE = IDS.allocId("RECIPE_STATE");
@@ -56,7 +60,11 @@ public class TileAssemblyTable extends TileLaserTableBase {
     );
     public SortedMap<AssemblyInstruction, EnumAssemblyRecipeState> recipesStates = new TreeMap<>();
 
-    private static final ResourceLocation ADVANCEMENT = new ResourceLocation("buildcraftsilicon:precision_crafting");
+    private static final ResourceLocation ADVANCEMENT = ResourceLocation.parse("buildcraftsilicon:precision_crafting");
+
+    public TileAssemblyTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     public IdAllocator getIdAllocator() {
@@ -212,7 +220,6 @@ public class TileAssemblyTable extends TileLaserTableBase {
             recipesStatesTag.appendTag(entryTag);
         });
         nbt.put("recipes_states", recipesStatesTag);
-        return nbt;
     }
 
     @Override
@@ -286,7 +293,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
 
     @Nullable
     private AssemblyInstruction lookupRecipe(String name, ItemStack output) {
-        AssemblyRecipe recipe = AssemblyRecipeRegistry.REGISTRY.get(new ResourceLocation(name));
+        AssemblyRecipe recipe = AssemblyRecipeRegistry.REGISTRY.get(ResourceLocation.parse(name));
         return recipe != null ? new AssemblyInstruction(recipe, output) : null;
     }
 

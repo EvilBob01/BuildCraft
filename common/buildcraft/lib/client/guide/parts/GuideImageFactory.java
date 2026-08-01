@@ -41,7 +41,7 @@ public class GuideImageFactory implements GuidePartFactory {
         } else {
             ISprite s;
             int sw, sh;
-            ResourceLocation resLoc = new ResourceLocation(location);
+            ResourceLocation resLoc = ResourceLocation.parse(location);
             try (IResource resource = Minecraft.getInstance().getResourceManager().getResource(resLoc)) {
                 PngSizeInfo size = PngSizeInfo.makeFromResource(resource);
                 s = new SpriteRaw(resLoc, 0, 0, 1, 1);

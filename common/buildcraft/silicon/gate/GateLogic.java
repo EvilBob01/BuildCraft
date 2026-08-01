@@ -7,6 +7,7 @@
 package buildcraft.silicon.gate;
 
 import java.io.IOException;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -372,8 +373,8 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
         boolean[] prevTriggers = Arrays.copyOf(triggerOn, triggerOn.length);
         boolean[] prevActions = Arrays.copyOf(actionOn, actionOn.length);
 
-        Arrays.fill(triggerOn, false);
-        Arrays.fill(actionOn, false);
+        Arrays.fill(triggerOn, IFluidHandler.FluidAction.SIMULATE);
+        Arrays.fill(actionOn, IFluidHandler.FluidAction.SIMULATE);
 
         activeActions.clear();
 
@@ -484,7 +485,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 set.add(new TriggerWrapperInternal(trigger));
             }
         }
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             for (ITriggerInternalSided trigger : StatementManager.getInternalSidedTriggers(this, face)) {
                 if (isValidTrigger(trigger)) {
                     set.add(new TriggerWrapperInternalSided(trigger, face));
@@ -509,7 +510,7 @@ public class GateLogic implements IGate, IWireEmitter, IRedstoneStatementContain
                 set.add(new ActionWrapperInternal(trigger));
             }
         }
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             for (IActionInternalSided trigger : StatementManager.getInternalSidedActions(this, face)) {
                 if (isValidAction(trigger)) {
                     set.add(new ActionWrapperInternalSided(trigger, face));

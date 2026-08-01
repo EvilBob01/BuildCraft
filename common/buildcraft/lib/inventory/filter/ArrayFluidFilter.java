@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 import buildcraft.api.core.IFluidFilter;
 
@@ -33,7 +33,7 @@ public class ArrayFluidFilter implements IFluidFilter {
         fluids = new FluidStack[stacks.size()];
 
         for (int i = 0; i < stacks.size(); ++i) {
-            FluidStack stack = FluidUtil.getFluidContained(stacks.get(i));
+            FluidStack stack = FluidUtil.getFluidContained(stacks.get(i).orElse(null));
             if (stack != null) {
                 fluids[i] = stack;
             }

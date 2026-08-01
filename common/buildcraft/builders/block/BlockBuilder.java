@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.builders.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.List;
 
 import net.minecraft.world.level.material.MapColor;
@@ -30,9 +31,9 @@ import buildcraft.builders.tile.TileBuilder;
 public class BlockBuilder extends BlockBCTile_Neptune implements IBlockWithFacing {
     public static final Property<EnumOptionalSnapshotType> SNAPSHOT_TYPE = BuildCraftProperties.SNAPSHOT_TYPE;
 
-    public BlockBuilder(Material material, String id) {
-        super(material, id);
-        setDefaultState(getDefaultState().withProperty(SNAPSHOT_TYPE, EnumOptionalSnapshotType.NONE));
+    public BlockBuilder(BlockBehaviour.Properties props, String id) {
+        super(props, id);
+        setDefaultState(getDefaultState().setValue(SNAPSHOT_TYPE, EnumOptionalSnapshotType.NONE));
     }
 
     // BlockState
@@ -48,7 +49,7 @@ public class BlockBuilder extends BlockBCTile_Neptune implements IBlockWithFacin
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileBuilder) {
             return state
-                    .withProperty(
+                    .setValue(
                             SNAPSHOT_TYPE,
                             EnumOptionalSnapshotType.fromNullable(((TileBuilder) tile).snapshotType)
                     );

@@ -82,7 +82,7 @@ public class FluidSmoother implements IDebuggable {
             if (fluid == null) {
                 return null;
             }
-            return new FluidStack(fluid, client.amount);
+            return fluid.copyWithAmount(client.amount);
         }
         return null;
     }
@@ -126,7 +126,7 @@ public class FluidSmoother implements IDebuggable {
 
         public FluidStackInterp(FluidStack fluid, double amount) {
             this.fluid = fluid;
-            this.amount = amount;
+            this.getAmount() = amount;
         }
     }
 

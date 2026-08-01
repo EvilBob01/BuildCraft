@@ -7,6 +7,7 @@
 package buildcraft.transport.stripes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,18 +23,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.neoforged.api.distmarker.Dist;
 
 import buildcraft.api.core.BCLog;
@@ -56,12 +57,11 @@ import buildcraft.lib.misc.SoundUtil;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourStripes;
 import buildcraft.transport.wire.WireManager;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PipeExtensionManager implements IPipeExtensionManager {
     INSTANCE;
 
-    private final Int2ObjectOpenHashMap<List<PipeExtensionRequest>> requests = new Int2ObjectOpenHashMap<>();
+    private final java.util.Map<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>, List<PipeExtensionRequest>> requests = new java.util.HashMap<>();
     private final Set<PipeDefinition> retractionPipeDefs = new HashSet<>();
 
     @Override
@@ -70,7 +70,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             return false;
         }
 
-        int id = world.provider.getDimension();
+        net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> id = world.dimension();
         List<PipeExtensionRequest> rList = requests.get(id);
         if (rList == null) {
             requests.put(id, rList = new ArrayList<>());
@@ -86,19 +86,19 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
     }
 
     @SubscribeEvent
-    public void tick(TickEvent.WorldTickEvent event) {
-        if (event.phase != Phase.END || event.side != Dist.DEDICATED_SERVER) {
+    public void tick(LevelTickEvent.Post event) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
-        List<PipeExtensionRequest> rList = requests.get(event.world.provider.getDimension());
+        List<PipeExtensionRequest> rList = requests.get(event.getLevel().dimension());
         if (rList == null) {
             return;
         }
         for (PipeExtensionRequest r : rList) {
             if (retractionPipeDefs.contains(r.pipeDef)) {
-                retract(event.world, r);
+                retract(event.getLevel(), r);
             } else {
-                extend(event.world, r);
+                extend(event.getLevel(), r);
             }
         }
         rList.clear();
@@ -110,7 +110,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
 
             // check other directions
             List<Direction> possible = new ArrayList<>();
-            for (Direction facing : Direction.VALUES) {
+            for (Direction facing : Direction.values()) {
                 if (facing.getAxis() != r.dir.getAxis()) {
                     if (isValidRetractionPath(w, r, facing)) {
                         possible.add(facing);
@@ -122,9 +122,9 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
                 r.stripes.sendItem(r.stack.copy(), r.dir);
                 return;
             }
-            retractDir = possible.get(Mth.getInt(w.rand, 0, possible.size() - 1));
+            retractDir = possible.get(w.getRandom().nextInt(possible.size()));
         }
-        BlockPos p = r.pos.offset(retractDir);
+        BlockPos p = r.pos.relative(retractDir);
 
         NonNullList<ItemStack> stacksToSendBack = NonNullList.create();
         // Always send back catalyst pipe
@@ -151,7 +151,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         }
 
         CompoundTag stripesNBTOld = new CompoundTag();
-        stripesTileOld.saveAdditional(stripesNBTOld);
+        stripesTileOld.saveAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
 
         // Step 2: Remove previous pipe
         BlockSnapshot blockSnapshot2 = BlockSnapshot.getBlockSnapshot(w, p);
@@ -176,7 +176,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, p);
             player.getInventory().clearContent();
             w.setBlock(p, stripesStateOld, 3);
-            BlockEvent.PlaceEvent placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshot2, r.dir, InteractionHand.MAIN_HAND);
+            BlockEvent.PlaceEvent placeEvent = EventHooks.onPlayerBlockPlace(player, blockSnapshot2, r.dir, InteractionHand.MAIN_HAND);
             if (canceled = placeEvent.isCanceled()) {
                 blockSnapshot2.restore(true);
                 BlockEntity tile = w.getBlockEntity(r.pos);
@@ -216,8 +216,8 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
     }
 
     private void extend(Level w, PipeExtensionRequest r) {
-        BlockPos p = r.pos.offset(r.dir);
-        if (!w.isEmptyBlock(p) && !w.getBlockState(p).getBlock().isReplaceable(w, p)) {
+        BlockPos p = r.pos.relative(r.dir);
+        if (!w.isEmptyBlock(p) && !w.getBlockState(p).canBeReplaced()) {
             r.stripes.sendItem(r.stack.copy(), r.dir);
             return;
         }
@@ -239,7 +239,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             owner = holder.getOwner();
         }
 
-        stripesTileOld.saveAdditional(stripesNBTOld);
+        stripesTileOld.saveAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
         BlockSnapshot blockSnapshot1 = BlockSnapshot.getBlockSnapshot(w, r.pos);
         boolean canceled = !BlockUtil.breakBlock((ServerLevel) w, r.pos, NonNullList.create(), r.pos, owner);
         if (canceled) {
@@ -259,7 +259,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, r.pos);
             player.getInventory().clearContent();
             player.getInventory().setItem(player.getInventory().selected, r.stack);
-            InteractionResult result = ForgeHooks.onPlaceItemIntoWorld(r.stack, player, w, r.pos, r.dir.getOpposite(), 0.5F, 0.5F, 0.5F, InteractionHand.MAIN_HAND);
+            InteractionResult result = CommonHooks.onPlaceItemIntoWorld(r.stack, player, w, r.pos, r.dir.getOpposite(), 0.5F, 0.5F, 0.5F, InteractionHand.MAIN_HAND);
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().removeItemNoUpdate(i);
                 if (!stack.isEmpty()) {
@@ -287,7 +287,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             player.getInventory().clearContent();
             BlockSnapshot blockSnapshot2 = BlockSnapshot.getBlockSnapshot(w, p);
             w.setBlock(p, stripesStateOld, 3);
-            BlockEvent.PlaceEvent placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshot2, r.dir.getOpposite(), InteractionHand.MAIN_HAND);
+            BlockEvent.PlaceEvent placeEvent = EventHooks.onPlayerBlockPlace(player, blockSnapshot2, r.dir.getOpposite(), InteractionHand.MAIN_HAND);
             if (canceled = placeEvent.isCanceled()) {
                 stacksToSendBack.add(r.stack);
 
@@ -318,7 +318,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             return;
         }
         if (!canceled) {
-            stripesTileNew.loadAdditional(stripesNBTOld);
+            stripesTileNew.loadAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
             stripesTileNew.onLoad();
         }
 
@@ -349,11 +349,11 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
     }
 
     private boolean isValidRetractionPath(Level w, PipeExtensionRequest r, Direction retractDir) {
-        BlockEntity tile = w.getBlockEntity(r.pos.offset(retractDir));
+        BlockEntity tile = w.getBlockEntity(r.pos.relative(retractDir));
         IPipe pipe = CapUtil.getCapability(tile, PipeApi.CAP_PIPE, null);
         if (pipe != null) {
             boolean connected = false;
-            for (Direction facing : Direction.VALUES) {
+            for (Direction facing : Direction.values()) {
                 if (pipe.getConnectedType(facing) == IPipe.ConnectedType.TILE) {
                     return false;
                 }
@@ -381,7 +381,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         public final ItemStack stack;
 
         private PipeExtensionRequest(BlockPos pos, Direction dir, IStripesActivator stripes, PipeDefinition pipeDef, ItemStack stack) {
-            this.worldPosition = pos;
+            this.pos = pos;
             this.dir = dir;
             this.stripes = stripes;
             this.pipeDef = pipeDef;

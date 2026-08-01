@@ -6,6 +6,7 @@
 
 package buildcraft.builders.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.level.material.MapColor;
@@ -24,8 +25,8 @@ import buildcraft.builders.BCBuildersGuis;
 import buildcraft.builders.tile.TileReplacer;
 
 public class BlockReplacer extends BlockBCTile_Neptune implements IBlockWithFacing {
-    public BlockReplacer(Material material, String id) {
-        super(material, id);
+    public BlockReplacer(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Nullable

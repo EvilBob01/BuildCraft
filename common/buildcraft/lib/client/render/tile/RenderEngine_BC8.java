@@ -23,10 +23,10 @@ public abstract class RenderEngine_BC8<T extends TileEngineBase_BC8> extends Fas
     @Override
     public void renderTileEntityFast(@Nonnull T engine, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder vb) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("bc");
-        profiler.startSection("engine");
+        profiler.push("bc");
+        profiler.push("engine");
 
-        profiler.startSection("compute");
+        profiler.push("compute");
         vb.setTranslation(x, y, z);
         MutableQuad[] quads = getEngineModel(engine, partialTicks);
         profiler.endStartSection("render");
@@ -42,9 +42,9 @@ public abstract class RenderEngine_BC8<T extends TileEngineBase_BC8> extends Fas
         }
         vb.setTranslation(0, 0, 0);
 
-        profiler.endSection();
-        profiler.endSection();
-        profiler.endSection();
+        profiler.pop();
+        profiler.pop();
+        profiler.pop();
     }
 
     protected abstract MutableQuad[] getEngineModel(T engine, float partialTicks);

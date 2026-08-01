@@ -9,10 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -48,21 +45,19 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
 
     public ItemSchematicSingle(String id) {
         super(id);
-        setHasSubtypes(true);
-        setMaxStackSize(1);
     }
 
     @Override
     public int getItemStackLimit(ItemStack stack) {
-        return stack.getItemDamage() == DAMAGE_CLEAN ? 16 : super.getItemStackLimit(stack);
+        return !stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA) ? 16 : super.getItemStackLimit(stack);
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
-        addVariant(variants, DAMAGE_CLEAN, "clean");
-        addVariant(variants, DAMAGE_USED, "used");
-    }
+    // @Override
+    // @OnlyIn(Dist.CLIENT)
+    // public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
+    //     addVariant(variants, DAMAGE_CLEAN, "clean");
+    //     addVariant(variants, DAMAGE_USED, "used");
+    // }
 
     @Override
     public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
@@ -72,17 +67,15 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
         }
         if (player.isSneaking()) {
             CompoundTag itemData = NBTUtilBC.getItemData(stack);
-            itemData.removeTag(NBT_KEY);
-            if (itemData.hasNoTags()) {
-                stack.setTagCompound(null);
+            itemData.remove(NBT_KEY);
+            if (itemData.isEmpty()) {
+                stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
             }
-            stack.setItemDamage(DAMAGE_CLEAN);
             return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
         }
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
-    @Override
     public InteractionResult onItemUseFirst(Player player, Level world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, InteractionHand hand) {
         if (world.isClientSide) {
             return InteractionResult.PASS;
@@ -90,15 +83,13 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isSneaking()) {
             CompoundTag itemData = NBTUtilBC.getItemData(StackUtil.asNonNull(stack));
-            itemData.removeTag(NBT_KEY);
-            if (itemData.hasNoTags()) {
-                stack.setTagCompound(null);
+            itemData.remove(NBT_KEY);
+            if (itemData.isEmpty()) {
+                stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
             }
-            stack.setItemDamage(DAMAGE_CLEAN);
             return InteractionResult.SUCCESS;
         }
-        int damage = stack.getItemDamage();
-        if (damage != DAMAGE_USED) {
+        if (!stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
             BlockState state = world.getBlockState(pos);
             ISchematicBlock schematicBlock = SchematicBlockManager.getSchematicBlock(new SchematicBlockContext(
                 world,
@@ -111,15 +102,14 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
                 return InteractionResult.FAIL;
             }
             NBTUtilBC.getItemData(stack).put(NBT_KEY, SchematicBlockManager.saveAdditional(schematicBlock));
-            stack.setItemDamage(DAMAGE_USED);
             return InteractionResult.SUCCESS;
         } else {
             BlockPos placePos = pos;
-            boolean replaceable = world.getBlockState(pos).getBlock().isReplaceable(world, pos);
+            boolean replaceable = world.getBlockState(pos).canBeReplaced();
             if (!replaceable) {
-                placePos = placePos.offset(side);
+                placePos = placePos.relative(side);
             }
-            if (!world.mayPlace(world.getBlockState(pos).getBlock(), placePos, false, side, null)) {
+            if (!world.isInWorldBounds(placePos)) {
                 return InteractionResult.FAIL;
             }
             if (replaceable && !world.isEmptyBlock(placePos)) {
@@ -132,7 +122,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
                         List<FluidStack> requiredFluids = schematicBlock.computeRequiredFluids();
                         List<ItemStack> requiredItems = schematicBlock.computeRequiredItems();
                         if (requiredFluids.isEmpty()) {
-                            InventoryWrapper itemTransactor = new InventoryWrapper(player.inventory);
+                            InventoryWrapper itemTransactor = new InventoryWrapper(player.getInventory());
                             if (StackUtil.mergeSameItems(requiredItems).stream().noneMatch(s ->
                                 itemTransactor.extract(
                                     extracted -> StackUtil.canMerge(s, extracted),
@@ -151,31 +141,31 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
                                         )
                                     );
                                     SoundUtil.playBlockPlace(world, placePos);
-                                    player.swingArm(hand);
+                                    player.swing(hand);
                                     return InteractionResult.SUCCESS;
                                 }
                             } else {
-                                player.sendStatusMessage(
-                                    new TextComponentString(
+                                player.displayClientMessage(
+                                    Component.literal(
                                         "Not enough items. Total needed: " +
                                             StackUtil.mergeSameItems(requiredItems).stream()
-                                                .map(s -> s.getTextComponent().getFormattedText() + " x " + s.getCount())
+                                                .map(s -> s.getDisplayName().getString() + " x " + s.getCount())
                                                 .collect(Collectors.joining(", "))
                                     ),
                                     true
                                 );
                             }
                         } else {
-                            player.sendStatusMessage(
-                                new TextComponentString("Schematic requires fluids"),
+                            player.displayClientMessage(
+                                Component.literal("Schematic requires fluids"),
                                 true
                             );
                         }
                     }
                 }
             } catch (InvalidInputDataException e) {
-                player.sendStatusMessage(
-                    new TextComponentString("Invalid schematic: " + e.getMessage()),
+                player.displayClientMessage(
+                    Component.literal("Invalid schematic: " + e.getMessage()),
                     true
                 );
                 e.printStackTrace();

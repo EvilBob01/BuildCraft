@@ -167,7 +167,7 @@ public enum ClientSnapshots {
         }
         // noinspection Guava
         for (Entity entity : world.getEntities(Entity.class, Predicates.alwaysTrue())) {
-            Vec3 pos = entity.getPositionVector();
+            Vec3 pos = entity.position();
             GlStateManager.pushAttrib();
             Minecraft.getInstance().getRenderManager().renderEntity(
                 entity,

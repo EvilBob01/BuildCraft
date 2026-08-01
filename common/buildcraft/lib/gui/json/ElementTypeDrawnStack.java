@@ -31,7 +31,7 @@ public class ElementTypeDrawnStack extends ElementType {
 
         Item item = GsonHelper.getItem(json.json, "id");
         int meta = resolveEquationInt(json, "meta", ctx);
-        ItemStack stack = new ItemStack(item, 1, meta);
+        ItemStack stack = new ItemStack(item, 1);
 
         ISimpleDrawable icon = new GuiStack(stack);
         IGuiArea area = IGuiArea.create(pos, 16, 16);

@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -87,7 +87,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
                     int x = cpt.getInt("x");
                     int y = cpt.getInt("y");
                     int z = cpt.getInt("z");
-                    Direction side = Direction.VALUES[cpt.getByte("side")];
+                    Direction side = Direction.values()[cpt.getByte("side")];
 
                     strings.add(LocaleUtil.localize("{" + x + ", " + y + ", " + z + ", " + side + "}"));
                 }
@@ -153,7 +153,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             nbt.removeTag(key);
         }
         if (nbt.hasNoTags()) {
-            stack.setTagCompound(null);
+            stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
         }
         MapLocationType.CLEAN.setToStack(stack);
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
@@ -213,7 +213,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         } else {
             MapLocationType.SPOT.setToStack(modified);
 
-            cpt.putByte("side", (byte) side.getIndex());
+            cpt.putByte("side", (byte) side.get3DDataValue());
             cpt.putInt("x", pos.getX());
             cpt.putInt("y", pos.getY());
             cpt.putInt("z", pos.getZ());
@@ -259,7 +259,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
 
     public static Direction getPointFace(@Nonnull ItemStack stack) {
         CompoundTag cpt = NBTUtilBC.getItemData(stack);
-        return Direction.VALUES[cpt.getByte("side")];
+        return Direction.values()[cpt.getByte("side")];
     }
 
     @Override
@@ -285,7 +285,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         MapLocationType type = MapLocationType.getFromStack(item);
 
         if (type == MapLocationType.SPOT) {
-            return Direction.VALUES[cpt.getByte("side")];
+            return Direction.values()[cpt.getByte("side")];
         } else {
             return null;
         }

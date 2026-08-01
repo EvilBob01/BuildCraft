@@ -6,6 +6,10 @@
 
 package buildcraft.transport.tile;
 
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+
 import buildcraft.api.core.EnumPipePart;
 
 import buildcraft.lib.tile.TileBC_Neptune;
@@ -17,7 +21,8 @@ public class TileFilteredBuffer extends TileBC_Neptune {
     public final ItemHandlerSimple invFilter;
     public final ItemHandlerFiltered invMain;
 
-    public TileFilteredBuffer() {
+    public TileFilteredBuffer(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         invFilter = itemManager.addInvHandler("filter", 9, EnumAccess.PHANTOM);
         invFilter.setLimitedInsertor(1);
 

@@ -64,7 +64,7 @@ public class RetroGenData extends SavedData {
         }
 
         CompoundTag data = nbt.getCompound("data");
-        for (String key : data.getKeySet()) {
+        for (String key : data.getAllKeys()) {
             ChunkPos pos = deserializeChunkPos(key);
             if (pos == null) {
                 continue;
@@ -121,7 +121,7 @@ public class RetroGenData extends SavedData {
         for (int i = 0; i < list.size(); i++) {
             String name = list.get(i);
             map.put(name, (byte) i);
-            registry.appendTag(new StringTag(name));
+            registry.appendTag(StringTag.valueOf(name));
         }
         nbt.put("registry", registry);
 

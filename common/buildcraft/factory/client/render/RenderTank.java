@@ -46,8 +46,8 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         if (forRender == null) {
             return;
         }
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("tank");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("tank");
 
         // gl state setup
         RenderHelper.disableStandardItemLighting();
@@ -75,7 +75,7 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
 
             FluidRenderer.vertex.lighti(combinedLight);
 
-            FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid, forRender.amount, tile.tank.getCapacity(), min, max,
+            FluidRenderer.renderFluid(FluidSpriteType.STILL, fluid, forRender.getAmount(), tile.tank.getCapacity(), min, max,
                 bb, sideRender);
 
             // buffer finish
@@ -86,12 +86,12 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
         // gl state finish
         RenderHelper.enableStandardItemLighting();
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     private static boolean isFullyConnected(TileTank thisTank, Direction face, float partialTicks) {
-        BlockPos pos = thisTank.getBlockPos().offset(face);
+        BlockPos pos = thisTank.getBlockPos().relative(face);
         BlockEntity oTile = thisTank.getLevel().getBlockEntity(pos);
         if (oTile instanceof TileTank) {
             TileTank oTank = (TileTank) oTile;
@@ -103,7 +103,7 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
                 return false;
             }
             FluidStack fluid = forRender.fluid;
-            if (fluid == null || forRender.amount <= 0) {
+            if (fluid == null || forRender.getAmount() <= 0) {
                 return false;
             } else if (thisTank.getFluidForRender(partialTicks) == null
                 || !fluid.isFluidEqual(thisTank.getFluidForRender(partialTicks).fluid)) {
@@ -112,7 +112,7 @@ public class RenderTank extends TileEntitySpecialRenderer<TileTank> {
             if (fluid.getFluid().isGaseous(fluid)) {
                 face = face.getOpposite();
             }
-            return forRender.amount >= oTank.tank.getCapacity() || face == Direction.UP;
+            return forRender.getAmount() >= oTank.tank.getCapacity() || face == Direction.UP;
         } else {
             return false;
         }

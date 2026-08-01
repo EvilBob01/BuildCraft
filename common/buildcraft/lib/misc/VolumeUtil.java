@@ -93,7 +93,7 @@ public class VolumeUtil {
             BlockPos coneCenter = start;
             for (int d = 0; d < distance; d++) {
                 // Firstly expand the visGraph
-                coneCenter = coneCenter.offset(direction);
+                coneCenter = coneCenter.relative(direction);
                 for (int i = -d; i <= d; i++) {
                     for (int j = -d; j <= d; j++) {
                         if (!edges) {

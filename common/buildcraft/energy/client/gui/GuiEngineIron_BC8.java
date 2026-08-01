@@ -17,7 +17,7 @@ import buildcraft.lib.misc.LocaleUtil;
 import buildcraft.energy.container.ContainerEngineIron_BC8;
 
 public class GuiEngineIron_BC8 extends GuiBC8<ContainerEngineIron_BC8> {
-    private static final ResourceLocation TEXTURE_BASE = new ResourceLocation("buildcraftenergy:textures/gui/combustion_engine_gui.png");
+    private static final ResourceLocation TEXTURE_BASE = ResourceLocation.parse("buildcraftenergy:textures/gui/combustion_engine_gui.png");
     private static final int SIZE_X = 176, SIZE_Y = 177;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_TANK_OVERLAY = new GuiIcon(TEXTURE_BASE, 176, 0, 16, 60);

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.item.ItemShears;
+import net.minecraft.world.item.ItemShears;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -38,7 +38,7 @@ public enum StripesHandlerShears implements IStripesHandlerItem {
             return false;
         }
 
-        pos = pos.offset(direction);
+        pos = pos.relative(direction);
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 

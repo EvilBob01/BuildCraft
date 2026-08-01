@@ -7,6 +7,7 @@
 package buildcraft.factory.tile;
 
 import java.io.IOException;
+import net.minecraft.world.level.material.Fluid;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +15,12 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
@@ -46,6 +49,7 @@ import buildcraft.lib.misc.CapUtil;
 import buildcraft.lib.misc.FluidUtilBC;
 import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 import buildcraft.factory.BCFactoryGuis;
@@ -54,7 +58,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
     public static final IdAllocator IDS = TileBC_Neptune.IDS.makeChild("tank");
     public static final int NET_FLUID_DELTA = IDS.allocId("FLUID_DELTA");
 
-    private static final ResourceLocation ADVANCEMENT_STORE_FLUIDS = new ResourceLocation(
+    private static final ResourceLocation ADVANCEMENT_STORE_FLUIDS = ResourceLocation.parse(
         "buildcraftfactory:fluid_storage"
     );
 
@@ -65,15 +69,16 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
 
     private int lastComparatorLevel;
 
-    public TileTank() {
-        this(16 * Fluid.BUCKET_VOLUME);
+    public TileTank(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        this(type, pos, state, 16 * FluidType.BUCKET_VOLUME);
     }
 
-    protected TileTank(int capacity) {
-        this(new Tank("tank", capacity, null));
+    protected TileTank(BlockEntityType<?> type, BlockPos pos, BlockState state, int capacity) {
+        this(type, pos, state, new Tank("tank", capacity, null));
     }
 
-    protected TileTank(Tank tank) {
+    protected TileTank(BlockEntityType<?> type, BlockPos pos, BlockState state, Tank tank) {
+        super(type, pos, state);
         tank.setBlockEntity(this);
         this.tank = tank;
         tankManager.add(tank);

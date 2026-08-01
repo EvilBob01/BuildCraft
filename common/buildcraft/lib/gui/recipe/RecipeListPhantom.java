@@ -33,7 +33,7 @@ public class RecipeListPhantom extends RecipeList {
     }
 
     @Override
-    public boolean isCraftable(IRecipe recipe) {
+    public boolean isCraftable(Recipe recipe) {
         return true;
     }
 

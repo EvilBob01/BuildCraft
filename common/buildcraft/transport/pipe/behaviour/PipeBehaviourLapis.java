@@ -60,7 +60,7 @@ public class PipeBehaviourLapis extends PipeBehaviour {
     public void writePayload(FriendlyByteBuf buffer, Dist side) {
         super.writePayload(buffer, side);
         if (side == Dist.DEDICATED_SERVER) {
-            buffer.writeByte(colour.getMetadata());
+            buffer.writeByte(colour.getId());
         }
     }
 
@@ -68,13 +68,13 @@ public class PipeBehaviourLapis extends PipeBehaviour {
     public void readPayload(FriendlyByteBuf buffer, Dist side, MessageContext ctx) throws IOException {
         super.readPayload(buffer, side, ctx);
         if (side == Dist.CLIENT) {
-            colour = DyeColor.byMetadata(buffer.readUnsignedByte());
+            colour = DyeColor.byId(buffer.readUnsignedByte());
         }
     }
 
     @Override
     public int getTextureIndex(Direction face) {
-        return colour.getMetadata();
+        return colour.getId();
     }
 
     @Override
@@ -84,8 +84,8 @@ public class PipeBehaviourLapis extends PipeBehaviour {
         }
         if (EntityUtil.getWrenchHand(player) != null) {
             EntityUtil.activateWrench(player, trace);
-            int n = colour.getMetadata() + (player.isSneaking() ? 15 : 1);
-            colour = DyeColor.byMetadata(n & 15);
+            int n = colour.getId() + (player.isSneaking() ? 15 : 1);
+            colour = DyeColor.byId(n & 15);
             pipe.getHolder().scheduleNetworkUpdate(PipeMessageReceiver.BEHAVIOUR);
             return true;
         }

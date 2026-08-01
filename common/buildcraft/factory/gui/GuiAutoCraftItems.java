@@ -14,9 +14,9 @@ import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -39,11 +39,11 @@ import buildcraft.factory.container.ContainerAutoCraftItems;
 
 public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implements IRecipeShownListener {
     private static final ResourceLocation TEXTURE_BASE =
-        new ResourceLocation("buildcraftfactory:textures/gui/autobench_item.png");
+        ResourceLocation.parse("buildcraftfactory:textures/gui/autobench_item.png");
     private static final ResourceLocation TEXTURE_MISC =
-        new ResourceLocation("buildcraftlib:textures/gui/misc_slots.png");
+        ResourceLocation.parse("buildcraftlib:textures/gui/misc_slots.png");
     private static final ResourceLocation VANILLA_CRAFTING_TABLE =
-        new ResourceLocation("textures/gui/container/crafting_table.png");
+        ResourceLocation.parse("textures/gui/container/crafting_table.png");
     private static final int SIZE_X = 176, SIZE_Y = 197;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_FILTER_OVERLAY_SAME = new GuiIcon(TEXTURE_MISC, 54, 0, 18, 18);
@@ -72,7 +72,7 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
         mainGui.shownElements.add(new LedgerHelp(mainGui, true));
     }
 
-    private void sendRecipe(IRecipe recipe) {
+    private void sendRecipe(Recipe recipe) {
         List<ItemStack> stacks = new ArrayList<>(9);
 
         int maxX = recipe instanceof IShapedRecipe ? ((IShapedRecipe) recipe).getRecipeWidth() : 3;
@@ -118,7 +118,7 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
         super.initGui();
         widthTooNarrow = this.width < SIZE_X + 176;
         if (recipeBook != null) {
-            InventoryCrafting invCraft = container.tile.getWorkbenchCrafting();
+            CraftingContainer invCraft = container.tile.getWorkbenchCrafting();
             recipeBook.func_194303_a(width, height, mc, widthTooNarrow, invCraft);
             guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
             recipeButton =

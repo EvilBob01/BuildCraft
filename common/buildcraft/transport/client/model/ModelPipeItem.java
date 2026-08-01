@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +62,7 @@ public enum ModelPipeItem implements IBakedModel {
             Tuple3f radius = new Vector3f(0.25f, 0.5f, 0.25f);
             UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
             UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 16);
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
                 QUADS_SAME[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
             }
@@ -79,7 +79,7 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.125f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 4);
-                 for (Direction face : Direction.VALUES) {
+                 for (Direction face : Direction.values()) {
                      if (face == Direction.DOWN) {
                          continue;
                      }
@@ -97,7 +97,7 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.25f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 4, 12, 12);
-                 for (Direction face : Direction.VALUES) {
+                 for (Direction face : Direction.values()) {
                      if (face.getAxis() == Axis.Y) {
                          continue;
                      }
@@ -115,7 +115,7 @@ public enum ModelPipeItem implements IBakedModel {
                  Tuple3f radius = new Vector3f(0.25f, 0.125f, 0.25f);
                  UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
                  UvFaceData uvsXZ = UvFaceData.from16(4, 12, 12, 16);
-                 for (Direction face : Direction.VALUES) {
+                 for (Direction face : Direction.values()) {
                      if (face == Direction.UP) {
                          continue;
                      }
@@ -134,7 +134,7 @@ public enum ModelPipeItem implements IBakedModel {
             Tuple3f radius = new Vector3f(0.24f, 0.49f, 0.24f);
             UvFaceData uvsY = UvFaceData.from16(4, 4, 12, 12);
             UvFaceData uvsXZ = UvFaceData.from16(4, 0, 12, 16);
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 UvFaceData uvs = face.getAxis() == Axis.Y ? uvsY : uvsXZ;
                 QUADS_COLOUR[face.ordinal()] = ModelUtil.createFace(face, center, radius, uvs);
             }
@@ -160,7 +160,7 @@ public enum ModelPipeItem implements IBakedModel {
         }
 
         if (colour > 0 && colour <= 16) {
-            DyeColor rColour = DyeColor.byMetadata(colour - 1);
+            DyeColor rColour = DyeColor.byId(colour - 1);
             int rgb = 0xFF_00_00_00 | ColourUtil.swapArgbToAbgr(ColourUtil.getLightHex(rColour));
             if (colourType == EnumPipeColourType.TRANSLUCENT) {
                 TextureAtlasSprite sprite = BCTransportSprites.PIPE_COLOUR.getSprite();
@@ -276,7 +276,7 @@ public enum ModelPipeItem implements IBakedModel {
             } else {
                 type = EnumPipeColourType.TRANSLUCENT;
             }
-            List<BakedQuad> quads = getQuads(center, top, bottom, sprites, stack.getMetadata(), type);
+            List<BakedQuad> quads = getQuads(center, top, bottom, sprites, stack.getId(), type);
             return new ModelItemSimple(quads, ModelItemSimple.TRANSFORM_BLOCK, true);
         }
     }

@@ -20,7 +20,7 @@ import buildcraft.transport.BCTransportSprites;
 import buildcraft.transport.container.ContainerFilteredBuffer_BC8;
 
 public class GuiFilteredBuffer extends GuiBC8<ContainerFilteredBuffer_BC8> {
-    private static final ResourceLocation TEXTURE_BASE = new ResourceLocation("buildcrafttransport:textures/gui/filtered_buffer.png");
+    private static final ResourceLocation TEXTURE_BASE = ResourceLocation.parse("buildcrafttransport:textures/gui/filtered_buffer.png");
     private static final int SIZE_X = 176, SIZE_Y = 169;
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE_BASE, 0, 0, SIZE_X, SIZE_Y);
 

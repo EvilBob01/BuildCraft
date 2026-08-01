@@ -17,7 +17,7 @@ import buildcraft.api.transport.pluggable.PipePluggable;
 public class FilterEventHandler {
     @PipeEventHandler
     public static void sideCheck(PipeEventItem.SideCheck event) {
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : Direction.values()) {
             if (!event.isAllowed(side)) {
                 continue;
             }

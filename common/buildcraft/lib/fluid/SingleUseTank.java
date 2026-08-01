@@ -6,6 +6,7 @@
  */
 package buildcraft.lib.fluid;
 
+import net.minecraft.world.level.material.Fluid;
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +52,7 @@ public class SingleUseTank extends Tank {
         if (fluid == null) {
             this.acceptedFluid = null;
         } else {
-            this.acceptedFluid = new FluidStack(fluid, 1);
+            this.acceptedFluid = fluid.copyWithAmount(1);
         }
     }
 
@@ -59,7 +60,7 @@ public class SingleUseTank extends Tank {
         if (fluid == null) {
             this.acceptedFluid = null;
         } else {
-            this.acceptedFluid = new FluidStack(fluid, 1);
+            this.acceptedFluid = fluid.copyWithAmount(1);
         }
     }
 

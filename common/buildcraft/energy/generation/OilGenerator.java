@@ -91,7 +91,7 @@ public class OilGenerator {
                 world.getProfiler().push("scan");
                 List<OilGenStructure> structures = getStructures(world, cx, cz, cdx == 0 && cdz == 0);
                 OilGenStructure.Spring spring = null;
-                world.profiler.endStartSection("gen");
+                world.getProfiler().endStartSection("gen");
                 for (OilGenStructure struct : structures) {
                     struct.generate(world, box);
                     if (struct instanceof OilGenStructure.Spring) {
@@ -272,14 +272,14 @@ public class OilGenerator {
         BlockPos max = VecUtil.replaceValue(center.offset(radius, radius, radius), axis, valForAxis + length);
         double radiusSq = radius * radius;
         int toReplace = valForAxis;
-        Predicate<BlockPos> tester = p -> VecUtil.replaceValue(p, axis, toReplace).distanceSq(center) <= radiusSq;
+        Predicate<BlockPos> tester = p -> VecUtil.replaceValue(p, axis, toReplace).distSqr(center) <= radiusSq;
         return new GenByPredicate(new Box(min, max), ReplaceType.ALWAYS, tester);
     }
 
     public static OilGenStructure createSphere(BlockPos center, int radius) {
         Box box = new Box(center.add(-radius, -radius, -radius), center.offset(radius, radius, radius));
         double radiusSq = radius * radius + 0.01;
-        Predicate<BlockPos> tester = p -> p.distanceSq(center) <= radiusSq;
+        Predicate<BlockPos> tester = p -> p.distSqr(center) <= radiusSq;
         return new GenByPredicate(box, ReplaceType.ALWAYS, tester);
     }
 
@@ -334,3 +334,4 @@ public class OilGenerator {
         return pattern[x][z];
     }
 }
+

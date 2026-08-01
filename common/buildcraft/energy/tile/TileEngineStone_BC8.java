@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.level.block.entity.TileEntityFurnace;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 
@@ -33,6 +33,10 @@ import buildcraft.lib.tile.item.ItemHandlerSimple;
 
 import buildcraft.energy.BCEnergyGuis;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
     private static final long MAX_OUTPUT = MjAPI.MJ;
     private static final long MIN_OUTPUT = MAX_OUTPUT / 3;
@@ -50,7 +54,8 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
 
     private boolean isForceInserting = false;
 
-    public TileEngineStone_BC8() {
+    public TileEngineStone_BC8(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         invFuel = itemManager.addInvHandler("fuel", 1, this::isValidFuel, EnumAccess.BOTH, EnumPipePart.VALUES);
     }
 
@@ -75,7 +80,6 @@ public class TileEngineStone_BC8 extends TileEngineBase_BC8 {
         nbt.putInt("burnTime", burnTime);
         nbt.putInt("totalBurnTime", totalBurnTime);
         nbt.putLong("esum", esum);
-        return nbt;
     }
 
     @Override

@@ -52,12 +52,12 @@ public enum EnumAddonSlot {
             boxOffset.x,
             boxOffset.y,
             boxOffset.z
-        ).grow(1 / 16D);
+        ).inflate(1 / 16D);
     }
 
     public static Pair<VolumeBox, EnumAddonSlot> getSelectingVolumeBoxAndSlot(Player player,
                                                                               List<VolumeBox> volumeBoxes) {
-        Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
+        Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 end = start.add(player.getLookVec().scale(4));
         VolumeBox bestVolumeBox = null;
         EnumAddonSlot bestSlot = null;

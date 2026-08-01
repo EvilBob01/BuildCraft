@@ -41,7 +41,7 @@ public class TriggerLightSensor extends BCStatement implements ITriggerInternalS
     @Override
     public boolean isTriggerActive(Direction side, IStatementContainer source, IStatementParameter[] parameters) {
         BlockEntity tile = source.getTile();
-        BlockPos pos = tile.getBlockPos().offset(side);
+        BlockPos pos = tile.getBlockPos().relative(side);
         int light = tile.getLevel().getLightFromNeighbors(pos);
         return (light < 8) ^ bright;
     }

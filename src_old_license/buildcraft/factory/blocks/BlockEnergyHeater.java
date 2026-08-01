@@ -1,4 +1,4 @@
-package buildcraft.factory.blocks;
+﻿package buildcraft.factory.blocks;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -79,7 +79,8 @@ public class BlockEnergyHeater extends BlockBuildCraft implements ICustomPipeCon
     @Override
     public float getExtension(World world, BlockPos pos, EnumFacing face, IBlockState state) {
         EnumFacing current = state.getValue(FACING_PROP);
-        if (current.rotateY().getAxis() == face.getAxis()) return 0;
+        if (current.getClockWise().getAxis() == face.getAxis()) return 0;
         return 0.25f;
     }
 }
+

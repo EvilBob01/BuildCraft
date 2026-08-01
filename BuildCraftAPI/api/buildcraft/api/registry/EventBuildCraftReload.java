@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Event;
 
 public abstract class EventBuildCraftReload extends Event {
 

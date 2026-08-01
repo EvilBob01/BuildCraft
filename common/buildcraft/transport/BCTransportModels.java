@@ -7,12 +7,12 @@
 package buildcraft.transport;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.neoforged.fml.client.registry.ClientRegistry;
 import net.neoforged.bus.api.SubscribeEvent;
 
 import buildcraft.api.transport.pipe.PipeApiClient;

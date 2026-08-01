@@ -6,6 +6,7 @@
 
 package buildcraft.lib.misc;
 
+import net.minecraft.world.level.material.Fluid;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -65,7 +66,7 @@ import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import buildcraft.api.core.BCLog;
 
@@ -115,20 +116,20 @@ public class JsonUtil {
     public static final JsonDeserializer<ItemStack> ITEM_STACK_DESERIALIZER = (json, type, ctx) -> {
         if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
             String name = json.getAsString();
-            ResourceLocation id = new ResourceLocation(name);
-            if (!ForgeRegistries.ITEMS.containsKey(id)) {
+            ResourceLocation id = ResourceLocation.parse(name);
+            if (!BuiltInRegistries.ITEM.containsKey(id)) {
                 throw new JsonSyntaxException("Unknown item '" + name + "'");
             } else {
-                return new ItemStack(ForgeRegistries.ITEMS.getValue(id));
+                return new ItemStack(BuiltInRegistries.ITEM.get(id));
             }
         } else if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
             String id = GsonHelper.getString(obj, "id");
-            ResourceLocation loc = new ResourceLocation(id);
-            if (!ForgeRegistries.ITEMS.containsKey(loc)) {
+            ResourceLocation loc = ResourceLocation.parse(id);
+            if (!BuiltInRegistries.ITEM.containsKey(loc)) {
                 throw new JsonSyntaxException("Unknown item '" + id + "'");
             }
-            Item item = ForgeRegistries.ITEMS.getValue(loc);
+            Item item = BuiltInRegistries.ITEM.get(loc);
             int count = 1;
             if (obj.has("count")) {
                 count = JsonUtil.getInt(obj, "count");
@@ -141,7 +142,7 @@ public class JsonUtil {
                 meta = JsonUtil.getInt(obj, "meta");
             }
             // TODO: NBT!
-            return new ItemStack(item, count, meta);
+            return new ItemStack(item, count);
         } else {
             throw new JsonSyntaxException("Expected either a string or an object, got " + json);
         }
@@ -280,7 +281,7 @@ public class JsonUtil {
         }
         String domain = str.substring(0, index);
         String path = str.substring(index + 1);
-        return new ResourceLocation(domain, path);
+        return ResourceLocation.fromNamespaceAndPath(domain, path);
     }
 
     public static int getInt(JsonObject obj, String string) {
@@ -512,32 +513,32 @@ public class JsonUtil {
             (JsonSerializer<ByteTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getByte()))
             .registerTypeAdapter(ByteTag.class,
                 (JsonDeserializer<
-                    ByteTag>) (json, typeOfT, context) -> new ByteTag(json.getAsJsonPrimitive().getAsByte()))
+                    ByteTag>) (json, typeOfT, context) -> ByteTag.valueOf(json.getAsJsonPrimitive().getAsByte()))
             .registerTypeAdapter(ShortTag.class,
                 (JsonSerializer<ShortTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getShort()))
             .registerTypeAdapter(ShortTag.class,
                 (JsonDeserializer<
-                    ShortTag>) (json, typeOfT, context) -> new ShortTag(json.getAsJsonPrimitive().getAsShort()))
+                    ShortTag>) (json, typeOfT, context) -> ShortTag.valueOf(json.getAsJsonPrimitive().getAsShort()))
             .registerTypeAdapter(IntTag.class,
                 (JsonSerializer<IntTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getInt()))
             .registerTypeAdapter(IntTag.class,
                 (JsonDeserializer<
-                    IntTag>) (json, typeOfT, context) -> new IntTag(json.getAsJsonPrimitive().getAsInt()))
+                    IntTag>) (json, typeOfT, context) -> IntTag.valueOf(json.getAsJsonPrimitive().getAsInt()))
             .registerTypeAdapter(LongTag.class,
                 (JsonSerializer<LongTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getLong()))
             .registerTypeAdapter(LongTag.class,
                 (JsonDeserializer<
-                    LongTag>) (json, typeOfT, context) -> new LongTag(json.getAsJsonPrimitive().getAsLong()))
+                    LongTag>) (json, typeOfT, context) -> LongTag.valueOf(json.getAsJsonPrimitive().getAsLong()))
             .registerTypeAdapter(FloatTag.class,
                 (JsonSerializer<FloatTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getFloat()))
             .registerTypeAdapter(FloatTag.class,
                 (JsonDeserializer<
-                    FloatTag>) (json, typeOfT, context) -> new FloatTag(json.getAsJsonPrimitive().getAsFloat()))
+                    FloatTag>) (json, typeOfT, context) -> FloatTag.valueOf(json.getAsJsonPrimitive().getAsFloat()))
             .registerTypeAdapter(DoubleTag.class,
                 (JsonSerializer<DoubleTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getDouble()))
             .registerTypeAdapter(DoubleTag.class,
                 (JsonDeserializer<DoubleTag>) (json, typeOfT,
-                    context) -> new DoubleTag(json.getAsJsonPrimitive().getAsDouble()))
+                    context) -> DoubleTag.valueOf(json.getAsJsonPrimitive().getAsDouble()))
             .registerTypeAdapter(ByteArrayTag.class, (JsonSerializer<ByteArrayTag>) (src, typeOfSrc, context) -> {
                 JsonArray jsonArray = new JsonArray();
                 for (byte element : src.getByteArray()) {
@@ -553,7 +554,7 @@ public class JsonUtil {
                 (JsonSerializer<StringTag>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getString()))
             .registerTypeAdapter(StringTag.class,
                 (JsonDeserializer<StringTag>) (json, typeOfT,
-                    context) -> new StringTag(json.getAsJsonPrimitive().getAsString()))
+                    context) -> StringTag.valueOf(json.getAsJsonPrimitive().getAsString()))
             .registerTypeAdapter(ListTag.class, (JsonSerializer<ListTag>) (src, typeOfSrc, context) -> {
                 JsonArray jsonArray = new JsonArray();
                 for (int i = 0; i < src.size(); i++) {
@@ -569,7 +570,7 @@ public class JsonUtil {
                 return nbtTagList;
             }).registerTypeAdapter(CompoundTag.class, (JsonSerializer<CompoundTag>) (src, typeOfSrc, context) -> {
                 JsonObject jsonObject = new JsonObject();
-                for (String key : src.getKeySet()) {
+                for (String key : src.getAllKeys()) {
                     jsonObject.add(key, context.serialize(src.get(key), Tag.class));
                 }
                 return jsonObject;

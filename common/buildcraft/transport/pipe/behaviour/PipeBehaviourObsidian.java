@@ -6,13 +6,14 @@
 
 package buildcraft.transport.pipe.behaviour;
 
+import net.minecraft.world.level.material.Fluid;
 import java.util.List;
 import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -98,7 +99,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
 
     private Direction getOpenFace() {
         Direction openFace = null;
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (pipe.isConnected(face)) {
                 if (openFace == null) {
                     openFace = face.getOpposite();
@@ -115,17 +116,17 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
         switch (openFace) {
             default:
             case WEST:
-                return bb.offset(-distance, 0, 0).grow(0.5, distance, distance);
+                return bb.offset(-distance, 0, 0).inflate(0.5, distance, distance);
             case EAST:
-                return bb.offset(distance, 0, 0).grow(0.5, distance, distance);
+                return bb.offset(distance, 0, 0).inflate(0.5, distance, distance);
             case DOWN:
-                return bb.offset(0, -distance, 0).grow(distance, 0.5, distance);
+                return bb.offset(0, -distance, 0).inflate(distance, 0.5, distance);
             case UP:
-                return bb.offset(0, distance, 0).grow(distance, 0.5, distance);
+                return bb.offset(0, distance, 0).inflate(distance, 0.5, distance);
             case NORTH:
-                return bb.offset(0, 0, -distance).grow(distance, distance, 0.5);
+                return bb.offset(0, 0, -distance).inflate(distance, distance, 0.5);
             case SOUTH:
-                return bb.offset(0, 0, distance).grow(distance, distance, 0.5);
+                return bb.offset(0, 0, distance).inflate(distance, distance, 0.5);
         }
     }
 
@@ -208,7 +209,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
 
         for (int d = 1; d < 5; d++) {
             AABB aabb = getSuckingBox(openFace, d);
-            List<Entity> discoveredEntities = pipe.getHolder().getPipeWorld().getEntitiesWithinAABB(Entity.class, aabb);
+            List<Entity> discoveredEntities = pipe.getHolder().getPipeWorld().getEntitiesOfClass(Entity.class, aabb);
 
             for (Entity entity : discoveredEntities) {
                 long leftOver = trySuckEntity(entity, openFace, microJoules, simulate);

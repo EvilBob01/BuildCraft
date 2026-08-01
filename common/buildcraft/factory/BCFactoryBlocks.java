@@ -4,6 +4,8 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.factory;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
 
 import buildcraft.lib.registry.RegistrationHelper;
@@ -54,7 +56,7 @@ public class BCFactoryBlocks {
         chute = HELPER.addBlockAndItem(new BlockChute(Block.Properties.of(), "block.chute"));
         distiller = HELPER.addBlockAndItem(new BlockDistiller(Block.Properties.of(), "block.distiller"));
         heatExchange = HELPER.addBlockAndItem(new BlockHeatExchange(Block.Properties.of(), "block.heat_exchange"));
-        waterGel = HELPER.addBlock(new BlockWaterGel(Material.CLAY, "block.water_gel"));
+        waterGel = HELPER.addBlock(new BlockWaterGel(BlockBehaviour.Properties.of(), "block.water_gel"));
 
         HELPER.registerTile(TileAutoWorkbenchItems.class, "tile.autoworkbench.item");
         HELPER.registerTile(TileMiningWell.class, "tile.mining_well");

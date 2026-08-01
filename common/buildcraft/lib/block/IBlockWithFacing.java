@@ -38,8 +38,9 @@ public interface IBlockWithFacing extends ICustomRotationHandler {
             return InteractionResult.FAIL;
         }
         Direction currentFacing = state.getValue(getFacingProperty());
-        Direction newFacing = canFaceVertically() ? RotationUtil.rotateAll(currentFacing) : currentFacing.rotateY();
-        world.setBlock(pos, state.withProperty(getFacingProperty(), newFacing));
+        Direction newFacing = canFaceVertically() ? RotationUtil.rotateAll(currentFacing) : currentFacing.getClockWise();
+        world.setBlock(pos, state.setValue(getFacingProperty(), newFacing), 3);
         return InteractionResult.SUCCESS;
     }
 }
+

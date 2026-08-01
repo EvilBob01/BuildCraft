@@ -31,8 +31,8 @@ public class ContainerArchitectTable extends ContainerBCTile<TileArchitectTable>
         super(player, tile);
         addFullPlayerInventory(88, 84);
 
-        addSlotToContainer(new SlotBase(tile.invSnapshotIn, 0, 135, 35));
-        addSlotToContainer(new SlotOutput(tile.invSnapshotOut, 0, 194, 35));
+        addSlot(new SlotBase(tile.invSnapshotIn, 0, 135, 35));
+        addSlot(new SlotOutput(tile.invSnapshotOut, 0, 194, 35));
     }
     
     @Override

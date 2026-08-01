@@ -44,9 +44,9 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
     public void render(TileMarkerVolume marker, double tileX, double tileY, double tileZ, float partialTicks, int destroyStage, float alpha) {
         if (marker == null || !marker.isShowingSignals()) return;
 
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("marker");
-        Minecraft.getInstance().mcProfiler.startSection("volume");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("marker");
+        Minecraft.getInstance().mcProfiler.push("volume");
 
         DetachedRenderer.fromWorldOriginPre(Minecraft.getInstance().player, partialTicks);
         RenderHelper.disableStandardItemLighting();
@@ -56,7 +56,7 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
         Set<Axis> taken = volume == null ? ImmutableSet.of() : volume.getConnectedAxis();
 
         Vec3 start = VecUtil.add(VEC_HALF, marker.getBlockPos());
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (taken.contains(face.getAxis())) {
                 continue;
             }
@@ -67,9 +67,9 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
         RenderHelper.enableStandardItemLighting();
         DetachedRenderer.fromWorldOriginPost();
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     private static void renderLaser(Vec3 min, Vec3 max, Axis axis) {
@@ -84,17 +84,17 @@ public class RenderMarkerVolume extends TileEntitySpecialRenderer<TileMarkerVolu
     private static Vec3 offset(Vec3 vec, Direction face) {
         double by = 1 / 16.0;
         if (face == Direction.DOWN) {
-            return vec.addVector(0, -by, 0);
+            return vec.add(0, -by, 0);
         } else if (face == Direction.UP) {
-            return vec.addVector(0, by, 0);
+            return vec.add(0, by, 0);
         } else if (face == Direction.EAST) {
-            return vec.addVector(by, 0, 0);
+            return vec.add(by, 0, 0);
         } else if (face == Direction.WEST) {
-            return vec.addVector(-by, 0, 0);
+            return vec.add(-by, 0, 0);
         } else if (face == Direction.SOUTH) {
-            return vec.addVector(0, 0, by);
+            return vec.add(0, 0, by);
         } else {// North
-            return vec.addVector(0, 0, -by);
+            return vec.add(0, 0, -by);
         }
     }
 }

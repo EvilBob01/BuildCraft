@@ -8,7 +8,7 @@ package buildcraft.lib.fake;
 
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.world.level.block.entity.TileEntitySign;
 import net.minecraft.server.level.ServerLevel;
 
 import net.neoforged.neoforge.common.util.FakePlayer;

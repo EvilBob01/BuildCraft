@@ -17,7 +17,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
     public static final SpecialColourFontRenderer INSTANCE = new SpecialColourFontRenderer();
 
     private SpecialColourFontRenderer() {
-        super(Minecraft.getInstance().gameSettings, new ResourceLocation("textures/font/ascii.png"),
+        super(Minecraft.getInstance().gameSettings, ResourceLocation.parse("textures/font/ascii.png"),
             Minecraft.getInstance().renderEngine, false);
     }
 
@@ -49,7 +49,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
             int thisColour = color;
             try {
                 int ord = Integer.parseInt(Character.toString(c), 16);
-                thisColour = ColourUtil.getLightHex(DyeColor.byMetadata(ord));
+                thisColour = ColourUtil.getLightHex(DyeColor.byId(ord));
             } catch (NumberFormatException nfe) {
                 BCLog.logger
                     .warn("[lib.font] Invalid colour string for SpecialColourFontRenderer! " + nfe.getMessage());

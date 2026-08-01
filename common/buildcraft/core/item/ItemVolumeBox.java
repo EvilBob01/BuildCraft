@@ -29,7 +29,7 @@ public class ItemVolumeBox extends ItemBC_Neptune {
             return InteractionResult.PASS;
         }
 
-        BlockPos offset = pos.offset(facing);
+        BlockPos offset = pos.relative(facing);
 
         WorldSavedDataVolumeBoxes volumeBoxes = WorldSavedDataVolumeBoxes.get(world);
         VolumeBox current = volumeBoxes.getVolumeBoxAt(offset);

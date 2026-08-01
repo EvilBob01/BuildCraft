@@ -18,10 +18,12 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -45,6 +47,7 @@ import buildcraft.lib.inventory.TransactorEntityItem;
 import buildcraft.lib.misc.AdvancementUtil;
 import buildcraft.lib.misc.BoundingBoxUtil;
 import buildcraft.lib.mj.MjBatteryReceiver;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager.EnumAccess;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -52,7 +55,7 @@ import buildcraft.lib.tile.item.ItemHandlerSimple;
 import buildcraft.factory.block.BlockChute;
 
 public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable {
-    private static final ResourceLocation ADVANCEMENT_DID_INSERT = new ResourceLocation("buildcraftfactory:retired_hopper");
+    private static final ResourceLocation ADVANCEMENT_DID_INSERT = ResourceLocation.parse("buildcraftfactory:retired_hopper");
 
     private static final int PICKUP_MAX = 3;
 
@@ -66,7 +69,8 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     private final MjBattery battery = new MjBattery(1 * MjAPI.MJ);
     private int progress = 0;
 
-    public TileChute() {
+    public TileChute(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addProvider(new MjCapabilityHelper(new MjBatteryReceiver(battery)));
     }
 
@@ -78,7 +82,7 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
     private void pickupItems(Direction currentSide) {
         AABB aabb = BoundingBoxUtil.extrudeFace(getBlockPos(), currentSide, 0.25);
         int count = PICKUP_MAX;
-        for (ItemEntity entity : level.getEntitiesWithinAABB(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelectors.IS_ALIVE)) {
             int moved = ItemTransactorHelper.move(new TransactorEntityItem(entity), inv, count);
             count -= moved;
             if (count <= 0) {
@@ -89,15 +93,15 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
 
     private void putInNearInventories(Direction currentSide) {
         boolean[] didWork = { false };
-        List<Direction> sides = new ArrayList<>(Arrays.asList(Direction.VALUES));
+        List<Direction> sides = new ArrayList<>(Arrays.asList(Direction.values()));
         Collections.shuffle(sides, new Random());
         sides.removeIf(Predicate.isEqual(currentSide));
         Stream.<Pair<Direction, BlockEntity>>concat(
             sides.stream()
-                .map(side -> Pair.of(side, level.getBlockEntity(worldPosition.offset(side)))),
+                .map(side -> Pair.of(side, level.getBlockEntity(worldPosition.relative(side)))),
             sides.stream()
                 .flatMap(side ->
-                    level.getEntitiesWithinAABB(Entity.class, new AABB(worldPosition.offset(side))).stream()
+                    level.getEntitiesOfClass(Entity.class, new AABB(worldPosition.relative(side))).stream()
                         .filter(entity -> !(entity instanceof LivingEntity))
                         .map(entity -> Pair.of(side, entity))
                 )
@@ -156,7 +160,6 @@ public class TileChute extends TileBC_Neptune implements ITickable, IDebuggable 
         super.saveAdditional(nbt, registries);
         nbt.putInt("progress", progress);
         nbt.put("battery", battery.serializeNBT());
-        return nbt;
     }
 
     // IDebuggable

@@ -6,6 +6,7 @@
 
 package buildcraft.factory.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,8 @@ public class BlockFloodGate extends BlockBCTile_Neptune {
         CONNECTED_MAP.remove(Direction.UP);
     }
 
-    public BlockFloodGate(Material material, String id) {
-        super(material, id);
+    public BlockFloodGate(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class BlockFloodGate extends BlockBCTile_Neptune {
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFloodGate) {
             for (Direction side : CONNECTED_MAP.keySet()) {
-                state = state.withProperty(CONNECTED_MAP.get(side), ((TileFloodGate) tile).openSides.contains(side));
+                state = state.setValue(CONNECTED_MAP.get(side), ((TileFloodGate) tile).openSides.contains(side));
             }
         }
         return state;

@@ -149,21 +149,21 @@ public class LaserRenderer_BC8 {
 
     public static void renderLaserStatic(LaserData_BC8 data) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("compute");
+        profiler.push("compute");
         LaserCompiledList compiled = COMPILED_STATIC_LASERS.getUnchecked(data);
         profiler.endStartSection("render");
         SpriteUtil.bindBlockTextureMap();
         compiled.render();
-        profiler.endSection();
+        profiler.pop();
     }
 
     /** Assumes the buffer uses {@link DefaultVertexFormats#BLOCK} */
     public static void renderLaserDynamic(LaserData_BC8 data, BufferBuilder buffer) {
         Profiler profiler = Minecraft.getInstance().mcProfiler;
-        profiler.startSection("compute");
+        profiler.push("compute");
         LaserCompiledBuffer compiled = COMPILED_DYNAMIC_LASERS.getUnchecked(data);
         profiler.endStartSection("render");
         compiled.render(buffer);
-        profiler.endSection();
+        profiler.pop();
     }
 }

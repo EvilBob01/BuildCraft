@@ -10,6 +10,9 @@ import java.util.Date;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.enums.EnumSnapshotType;
@@ -17,6 +20,7 @@ import buildcraft.api.schematics.ISchematicBlock;
 
 import buildcraft.lib.misc.NBTUtilBC;
 import buildcraft.lib.misc.data.IdAllocator;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
@@ -54,6 +58,10 @@ public class TileReplacer extends TileBC_Neptune implements ITickable {
             stack.getItemDamage() == ItemSchematicSingle.DAMAGE_USED,
         ItemHandlerManager.EnumAccess.NONE
     );
+
+    public TileReplacer(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     @Override
     public void update() {

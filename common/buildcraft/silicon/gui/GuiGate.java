@@ -14,7 +14,7 @@ import buildcraft.silicon.gate.GateLogic;
 
 public class GuiGate extends GuiBC8<ContainerGate> {
 
-    public static final ResourceLocation GUI_DEFINITION = new ResourceLocation("buildcraftsilicon:gui/gate.json");
+    public static final ResourceLocation GUI_DEFINITION = ResourceLocation.parse("buildcraftsilicon:gui/gate.json");
 
     public GuiGate(ContainerGate container) {
         super(container, GUI_DEFINITION);

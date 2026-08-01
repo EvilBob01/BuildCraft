@@ -21,13 +21,15 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -57,6 +59,7 @@ import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.lib.misc.AdvancementUtil;
 import buildcraft.lib.misc.data.IdAllocator;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 
 import buildcraft.silicon.plug.FilterEventHandler;
@@ -83,7 +86,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     public static final int NET_UPDATE_WIRES = getReceiverId(PipeMessageReceiver.WIRES);
     public static final int NET_CREATE_LANDING_PARTICLE;
 
-    private static final ResourceLocation ADVANCEMENT_PLACE_PIPE = new ResourceLocation(
+    private static final ResourceLocation ADVANCEMENT_PLACE_PIPE = ResourceLocation.parse(
         "buildcrafttransport:pipe_dream"
     );
 
@@ -121,8 +124,9 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
     private final Set<PipeMessageReceiver> networkGuiUpdates = EnumSet.noneOf(PipeMessageReceiver.class);
     private CompoundTag unknownData;
 
-    public TilePipeHolder() {
-        for (Direction side : Direction.VALUES) {
+    public TilePipeHolder(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+        for (Direction side : Direction.values()) {
             pluggables.put(side, new PluggableHolder(this, side));
         }
         caps.addCapabilityInstance(PipeApi.CAP_PIPE_HOLDER, this, EnumPipePart.VALUES);
@@ -139,7 +143,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             nbt.put("pipe", pipe.writeToNbt());
         }
         CompoundTag plugs = new CompoundTag();
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             CompoundTag plugTag = pluggables.get(face).writeToNbt();
             if (!plugTag.hasNoTags()) {
                 plugs.put(face.getName(), plugTag);
@@ -150,7 +154,6 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         }
         nbt.put("wireManager", wireManager.writeToNbt());
         nbt.putIntArray("redstone", redstoneValues);
-        return nbt;
     }
 
     @Override
@@ -171,7 +174,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             }
         }
         CompoundTag plugs = nbt.getCompound("plugs");
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             pluggables.get(face).readFromNbt(plugs.getCompound(face.getName()));
         }
         wireManager.readFromNbt(nbt.getCompound("wireManager"));
@@ -198,9 +201,9 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             if (pipe.flow instanceof IFlowItems && BCModules.SILICON.isLoaded()) {
                 eventBus.registerHandler(FilterEventHandler.class);
             }
-            int meta = stack.getMetadata();
+            int meta = stack.getId();
             if (meta > 0 && meta <= 16) {
-                pipe.setColour(DyeColor.byMetadata(meta - 1));
+                pipe.setColour(DyeColor.byId(meta - 1));
             }
             eventBus.fireEvent(new PipeEventPlaced(this, placer, stack));
         }
@@ -260,7 +263,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         if (pipe != null) {
             pipe.onTick();
         }
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             pluggables.get(face).onTick();
         }
         if (pipe != null) {
@@ -299,9 +302,9 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             Block block = level.getBlockState(worldPosition).getBlock();
             level.notifyNeighborsOfStateChange(worldPosition, block, true);
             for (int i = 0; i < 6; i++) {
-                Direction face = Direction.VALUES[i];
+                Direction face = Direction.values()[i];
                 if (oldRedstoneValues[i] != redstoneValues[i]) {
-                    level.notifyNeighborsOfStateChange(worldPosition.offset(face), block, true);
+                    level.notifyNeighborsOfStateChange(worldPosition.relative(face), block, true);
                 }
             }
             oldRedstoneValues = redstoneValues;
@@ -325,7 +328,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
                     buffer.writeBoolean(true);
                     pipe.writeCreationPayload(buffer);
                 }
-                for (Direction face : Direction.VALUES) {
+                for (Direction face : Direction.values()) {
                     pluggables.get(face).writeCreationPayload(buffer);
                 }
                 wireManager.writePayload(buffer, side);
@@ -372,7 +375,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
                     eventBus.unregisterHandler(pipe.flow);
                     pipe = null;
                 }
-                for (Direction face : Direction.VALUES) {
+                for (Direction face : Direction.values()) {
                     pluggables.get(face).readCreationPayload(buffer);
                 }
                 wireManager.readPayload(buffer, side, ctx);
@@ -470,7 +473,7 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
             holder.sendNewPluggableData();
         }
         scheduleRenderUpdate();
-        level.neighborChanged(worldPosition.offset(side), BCTransportBlocks.pipeHolder, worldPosition);
+        level.neighborChanged(worldPosition.relative(side), BCTransportBlocks.pipeHolder, worldPosition);
         return old;
     }
 
@@ -544,14 +547,14 @@ public class TilePipeHolder extends TileBC_Neptune implements IPipeHolder, ITick
         if (side == null) {
             return level.isBlockIndirectlyGettingPowered(worldPosition);
         } else {
-            return level.getRedstonePower(worldPosition.offset(side), side);
+            return level.getRedstonePower(worldPosition.relative(side), side);
         }
     }
 
     @Override
     public boolean setRedstoneOutput(Direction side, int value) {
         if (side == null) {
-            for (Direction facing : Direction.VALUES) {
+            for (Direction facing : Direction.values()) {
                 redstoneValues[facing.ordinal()] = value;
             }
         } else {

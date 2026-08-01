@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.world.level.block.SupportType;
+import buildcraft.lib.misc.BlockFaceShape;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

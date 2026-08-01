@@ -35,7 +35,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
     @Override
     public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
+        Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 look = player.getLookVec();
         Vec3 end = start.add(look.scale(7));
         BlockHitResult ray = world.rayTraceBlocks(start, end, true, false, true);
@@ -59,7 +59,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
                 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClientSide) {
-            world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.defaultBlockState().withProperty(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0));
+            world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.defaultBlockState().setValue(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0), 3);
             world.scheduleTick(ray.getBlockPos(), BCFactoryBlocks.waterGel, 200);
 
             // TODO: Snowball stuff

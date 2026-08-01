@@ -109,7 +109,7 @@ public final class PipeDefinition {
         }
 
         public PipeDefinitionBuilder id(String post) {
-            identifier = new ResourceLocation(getActiveModId(), post);
+            identifier = ResourceLocation.fromNamespaceAndPath(getActiveModId(), post);
             return this;
         }
 

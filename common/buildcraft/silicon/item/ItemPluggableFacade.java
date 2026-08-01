@@ -26,7 +26,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
 
 import net.minecraft.nbt.Tag;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -124,7 +124,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
             subItems.add(createItemStack(inst));
 
             for (FacadeBlockStateInfo info : FacadeStateManager.validFacadeStates.values()) {
-                if (!ForgeRegistries.BLOCKS.containsValue(info.state.getBlock())) {
+                if (!BuiltInRegistries.BLOCK.getKey(info.state.getBlock() != null)) {
                     // Forge can de-register blocks if the server a client is connected to
                     // doesn't have the mods that created them.
                     continue;

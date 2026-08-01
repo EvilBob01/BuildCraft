@@ -7,8 +7,8 @@ package buildcraft.api.events;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Cancelable;
+import net.neoforged.bus.api.Event;
 
 import buildcraft.api.robots.EntityRobotBase;
 

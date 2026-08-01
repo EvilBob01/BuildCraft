@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -116,7 +116,7 @@ public abstract class BlueprintBase {
         for (NBTTagCompound sub : subBlueprintsNBT) {
             EnumFacing dir = EnumFacing.values()[sub.getByte("dir")];
 
-            if (dir.getAxis() != Axis.Y) dir = dir.rotateY();
+            if (dir.getAxis() != Axis.Y) dir = dir.getClockWise();
 
             Vec3d pos = new Vec3d(sub.getInteger("x"), sub.getInteger("y"), sub.getInteger("z"));
             Vec3d rotated = context.rotatePositionLeft(pos);
@@ -130,7 +130,7 @@ public abstract class BlueprintBase {
 
         anchor = newAnchor;
 
-        if (mainDir.getAxis() != Axis.Y) mainDir = mainDir.rotateY();
+        if (mainDir.getAxis() != Axis.Y) mainDir = mainDir.getClockWise();
     }
 
     private void writeToNBTInternal(NBTTagCompound nbt) {
@@ -291,3 +291,4 @@ public abstract class BlueprintBase {
 
     }
 }
+

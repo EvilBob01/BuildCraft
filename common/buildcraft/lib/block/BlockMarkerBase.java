@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.lib.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.InteractionResult;
@@ -49,13 +50,13 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
         BOUNDING_BOXES.put(Direction.WEST, new AABB(ih, nw, nw, 1, pw, pw));
     }
 
-    public BlockMarkerBase(Material material, String id) {
-        super(material, id);
+    public BlockMarkerBase(BlockBehaviour.Properties props, String id) {
+        super(props, id);
         setHardness(0.25f);
 
         BlockState defaultState = getDefaultState();
-        defaultState = defaultState.withProperty(BuildCraftProperties.BLOCK_FACING_6, Direction.UP);
-        defaultState = defaultState.withProperty(BuildCraftProperties.ACTIVE, false);
+        defaultState = defaultState.setValue(BuildCraftProperties.BLOCK_FACING_6, Direction.UP);
+        defaultState = defaultState.setValue(BuildCraftProperties.ACTIVE, false);
         setDefaultState(defaultState);
     }
 
@@ -66,12 +67,12 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
 
     @Override
     public int getMetaFromState(BlockState state) {
-        return state.getValue(BuildCraftProperties.BLOCK_FACING_6).getIndex();
+        return state.getValue(BuildCraftProperties.BLOCK_FACING_6).get3DDataValue();
     }
 
     @Override
     public BlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(BuildCraftProperties.BLOCK_FACING_6, Direction.from3DDataValue(meta));
+        return getDefaultState().setValue(BuildCraftProperties.BLOCK_FACING_6, Direction.from3DDataValue(meta));
     }
 
     @Override
@@ -79,7 +80,7 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileMarker) {
             TileMarker<?> marker = (TileMarker<?>) tile;
-            state = state.withProperty(BuildCraftProperties.ACTIVE, marker.isActiveForRender());
+            state = state.setValue(BuildCraftProperties.ACTIVE, marker.isActiveForRender());
         }
         return state;
     }
@@ -113,13 +114,13 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
     @Override
     public BlockState getStateForPlacement(Level world, BlockPos pos, Direction facing, float hitX, float hitY, float hitZ, int meta, LivingEntity placer, InteractionHand hand) {
         BlockState state = getDefaultState();
-        state = state.withProperty(BuildCraftProperties.BLOCK_FACING_6, facing);
+        state = state.setValue(BuildCraftProperties.BLOCK_FACING_6, facing);
         return state;
     }
 
     @Override
     public boolean canPlaceBlockOnSide(Level world, BlockPos pos, Direction side) {
-        return world.isSideSolid(pos.offset(side.getOpposite()), side);
+        return world.isSideSolid(pos.relative(side.getOpposite()), side);
     }
     
     @Override

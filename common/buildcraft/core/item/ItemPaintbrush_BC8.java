@@ -10,7 +10,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -50,7 +50,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
     @Override
     protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
         for (int i = 0; i < 17; i++) {
-            subItems.add(new ItemStack(this, 1, i));
+            subItems.add(new ItemStack(this, 1));
         }
     }
 
@@ -59,7 +59,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
     public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
         addVariant(variants, 0, "clean");
         for (DyeColor colour : DyeColor.values()) {
-            addVariant(variants, colour.getMetadata() + 1, colour.getName());
+            addVariant(variants, colour.getId() + 1, colour.getName());
         }
     }
 
@@ -144,10 +144,10 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         }
 
         public Brush(ItemStack stack) {
-            int meta = stack.getMetadata();
+            int meta = stack.getId();
             if (meta > 0 && meta <= 16) {
-                colour = DyeColor.byMetadata(meta - 1);
-                CompoundTag nbt = stack.getTag();
+                colour = DyeColor.byId(meta - 1);
+                CompoundTag nbt = NBTUtilBC.getTag(stack);
                 if (nbt == null) {
                     usesLeft = MAX_USES;
                 } else {
@@ -166,14 +166,14 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         @Nonnull
         public ItemStack save(@Nonnull ItemStack existing) {
             ItemStack stack = existing;
-            if (existing.isEmpty() || existing.getMetadata() != getMeta()) {
-                stack = new ItemStack(ItemPaintbrush_BC8.this, 1, getMeta());
+            if (existing.isEmpty() || existing.getId() != getMeta()) {
+                stack = new ItemStack(ItemPaintbrush_BC8.this, 1);
             }
             if (usesLeft != MAX_USES && colour != null) {
-                CompoundTag nbt = stack.getTag();
+                CompoundTag nbt = NBTUtilBC.getTag(stack);
                 if (nbt == null) {
                     nbt = new CompoundTag();
-                    stack.setTagCompound(nbt);
+                    NBTUtilBC.setTag(stack, nbt);
                 }
                 nbt.putByte(DAMAGE, (byte) (MAX_USES - usesLeft));
             }
@@ -181,7 +181,7 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
         }
 
         public int getMeta() {
-            return (usesLeft <= 0 || colour == null) ? 0 : colour.getMetadata() + 1;
+            return (usesLeft <= 0 || colour == null) ? 0 : colour.getId() + 1;
         }
 
         public boolean useOnBlock(Level world, BlockPos pos, BlockState state, Vec3 hitPos, Direction side, Player player) {

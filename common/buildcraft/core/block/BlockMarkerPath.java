@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +21,8 @@ import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.core.tile.TileMarkerPath;
 
 public class BlockMarkerPath extends BlockMarkerBase {
-    public BlockMarkerPath(Material material, String id) {
-        super(material, id);
+    public BlockMarkerPath(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override

@@ -293,8 +293,8 @@ public class StackUtil {
             }
         }
         if (matchNBT) {
-            CompoundTag baseTag = base.getTag();
-            if (baseTag != null && !baseTag.equals(comparison.getTag())) {
+            CompoundTag baseTag = NBTUtilBC.getTag(base);
+            if (baseTag != null && !baseTag.equals(NBTUtilBC.getTag(comparison))) {
                 return false;
             }
         } else {
@@ -405,8 +405,8 @@ public class StackUtil {
         if (stack.isEmpty()) {
             return 0;
         }
-        if (!stack.hasTag()) {
-            return Objects.hash(stack.getItem(), stack.getMetadata());
+        if (!NBTUtilBC.hasTag(stack)) {
+            return Objects.hash(stack.getItem(), stack.getId());
         }
         return stack.serializeNBT().hashCode();
     }

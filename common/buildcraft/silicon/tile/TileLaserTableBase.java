@@ -16,6 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
@@ -30,6 +33,7 @@ import buildcraft.api.tiles.TilesAPI;
 import buildcraft.lib.misc.LocaleUtil;
 import buildcraft.lib.misc.data.AverageLong;
 import buildcraft.lib.net.PacketBufferBC;
+import buildcraft.lib.tile.ITickable;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
 
@@ -39,7 +43,8 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     public long avgPowerClient;
     public long power;
 
-    protected TileLaserTableBase() {
+    protected TileLaserTableBase(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         caps.addCapabilityInstance(TilesAPI.CAP_HAS_WORK, () -> getTarget() > 0, EnumPipePart.VALUES);
     }
 
@@ -80,7 +85,6 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
     public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.saveAdditional(nbt, registries);
         nbt.putLong("power", power);
-        return nbt;
     }
 
     @Override

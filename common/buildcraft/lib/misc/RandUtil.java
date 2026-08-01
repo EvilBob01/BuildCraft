@@ -2,12 +2,13 @@ package buildcraft.lib.misc;
 
 import java.util.Random;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
 /** Utilities based around more complex (but common) usages of {@link Random}. */
 public class RandUtil {
     /** Creates a {@link Random} instance for a specific generator, for the specified chunk, in the specified world.
-     * 
+     *
      * @param world The world to generate for.
      * @param chunkX The chunk X co-ord to generate for.
      * @param chunkY The chunk X co-ord to generate for.
@@ -17,7 +18,9 @@ public class RandUtil {
      *            generator class (Perhaps by using <code>new SecureRandom().nextLong()</code>).
      * @return A {@link Random} instance that starts off with the same seed given the same arguments. */
     public static Random createRandomForChunk(Level world, int chunkX, int chunkY, long magicNumber) {
-        long worldSeed = world.getSeed();
+        long worldSeed = (world instanceof ServerLevel sl)
+            ? sl.getServer().getWorldData().worldGenOptions().seed()
+            : 0L;
         return createRandomForChunk(worldSeed, chunkX, chunkY, magicNumber);
     }
 

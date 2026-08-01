@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.level.block.AbstractBannerBlock;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.item.ItemBanner;
+import net.minecraft.world.item.ItemBanner;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;

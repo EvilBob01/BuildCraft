@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.neoforged.fml.client.registry.ClientRegistry;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

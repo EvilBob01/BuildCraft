@@ -109,7 +109,7 @@ public class ModelHeatExchange extends ModelItemSimple {
         return (state.getValue(BlockHeatExchange.PROP_CONNECTED_LEFT) ? 1 : 0)//
             | (state.getValue(BlockHeatExchange.PROP_CONNECTED_RIGHT) ? 2 : 0)//
             | (state.getValue(BlockHeatExchange.PROP_CONNECTED_Y) ? 4 : 0)//
-            | (state.getValue(BlockBCBase_Neptune.PROP_FACING).getHorizontalIndex() * 8)//
+            | (state.getValue(BlockBCBase_Neptune.PROP_FACING).get2DDataValue() * 8)//
             | (state.getValue(BlockHeatExchange.PROP_PART).ordinal() * 8 * 4)//
         ;
     }

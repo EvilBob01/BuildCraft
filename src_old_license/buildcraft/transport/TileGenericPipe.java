@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -208,7 +208,7 @@ public class TileGenericPipe extends TileEntity implements IFluidHandler, IPipeT
         public void rotateLeft() {
             PipePluggable[] newPluggables = new PipePluggable[EnumFacing.VALUES.length];
             for (EnumFacing dir : EnumFacing.VALUES) {
-                EnumFacing rotated = dir.getAxis() == Axis.Y ? dir : dir.rotateY();
+                EnumFacing rotated = dir.getAxis() == Axis.Y ? dir : dir.getClockWise();
                 newPluggables[rotated.ordinal()] = pluggables[dir.ordinal()];
             }
             pluggables = newPluggables;
@@ -1343,3 +1343,4 @@ public class TileGenericPipe extends TileEntity implements IFluidHandler, IPipeT
         return getPos();
     }
 }
+

@@ -104,7 +104,7 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
 
     @PipeEventHandler
     public void addInternalActions(PipeEventStatement.AddActionInternal event) {
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (!pipe.isConnected(face)) {
                 PipePluggable plug = pipe.getHolder().getPluggable(face);
                 if (plug == null || !plug.isBlocking()) {
@@ -116,7 +116,7 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
 
     @PipeEventHandler
     public void onActionActivate(PipeEventActionActivate event) {
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (event.action == BCTransportStatements.ACTION_PIPE_DIRECTION[face.ordinal()]) {
                 setDirection(face);
             }
@@ -157,7 +157,7 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
         if (direction == null || pipe.isConnected(direction)) {
             int sides = 0;
             Direction dir = null;
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : Direction.values()) {
                 if (pipe.isConnected(face)) {
                     sides++;
                     dir = face;
@@ -171,7 +171,7 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
         }
         battery.tick(world, pipe.getHolder().getPipePos());
         if (direction != null) {
-            BlockPos offset = pos.offset(direction);
+            BlockPos offset = pos.relative(direction);
             long target = BlockUtil.computeBlockBreakPower(world, offset);
             if (target > 0) {
                 int offsetHash = offset.hashCode();

@@ -30,9 +30,9 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
         if (addon.buildingInfo == null) {
             return;
         }
-        Minecraft.getInstance().mcProfiler.startSection("filler_planner");
+        Minecraft.getInstance().mcProfiler.push("filler_planner");
 
-        Minecraft.getInstance().mcProfiler.startSection("iter");
+        Minecraft.getInstance().mcProfiler.push("iter");
         List<BlockPos> list = StreamSupport.stream(
             BlockPos.getAllInBoxMutable(addon.buildingInfo.box.min(), addon.buildingInfo.box.max()).spliterator(),
             false
@@ -47,15 +47,15 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
             .filter(player.level()::isAirBlock)
             .map(BlockPos.MutableBlockPos::toImmutable)
             .collect(Collectors.toCollection(ArrayList::new));
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
 
-        Minecraft.getInstance().mcProfiler.startSection("sort");
-        list.sort(Comparator.<BlockPos>comparingDouble(p -> player.getPositionVector().squareDistanceTo(new Vec3(p))).reversed());
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.push("sort");
+        list.sort(Comparator.<BlockPos>comparingDouble(p -> player.position().squareDistanceTo(new Vec3(p.getX(), p.getY(), p.getZ()))).reversed());
+        Minecraft.getInstance().mcProfiler.pop();
 
-        Minecraft.getInstance().mcProfiler.startSection("render");
+        Minecraft.getInstance().mcProfiler.push("render");
         for (BlockPos p : list) {
-            AABB bb = new AABB(p, p.offset(1, 1, 1)).grow(-0.1);
+            AABB bb = new AABB(p, p.offset(1, 1, 1)).inflate(-0.1);
             TextureAtlasSprite s = ModelLoader.White.INSTANCE;
 
             vb.pos(bb.minX, bb.maxY, bb.minZ).color(204, 204, 204, 127).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
@@ -88,8 +88,8 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
             vb.pos(bb.maxX, bb.maxY, bb.maxZ).color(153, 153, 153, 127).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
             vb.pos(bb.maxX, bb.minY, bb.maxZ).color(153, 153, 153, 127).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
         }
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
 
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 }

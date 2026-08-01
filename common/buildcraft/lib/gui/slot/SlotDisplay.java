@@ -9,9 +9,9 @@ package buildcraft.lib.gui.slot;
 import java.util.function.IntFunction;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.IInventory;
+import net.minecraft.world.inventory.InventoryBasic;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class SlotDisplay extends Slot {

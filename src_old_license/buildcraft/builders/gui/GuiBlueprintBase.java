@@ -1,4 +1,4 @@
-package buildcraft.builders.gui;
+﻿package buildcraft.builders.gui;
 
 import java.io.IOException;
 import org.lwjgl.input.Mouse;
@@ -94,9 +94,9 @@ public abstract class GuiBlueprintBase extends GuiScreen {
         } else if (keyCode == mc.gameSettings.keyBindBack.getKeyCode()) {
             offset = offset.offset(currentLookFace);
         } else if (keyCode == mc.gameSettings.keyBindLeft.getKeyCode()) {
-            offset = offset.offset(currentLookFace.rotateY());
+            offset = offset.offset(currentLookFace.getClockWise());
         } else if (keyCode == mc.gameSettings.keyBindRight.getKeyCode()) {
-            offset = offset.offset(currentLookFace.rotateY().getOpposite());
+            offset = offset.offset(currentLookFace.getClockWise().getOpposite());
         } else if (isCtrlKeyDown() && !isShiftKeyDown()) {
             offset = offset.down();
         } else if (isShiftKeyDown() && !isCtrlKeyDown()) {
@@ -104,3 +104,4 @@ public abstract class GuiBlueprintBase extends GuiScreen {
         }
     }
 }
+

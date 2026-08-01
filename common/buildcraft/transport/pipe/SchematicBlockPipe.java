@@ -66,7 +66,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
                     new ItemStack(
                         item,
                         1,
-                        color == null ? 0 : color.getMetadata() + 1
+                        color == null ? 0 : color.getId() + 1
                     )
                 );
             }
@@ -96,7 +96,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
                 tileEntity.setLevel(world);
-                world.setBlockEntity(blockPos, tileEntity);
+                world.setBlockEntity(tileEntity);
                 if (tileRotation != Rotation.NONE) {
                     tileEntity.rotate(tileRotation);
                 }
@@ -113,7 +113,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
             BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
             if (tileEntity != null) {
                 tileEntity.setLevel(world);
-                world.setBlockEntity(blockPos, tileEntity);
+                world.setBlockEntity(tileEntity);
                 if (tileRotation != Rotation.NONE) {
                     tileEntity.rotate(tileRotation);
                 }

@@ -1,4 +1,4 @@
-/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
+﻿/** Copyright (c) 2011-2015, SpaceToad and the BuildCraft Team http://www.mod-buildcraft.com
  * <p/>
  * BuildCraft is distributed under the terms of the Minecraft Mod Public License 1.0, or MMPL. Please check the contents
  * of the license located in http://www.mod-buildcraft.com/MMPL-1.0.txt */
@@ -91,7 +91,7 @@ public class TileFiller extends TileAbstractBuilder implements IHasWork, IContro
     }
 
     private void initTemplate() {
-        if (currentPattern != null && box.size().distanceSq(BlockPos.ORIGIN) > 0) {
+        if (currentPattern != null && box.size().distSqr(BlockPos.ORIGIN) > 0) {
             currentTemplate = currentPattern.getTemplateBuilder(box, getWorld(), patternParameters);
             currentTemplate.blueprint.excavate = excavate;
         }
@@ -447,3 +447,4 @@ public class TileFiller extends TileAbstractBuilder implements IHasWork, IContro
         this.excavate = excavate;
     }
 }
+

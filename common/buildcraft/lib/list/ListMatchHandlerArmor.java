@@ -11,7 +11,7 @@ import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.world.inventory.EntityEquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 
 import net.minecraftforge.common.DimensionManager;

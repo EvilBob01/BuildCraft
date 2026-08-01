@@ -29,7 +29,7 @@ public enum StripesHandlerMinecartDestroy implements IStripesHandlerBlock {
     @Override
     public boolean handle(Level world, BlockPos pos, Direction direction, Player player, IStripesActivator activator) {
         AABB box = new AABB(pos, pos.offset(1, 1, 1));
-        List<EntityMinecart> minecarts = world.getEntitiesWithinAABB(EntityMinecart.class, box);
+        List<EntityMinecart> minecarts = world.getEntitiesOfClass(EntityMinecart.class, box);
 
         if (minecarts.size() > 0) {
             Collections.shuffle(minecarts);
@@ -48,7 +48,7 @@ public enum StripesHandlerMinecartDestroy implements IStripesHandlerBlock {
                     }
                 }
             }
-            cart.setDead();
+            cart.discard();
             activator.sendItem(StackUtil.asNonNull(cart.getCartItem()), direction);
             return true;
         }

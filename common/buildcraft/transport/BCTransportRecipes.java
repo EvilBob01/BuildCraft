@@ -46,7 +46,7 @@ public class BCTransportRecipes {
     private static final Block SILICON_TABLE_ASSEMBLY = null;
 
     @SubscribeEvent
-    public static void registerRecipes(RegisterEvent<IRecipe> event) {
+    public static void registerRecipes(RegisterEvent<Recipe> event) {
         addPipeRecipe(BCTransportItems.pipeItemWood, "plankWood");
         addPipeRecipe(BCTransportItems.pipeItemCobble, "cobblestone");
         addPipeRecipe(BCTransportItems.pipeItemStone, "stone");
@@ -106,7 +106,7 @@ public class BCTransportRecipes {
                 ImmutableSet<IngredientStack> input = ImmutableSet.of(IngredientStack.of("dustRedstone"),
                     IngredientStack.of(ColourUtil.getDyeName(color)));
                 AssemblyRecipeRegistry.register(new AssemblyRecipeBasic(name, 10_000 * MjAPI.MJ, input,
-                    new ItemStack(BCTransportItems.wire, 8, color.getMetadata())));
+                    new ItemStack(BCTransportItems.wire, 8, color.getId())));
             }
         }
     }

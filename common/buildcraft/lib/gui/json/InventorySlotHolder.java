@@ -3,9 +3,9 @@ package buildcraft.lib.gui.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.world.inventory.Container;
+import net.minecraft.world.inventory.IInventory;
+import net.minecraft.world.inventory.Slot;
 
 import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;

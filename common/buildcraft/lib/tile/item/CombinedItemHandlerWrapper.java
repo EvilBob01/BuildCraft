@@ -3,7 +3,7 @@ package buildcraft.lib.tile.item;
 import net.minecraft.world.item.ItemStack;
 
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 import buildcraft.api.inventory.IItemHandlerFiltered;
 

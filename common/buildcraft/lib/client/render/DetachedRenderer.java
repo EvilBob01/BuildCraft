@@ -99,7 +99,7 @@ public enum DetachedRenderer {
 
         Vec3 diff = new Vec3(0, 0, 0);
         diff = diff.subtract(player.getPositionEyes(partialTicks));
-        diff = diff.addVector(0, player.getEyeHeight(), 0);
+        diff = diff.add(0, player.getEyeHeight(), 0);
         GL11.glTranslated(diff.x, diff.y, diff.z);
     }
 

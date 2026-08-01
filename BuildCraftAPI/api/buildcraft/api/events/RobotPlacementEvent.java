@@ -6,8 +6,8 @@ package buildcraft.api.events;
 
 import net.minecraft.world.entity.player.Player;
 
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Cancelable;
+import net.neoforged.bus.api.Event;
 
 @Cancelable
 public class RobotPlacementEvent extends Event {

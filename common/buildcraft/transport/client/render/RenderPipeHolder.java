@@ -30,10 +30,10 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         int destroyStage, float partial, BufferBuilder buffer) {
         bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("pipe");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("pipe");
 
-        Minecraft.getInstance().mcProfiler.startSection("wire");
+        Minecraft.getInstance().mcProfiler.push("wire");
         PipeWireRenderer.renderWires(pipe, x, y, z, buffer);
 
         Minecraft.getInstance().mcProfiler.endStartSection("pluggable");
@@ -42,14 +42,14 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         Minecraft.getInstance().mcProfiler.endStartSection("contents");
         renderContents(pipe, x, y, z, partialTicks, buffer);
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     private static void renderPluggables(TilePipeHolder pipe, double x, double y, double z, float partialTicks,
         BufferBuilder bb) {
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             PipePluggable plug = pipe.getPluggable(face);
             if (plug == null) {
                 continue;
@@ -62,9 +62,9 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         BufferBuilder bb) {
         IPlugDynamicRenderer<P> renderer = PipeRegistryClient.getPlugRenderer(plug);
         if (renderer != null) {
-            Minecraft.getInstance().mcProfiler.startSection(plug.getClass());
+            Minecraft.getInstance().mcProfiler.push(plug.getClass());
             renderer.render(plug, x, y, z, partialTicks, bb);
-            Minecraft.getInstance().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.pop();
         }
     }
 
@@ -86,9 +86,9 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         BufferBuilder bb) {
         IPipeFlowRenderer<F> renderer = PipeRegistryClient.getFlowRenderer(flow);
         if (renderer != null) {
-            Minecraft.getInstance().mcProfiler.startSection(flow.getClass());
+            Minecraft.getInstance().mcProfiler.push(flow.getClass());
             renderer.render(flow, x, y, z, partialTicks, bb);
-            Minecraft.getInstance().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.pop();
         }
     }
 
@@ -96,9 +96,9 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         float partialTicks, BufferBuilder bb) {
         IPipeBehaviourRenderer<B> renderer = PipeRegistryClient.getBehaviourRenderer(behaviour);
         if (renderer != null) {
-            Minecraft.getInstance().mcProfiler.startSection(behaviour.getClass());
+            Minecraft.getInstance().mcProfiler.push(behaviour.getClass());
             renderer.render(behaviour, x, y, z, partialTicks, bb);
-            Minecraft.getInstance().mcProfiler.endSection();
+            Minecraft.getInstance().mcProfiler.pop();
         }
     }
 }

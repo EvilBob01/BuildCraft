@@ -61,7 +61,7 @@ public class SimpleSuffixArray<T> implements ISuffixArray<T> {
     }
 
     @Override
-    public void generate(Profiler prof) {
+    public void generate(ProfilerFiller prof) {
         if (ADD_IS_GENERATE) {
             BCLog.logger.info("[lib.search] Max suffix length is " + maxLength);
             for (String suffix : suffixArray.keySet()) {

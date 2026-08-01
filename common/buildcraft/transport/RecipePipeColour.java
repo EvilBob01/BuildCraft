@@ -8,7 +8,7 @@ package buildcraft.transport;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.core.NonNullList;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 import buildcraft.lib.recipe.ChangingItemStack;
 import buildcraft.lib.recipe.IRecipeViewable;
 //TODO: convert to factory if needed, currently not used
-public class RecipePipeColour implements IRecipe, IRecipeViewable {
+public class RecipePipeColour implements Recipe, IRecipeViewable {
 
     private final ItemStack output;
     /** Single-dimension because all pipe recipes use 3 items or less. */
@@ -32,13 +32,13 @@ public class RecipePipeColour implements IRecipe, IRecipeViewable {
     }
 
     @Override
-    public boolean matches(InventoryCrafting inv, Level worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack getCraftingResult(CraftingContainer inv) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
@@ -54,7 +54,7 @@ public class RecipePipeColour implements IRecipe, IRecipeViewable {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
@@ -70,7 +70,7 @@ public class RecipePipeColour implements IRecipe, IRecipeViewable {
     }
 
     @Override
-    public IRecipe setRegistryName(ResourceLocation name) {
+    public Recipe setRegistryName(ResourceLocation name) {
         return null;
     }
 
@@ -81,7 +81,7 @@ public class RecipePipeColour implements IRecipe, IRecipeViewable {
     }
 
     @Override
-    public Class<IRecipe> getRegistryType() {
+    public Class<Recipe> getRegistryType() {
         return null;
     }
 }

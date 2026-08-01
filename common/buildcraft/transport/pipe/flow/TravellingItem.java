@@ -81,7 +81,7 @@ public class TravellingItem {
         clientItemLink = () -> ItemStack.EMPTY;
         stack = new ItemStack(nbt.getCompound("stack"));
         int c = nbt.getByte("colour");
-        this.colour = c == 0 ? null : DyeColor.byMetadata(c - 1);
+        this.colour = c == 0 ? null : DyeColor.byId(c - 1);
         this.toCenter = nbt.getBoolean("toCenter");
         this.speed = nbt.getDouble("speed");
         if (speed < 0.001) {
@@ -104,7 +104,7 @@ public class TravellingItem {
     public CompoundTag writeToNbt(long tickNow) {
         CompoundTag nbt = new CompoundTag();
         nbt.put("stack", stack.serializeNBT());
-        nbt.putByte("colour", (byte) (colour == null ? 0 : colour.getMetadata() + 1));
+        nbt.putByte("colour", (byte) (colour == null ? 0 : colour.getId() + 1));
         nbt.putBoolean("toCenter", toCenter);
         nbt.putDouble("speed", speed);
         nbt.putInt("tickStarted", (int) (tickStarted - tickNow));
@@ -185,7 +185,7 @@ public class TravellingItem {
         float interp = (afterTick + partialTicks) / diff;
         interp = Math.max(0, Math.min(1, interp));
 
-        Vec3 center = new Vec3(pos).addVector(0.5, 0.5, 0.5);
+        Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         Vec3 vecSide = side == null ? center : VecUtil.offset(center, side, flow.getPipeLength(side));
 
         Vec3 vecFrom;

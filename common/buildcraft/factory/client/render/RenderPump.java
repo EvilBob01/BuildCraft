@@ -107,8 +107,8 @@ public class RenderPump extends FastTESR<TilePump> {
 
     @Override
     public void renderTileEntityFast(@Nonnull TilePump tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
-        Minecraft.getInstance().mcProfiler.startSection("bc");
-        Minecraft.getInstance().mcProfiler.startSection("pump");
+        Minecraft.getInstance().mcProfiler.push("bc");
+        Minecraft.getInstance().mcProfiler.push("pump");
 
         buffer.setTranslation(x, y, z);
 
@@ -122,7 +122,7 @@ public class RenderPump extends FastTESR<TilePump> {
         for (int i = 0; i < 4; i++) {
             // Get the light level of a direction
             Direction dir = Direction.from2DDataValue(i);
-            BlockPos pos = tile.getBlockPos().offset(dir);
+            BlockPos pos = tile.getBlockPos().relative(dir);
             int block = tile.getLevel().getLightFor(EnumSkyBlock.BLOCK, pos);
             int sky = tile.getLevel().getLightFor(EnumSkyBlock.SKY, pos);
 
@@ -140,8 +140,8 @@ public class RenderPump extends FastTESR<TilePump> {
 
         tubeRenderer.renderTileEntityFast(tile, x, y, z, partialTicks, destroyStage, partial, buffer);
 
-        Minecraft.getInstance().mcProfiler.endSection();
-        Minecraft.getInstance().mcProfiler.endSection();
+        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().mcProfiler.pop();
     }
 
     @Override

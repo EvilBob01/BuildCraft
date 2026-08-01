@@ -131,7 +131,7 @@ public abstract class PipeBehaviourDirectional extends PipeBehaviour {
 
     @PipeEventHandler
     public void addActions(PipeEventStatement.AddActionInternal event) {
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : Direction.values()) {
             if (canFaceDirection(face)) {
                 event.actions.add(BCTransportStatements.ACTION_PIPE_DIRECTION[face.ordinal()]);
             }

@@ -91,8 +91,8 @@ public class NbtPath {
             } catch (NumberFormatException e) {
                 return NBTUtilBC.NBT_NULL;
             }
-            if (key >= 0 && key < tag.getByteArray().length) {
-                return new ByteTag(tag.getByteArray()[key]);
+            if (key >= 0 && key < tag.getAsByteArray().length) {
+                return ByteTag.valueOf(tag.getAsByteArray()[key]);
             } else {
                 return NBTUtilBC.NBT_NULL;
             }
@@ -153,7 +153,7 @@ public class NbtPath {
                 return NBTUtilBC.NBT_NULL;
             }
             if (key >= 0 && key < tag.getIntArray().length) {
-                return new IntTag(tag.getIntArray()[key]);
+                return IntTag.valueOf(tag.getIntArray()[key]);
             } else {
                 return NBTUtilBC.NBT_NULL;
             }

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -47,12 +48,16 @@ public class Lock {
         CompoundTag nbt = new CompoundTag();
         CompoundTag causeTag = new CompoundTag();
         causeTag.put("type", NBTUtilBC.writeEnum(Cause.EnumCause.getForClass(cause.getClass())));
-        causeTag.put("data", cause.saveAdditional(new CompoundTag()));
+        CompoundTag causeData = new CompoundTag();
+        cause.saveAdditional(causeData);
+        causeTag.put("data", causeData);
         nbt.put("cause", causeTag);
         nbt.put("targets", NBTUtilBC.writeCompoundList(targets.stream().map(target -> {
             CompoundTag targetTag = new CompoundTag();
             targetTag.put("type", NBTUtilBC.writeEnum(Target.EnumTarget.getForClass(target.getClass())));
-            targetTag.put("data", target.saveAdditional(new CompoundTag()));
+            CompoundTag targetData = new CompoundTag();
+            target.saveAdditional(targetData);
+            targetTag.put("data", targetData);
             return targetTag;
         })));
         return nbt;
@@ -75,7 +80,7 @@ public class Lock {
         cause.toBytes(buf);
         buf.writeInt(targets.size());
         targets.forEach(target -> {
-            new FriendlyByteBuf(buf).writeEnumValue(Target.EnumTarget.getForClass(target.getClass()));
+            new PacketBufferBC(buf).writeEnumValue(Target.EnumTarget.getForClass(target.getClass()));
             target.toBytes(buf);
         });
     }
@@ -93,9 +98,9 @@ public class Lock {
     }
 
     public static abstract class Cause {
-        public abstract CompoundTag writeToNBT(CompoundTag nbt);
+        public abstract void saveAdditional(CompoundTag nbt);
 
-        public abstract void readFromNBT(CompoundTag nbt);
+        public abstract void loadAdditional(CompoundTag nbt);
 
         public abstract void toBytes(FriendlyByteBuf buf);
 
@@ -116,28 +121,27 @@ public class Lock {
             }
 
             @Override
-            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-                nbt.put("pos", NbtUtils.createPosTag(pos));
-                nbt.putString("block", Block.REGISTRY.getNameForObject(block).toString());
-                return nbt;
+            public void saveAdditional(CompoundTag nbt) {
+                nbt.put("pos", NbtUtils.writeBlockPos(pos));
+                nbt.putString("block", BuiltInRegistries.BLOCK.getKey(block).toString());
             }
 
             @Override
-            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-                pos = NbtUtils.getPosFromTag(nbt.getCompound("pos"));
-                block = Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("block")));
+            public void loadAdditional(CompoundTag nbt) {
+                pos = NbtUtils.readBlockPos(nbt, "pos").orElse(BlockPos.ZERO);
+                block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(nbt.getString("block")));
             }
 
             @Override
             public void toBytes(FriendlyByteBuf buf) {
                 MessageUtil.writeBlockPos(buf, pos);
-                buf.writeString(Block.REGISTRY.getNameForObject(block).toString());
+                buf.writeUtf(BuiltInRegistries.BLOCK.getKey(block).toString());
             }
 
             @Override
             public void fromBytes(FriendlyByteBuf buf) {
                 pos = MessageUtil.readBlockPos(buf);
-                block = Block.REGISTRY.getObject(new ResourceLocation(buf.readString(1024)));
+                block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(buf.readUtf(1024)));
             }
 
             @Override
@@ -165,9 +169,9 @@ public class Lock {
     }
 
     public static abstract class Target {
-        public abstract CompoundTag writeToNBT(CompoundTag nbt);
+        public abstract void saveAdditional(CompoundTag nbt);
 
-        public abstract void readFromNBT(CompoundTag nbt);
+        public abstract void loadAdditional(CompoundTag nbt);
 
         public abstract void toBytes(FriendlyByteBuf buf);
 
@@ -175,12 +179,11 @@ public class Lock {
 
         public static class TargetRemove extends Target {
             @Override
-            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-                return nbt;
+            public void saveAdditional(CompoundTag nbt) {
             }
 
             @Override
-            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void loadAdditional(CompoundTag nbt) {
             }
 
             @Override
@@ -194,12 +197,11 @@ public class Lock {
 
         public static class TargetResize extends Target {
             @Override
-            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-                return nbt;
+            public void saveAdditional(CompoundTag nbt) {
             }
 
             @Override
-            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void loadAdditional(CompoundTag nbt) {
             }
 
             @Override
@@ -222,13 +224,12 @@ public class Lock {
             }
 
             @Override
-            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void saveAdditional(CompoundTag nbt) {
                 nbt.put("slot", NBTUtilBC.writeEnum(slot));
-                return nbt;
             }
 
             @Override
-            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void loadAdditional(CompoundTag nbt) {
                 slot = NBTUtilBC.readEnum(nbt.get("slot"), EnumAddonSlot.class);
             }
 
@@ -254,13 +255,12 @@ public class Lock {
             }
 
             @Override
-            public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void saveAdditional(CompoundTag nbt) {
                 nbt.put("type", NBTUtilBC.writeEnum(type));
-                return nbt;
             }
 
             @Override
-            public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+            public void loadAdditional(CompoundTag nbt) {
                 type = NBTUtilBC.readEnum(nbt.get("type"), EnumType.class);
             }
 

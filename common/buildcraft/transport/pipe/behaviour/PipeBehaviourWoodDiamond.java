@@ -18,7 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidTypeUtil;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import buildcraft.lib.net.MessageContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -114,7 +114,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
         if (EntityUtil.getWrenchHand(player) != null) {
             return super.onPipeActivate(player, trace, hitX, hitY, hitZ, part);
         }
-        ItemStack held = player.getHeldItemMainhand();
+        ItemStack held = player.getMainHandItem();
         if (!held.isEmpty()) {
             if (held.getItem() instanceof IItemPluggable) {
                 return false;
@@ -193,7 +193,7 @@ public class PipeBehaviourWoodDiamond extends PipeBehaviourWood {
                         if (stack.isEmpty()) {
                             continue;
                         }
-                        extracted = flow.tryExtractFluid(millibuckets, dir, FluidUtil.getFluidContained(stack), simulate);
+                        extracted = flow.tryExtractFluid(millibuckets, dir, FluidUtil.getFluidContained(stack).orElse(null), simulate);
                         if (extracted != null && extracted.getAmount() > 0) {
                             return extracted;
                         }

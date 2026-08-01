@@ -35,7 +35,7 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
                 if (o == null || o.isEmpty()) {
                     return 0;
                 }
-                return Objects.hash(o.getItem(), o.getTag());
+                return Objects.hash(o.getItem(), NBTUtilBC.getTag(o));
             }
 
             @Override
@@ -60,7 +60,7 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
         } else {
             buffer.writeBoolean(true);
             buffer.writeShort(Item.getIdFromItem(obj.getItem()));
-            buffer.writeShort(obj.getMetadata());
+            buffer.writeShort(obj.getId());
             CompoundTag tag = null;
             if (obj.getItem().isDamageable() || obj.getItem().getShareTag()) {
                 tag = obj.getItem().getNBTShareTag(obj);
@@ -74,8 +74,8 @@ public class NetworkedItemStackCache extends NetworkedObjectCache<ItemStack> {
         if (buffer.readBoolean()) {
             Item item = Item.getItemById(buffer.readUnsignedShort());
             int meta = buffer.readShort();
-            ItemStack stack = new ItemStack(item, 1, meta);
-            stack.setTagCompound(buffer.readCompoundTag());
+            ItemStack stack = new ItemStack(item, 1);
+            NBTUtilBC.setTag(stack, buffer.readCompoundTag());
             return stack;
         } else {
             return ItemStack.EMPTY;

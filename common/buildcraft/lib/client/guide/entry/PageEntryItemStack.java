@@ -19,7 +19,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import buildcraft.api.BCModules;
 import buildcraft.api.core.BCLog;
@@ -61,7 +61,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
     public void iterateAllDefault(IEntryLinkConsumer consumer, Profiler prof) {
 
         // For now, we can always re-enable this as a last resort fix.
-        boolean limitDomains = ForgeRegistries.ITEMS.getKeys().size() > BCLibConfig.guideItemSearchLimit;
+        boolean limitDomains = BuiltInRegistries.ITEM.keySet().size() > BCLibConfig.guideItemSearchLimit;
 
         Set<String> domains = new HashSet<>();
         // Always show all of minecraft's items
@@ -75,20 +75,20 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
         if (limitDomains) {
             BCLog.logger.warn(
                 "[lib.guide] Limiting the domians of items to only: " + domains + " because there are "
-                    + ForgeRegistries.ITEMS.getKeys().size() + " items!"
+                    + BuiltInRegistries.ITEM.keySet().size() + " items!"
             );
         }
 
-        for (Item item : ForgeRegistries.ITEMS) {
+        for (Item item : BuiltInRegistries.ITEM) {
             ResourceLocation regName = item.builtInRegistryHolder().key().location();
-            if (regName == null || (limitDomains && !domains.contains(regName.getResourceDomain()))) {
+            if (regName == null || (limitDomains && !domains.contains(regName.getNamespace()))) {
                 continue;
             }
             if (!GuideManager.INSTANCE.objectsAdded.add(item)) {
                 continue;
             }
             NonNullList<ItemStack> stacks = NonNullList.create();
-            prof.startSection("search");
+            prof.push("search");
             item.getSubItems(CreativeModeTab.SEARCH, stacks);
             prof.endStartSection("itr_search");
             if (stacks.size() > 200) {
@@ -96,7 +96,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                 // and so it has thousands of useless permutations
                 // Instead lets replace it with a custom tooltip
                 consumer.addChild(TAGS, PageLinkItemPermutations.create(false, stacks, prof));
-                prof.endSection();
+                prof.pop();
                 BCLog.logger.info(
                     "[lib.guide] Squished " + regName + " and all of it's " + stacks.size()
                         + " variants down into one page entry."
@@ -115,7 +115,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                     );
                 }
             }
-            prof.endSection();
+            prof.pop();
         }
     }
 
@@ -146,13 +146,13 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                 stack = MarkdownPageLoader.loadComplexItemStack(str.substring(1, str.length() - 1));
                 stack.setCount(1);
                 matchMeta = true;
-                matchNbt = stack.hasTag();
+                matchNbt = NBTUtilBC.hasTag(stack);
             } else {
                 if (str.startsWith("(") && str.endsWith(")")) {
                     str = str.substring(1, str.length() - 1);
                 }
-                ResourceLocation loc = new ResourceLocation(str);
-                Item item = ForgeRegistries.ITEMS.getValue(loc);
+                ResourceLocation loc = ResourceLocation.parse(str);
+                Item item = BuiltInRegistries.ITEM.get(loc);
                 if (item == null) {
                     if (RegistryConfig.hasItemBeenDisabled(loc)) {
                         return new OptionallyDisabled<>("The item '" + loc + "' has been disabled.");
@@ -202,7 +202,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
                 return false;
             }
             if (entry.matchMeta) {
-                if (base.getMetadata() != test.getMetadata()) {
+                if (base.getId() != test.getId()) {
                     return false;
                 }
             }

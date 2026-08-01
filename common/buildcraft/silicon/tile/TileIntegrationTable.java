@@ -30,6 +30,10 @@ import buildcraft.lib.recipe.IntegrationRecipeRegistry;
 import buildcraft.lib.tile.item.ItemHandlerManager;
 import buildcraft.lib.tile.item.ItemHandlerSimple;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
 public class TileIntegrationTable extends TileLaserTableBase {
     public final ItemHandlerSimple invTarget = itemManager.addInvHandler(
         "target",
@@ -50,6 +54,10 @@ public class TileIntegrationTable extends TileLaserTableBase {
         EnumPipePart.VALUES
     );
     public IntegrationRecipe recipe;
+
+    public TileIntegrationTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     private boolean extract(IngredientStack item, ImmutableList<IngredientStack> items, boolean simulate) {
         ItemStack targetStack = invTarget.getStackInSlot(0);
@@ -120,7 +128,6 @@ public class TileIntegrationTable extends TileLaserTableBase {
         if (recipe != null) {
             nbt.putString("recipe", recipe.name.toString());
         }
-        return nbt;
     }
 
     @Override
@@ -166,6 +173,6 @@ public class TileIntegrationTable extends TileLaserTableBase {
     }
 
     private IntegrationRecipe lookupRecipe(String name) {
-        return IntegrationRecipeRegistry.INSTANCE.getRecipe(new ResourceLocation(name));
+        return IntegrationRecipeRegistry.INSTANCE.getRecipe(ResourceLocation.parse(name));
     }
 }

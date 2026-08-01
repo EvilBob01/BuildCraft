@@ -45,8 +45,8 @@ import buildcraft.core.marker.volume.WorldSavedDataVolumeBoxes;
 
 public class ItemMarkerConnector extends ItemBC_Neptune {
 
-    private static final ResourceLocation ADVANCEMENT_VOLUME_MARKER = new ResourceLocation("buildcraftcore:markers");
-    private static final ResourceLocation ADVANCEMENT_PATH_MARKER = new ResourceLocation("buildcraftcore:path_markers");
+    private static final ResourceLocation ADVANCEMENT_VOLUME_MARKER = ResourceLocation.parse("buildcraftcore:markers");
+    private static final ResourceLocation ADVANCEMENT_PATH_MARKER = ResourceLocation.parse("buildcraftcore:path_markers");
 
     public ItemMarkerConnector(String id) {
         super(id);
@@ -68,7 +68,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
 
     private static <S extends MarkerSubCache<?>> boolean interactCache(S cache, Player player) {
         MarkerLineInteraction best = null;
-        Vec3 playerPos = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
+        Vec3 playerPos = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 playerLook = player.getLookVec();
         for (BlockPos marker : cache.getAllMarkers()) {
             ImmutableList<BlockPos> possibles = cache.getValidConnections(marker);
@@ -97,7 +97,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
         return new MarkerLineInteraction(
             a,
             b,
-            player.getPositionVector().addVector(0, player.getEyeHeight(), 0),
+            player.position().add(0, player.getEyeHeight(), 0),
             player.getLookVec()
         ).didInteract();
     }
@@ -111,7 +111,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
 
         VolumeBox currentEditing = volumeBoxes.getCurrentEditing(player);
 
-        Vec3 start = player.getPositionVector().addVector(0, player.getEyeHeight(), 0);
+        Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 end = start.add(player.getLookVec().scale(4));
 
         Pair<VolumeBox, EnumAddonSlot> selectingVolumeBoxAndSlot = EnumAddonSlot.getSelectingVolumeBoxAndSlot(

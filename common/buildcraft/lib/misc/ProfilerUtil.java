@@ -206,12 +206,12 @@ public class ProfilerUtil {
 
         @Override
         public void startSection(String name) {
-            p.startSection(name);
+            p.push(name);
         }
 
         @Override
         public void endSection() {
-            p.endSection();
+            p.pop();
         }
     }
 
@@ -225,14 +225,14 @@ public class ProfilerUtil {
 
         @Override
         public void startSection(String name) {
-            p1.startSection(name);
-            p2.startSection(name);
+            p1.push(name);
+            p2.push(name);
         }
 
         @Override
         public void endSection() {
-            p1.endSection();
-            p2.endSection();
+            p1.pop();
+            p2.pop();
         }
     }
 

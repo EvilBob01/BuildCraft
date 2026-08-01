@@ -6,6 +6,7 @@
 
 package buildcraft.builders.block;
 
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,8 @@ public class BlockFrame extends BlockBCBase_Neptune {
     public static final AABB BASE_AABB = new AABB(4 / 16D, 4 / 16D, 4 / 16D, 12 / 16D, 12 / 16D, 12 / 16D);
     public static final AABB CONNECTION_AABB = new AABB(4 / 16D, 0 / 16D, 4 / 16D, 12 / 16D, 4 / 16D, 12 / 16D);
 
-    public BlockFrame(Material material, String id) {
-        super(material, id);
+    public BlockFrame(BlockBehaviour.Properties props, String id) {
+        super(props, id);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class BlockFrame extends BlockBCBase_Neptune {
     @Override
     public BlockState getActualState(BlockState state, BlockGetter world, BlockPos pos) {
         for (Direction side : CONNECTED_MAP.keySet()) {
-            Block block = world.getBlockState(pos.offset(side)).getBlock();
-            state = state.withProperty(CONNECTED_MAP.get(side), block instanceof BlockFrame || block instanceof BlockQuarry);
+            Block block = world.getBlockState(pos.relative(side)).getBlock();
+            state = state.setValue(CONNECTED_MAP.get(side), block instanceof BlockFrame || block instanceof BlockQuarry);
         }
         return state;
     }
