@@ -10,10 +10,10 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.world.inventory.IInventory;
-import net.minecraft.world.inventory.ISidedInventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -47,11 +47,11 @@ public class ItemTransactorHelper {
 
         IItemHandler handler = CapUtil.getCapability(provider, CapUtil.CAP_ITEMS, face);
         if (handler == null) {
-            if (provider instanceof ISidedInventory) {
-                return new SidedInventoryWrapper((ISidedInventory) provider, face);
+            if (provider instanceof WorldlyContainer) {
+                return new SidedInventoryWrapper((WorldlyContainer) provider, face);
             }
-            if (provider instanceof IInventory) {
-                return new InventoryWrapper((IInventory) provider);
+            if (provider instanceof Container) {
+                return new InventoryWrapper((Container) provider);
             }
             return NoSpaceTransactor.INSTANCE;
         }
@@ -62,7 +62,7 @@ public class ItemTransactorHelper {
     }
 
     @Nonnull
-    public static IItemTransactor getTransactor(InventoryPlayer inventory) {
+    public static IItemTransactor getTransactor(Inventory inventory) {
         if (inventory == null) {
             return NoSpaceTransactor.INSTANCE;
         }
@@ -76,8 +76,8 @@ public class ItemTransactorHelper {
             return transactor;
         } else if (entity instanceof ItemEntity) {
             return new TransactorEntityItem((ItemEntity) entity);
-        } else if (entity instanceof EntityArrow) {
-            return new TransactorEntityArrow((EntityArrow) entity);
+        } else if (entity instanceof AbstractArrow) {
+            return new TransactorEntityArrow((AbstractArrow) entity);
         } else {
             return NoSpaceTransactor.INSTANCE;
         }

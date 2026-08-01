@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -71,12 +72,12 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         LensData data = getData(stack);
         String colour = data.colour == null ? LocaleUtil.localize("color.clear")
             : ColourUtil.getTextFullTooltipSpecial(data.colour);
         String first = LocaleUtil.localize(data.isFilter ? "item.Filter.name" : "item.Lens.name");
-        return colour + " " + first;
+        return Component.literal(colour + " " + first);
     }
 
     public static class LensData {

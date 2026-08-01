@@ -37,7 +37,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.stats.StatList;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.world.InteractionResult;
@@ -212,7 +211,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (player instanceof ServerPlayer) {
             reachDistance = ((ServerPlayer) player).interactionManager.getBlockReachDistance();
         }
-        Vec3 end = start.add(player.getLookVec().normalize().scale(reachDistance));
+        Vec3 end = start.add(player.getLookAngle().normalize().scale(reachDistance));
         return rayTrace(world, pos, start, end);
     }
 
@@ -674,7 +673,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
     public void harvestBlock(
         Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack
     ) {
-        player.addStat(StatList.getBlockStats(this));
+        // TODO (Phase 6): StatList removed — no stat tracking for now
         player.addExhaustion(0.005F);
     }
 
@@ -755,9 +754,9 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
 
                 @Override
                 public void write(PacketBufferBC buffer) {
-                    buffer.writeDouble(entity.posX);
-                    buffer.writeDouble(entity.posY);
-                    buffer.writeDouble(entity.posZ);
+                    buffer.writeDouble(entity.getX());
+                    buffer.writeDouble(entity.getY());
+                    buffer.writeDouble(entity.getZ());
                     buffer.writeInt(numberOfParticles);
                 }
             });
@@ -778,7 +777,7 @@ public class BlockPipeHolder extends BlockBCTile_Neptune implements ICustomPaint
         if (te instanceof TilePipeHolder) {
             TilePipeHolder pipeHolder = ((TilePipeHolder) te);
 
-            spawnRunningParticles(pipeHolder, entity.posX, entity.getEntityBoundingBox().minY, entity.posZ, entity.width, entity.motionX, entity.motionZ);
+            spawnRunningParticles(pipeHolder, entity.getX(), entity.getBoundingBox().minY, entity.getZ(), entity.getBbWidth(), entity.getDeltaMovement().x, entity.getDeltaMovement().z);
 
             return true;
         }

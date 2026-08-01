@@ -191,7 +191,7 @@ public abstract class NetworkedObjectCache<T> {
                 String toString;
                 if (copy instanceof FluidStack) {
                     FluidStack fluid = (FluidStack) copy;
-                    toString = fluid.getUnlocalizedName();
+                    toString = fluid.getHoverName().getString();
                 } else {
                     toString = copy.toString();
                 }

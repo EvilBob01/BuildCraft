@@ -7,16 +7,17 @@
 package buildcraft.builders.snapshot;
 
 import java.util.Objects;
-import net.minecraft.world.level.material.Fluid;
 import java.util.Optional;
 
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class FluidStackRef {
     private final NbtRef<StringTag> fluid;
@@ -24,19 +25,17 @@ public class FluidStackRef {
 
     public FluidStackRef(NbtRef<StringTag> fluid, NbtRef<IntTag> amount) {
         this.fluid = fluid;
-        this.getAmount() = amount;
+        this.amount = amount;
     }
 
     public FluidStack get(Tag nbt) {
+        String fluidName = fluid
+            .get(nbt)
+            .orElseThrow(NullPointerException::new)
+            .getString();
+        Fluid f = BuiltInRegistries.FLUID.get(ResourceLocation.tryParse(fluidName));
         return new FluidStack(
-            Objects.requireNonNull(
-                FluidRegistry.getFluid(
-                    fluid
-                        .get(nbt)
-                        .orElseThrow(NullPointerException::new)
-                        .getString()
-                )
-            ),
+            Objects.requireNonNull(f),
             Optional.ofNullable(amount)
                 .flatMap(ref -> ref.get(nbt))
                 .map(IntTag::getInt)

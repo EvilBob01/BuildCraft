@@ -6,15 +6,16 @@
 
 package buildcraft.factory.item;
 
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -29,18 +30,17 @@ public class ItemWaterGel extends ItemBC_Neptune {
 
     public ItemWaterGel(String id) {
         super(id);
-        this.maxStackSize = 16;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
-        Vec3 look = player.getLookVec();
+        Vec3 look = player.getLookAngle();
         Vec3 end = start.add(look.scale(7));
-        BlockHitResult ray = world.rayTraceBlocks(start, end, true, false, true);
+        BlockHitResult ray = world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, player));
 
-        if (ray == null || ray.getBlockPos() == null) {
+        if (ray.getBlockPos() == null) {
             return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
         }
 
@@ -54,22 +54,15 @@ public class ItemWaterGel extends ItemBC_Neptune {
         }
 
         // Same as ItemSnowball
-        world.playSound(null, player.posX, player.posY, player.posZ,//
-                SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL,//
-                0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL,
+                0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClientSide) {
             world.setBlock(ray.getBlockPos(), BCFactoryBlocks.waterGel.defaultBlockState().setValue(BlockWaterGel.PROP_STAGE, GelStage.SPREAD_0), 3);
             world.scheduleTick(ray.getBlockPos(), BCFactoryBlocks.waterGel, 200);
-
-            // TODO: Snowball stuff
-
-            // EntitySnowball entitysnowball = new EntitySnowball(world, player);
-            // entitysnowball.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5F, 1.0F);
-            // world.spawnEntityInWorld(entitysnowball);
         }
 
-        // player.addStat(StatList.getObjectUseStats(this));
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 

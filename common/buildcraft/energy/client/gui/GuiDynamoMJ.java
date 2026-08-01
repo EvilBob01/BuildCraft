@@ -62,7 +62,7 @@ public class GuiDynamoMJ extends GuiBC8<ContainerDynamoMJ> {
                     List<String> lines = new ArrayList<>();
                     lines.add(LocaleUtil.localize("buildcraft.gui.rf_engine.upgrade_types"));
                     for (Map.Entry<Item, Long> entry : TileEngineRF.RF_UPGRADE.entrySet()) {
-                        String itemName = entry.getKey().getItemStackDisplayName(new ItemStack(entry.getKey()));
+                        String itemName = new ItemStack(entry.getKey()).getHoverName().getString();
                         long mj = entry.getValue();
                         int rf = (int) (mj / BCLibConfig.mjRfConversion.mjPerRf);
                         lines.add(itemName + " = +" + LocaleUtil.localizeRfFlow(rf));

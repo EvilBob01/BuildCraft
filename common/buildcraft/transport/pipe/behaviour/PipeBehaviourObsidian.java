@@ -132,7 +132,7 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
 
     /** @return The left over power */
     protected long trySuckEntity(Entity entity, Direction faceFrom, long power, boolean simulate) {
-        if (entity.isDead || entity instanceof LivingEntity) {
+        if (entity.isRemoved() || entity instanceof LivingEntity) {
             return power;
         }
 

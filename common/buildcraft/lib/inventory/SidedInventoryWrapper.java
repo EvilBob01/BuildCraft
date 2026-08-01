@@ -8,7 +8,7 @@ package buildcraft.lib.inventory;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.world.inventory.ISidedInventory;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 
@@ -17,12 +17,12 @@ import buildcraft.api.core.IStackFilter;
 import buildcraft.lib.misc.StackUtil;
 
 public final class SidedInventoryWrapper extends AbstractInvItemTransactor {
-    private final ISidedInventory sided;
+    private final WorldlyContainer sided;
     private final InventoryWrapper normal;
     private final Direction face;
     private final int[] slots;
 
-    public SidedInventoryWrapper(ISidedInventory sided, Direction face) {
+    public SidedInventoryWrapper(WorldlyContainer sided, Direction face) {
         this.sided = sided;
         this.normal = new InventoryWrapper(sided);
         this.face = face;
@@ -33,8 +33,7 @@ public final class SidedInventoryWrapper extends AbstractInvItemTransactor {
     @Override
     protected ItemStack insert(int externalSlot, @Nonnull ItemStack stack, boolean simulate) {
         int sidedSlot = slots[externalSlot];
-        if (sided.canInsertItem(sidedSlot, stack, face)) {
-            // Delegate to the normal inserter - its just easier.
+        if (sided.canPlaceItemThroughFace(sidedSlot, stack, face)) {
             return normal.insert(sidedSlot, stack, simulate);
         }
         return stack;
@@ -44,9 +43,8 @@ public final class SidedInventoryWrapper extends AbstractInvItemTransactor {
     @Override
     protected ItemStack extract(int externalSlot, IStackFilter filter, int min, int max, boolean simulate) {
         int sidedSlot = slots[externalSlot];
-        ItemStack current = sided.getStackInSlot(sidedSlot);
-        if (sided.canExtractItem(sidedSlot, current, face)) {
-            // Delegate to the normal inserter - its just easier.
+        ItemStack current = sided.getItem(sidedSlot);
+        if (sided.canTakeItemThroughFace(sidedSlot, current, face)) {
             return normal.extract(sidedSlot, filter, min, max, simulate);
         }
         return StackUtil.EMPTY;

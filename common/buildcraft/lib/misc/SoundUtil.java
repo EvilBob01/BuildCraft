@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -29,7 +29,7 @@ public class SoundUtil {
         SoundType soundType = state.getBlock().getSoundType(state, world, pos, null);
         float volume = (soundType.getVolume() + 1.0F) / 2.0F;
         float pitch = soundType.getPitch() * 0.8F;
-        world.playSound(null, pos, soundType.getPlaceSound(), SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS, volume, pitch);
     }
 
     public static void playBlockBreak(Level world, BlockPos pos) {
@@ -40,28 +40,28 @@ public class SoundUtil {
         SoundType soundType = state.getBlock().getSoundType(state, world, pos, null);
         float volume = (soundType.getVolume() + 1.0F) / 2.0F;
         float pitch = soundType.getPitch() * 0.8F;
-        world.playSound(null, pos, soundType.getBreakSound(), SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, volume, pitch);
     }
 
     public static void playLeverSwitch(Level world, BlockPos pos, boolean isNowOn) {
         float pitch = isNowOn ? 0.6f : 0.5f;
-        SoundEvent soundEvent = SoundEvents.BLOCK_LEVER_CLICK;
-        world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 0.2f, pitch);
+        SoundEvent soundEvent = SoundEvents.LEVER_CLICK;
+        world.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 0.2f, pitch);
     }
 
     public static void playChangeColour(Level world, BlockPos pos, @Nullable DyeColor colour) {
         SoundType soundType = SoundType.SLIME;
         final SoundEvent soundEvent;
         if (colour == null) {
-            soundEvent = SoundEvents.ITEM_BUCKET_EMPTY;
+            soundEvent = SoundEvents.BUCKET_EMPTY;
         } else {
             // FIXME: is this a good sound? Idk tbh.
             // TODO: Look into configuring this kind of stuff.
-            soundEvent = SoundEvents.ENTITY_SLIME_SQUISH;
+            soundEvent = SoundEvents.SLIME_SQUISH;
         }
         float volume = (soundType.getVolume() + 1.0F) / 2.0F;
         float pitch = soundType.getPitch() * 0.8F;
-        world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, pos, soundEvent, SoundSource.BLOCKS, volume, pitch);
     }
 
     public static void playSlideSound(Level world, BlockPos pos) {
@@ -81,22 +81,22 @@ public class SoundUtil {
         SoundType soundType = state.getBlock().getSoundType(state, world, pos, null);
         SoundEvent event;
         if (result == InteractionResult.SUCCESS) {
-            event = SoundEvents.BLOCK_PISTON_CONTRACT;
+            event = SoundEvents.PISTON_CONTRACT;
         } else {
-            event = SoundEvents.BLOCK_PISTON_EXTEND;
+            event = SoundEvents.PISTON_EXTEND;
         }
         float volume = (soundType.getVolume() + 1.0F) / 2.0F;
         float pitch = soundType.getPitch() * 0.8F;
-        world.playSound(null, pos, event, SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, pos, event, SoundSource.BLOCKS, volume, pitch);
     }
 
     public static void playBucketEmpty(Level world, BlockPos pos, FluidStack moved) {
         SoundEvent sound = moved.getFluid().getEmptySound(moved);
-        world.playSound(null, pos, sound, SoundCategory.PLAYERS, 1, 1);
+        world.playSound(null, pos, sound, SoundSource.PLAYERS, 1, 1);
     }
 
     public static void playBucketFill(Level world, BlockPos pos, FluidStack moved) {
         SoundEvent sound = moved.getFluid().getFillSound(moved);
-        world.playSound(null, pos, sound, SoundCategory.PLAYERS, 1, 1);
+        world.playSound(null, pos, sound, SoundSource.PLAYERS, 1, 1);
     }
 }

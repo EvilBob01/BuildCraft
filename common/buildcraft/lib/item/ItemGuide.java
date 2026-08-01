@@ -6,6 +6,7 @@
 
 package buildcraft.lib.item;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,7 @@ public class ItemGuide extends ItemBC_Neptune {
 
     public ItemGuide(String id) {
         super(id);
-        setContainerItem(this);
+        // TODO (Phase 10 — Registry): setContainerItem removed; use Item.Properties.craftRemainder()
     }
 
     @Override
@@ -54,13 +55,13 @@ public class ItemGuide extends ItemBC_Neptune {
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         String bookName = getBookName(stack);
         GuideBook book = GuideBookRegistry.INSTANCE.getBook(bookName);
         if (book != null) {
-            return book.title.getFormattedText();
+            return book.title;
         }
-        return super.getItemStackDisplayName(stack);
+        return super.getName(stack);
     }
 
     public static String getBookName(ItemStack stack) {

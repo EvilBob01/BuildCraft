@@ -500,13 +500,11 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         speed += 0.01;
         speed *= 2;
         ItemEntity ent = new ItemEntity(world, x, y, z, stack);
-        ent.motionX = motion.getStepX() * speed;
-        ent.motionY = motion.getStepY() * speed;
-        ent.motionZ = motion.getStepZ() * speed;
+        ent.setDeltaMovement(motion.getStepX() * speed, motion.getStepY() * speed, motion.getStepZ() * speed);
 
         PipeEventItem.Drop drop = new PipeEventItem.Drop(holder, this, ent);
         holder.fireEvent(drop);
-        if (ent.getItem().isEmpty() || ent.isDead) {
+        if (ent.getItem().isEmpty() || ent.isRemoved()) {
             return;
         }
 
@@ -541,7 +539,7 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
             return stack;
         }
         ItemStack toSplit = stack.copy();
-        ItemStack toInsert = toSplit.splitStack(tryInsert.accepted);
+        ItemStack toInsert = toSplit.split(tryInsert.accepted);
 
         if (doAdd) {
             insertItemEvents(toInsert, colour, speed, from);

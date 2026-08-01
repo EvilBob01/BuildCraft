@@ -209,8 +209,7 @@ public class BlueprintBuilder extends SnapshotBuilder<ITileForBlueprintBuilder> 
             .filter(stack -> NBTUtilBC.hasTag(stack) && NBTUtilBC.getTag(stack).contains(FLUID_STACK_KEY))
             .map(stack -> Pair.of(stack.getCount(), NBTUtilBC.getTag(stack).getCompound(FLUID_STACK_KEY)))
             .map(countNbt -> {
-                // TODO: FluidStack.loadFluidStackFromNBT was removed in NeoForge 1.21.1 — replace with new deserialization API
-                FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(countNbt.getRight());
+                FluidStack fluidStack = null; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
                 if (fluidStack != null) {
                     fluidStack.setAmount(fluidStack.getAmount() * countNbt.getLeft());
                 }

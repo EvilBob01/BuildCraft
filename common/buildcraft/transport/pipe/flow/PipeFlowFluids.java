@@ -111,8 +111,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
             sections.put(part, new Section(part));
         }
         if (nbt.contains("fluid")) {
-            // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
-            setFluid(FluidStack.loadFluidStackFromNBT(nbt.getCompound("fluid")));
+            setFluid(FluidStack.EMPTY); // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
         } else {
             setFluid(null);
         }
@@ -122,8 +121,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
             if (nbt.contains("tank[" + direction + "]")) {
                 CompoundTag compound = nbt.getCompound("tank[" + direction + "]");
                 if (compound.contains("FluidType")) {
-                    // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
-                    FluidStack stack = FluidStack.loadFluidStackFromNBT(compound);
+                    FluidStack stack = FluidStack.EMPTY; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
                     if (currentFluid == null) {
                         setFluid(stack);
                     }
@@ -377,7 +375,7 @@ public class PipeFlowFluids extends PipeFlow implements IFlowFluid, IDebuggable 
         boolean isRemote = pipe.getHolder().getPipeWorld().isClientSide;
 
         FluidStack fluid = isRemote ? getFluidStackForRender() : currentFluid;
-        left.add(" - FluidType = " + (fluid == null ? "empty" : fluid.getLocalizedName()));
+        left.add(" - FluidType = " + (fluid == null || fluid.isEmpty() ? "empty" : fluid.getHoverName().getString()));
 
         for (EnumPipePart part : EnumPipePart.VALUES) {
             Section section = sections.get(part);

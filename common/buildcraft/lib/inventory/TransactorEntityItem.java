@@ -27,7 +27,7 @@ public class TransactorEntityItem implements IItemExtractable {
     @Override
     @Nonnull
     public ItemStack extract(IStackFilter filter, int min, int max, boolean simulate) {
-        if (entity.isDead) {
+        if (entity.isRemoved()) {
             return StackUtil.EMPTY;
         }
         if (min < 1) {
@@ -42,7 +42,7 @@ public class TransactorEntityItem implements IItemExtractable {
         }
         if (filter.matches(current)) {
             current = current.copy();
-            ItemStack extracted = current.splitStack(max);
+            ItemStack extracted = current.split(max);
             if (!simulate) {
                 if (current.getCount() == 0) {
                     entity.discard();

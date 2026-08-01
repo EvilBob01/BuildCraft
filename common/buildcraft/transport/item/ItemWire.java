@@ -8,8 +8,9 @@ package buildcraft.transport.item;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +26,6 @@ import buildcraft.lib.misc.ColourUtil;
 public class ItemWire extends ItemBC_Neptune {
     public ItemWire(String id) {
         super(id);
-        setHasSubtypes(true);
     }
 
     @Override
@@ -44,13 +44,14 @@ public class ItemWire extends ItemBC_Neptune {
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
-        return ColourUtil.getTextFullTooltipSpecial(DyeColor.byId(stack.getDamageValue())) + " " + super.getItemStackDisplayName(stack);
+    public Component getName(ItemStack stack) {
+        String prefix = ColourUtil.getTextFullTooltipSpecial(DyeColor.byId(stack.getDamageValue()));
+        return Component.literal(prefix + " ").append(super.getName(stack));
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public FontRenderer getFontRenderer(ItemStack stack) {
+    public Font getFontRenderer(ItemStack stack) {
         return SpecialColourFontRenderer.INSTANCE;
     }
 }

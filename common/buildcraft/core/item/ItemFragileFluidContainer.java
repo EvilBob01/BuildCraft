@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -55,7 +56,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         FluidStack fluid = getFluid(stack);
 
         String localized;
@@ -65,17 +66,16 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         } else if (fluid.getFluid() instanceof BCFluid) {
             BCFluid bcFluid = (BCFluid) fluid.getFluid();
             if (bcFluid.isHeatable()) {
-                // Add the heatable bit to the end of the name
                 localized = bcFluid.getBareLocalizedName(fluid);
-                String whole = LocaleUtil.localize(getUnlocalizedName() + ".name", localized);
-                return LocaleUtil.localize("buildcraft.fluid.heat_" + bcFluid.getHeatValue(), whole);
+                String whole = LocaleUtil.localize(getDescriptionId() + ".name", localized);
+                return Component.literal(LocaleUtil.localize("buildcraft.fluid.heat_" + bcFluid.getHeatValue(), whole));
             } else {
-                localized = fluid.getLocalizedName();
+                localized = fluid.getHoverName().getString();
             }
         } else {
-            localized = fluid.getLocalizedName();
+            localized = fluid.getHoverName().getString();
         }
-        return LocaleUtil.localize(getUnlocalizedName() + ".name", localized);
+        return Component.literal(LocaleUtil.localize(getDescriptionId() + ".name", localized));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -85,8 +85,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         CompoundTag stackTag = stack.getTag();
         CompoundTag fluidTag = (stackTag != null && stackTag.contains("fluid")) ? stackTag.getCompound("fluid") : null;
         if (fluidTag != null) {
-            // TODO: FluidStack.loadFluidStackFromNBT was removed in NeoForge 1.21.1 — replace with new deserialization API
-            FluidStack fluid = FluidStack.loadFluidStackFromNBT(fluidTag);
+            FluidStack fluid = null; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
             if (fluid != null && fluid.getAmount() > 0) {
                 tooltip.add(LocaleUtil.localizeFluidStaticAmount(fluid.getAmount(), MAX_FLUID_HELD));
             }
@@ -131,8 +130,7 @@ public class ItemFragileFluidContainer extends ItemBC_Neptune implements IItemFl
         if (fluidNbt == null) {
             return null;
         }
-        // TODO: FluidStack.loadFluidStackFromNBT was removed in NeoForge 1.21.1 — replace with new deserialization API
-        return FluidStack.loadFluidStackFromNBT(fluidNbt);
+        return null; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
     }
 
     public class FragileFluidHandler implements IFluidHandlerItem {

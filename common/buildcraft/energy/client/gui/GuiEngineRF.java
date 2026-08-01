@@ -63,7 +63,7 @@ public class GuiEngineRF extends GuiBC8<ContainerEngineRF> {
                     List<String> lines = new ArrayList<>();
                     lines.add(LocaleUtil.localize("buildcraft.gui.rf_engine.upgrade_types"));
                     for (Map.Entry<Item, Long> entry : TileEngineRF.RF_UPGRADE.entrySet()) {
-                        String itemName = entry.getKey().getItemStackDisplayName(new ItemStack(entry.getKey()));
+                        String itemName = new ItemStack(entry.getKey()).getHoverName().getString();
                         lines.add(itemName + " = +" + LocaleUtil.localizeMjFlow(entry.getValue()));
                     }
                     tooltips.add(new ToolTip(lines));

@@ -83,8 +83,7 @@ public class SingleUseTank extends Tank {
             // TODO: FluidRegistry removed in NeoForge 1.21.1 — need to look up fluid by ResourceLocation
             setAcceptedFluid((FluidStack) null);
         } else {
-            // TODO: FluidStack.loadFluidStackFromNBT removed in NeoForge 1.21.1 — needs replacement
-            acceptedFluid = FluidStack.loadFluidStackFromNBT(nbt.getCompound(NBT_ACCEPTED_FLUID));
+            acceptedFluid = null; // TODO (Phase 9 — Fluids): FluidStack.loadFluidStackFromNBT removed
         }
     }
 }

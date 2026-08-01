@@ -14,6 +14,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -68,8 +69,8 @@ public class ItemPluggableGate extends ItemBC_Neptune implements IItemPluggable 
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
-        return getVariant(StackUtil.asNonNull(stack)).getLocalizedName();
+    public Component getName(ItemStack stack) {
+        return Component.literal(getVariant(StackUtil.asNonNull(stack)).getLocalizedName());
     }
 
 

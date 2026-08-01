@@ -7,7 +7,7 @@
 package buildcraft.transport.gui;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.IInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.neoforge.items.IItemHandler;
@@ -27,7 +27,7 @@ public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
     private static final GuiIcon ICON_GUI = new GuiIcon(TEXTURE, 0, 0, SIZE_X, SIZE_Y);
     private static final GuiIcon ICON_GUI_CB = new GuiIcon(TEXTURE_CB, 0, 0, SIZE_X, SIZE_Y);
 
-    IInventory playerInventory;
+    Inventory playerInventory;
     IItemHandler filterInventory;
 
     public GuiDiamondPipe(Player player, PipeBehaviourDiamond pipe) {

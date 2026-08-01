@@ -9,7 +9,8 @@ import javax.annotation.Nonnull;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
@@ -85,18 +86,18 @@ public class ItemPaintbrush_BC8 extends ItemBC_Neptune {
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         Brush brush = getBrushFromStack(stack);
-        String colourComponent = "";
         if (brush.colour != null) {
-            colourComponent = ColourUtil.getTextFullTooltipSpecial(brush.colour) + " ";
+            String colourComponent = ColourUtil.getTextFullTooltipSpecial(brush.colour) + " ";
+            return Component.literal(colourComponent).append(super.getName(stack));
         }
-        return colourComponent + super.getItemStackDisplayName(stack);
+        return super.getName(stack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public FontRenderer getFontRenderer(ItemStack stack) {
+    public Font getFontRenderer(ItemStack stack) {
         return SpecialColourFontRenderer.INSTANCE;
     }
 

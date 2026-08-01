@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -138,19 +139,19 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         FacadeInstance fullState = getStates(stack);
         if (fullState.type == FacadeType.Basic) {
             String displayName = getFacadeStateDisplayName(fullState.phasedStates[0]);
-            return super.getItemStackDisplayName(stack) + ": " + displayName;
+            return super.getName(stack).copy().append(": " + displayName);
         } else {
-            return LocaleUtil.localize("item.FacadePhased.name");
+            return Component.literal(LocaleUtil.localize("item.FacadePhased.name"));
         }
     }
 
     public static String getFacadeStateDisplayName(FacadePhasedState state) {
         ItemStack assumedStack = state.stateInfo.requiredStack;
-        return assumedStack.getDisplayName();
+        return assumedStack.getHoverName().getString();
     }
 
     @OnlyIn(Dist.CLIENT)

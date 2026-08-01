@@ -58,7 +58,7 @@ public enum EnumAddonSlot {
     public static Pair<VolumeBox, EnumAddonSlot> getSelectingVolumeBoxAndSlot(Player player,
                                                                               List<VolumeBox> volumeBoxes) {
         Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
-        Vec3 end = start.add(player.getLookVec().scale(4));
+        Vec3 end = start.add(player.getLookAngle().scale(4));
         VolumeBox bestVolumeBox = null;
         EnumAddonSlot bestSlot = null;
         double bestDist = Double.MAX_VALUE;
