@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
@@ -245,8 +245,8 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         super.loadAdditional(nbt, registries);
         Tag open = nbt.get("openSides");
-        if (open instanceof NBTPrimitive) {
-            byte sides = ((NBTPrimitive) open).getByte();
+        if (open instanceof NumericTag) {
+            byte sides = ((NumericTag) open).getAsByte();
             for (Direction face : Direction.values()) {
                 if (((sides >> face.get3DDataValue()) & 1) == 1) {
                     openSides.add(face);

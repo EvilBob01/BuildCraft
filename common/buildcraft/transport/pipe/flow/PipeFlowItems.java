@@ -76,8 +76,9 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         super(pipe, nbt);
         ListTag list = nbt.getList("items", Tag.TAG_COMPOUND);
         long tickNow = pipe.getHolder().getPipeWorld().getGameTime();
+        net.minecraft.core.HolderLookup.Provider registries = pipe.getHolder().getPipeWorld().registryAccess();
         for (int i = 0; i < list.size(); i++) {
-            TravellingItem item = new TravellingItem(list.getCompoundTagAt(i), tickNow);
+            TravellingItem item = new TravellingItem(list.getCompound(i), tickNow, registries);
             if (!item.stack.isEmpty()) {
                 items.add(item.getCurrentDelay(tickNow), item);
             }
@@ -91,9 +92,10 @@ public final class PipeFlowItems extends PipeFlow implements IFlowItems {
         ListTag list = new ListTag();
 
         long tickNow = pipe.getHolder().getPipeWorld().getGameTime();
+        net.minecraft.core.HolderLookup.Provider registries = pipe.getHolder().getPipeWorld().registryAccess();
         for (List<TravellingItem> l : allItems) {
             for (TravellingItem item : l) {
-                list.appendTag(item.writeToNbt(tickNow));
+                list.add(item.writeToNbt(tickNow, registries));
             }
         }
         nbt.put("items", list);

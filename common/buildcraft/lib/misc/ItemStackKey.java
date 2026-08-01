@@ -38,13 +38,7 @@ public class ItemStackKey {
         if (obj.getClass() != this.getClass()) return false;
         ItemStackKey other = (ItemStackKey) obj;
         if (hash != other.hash) return false;
-        if (baseStack.getItem() != other.baseStack.getItem()) {
-            return false;
-        }
-        if (baseStack.getId() != other.baseStack.getId()) {
-            return false;
-        }
-        return baseStack.serializeNBT().equals(other.baseStack.serializeNBT());
+        return ItemStack.isSameItemSameTags(baseStack, other.baseStack);
     }
 
     @Override

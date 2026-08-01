@@ -7,19 +7,15 @@
 package buildcraft.silicon.item;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.block.Blocks;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -31,10 +27,10 @@ import buildcraft.api.transport.pipe.IPipeHolder;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import buildcraft.api.transport.pluggable.PluggableDefinition;
 
-import buildcraft.lib.client.render.font.SpecialColourFontRenderer;
 import buildcraft.lib.item.ItemBC_Neptune;
 import buildcraft.lib.misc.ColourUtil;
 import buildcraft.lib.misc.LocaleUtil;
+import buildcraft.lib.misc.NBTUtilBC;
 import buildcraft.lib.misc.SoundUtil;
 
 import buildcraft.silicon.BCSiliconPlugs;
@@ -43,8 +39,6 @@ import buildcraft.silicon.plug.PluggableLens;
 public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable {
     public ItemPluggableLens(String id) {
         super(id);
-        setMaxDamage(0);
-        setHasSubtypes(true);
     }
 
     public static LensData getData(ItemStack stack) {
@@ -85,60 +79,34 @@ public class ItemPluggableLens extends ItemBC_Neptune implements IItemPluggable 
         return colour + " " + first;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public FontRenderer getFontRenderer(ItemStack stack) {
-        return SpecialColourFontRenderer.INSTANCE;
-    }
-
-    @Override
-    protected void addSubItems(CreativeModeTab tab, NonNullList<ItemStack> subItems) {
-        for (int i = 0; i < 34; i++) {
-            subItems.add(new ItemStack(this, 1));
-        }
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void addModelVariants(TIntObjectHashMap<ModelResourceLocation> variants) {
-        for (int i = 0; i < 34; i++) {
-            variants.put(i, new ModelResourceLocation("buildcraftsilicon:lens_item#inventory"));
-        }
-    }
-
     public static class LensData {
+        @Nullable
         public final DyeColor colour;
         public final boolean isFilter;
 
-        public LensData(DyeColor colour, boolean isFilter) {
+        public LensData(@Nullable DyeColor colour, boolean isFilter) {
             this.colour = colour;
             this.isFilter = isFilter;
         }
 
         public LensData(ItemStack stack) {
-            this(stack.getItemDamage());
-        }
-
-        public LensData(int damage) {
-            if (damage >= 32) {
+            CompoundTag tag = NBTUtilBC.getItemData(stack);
+            if (tag.contains("colour")) {
+                colour = DyeColor.byName(tag.getString("colour"), null);
+            } else {
                 colour = null;
-                isFilter = damage == 33;
-            } else {
-                colour = DyeColor.byDyeDamage(damage & 15);
-                isFilter = damage >= 16;
             }
-        }
-
-        public int getItemDamage() {
-            if (colour == null) {
-                return isFilter ? 33 : 32;
-            } else {
-                return colour.getDyeDamage() + (isFilter ? 16 : 0);
-            }
+            isFilter = tag.getBoolean("isFilter");
         }
 
         public ItemStack writeToStack(ItemStack stack) {
-            stack.setItemDamage(getItemDamage());
+            CompoundTag tag = NBTUtilBC.getItemData(stack);
+            if (colour != null) {
+                tag.putString("colour", colour.getName());
+            } else {
+                tag.remove("colour");
+            }
+            tag.putBoolean("isFilter", isFilter);
             return stack;
         }
     }

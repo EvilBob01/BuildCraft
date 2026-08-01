@@ -43,6 +43,11 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
     public static final int DAMAGE_USED = 1;
     public static final String NBT_KEY = "schematic";
 
+    /** Returns true if this schematic stack has a schematic written to it (replaces 1.12 DAMAGE_USED check). */
+    public static boolean isUsed(ItemStack stack) {
+        return stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+    }
+
     public ItemSchematicSingle(String id) {
         super(id);
     }

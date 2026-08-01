@@ -8,14 +8,15 @@ package buildcraft.lib.tile.item;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.ReportedException;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -79,23 +80,21 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
         ListTag list = new ListTag();
         for (ItemStack stack : stacks) {
-            CompoundTag itemNbt = new CompoundTag();
-            stack.saveAdditional(itemNbt);
-            list.appendTag(itemNbt);
+            list.add(stack.save(provider));
         }
         nbt.put("items", list);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         ListTag list = nbt.getList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size() && i < getSlots(); i++) {
-            setStackInternal(i, new ItemStack(list.getCompoundTagAt(i)));
+            setStackInternal(i, ItemStack.parseOptional(provider, list.getCompound(i)));
         }
         for (int i = list.size(); i < getSlots(); i++) {
             setStackInternal(i, StackUtil.EMPTY);

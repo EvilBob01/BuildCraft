@@ -68,16 +68,14 @@ public class StatementParameterItemStackExact implements IStatementParameter {
 
     @Override
     public void writeToNbt(CompoundTag compound) {
-        if (stack != null) {
-            CompoundTag tagCompound = new CompoundTag();
-            stack.saveAdditional(tagCompound);
-            compound.put("stack", tagCompound);
+        if (stack != null && !stack.isEmpty()) {
+            compound.put("stack", stack.save(net.minecraft.core.RegistryAccess.EMPTY));
         }
     }
 
     public static StatementParameterItemStackExact readFromNbt(CompoundTag nbt) {
         StatementParameterItemStackExact param = new StatementParameterItemStackExact();
-        param.stack = new ItemStack(nbt.getCompound("stack"));
+        param.stack = ItemStack.parseOptional(net.minecraft.core.RegistryAccess.EMPTY, nbt.getCompound("stack"));
         return param;
     }
 
@@ -93,10 +91,10 @@ public class StatementParameterItemStackExact implements IStatementParameter {
     }
 
     private static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
-        if (stack1 != null) {
-            return stack2 != null && stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+        if (stack1 != null && !stack1.isEmpty()) {
+            return stack2 != null && ItemStack.isSameItemSameTags(stack1, stack2);
         } else {
-            return stack2 == null;
+            return stack2 == null || stack2.isEmpty();
         }
     }
 

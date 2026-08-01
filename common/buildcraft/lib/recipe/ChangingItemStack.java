@@ -8,7 +8,6 @@ package buildcraft.lib.recipe;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.NonNullList;
@@ -52,13 +51,8 @@ public final class ChangingItemStack extends ChangingObject<ItemStackKey> {
         if (stack.isEmpty()) {
             return new ItemStackKey[] { ItemStackKey.EMPTY };
         }
-        if (stack.getItemDamage() == 32767) { // was OreDictionary.WILDCARD_VALUE
-            NonNullList<ItemStack> subs = NonNullList.create();
-            stack.getItem().getSubItems(CreativeModeTab.SEARCH, subs);
-            return makeListArray(subs);
-        } else {
-            return new ItemStackKey[] { new ItemStackKey(stack) };
-        }
+        // Wildcard metadata (32767) and getSubItems removed in 1.21; always return the specific stack
+        return new ItemStackKey[] { new ItemStackKey(stack) };
     }
 
     private static ItemStackKey[] makeRecipeArray(Ingredient ingredient) {

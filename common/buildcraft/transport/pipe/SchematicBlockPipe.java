@@ -45,7 +45,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
         if (tileEntity == null) {
             throw new IllegalStateException();
         }
-        tileNbt = tileEntity.serializeNBT();
+        tileNbt = tileEntity.saveWithFullMetadata(context.world.registryAccess());
     }
 
     @Nonnull
@@ -62,13 +62,8 @@ public class SchematicBlockPipe implements ISchematicBlock {
             );
             Item item = (Item) PipeApi.pipeRegistry.getItemForPipe(definition);
             if (item != null) {
-                builder.add(
-                    new ItemStack(
-                        item,
-                        1,
-                        color == null ? 0 : color.getId() + 1
-                    )
-                );
+                // color was stored as item damage in 1.12; in 1.21 it must use NBT/components
+                builder.add(new ItemStack(item, 1));
             }
             return builder.build();
         } catch (InvalidInputDataException e) {

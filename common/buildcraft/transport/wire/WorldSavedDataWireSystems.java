@@ -60,7 +60,7 @@ public class WorldSavedDataWireSystems extends SavedData {
         instance.elementsToWireSystemsIndex.clear();
         ListTag entriesList = nbt.getList("entries", Tag.TAG_COMPOUND);
         for(int i = 0; i < entriesList.size(); i++) {
-            CompoundTag entry = entriesList.getCompoundTagAt(i);
+            CompoundTag entry = entriesList.getCompound(i);
             instance.addWireSystem(new WireSystem(entry.getCompound("wireSystem")), entry.getBoolean("powered"));
         }
         return instance;
@@ -204,7 +204,7 @@ public class WorldSavedDataWireSystems extends SavedData {
             CompoundTag entry = new CompoundTag();
             entry.put("wireSystem", wireSystem.saveAdditional());
             entry.putBoolean("powered", powered);
-            entriesList.appendTag(entry);
+            entriesList.add(entry);
         });
         nbt.put("entries", entriesList);
         return nbt;

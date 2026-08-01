@@ -82,7 +82,7 @@ public class PluggableFacade extends PipePluggable implements IFacade {
         if (nbt.contains("states") && !nbt.contains("facade")) {
             ListTag tagStates = nbt.getList("states", Tag.TAG_COMPOUND);
             if (tagStates.size() > 0) {
-                boolean isHollow = tagStates.getCompoundTagAt(0).getBoolean("isHollow");
+                boolean isHollow = tagStates.getCompound(0).getBoolean("isHollow");
                 CompoundTag tagFacade = new CompoundTag();
                 tagFacade.put("states", tagStates);
                 tagFacade.putBoolean("isHollow", isHollow);

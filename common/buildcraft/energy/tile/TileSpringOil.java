@@ -63,7 +63,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         super.loadAdditional(nbt, registries);
         ListTag list = nbt.getList("pumpProgress", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            PlayerPumpInfo info = new PlayerPumpInfo(list.getCompoundTagAt(i));
+            PlayerPumpInfo info = new PlayerPumpInfo(list.getCompound(i));
             pumpProgress.put(info.profile, info);
         }
     }
@@ -74,7 +74,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         nbt.putInt("totalSources", totalSources);
         ListTag list = new ListTag();
         for (PlayerPumpInfo info : pumpProgress.values()) {
-            list.appendTag(info.writeToNbt());
+            list.add(info.writeToNbt());
         }
         nbt.put("pumpProgress", list);
     }

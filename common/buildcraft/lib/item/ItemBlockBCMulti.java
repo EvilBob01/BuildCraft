@@ -8,37 +8,25 @@ package buildcraft.lib.item;
 
 import java.util.function.Function;
 
-import net.minecraft.world.item.ItemMultiTexture;
 import net.minecraft.world.item.ItemStack;
 
 import buildcraft.lib.block.BlockBCBase_Neptune;
 
-/** Basically a copy of {@link ItemMultiTexture}, but extends {@link ItemBC_Neptune} */
+/** Multi-variant block item. In 1.21 metadata is gone; variants must be encoded in NBT or as separate items. */
 public class ItemBlockBCMulti extends ItemBlockBC_Neptune {
     protected final Function<ItemStack, String> nameFunction;
 
     public ItemBlockBCMulti(BlockBCBase_Neptune block, Function<ItemStack, String> nameFunction) {
         super(block);
         this.nameFunction = nameFunction;
-        setHasSubtypes(true);
-        setMaxDamage(0);
     }
 
     public ItemBlockBCMulti(BlockBCBase_Neptune block, final String[] namesByMeta) {
-        this(block, stack -> {
-            int meta = stack.getId();
-            if (meta < 0 || meta >= namesByMeta.length) meta = 0;
-            return namesByMeta[meta];
-        });
+        this(block, stack -> namesByMeta[0]);
     }
 
     @Override
-    public int getMetadata(int damage) {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + "." + this.nameFunction.apply(stack);
+    public String getDescriptionId(ItemStack stack) {
+        return super.getDescriptionId() + "." + this.nameFunction.apply(stack);
     }
 }

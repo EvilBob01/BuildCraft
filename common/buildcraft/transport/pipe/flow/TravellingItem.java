@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.phys.Vec3;
 
 import buildcraft.lib.misc.NBTUtilBC;
@@ -77,9 +78,9 @@ public class TravellingItem {
         this.stack = StackUtil.EMPTY;
     }
 
-    public TravellingItem(CompoundTag nbt, long tickNow) {
+    public TravellingItem(CompoundTag nbt, long tickNow, HolderLookup.Provider registries) {
         clientItemLink = () -> ItemStack.EMPTY;
-        stack = new ItemStack(nbt.getCompound("stack"));
+        stack = ItemStack.parseOptional(registries, nbt.getCompound("stack"));
         int c = nbt.getByte("colour");
         this.colour = c == 0 ? null : DyeColor.byId(c - 1);
         this.toCenter = nbt.getBoolean("toCenter");
@@ -101,9 +102,9 @@ public class TravellingItem {
         isPhantom = nbt.getBoolean("isPhantom");
     }
 
-    public CompoundTag writeToNbt(long tickNow) {
+    public CompoundTag writeToNbt(long tickNow, HolderLookup.Provider registries) {
         CompoundTag nbt = new CompoundTag();
-        nbt.put("stack", stack.serializeNBT());
+        nbt.put("stack", stack.save(registries));
         nbt.putByte("colour", (byte) (colour == null ? 0 : colour.getId() + 1));
         nbt.putBoolean("toCenter", toCenter);
         nbt.putDouble("speed", speed);

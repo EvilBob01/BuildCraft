@@ -49,7 +49,7 @@ public class FacadeInstance implements IFacade {
         }
         FacadePhasedState[] states = new FacadePhasedState[list.size()];
         for (int i = 0; i < list.size(); i++) {
-            states[i] = FacadePhasedState.readFromNbt(list.getCompoundTagAt(i));
+            states[i] = FacadePhasedState.readFromNbt(list.getCompound(i));
         }
         boolean hollow = nbt.getBoolean("isHollow");
         return new FacadeInstance(states, hollow);
@@ -59,7 +59,7 @@ public class FacadeInstance implements IFacade {
         CompoundTag nbt = new CompoundTag();
         ListTag list = new ListTag();
         for (FacadePhasedState state : phasedStates) {
-            list.appendTag(state.writeToNbt());
+            list.add(state.writeToNbt());
         }
         nbt.put("states", list);
         nbt.putBoolean("isHollow", isHollow);

@@ -158,7 +158,7 @@ public class DeltaInt {
         changingEntries.clear();
         ListTag list = nbt.getList("changing", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag entryNbt = list.getCompoundTagAt(i);
+            CompoundTag entryNbt = list.getCompound(i);
             long start = entryNbt.getLong("start");
             long end = entryNbt.getLong("end");
             int delta = entryNbt.getInt("delta");
@@ -181,7 +181,7 @@ public class DeltaInt {
             entryNbt.putLong("end", entry.endTick);
             entryNbt.putInt("delta", entry.delta);
             entryNbt.putBoolean("started", entry.hasStarted);
-            list.appendTag(entryNbt);
+            list.add(entryNbt);
         }
         nbt.put("changing", list);
         return nbt;

@@ -445,7 +445,7 @@ public class GuiUtil {
             // Temp workaround for headcrumbs
             // TODO: Remove this after https://github.com/BuildCraft/BuildCraft/issues/4268 is fixed from their side! */
             Item item = stack.getItem();
-            String info = item.builtInRegistryHolder().key().location() + " " + item.getClass() + " (" + stack.serializeNBT() + ")";
+            String info = item.builtInRegistryHolder().key().location() + " " + item.getClass() + " (count=" + stack.getCount() + ")";
             BCLog.logger.warn("[lib.guide] Found null display name! " + info);
             name = "!!NULL stack.getDisplayName(): " + info;
         }

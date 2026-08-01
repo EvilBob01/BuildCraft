@@ -267,7 +267,7 @@ public class PluggableGate extends PipePluggable implements IWireEmitter {
 
         } else {
             stored = logic.writeToNbt();
-            stored.removeTag("wireBroadcasts");
+            stored.remove("wireBroadcasts");
 
             if (stored.getSize() == 1) {
                 player.sendStatusMessage(new TextComponentTranslation("chat.gateCopier.noInformation"), true);

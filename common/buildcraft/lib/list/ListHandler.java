@@ -12,14 +12,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.NonNullList;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -100,18 +98,12 @@ public final class ListHandler {
                         anyHandled = true;
                     }
                 }
-                if (!anyHandled) {
-                    if (type == Type.TYPE && target.getHasSubtypes()) {
-                        return StackUtil.isMatchingItem(compare, target, false, false);
-                    }
-                }
+                // getHasSubtypes() removed in 1.21; metadata-based subtype matching no longer applicable
             } else {
                 for (ItemStack s : stacks) {
                     if (s != null && StackUtil.isMatchingItem(s, target, true, precise)) {
-                        // If precise, re-check damage
-                        if (!precise || s.getItemDamage() == target.getItemDamage()) {
-                            return true;
-                        }
+                        // Item damage (metadata) removed in 1.21; damage comparison always passes
+                        return true;
                     }
                 }
             }
@@ -129,7 +121,7 @@ public final class ListHandler {
             if (data != null && data.contains("st")) {
                 ListTag l = data.getList("st", 10);
                 for (int i = 0; i < l.size(); i++) {
-                    line.stacks.set(i, new ItemStack(l.getCompoundTagAt(i)));
+                    line.stacks.set(i, ItemStack.parseOptional(net.minecraft.core.RegistryAccess.EMPTY, l.getCompound(i)));
                 }
 
                 line.precise = data.getBoolean("Fp");
@@ -144,11 +136,11 @@ public final class ListHandler {
             CompoundTag data = new CompoundTag();
             ListTag stackList = new ListTag();
             for (ItemStack stack1 : stacks) {
-                CompoundTag stack = new CompoundTag();
-                if (stack1 != null) {
-                    stack1.saveAdditional(stack);
+                if (stack1 != null && !stack1.isEmpty()) {
+                    stackList.add(stack1.save(net.minecraft.core.RegistryAccess.EMPTY));
+                } else {
+                    stackList.add(new CompoundTag());
                 }
-                stackList.appendTag(stack);
             }
             data.put("st", stackList);
             data.putBoolean("Fp", precise);
@@ -198,20 +190,8 @@ public final class ListHandler {
                     }
                 }
             }
-            if (handlersCustom.size() > 0) {
-                for (Item i : ForgeRegistries.ITEMS) {
-                    NonNullList<ItemStack> examples = NonNullList.create();
-                    i.getSubItems(CreativeModeTab.SEARCH, examples);
-                    for (ItemStack s : examples) {
-                        for (ListMatchHandler mh : handlersCustom) {
-                            if (mh.matches(type, firstStack, s, false)) {
-                                stackList.add(s);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            // TODO (Phase 11): getSubItems removed in 1.21; iterate items via BuiltInRegistries.ITEM
+            // and use CreativeModeTabs data-gen to enumerate variants. Skipped for now.
             Collections.shuffle(stackList);
             return stackList;
         }
@@ -243,7 +223,7 @@ public final class ListHandler {
             ListTag list = data.getList("lines", 10);
             Line[] lines = new Line[list.size()];
             for (int i = 0; i < lines.length; i++) {
-                lines[i] = Line.fromNBT(list.getCompoundTagAt(i));
+                lines[i] = Line.fromNBT(list.getCompound(i));
             }
             return lines;
         } else {
@@ -270,14 +250,14 @@ public final class ListHandler {
             data.putBoolean("written", true);
             ListTag lineList = new ListTag();
             for (Line saving : lines) {
-                lineList.appendTag(saving.toNBT());
+                lineList.add(saving.toNBT());
             }
             data.put("lines", lineList);
         } else if (NBTUtilBC.hasTag(stackList)) {
             CompoundTag data = NBTUtilBC.getItemData(stackList);
             // No non-default lines, we can remove the old NBT data
-            data.removeTag("written");
-            data.removeTag("lines");
+            data.remove("written");
+            data.remove("lines");
             if (data.isEmpty()) {
                 // We can safely remove the
                 stackList.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
@@ -290,7 +270,7 @@ public final class ListHandler {
         if (data.contains("written") && data.contains("lines")) {
             ListTag list = data.getList("lines", 10);
             for (int i = 0; i < list.size(); i++) {
-                Line line = Line.fromNBT(list.getCompoundTagAt(i));
+                Line line = Line.fromNBT(list.getCompound(i));
                 if (line.matches(item)) {
                     return true;
                 }

@@ -229,7 +229,7 @@ public final class WireSystem {
     public CompoundTag writeToNBT() {
         CompoundTag nbt = new CompoundTag();
         ListTag elementsList = new ListTag();
-        elements.stream().map(WireElement::writeToNBT).forEach(elementsList::appendTag);
+        elements.stream().map(WireElement::writeToNBT).forEach(elementsList::add);
         nbt.put("elements", elementsList);
         nbt.putInt("color", color.getId());
         return nbt;
@@ -239,7 +239,7 @@ public final class WireSystem {
         networkId = nextServerNetworkId();
         ListTag elementsList = nbt.getList("elements", Tag.TAG_COMPOUND);
         //noinspection UnstableApiUsage
-        elements = IntStream.range(0, elementsList.size()).mapToObj(elementsList::getCompoundTagAt).map(WireElement::new).collect(ImmutableList.toImmutableList());
+        elements = IntStream.range(0, elementsList.size()).mapToObj(elementsList::getCompound).map(WireElement::new).collect(ImmutableList.toImmutableList());
         color = DyeColor.byId(nbt.getInt("color"));
 
         this.cachedHashCode = this.computeHashCode();

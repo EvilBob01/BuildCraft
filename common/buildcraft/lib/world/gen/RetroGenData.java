@@ -121,7 +121,7 @@ public class RetroGenData extends SavedData {
         for (int i = 0; i < list.size(); i++) {
             String name = list.get(i);
             map.put(name, (byte) i);
-            registry.appendTag(StringTag.valueOf(name));
+            registry.add(StringTag.valueOf(name));
         }
         nbt.put("registry", registry);
 

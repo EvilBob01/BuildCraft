@@ -215,9 +215,9 @@ public class TileAssemblyTable extends TileLaserTableBase {
         recipesStates.forEach((instruction, state) -> {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("recipe", instruction.recipe.builtInRegistryHolder().key().location().toString());
-            entryTag.put("output", instruction.output.serializeNBT());
+            entryTag.put("output", instruction.output.save(registries));
             entryTag.putInt("state", state.ordinal());
-            recipesStatesTag.appendTag(entryTag);
+            recipesStatesTag.add(entryTag);
         });
         nbt.put("recipes_states", recipesStatesTag);
     }
@@ -228,10 +228,10 @@ public class TileAssemblyTable extends TileLaserTableBase {
         recipesStates.clear();
         ListTag recipesStatesTag = nbt.getList("recipes_states", Tag.TAG_COMPOUND);
         for (int i = 0; i < recipesStatesTag.size(); i++) {
-            CompoundTag entryTag = recipesStatesTag.getCompoundTagAt(i);
+            CompoundTag entryTag = recipesStatesTag.getCompound(i);
             String name = entryTag.getString("recipe");
             if (entryTag.contains("output")) {
-                AssemblyInstruction instruction = lookupRecipe(name, new ItemStack(entryTag.getCompound("output")));
+                AssemblyInstruction instruction = lookupRecipe(name, ItemStack.parseOptional(registries, entryTag.getCompound("output")));
                 if (instruction != null)
                     recipesStates.put(instruction, EnumAssemblyRecipeState.values()[entryTag.getInt("state")]);
             }
@@ -308,14 +308,14 @@ public class TileAssemblyTable extends TileLaserTableBase {
 
         @Override
         public int compareTo(AssemblyInstruction o) {
-            return recipe.compareTo(o.recipe) + output.serializeNBT().toString().compareTo(o.output.serializeNBT().toString());
+            return recipe.compareTo(o.recipe) + output.getDescriptionId().compareTo(o.output.getDescriptionId());
         }
 
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof AssemblyInstruction)) return false;
             AssemblyInstruction instruction = (AssemblyInstruction) obj;
-            return recipe.builtInRegistryHolder().key().location().equals(instruction.recipe.builtInRegistryHolder().key().location()) && ItemStack.areItemStacksEqual(output, instruction.output);
+            return recipe.builtInRegistryHolder().key().location().equals(instruction.recipe.builtInRegistryHolder().key().location()) && ItemStack.isSameItemSameTags(output, instruction.output);
         }
     }
 }

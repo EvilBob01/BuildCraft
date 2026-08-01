@@ -566,7 +566,7 @@ public class JsonUtil {
                 ListTag nbtTagList = new ListTag();
                 StreamSupport.stream(json.getAsJsonArray().spliterator(), false)
                     .map(element -> context.<Tag> deserialize(element, Tag.class))
-                    .forEach(nbtTagList::appendTag);
+                    .forEach(nbtTagList::add);
                 return nbtTagList;
             }).registerTypeAdapter(CompoundTag.class, (JsonSerializer<CompoundTag>) (src, typeOfSrc, context) -> {
                 JsonObject jsonObject = new JsonObject();

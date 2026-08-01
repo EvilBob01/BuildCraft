@@ -11,12 +11,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -34,7 +32,6 @@ import buildcraft.lib.client.guide.loader.MarkdownPageLoader;
 import buildcraft.lib.client.guide.loader.XmlPageLoader;
 import buildcraft.lib.client.guide.parts.GuidePart;
 import buildcraft.lib.client.guide.parts.contents.PageLink;
-import buildcraft.lib.client.guide.parts.contents.PageLinkItemPermutations;
 import buildcraft.lib.client.guide.parts.contents.PageLinkItemStack;
 import buildcraft.lib.gui.GuiStack;
 import buildcraft.lib.gui.ISimpleDrawable;
@@ -87,35 +84,18 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
             if (!GuideManager.INSTANCE.objectsAdded.add(item)) {
                 continue;
             }
-            NonNullList<ItemStack> stacks = NonNullList.create();
+            // getSubItems removed in 1.21; creative tabs are data-driven.
+            // Fall back to a single base ItemStack per item.
             prof.push("search");
-            item.getSubItems(CreativeModeTab.SEARCH, stacks);
-            prof.endStartSection("itr_search");
-            if (stacks.size() > 200) {
-                // Likely a "super-item" which is constructed from a different registry
-                // and so it has thousands of useless permutations
-                // Instead lets replace it with a custom tooltip
-                consumer.addChild(TAGS, PageLinkItemPermutations.create(false, stacks, prof));
-                prof.pop();
-                BCLog.logger.info(
-                    "[lib.guide] Squished " + regName + " and all of it's " + stacks.size()
-                        + " variants down into one page entry."
-                );
-                continue;
-            }
-            for (int i = 0; i < stacks.size(); i++) {
-                ItemStack stack = stacks.get(i);
-
-                try {
-                    consumer.addChild(TAGS, PageLinkItemStack.create(false, stack, prof));
-                } catch (RuntimeException e) {
-                    throw new Error(
-                        "Failed to create a page link for " + item.builtInRegistryHolder().key().location() + " " + item.getClass() + " ("
-                            + stack.serializeNBT() + ")", e
-                    );
-                }
-            }
+            ItemStack baseStack = new ItemStack(item);
             prof.pop();
+            try {
+                consumer.addChild(TAGS, PageLinkItemStack.create(false, baseStack, prof));
+            } catch (RuntimeException e) {
+                throw new Error(
+                    "Failed to create a page link for " + regName + " " + item.getClass(), e
+                );
+            }
         }
     }
 
@@ -201,13 +181,9 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
             if (base.getItem() != test.getItem()) {
                 return false;
             }
-            if (entry.matchMeta) {
-                if (base.getId() != test.getId()) {
-                    return false;
-                }
-            }
+            // matchMeta: metadata removed in 1.21; meta always matches
             if (entry.matchNbt) {
-                if (!ItemStack.areItemStackTagsEqual(base, test)) {
+                if (!ItemStack.isSameItemSameTags(base, test)) {
                     return false;
                 }
             }

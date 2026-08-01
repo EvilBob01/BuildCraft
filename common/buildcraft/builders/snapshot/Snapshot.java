@@ -154,7 +154,7 @@ public abstract class Snapshot {
     public void computeKey() {
         CompoundTag nbt = writeToNBT(this);
         if (nbt.contains("key", Tag.TAG_COMPOUND)) {
-            nbt.removeTag("key");
+            nbt.remove("key");
         }
         key = new Key(key, HashUtil.computeHash(nbt));
     }

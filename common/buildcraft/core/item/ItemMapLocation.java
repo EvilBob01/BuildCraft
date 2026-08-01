@@ -150,7 +150,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         }
         CompoundTag nbt = NBTUtilBC.getItemData(stack);
         for (String key : STORAGE_TAGS) {
-            nbt.removeTag(key);
+            nbt.remove(key);
         }
         if (nbt.isEmpty()) {
             stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
@@ -194,7 +194,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
             ListTag pathNBT = new ListTag();
 
             for (BlockPos posInPath : path) {
-                pathNBT.appendTag(NBTUtilBC.writeBlockPos(posInPath));
+                pathNBT.add(NBTUtilBC.writeBlockPos(posInPath));
             }
 
             cpt.put("path", pathNBT);

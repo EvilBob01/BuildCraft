@@ -79,7 +79,7 @@ public class ItemPluggableFacade extends ItemBC_Neptune implements IItemPluggabl
             ListTag states = nbt.getList("states", Tag.TAG_COMPOUND);
             if (states.size() > 0) {
                 // Only migrate if we actually have a facade to migrate.
-                boolean isHollow = states.getCompoundTagAt(0).getBoolean("isHollow");
+                boolean isHollow = states.getCompound(0).getBoolean("isHollow");
                 CompoundTag tagFacade = new CompoundTag();
                 tagFacade.putBoolean("isHollow", isHollow);
                 tagFacade.put("states", states);

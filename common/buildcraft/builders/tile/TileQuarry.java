@@ -418,14 +418,10 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
 
     @Override
     public void onLoad() {
+        super.onLoad();
         if (!level.isClientSide) {
             updatePoses();
         }
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
         BCBuildersEventDist.INSTANCE.validateQuarry(this);
     }
 
