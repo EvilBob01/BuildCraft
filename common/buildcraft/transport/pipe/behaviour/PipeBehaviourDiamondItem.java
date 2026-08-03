@@ -131,7 +131,7 @@ public class PipeBehaviourDiamondItem extends PipeBehaviourDiamond {
 
                 while (!toSplit.isEmpty()) {
                     // Pick a random number between 0 and total count.
-                    int rand = split.holder.getPipeWorld().rand.nextInt(totalCount);
+                    int rand = split.holder.getPipeWorld().getRandom().nextInt(totalCount);
                     int face = randLookup[rand];
                     if (entries[face] == null) {
                         ItemStack stack = toSplit.copy();

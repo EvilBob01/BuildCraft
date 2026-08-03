@@ -11,9 +11,10 @@ import java.util.List;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.ItemShears;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -34,7 +35,7 @@ public enum StripesHandlerShears implements IStripesHandlerItem {
                           ItemStack stack,
                           Player player,
                           IStripesActivator activator) {
-        if (!(stack.getItem() instanceof ItemShears)) {
+        if (!(stack.getItem() instanceof ShearsItem)) {
             return false;
         }
 
@@ -44,10 +45,11 @@ public enum StripesHandlerShears implements IStripesHandlerItem {
 
         if (block instanceof IShearable) {
             IShearable shearableBlock = (IShearable) block;
-            if (shearableBlock.isShearable(stack, world, pos)) {
-                List<ItemStack> drops = shearableBlock.onSheared(stack, world, pos, 0);
-                if (stack.attemptDamageItem(1, player.getRNG(), player instanceof ServerPlayer ? (ServerPlayer) player : null)) {
-                    stack.shrink(1);
+            if (shearableBlock.isShearable(player, stack, world, pos)) {
+                List<ItemStack> drops = shearableBlock.onSheared(player, stack, world, pos);
+                ServerPlayer serverPlayer = player instanceof ServerPlayer ? (ServerPlayer) player : null;
+                if (world instanceof ServerLevel) {
+                    stack.hurtAndBreak(1, (ServerLevel) world, serverPlayer, item -> stack.shrink(1));
                 }
                 world.setBlock(pos, Blocks.AIR.defaultBlockState(), 11); // Might become obsolete in 1.12+
                 for (ItemStack dropStack : drops) {

@@ -28,7 +28,7 @@ public enum StripesHandlerMinecartDestroy implements IStripesHandlerBlock {
 
     @Override
     public boolean handle(Level world, BlockPos pos, Direction direction, Player player, IStripesActivator activator) {
-        AABB box = new AABB(pos, pos.offset(1, 1, 1));
+        AABB box = new AABB(pos);
         List<AbstractMinecart> minecarts = world.getEntitiesOfClass(AbstractMinecart.class, box);
 
         if (minecarts.size() > 0) {

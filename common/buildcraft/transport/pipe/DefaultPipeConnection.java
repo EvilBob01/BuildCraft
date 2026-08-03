@@ -19,10 +19,11 @@ public enum DefaultPipeConnection implements ICustomPipeConnection {
 
     @Override
     public float getExtension(Level world, BlockPos pos, Direction face, BlockState state) {
-        AABB bb = state.getCollisionBoundingBox(world, pos);
-        if (bb == null) {
+        net.minecraft.world.phys.shapes.VoxelShape shape = state.getCollisionShape(world, pos);
+        if (shape.isEmpty()) {
             return 0;
         }
+        AABB bb = shape.bounds();
 
         switch (face) {
             case DOWN:

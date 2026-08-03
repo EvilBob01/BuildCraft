@@ -65,14 +65,14 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
 
     public PipeBehaviourStripes(IPipe pipe, CompoundTag nbt) {
         super(pipe, nbt);
-        battery.deserializeNBT(nbt.getCompound("battery"));
+        battery.deserializeNBT(pipe.getHolder().getPipeWorld().registryAccess(), nbt.getCompound("battery"));
         setDirection(NBTUtilBC.readEnum(nbt.get("direction"), Direction.class));
     }
 
     @Override
     public CompoundTag writeToNbt() {
         CompoundTag nbt = super.writeToNbt();
-        nbt.put("battery", battery.serializeNBT());
+        nbt.put("battery", battery.serializeNBT(pipe.getHolder().getPipeWorld().registryAccess()));
         nbt.put("direction", NBTUtilBC.writeEnum(direction));
         return nbt;
     }
@@ -178,7 +178,7 @@ public class PipeBehaviourStripes extends PipeBehaviour implements IStripesActiv
                 if (progress < target) {
                     progress += battery.extractPower(0, Math.min(target - progress, MjAPI.MJ * 10));
                     if (progress > 0) {
-                        world.sendBlockBreakProgress(offsetHash, offset, (int) (progress * 9 / target));
+                        world.destroyBlockProgress(offsetHash, offset, (int) (progress * 9 / target));
                     }
                 } else {
                     BlockUtil.breakBlockAndGetDrops(

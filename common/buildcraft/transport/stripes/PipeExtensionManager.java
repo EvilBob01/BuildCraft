@@ -27,12 +27,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -131,7 +133,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
         stacksToSendBack.add(r.stack);
 
         // Step 1: Copy over existing stripes pipe
-        BlockSnapshot blockSnapshot1 = BlockSnapshot.getBlockSnapshot(w, r.pos);
+        BlockSnapshot blockSnapshot1 = BlockSnapshot.create(w.dimension(), w, r.pos);
         BlockState stripesStateOld = w.getBlockState(r.pos);
         BlockEntity stripesTileOld = w.getBlockEntity(r.pos);
         final GameProfile owner;
@@ -150,15 +152,14 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             }
         }
 
-        CompoundTag stripesNBTOld = new CompoundTag();
-        stripesTileOld.saveAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
+        CompoundTag stripesNBTOld = stripesTileOld.saveWithFullMetadata(((net.minecraft.server.level.ServerLevel) w).registryAccess());
 
         // Step 2: Remove previous pipe
-        BlockSnapshot blockSnapshot2 = BlockSnapshot.getBlockSnapshot(w, p);
+        BlockSnapshot blockSnapshot2 = BlockSnapshot.create(w.dimension(), w, p);
         NonNullList<ItemStack> list = NonNullList.create();
         boolean canceled = !BlockUtil.breakBlock((ServerLevel) w, p, list, r.pos, owner);
         if (canceled) {
-            blockSnapshot2.restore(true);
+            blockSnapshot2.restore(3);
             BlockEntity tile = w.getBlockEntity(p);
             if (tile != null) {
                 tile.onLoad();
@@ -176,25 +177,25 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, p);
             player.getInventory().clearContent();
             w.setBlock(p, stripesStateOld, 3);
-            BlockEvent.PlaceEvent placeEvent = EventHooks.onPlayerBlockPlace(player, blockSnapshot2, r.dir, InteractionHand.MAIN_HAND);
-            if (canceled = placeEvent.isCanceled()) {
-                blockSnapshot2.restore(true);
+            boolean placeAllowed = EventHooks.onBlockPlace(player, blockSnapshot2, r.dir);
+            if (canceled = !placeAllowed) {
+                blockSnapshot2.restore(3);
                 BlockEntity tile = w.getBlockEntity(r.pos);
                 if (tile != null) {
                     tile.onLoad();
                 }
             } else {
-                SoundUtil.playBlockBreak(w, p, blockSnapshot2.getReplacedBlock());
+                SoundUtil.playBlockBreak(w, p, blockSnapshot2.getState());
 
                 canceled = !BlockUtil.breakBlock((ServerLevel) w, r.pos, NonNullList.create(), r.pos, owner);
                 if (canceled) {
-                    blockSnapshot1.restore(true);
+                    blockSnapshot1.restore(3);
                     BlockEntity tile1 = w.getBlockEntity(r.pos);
                     if (tile1 != null) {
                         tile1.onLoad();
                     }
 
-                    blockSnapshot2.restore(true);
+                    blockSnapshot2.restore(3);
                     BlockEntity tile2 = w.getBlockEntity(p);
                     if (tile2 != null) {
                         tile2.onLoad();
@@ -239,13 +240,13 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             owner = holder.getOwner();
         }
 
-        stripesTileOld.saveAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
-        BlockSnapshot blockSnapshot1 = BlockSnapshot.getBlockSnapshot(w, r.pos);
+        stripesNBTOld = stripesTileOld.saveWithFullMetadata(((net.minecraft.server.level.ServerLevel) w).registryAccess());
+        BlockSnapshot blockSnapshot1 = BlockSnapshot.create(w.dimension(), w, r.pos);
         boolean canceled = !BlockUtil.breakBlock((ServerLevel) w, r.pos, NonNullList.create(), r.pos, owner);
         if (canceled) {
             stacksToSendBack.add(r.stack);
 
-            blockSnapshot1.restore(true);
+            blockSnapshot1.restore(3);
             BlockEntity tile = w.getBlockEntity(r.pos);
             if (tile != null) {
                 tile.onLoad();
@@ -259,7 +260,9 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, r.pos);
             player.getInventory().clearContent();
             player.getInventory().setItem(player.getInventory().selected, r.stack);
-            InteractionResult result = CommonHooks.onPlaceItemIntoWorld(r.stack, player, w, r.pos, r.dir.getOpposite(), 0.5F, 0.5F, 0.5F, InteractionHand.MAIN_HAND);
+            Direction placeDir = r.dir.getOpposite();
+            BlockHitResult hitResult = new BlockHitResult(Vec3.atCenterOf(r.pos), placeDir, r.pos, false);
+            InteractionResult result = CommonHooks.onPlaceItemIntoWorld(new UseOnContext(player, InteractionHand.MAIN_HAND, hitResult));
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().removeItemNoUpdate(i);
                 if (!stack.isEmpty()) {
@@ -267,7 +270,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
                 }
             }
             if (canceled = result != InteractionResult.SUCCESS) {
-                blockSnapshot1.restore(true);
+                blockSnapshot1.restore(3);
                 BlockEntity tile = w.getBlockEntity(r.pos);
                 if (tile != null) {
                     tile.onLoad();
@@ -285,19 +288,19 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             // - Create block and tile
             FakePlayer player = BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) w, owner, p);
             player.getInventory().clearContent();
-            BlockSnapshot blockSnapshot2 = BlockSnapshot.getBlockSnapshot(w, p);
+            BlockSnapshot blockSnapshot2 = BlockSnapshot.create(w.dimension(), w, p);
             w.setBlock(p, stripesStateOld, 3);
-            BlockEvent.PlaceEvent placeEvent = EventHooks.onPlayerBlockPlace(player, blockSnapshot2, r.dir.getOpposite(), InteractionHand.MAIN_HAND);
-            if (canceled = placeEvent.isCanceled()) {
+            boolean placeAllowed = EventHooks.onBlockPlace(player, blockSnapshot2, r.dir.getOpposite());
+            if (canceled = !placeAllowed) {
                 stacksToSendBack.add(r.stack);
 
-                blockSnapshot1.restore(true);
+                blockSnapshot1.restore(3);
                 BlockEntity tile = w.getBlockEntity(r.pos);
                 if (tile != null) {
                     tile.onLoad();
                 }
 
-                blockSnapshot2.restore(true);
+                blockSnapshot2.restore(3);
             } else {
                 stacksToSendBack.addAll(list);
             }
@@ -318,7 +321,7 @@ public enum PipeExtensionManager implements IPipeExtensionManager {
             return;
         }
         if (!canceled) {
-            stripesTileNew.loadAdditional(stripesNBTOld, ((net.minecraft.server.level.ServerLevel)w).registryAccess());
+            stripesTileNew.loadWithComponents(stripesNBTOld, ((net.minecraft.server.level.ServerLevel) w).registryAccess());
             stripesTileNew.onLoad();
         }
 

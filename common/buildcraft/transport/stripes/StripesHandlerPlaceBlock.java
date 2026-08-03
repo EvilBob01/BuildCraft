@@ -7,8 +7,11 @@ package buildcraft.transport.stripes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -31,16 +34,9 @@ public enum StripesHandlerPlaceBlock implements IStripesHandlerItem {
         if (!world.isEmptyBlock(pos.relative(direction))) {
             return false;
         }
-        stack.getItem().onItemUse(
-            player,
-            world,
-            pos.relative(direction),
-            InteractionHand.MAIN_HAND,
-            direction,
-            0.5f,
-            0.5f,
-            0.5f
-        );
+        BlockPos target = pos.relative(direction);
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(target), direction, target, false);
+        stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
         return true;
     }
 }

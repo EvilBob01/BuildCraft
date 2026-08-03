@@ -9,18 +9,9 @@ package buildcraft.transport.stripes;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.state.BlockState;
-// TODO (Phase 8): net.minecraft.dispenser.IBehaviorDispenseItem/IBlockSource were renamed to
-// DispenseItemBehavior/BlockSource (net.minecraft.core.dispenser package) with a different API
-// shape; this whole class needs a rework beyond the block import rename done here.
-import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -28,74 +19,16 @@ import net.minecraft.world.level.Level;
 import buildcraft.api.transport.IStripesActivator;
 import buildcraft.api.transport.IStripesHandlerItem;
 
+// TODO Phase 8: net.minecraft.core.dispenser.BlockSource is now a record requiring a real
+// DispenserBlockEntity (level, pos, state, blockEntity), which stripes pipes don't have -- there
+// is no fake dispenser block placed at the pipe's output. DispenseItemBehavior.dispense() can no
+// longer be invoked without one. This needs either a temporary real DispenserBlockEntity or a
+// from-scratch reimplementation of the specific dispense behaviours BuildCraft cares about.
 public enum StripesHandlerDispenser implements IStripesHandlerItem {
     INSTANCE;
 
     public static final List<Item> ITEMS = new ArrayList<>();
     public static final List<Class<? extends Item>> ITEM_CLASSES = new ArrayList<>();
-
-    public static class Source implements IBlockSource {
-        private final Level world;
-        private final BlockPos pos;
-        private final Direction side;
-
-        public Source(Level world, BlockPos pos, Direction side) {
-            this.level = world;
-            this.worldPosition = pos;
-            this.side = side;
-        }
-
-        @Override
-        public double getX() {
-            return pos.getX() + 0.5D;
-        }
-
-        @Override
-        public double getY() {
-            return pos.getY() + 0.5D;
-        }
-
-        @Override
-        public double getZ() {
-            return pos.getZ() + 0.5D;
-        }
-
-        @Override
-        public BlockPos getBlockPos() {
-            return pos;
-        }
-
-        @Override
-        public BlockState getBlockState() {
-            return Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, side);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <T extends BlockEntity> T getBlockTileEntity() {
-            return (T) world.getBlockEntity(pos);
-        }
-
-        @Override
-        public Level getLevel() {
-            return world;
-        }
-    }
-
-    private static boolean shouldHandle(ItemStack stack) {
-        if (ITEMS.contains(stack.getItem())) {
-            return true;
-        }
-
-        Class<?> c = stack.getItem().getClass();
-        while (c != Item.class) {
-            if (ITEMS.contains(c)) {
-                return true;
-            }
-            c = c.getSuperclass();
-        }
-        return false;
-    }
 
     @Override
     public boolean handle(Level world,
@@ -104,18 +37,6 @@ public enum StripesHandlerDispenser implements IStripesHandlerItem {
                           ItemStack stack,
                           Player player,
                           IStripesActivator activator) {
-        if (!DispenserBlock.DISPENSE_BEHAVIOR_REGISTRY.containsKey(stack.getItem())) {
-            return false;
-        }
-        IBehaviorDispenseItem behaviour = DispenserBlock.DISPENSE_BEHAVIOR_REGISTRY.getObject(stack.getItem());
-        // Temp: for testing
-        // if (!shouldHandle(stack)) {
-        // return false;
-        // }
-
-        IBlockSource source = new Source(world, pos, direction);
-        ItemStack output = behaviour.dispense(source, stack.copy());
-        player.getInventory().setItem(player.getInventory().selected, output);
-        return true;
+        return false;
     }
 }

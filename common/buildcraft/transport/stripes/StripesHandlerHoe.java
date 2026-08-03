@@ -7,11 +7,14 @@
 package buildcraft.transport.stripes;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemHoe;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -29,35 +32,22 @@ public enum StripesHandlerHoe implements IStripesHandlerItem {
                           Player player,
                           IStripesActivator activator) {
 
-        if (!(stack.getItem() instanceof ItemHoe)) {
+        if (!(stack.getItem() instanceof HoeItem)) {
             return false;
         }
 
         pos = pos.relative(direction);
-        if (stack.onItemUse(
-                player,
-                world,
-                pos,
-                InteractionHand.MAIN_HAND,
-                Direction.UP,
-                0.0f,
-                0.0f,
-                0.0f
-        ) != InteractionResult.PASS) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atBottomCenterOf(pos), Direction.UP, pos, false);
+        if (stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit)) != InteractionResult.PASS) {
             return true;
         }
 
-        if (direction != Direction.UP && stack.onItemUse(
-                player,
-                world,
-                pos.below(),
-                InteractionHand.MAIN_HAND,
-                Direction.UP,
-                0.0f,
-                0.0f,
-                0.0f
-        ) != InteractionResult.PASS) {
-            return true;
+        if (direction != Direction.UP) {
+            BlockPos below = pos.below();
+            BlockHitResult belowHit = new BlockHitResult(Vec3.atBottomCenterOf(below), Direction.UP, below, false);
+            if (stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, belowHit)) != InteractionResult.PASS) {
+                return true;
+            }
         }
 
         return false;

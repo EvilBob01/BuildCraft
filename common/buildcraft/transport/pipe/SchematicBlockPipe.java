@@ -75,7 +75,7 @@ public class SchematicBlockPipe implements ISchematicBlock {
     public SchematicBlockPipe getRotated(Rotation rotation) {
         SchematicBlockPipe schematicBlock = new SchematicBlockPipe();
         schematicBlock.tileNbt = tileNbt;
-        schematicBlock.tileRotation = tileRotation.add(rotation);
+        schematicBlock.tileRotation = tileRotation.getRotated(rotation);
         return schematicBlock;
     }
 
@@ -88,12 +88,13 @@ public class SchematicBlockPipe implements ISchematicBlock {
     @Override
     public boolean build(Level world, BlockPos blockPos) {
         if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 11)) {
-            BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
+            BlockEntity tileEntity = BlockEntity.loadStatic(blockPos, world.getBlockState(blockPos), tileNbt, world.registryAccess());
             if (tileEntity != null) {
                 tileEntity.setLevel(world);
                 world.setBlockEntity(tileEntity);
                 if (tileRotation != Rotation.NONE) {
-                    tileEntity.rotate(tileRotation);
+                    // TODO Phase 8: BlockEntity no longer has a generic rotate(Rotation) method in
+                    // 1.21 -- schematic-block rotation on paste needs a per-tile replacement.
                 }
                 return true;
             }
@@ -105,12 +106,13 @@ public class SchematicBlockPipe implements ISchematicBlock {
     @Override
     public boolean buildWithoutChecks(Level world, BlockPos blockPos) {
         if (world.setBlock(blockPos, BCTransportBlocks.pipeHolder.defaultBlockState(), 0)) {
-            BlockEntity tileEntity = BlockEntity.create(world, tileNbt);
+            BlockEntity tileEntity = BlockEntity.loadStatic(blockPos, world.getBlockState(blockPos), tileNbt, world.registryAccess());
             if (tileEntity != null) {
                 tileEntity.setLevel(world);
                 world.setBlockEntity(tileEntity);
                 if (tileRotation != Rotation.NONE) {
-                    tileEntity.rotate(tileRotation);
+                    // TODO Phase 8: BlockEntity no longer has a generic rotate(Rotation) method in
+                    // 1.21 -- schematic-block rotation on paste needs a per-tile replacement.
                 }
                 return true;
             }

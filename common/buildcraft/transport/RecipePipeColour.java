@@ -6,19 +6,18 @@
 
 package buildcraft.transport;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 import buildcraft.lib.recipe.ChangingItemStack;
 import buildcraft.lib.recipe.IRecipeViewable;
 //TODO: convert to factory if needed, currently not used
-public class RecipePipeColour implements Recipe, IRecipeViewable {
+public class RecipePipeColour implements Recipe<RecipeInput>, IRecipeViewable {
 
     private final ItemStack output;
     /** Single-dimension because all pipe recipes use 3 items or less. */
@@ -32,29 +31,35 @@ public class RecipePipeColour implements Recipe, IRecipeViewable {
     }
 
     @Override
-    public boolean matches(CraftingContainer inv, Level worldIn) {
+    public boolean matches(RecipeInput inv, Level worldIn) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingContainer inv) {
+    public ItemStack assemble(RecipeInput inv, HolderLookup.Provider registries) {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return false;
     }
 
     @Override
-    public ItemStack getResultItem(net.minecraft.core.HolderLookup.Provider registries) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return output;
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
+    public RecipeSerializer<?> getSerializer() {
+        // TODO Auto-generated method stub
+        throw new AbstractMethodError("Implement this!");
+    }
+
+    @Override
+    public RecipeType<?> getType() {
         // TODO Auto-generated method stub
         throw new AbstractMethodError("Implement this!");
     }
@@ -66,22 +71,6 @@ public class RecipePipeColour implements Recipe, IRecipeViewable {
 
     @Override
     public ChangingItemStack getRecipeOutputs() {
-        return null;
-    }
-
-    @Override
-    public Recipe setRegistryName(ResourceLocation name) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getRegistryName() {
-        return null;
-    }
-
-    @Override
-    public Class<Recipe> getRegistryType() {
         return null;
     }
 }

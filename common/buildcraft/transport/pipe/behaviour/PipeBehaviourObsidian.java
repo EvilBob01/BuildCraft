@@ -116,17 +116,17 @@ public class PipeBehaviourObsidian extends PipeBehaviour implements IMjRedstoneR
         switch (openFace) {
             default:
             case WEST:
-                return bb.offset(-distance, 0, 0).inflate(0.5, distance, distance);
+                return bb.move(-distance, 0, 0).inflate(0.5, distance, distance);
             case EAST:
-                return bb.offset(distance, 0, 0).inflate(0.5, distance, distance);
+                return bb.move(distance, 0, 0).inflate(0.5, distance, distance);
             case DOWN:
-                return bb.offset(0, -distance, 0).inflate(distance, 0.5, distance);
+                return bb.move(0, -distance, 0).inflate(distance, 0.5, distance);
             case UP:
-                return bb.offset(0, distance, 0).inflate(distance, 0.5, distance);
+                return bb.move(0, distance, 0).inflate(distance, 0.5, distance);
             case NORTH:
-                return bb.offset(0, 0, -distance).inflate(distance, distance, 0.5);
+                return bb.move(0, 0, -distance).inflate(distance, distance, 0.5);
             case SOUTH:
-                return bb.offset(0, 0, distance).inflate(distance, distance, 0.5);
+                return bb.move(0, 0, distance).inflate(distance, distance, 0.5);
         }
     }
 
