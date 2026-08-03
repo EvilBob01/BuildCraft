@@ -16,7 +16,7 @@ public class TaskMiniChunkFiller implements Callable<FilledChunk> {
     private final BlockPos offset;
 
     public TaskMiniChunkFiller(Level world, BlockPos min) {
-        this.level = world;
+        this.world = world;
         this.offset = min;
     }
 
