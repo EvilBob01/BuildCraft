@@ -16,6 +16,7 @@ public class ItemBC_Neptune extends Item implements IItemBuildCraft {
     public final String id;
 
     public ItemBC_Neptune(String id) {
+        super(new Item.Properties());
         this.id = id;
         init();
     }
