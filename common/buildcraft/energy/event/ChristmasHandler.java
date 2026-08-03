@@ -58,12 +58,8 @@ public class ChristmasHandler {
         if (fluids != null) {
             for (BCFluid fluid : fluids) {
                 fluid.setColour(lightColour, darkColour);
-                if (fluid.isGaseous()) {
-                    fluid.setGaseous(false);
-                }
-                if (fluid.getDensity() < 0) {
-                    fluid.setDensity(-fluid.getDensity());
-                }
+                // TODO (Phase 9): gaseous/density override no longer possible via BCFluid;
+                // FluidType properties are immutable after registration in 1.21.
             }
         }
     }

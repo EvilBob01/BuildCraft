@@ -6,7 +6,7 @@ package buildcraft.api.robots;
 
 import java.util.Arrays;
 
-import net.minecraft.world.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -189,7 +189,7 @@ public abstract class DockingStation {
         return EnumPipePart.CENTER;
     }
 
-    public IInventory getItemInput() {
+    public Container getItemInput() {
         return null;
     }
 

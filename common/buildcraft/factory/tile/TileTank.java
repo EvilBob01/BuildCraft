@@ -143,7 +143,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
         if (fluid == null) {
             return;
         }
-        if (fluid.getFluid().isGaseous(fluid)) {
+        if (fluid.getFluidType().isLighterThanAir()) {
             Collections.reverse(tanks);
         }
         TileTank prev = null;
@@ -354,7 +354,7 @@ public class TileTank extends TileBC_Neptune implements ITickable, IDebuggable, 
                 return 0;
             }
         }
-        boolean gas = resource.getFluid().isGaseous(resource);
+        boolean gas = resource.getFluidType().isLighterThanAir();
         if (gas) {
             Collections.reverse(tanks);
         }

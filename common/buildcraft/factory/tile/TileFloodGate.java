@@ -107,10 +107,10 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
         List<BlockPos> nextPosesToCheck = new ArrayList<>();
         for (Direction face : openSides) {
             BlockPos offset = worldPosition.relative(face);
-            nextPosesToCheck.relative(offset);
+            nextPosesToCheck.add(offset);
             paths.put(offset, ImmutableList.of(offset));
         }
-        Direction[] directions = fluid.getFluid().isGaseous(fluid) ? SEARCH_GASEOUS : SEARCH_NORMAL;
+        Direction[] directions = fluid.getFluidType().isLighterThanAir() ? SEARCH_GASEOUS : SEARCH_NORMAL;
         level.getProfiler().popPush("build");
         outer: while (!nextPosesToCheck.isEmpty()) {
             List<BlockPos> nextPosesToCheckCopy = new ArrayList<>(nextPosesToCheck);
@@ -204,8 +204,8 @@ public class TileFloodGate extends TileBC_Neptune implements ITickable, IDebugga
                     }
                     if (canFill && canFill(currentPos)) {
                         FakePlayer fakePlayer =
-                            BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) world, getOwner(), currentPos);
-                        if (FluidUtil.tryPlaceFluid(fakePlayer, world, currentPos, tank, fluid)) {
+                            BuildCraftAPI.fakePlayerProvider.getFakePlayer((ServerLevel) level, getOwner(), currentPos);
+                        if (FluidUtil.tryPlaceFluid(fakePlayer, level, currentPos, tank, fluid)) {
                             AdvancementUtil.unlockAdvancement(getOwner().getId(), ADVANCEMENT_FLOOD_SINGLE);
                             for (Direction side : Direction.values()) {
                                 level.notifyNeighborsOfStateChange(currentPos.relative(side), BCFactoryBlocks.floodGate);

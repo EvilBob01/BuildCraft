@@ -103,7 +103,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
         }
 
         public PlayerPumpInfo(CompoundTag nbt) {
-            profile = NbtUtils.readGameProfileFromNBT(nbt.getCompound("profile"));
+            profile = NbtUtils.readGameProfile(nbt.getCompound("profile")).orElse(null);
             lastPumpTick = nbt.getLong("lastPumpTick");
             sourcesPumped = nbt.getInt("sourcesPumped");
         }
@@ -113,6 +113,7 @@ public class TileSpringOil extends BlockEntity implements IDebuggable, ITileOilS
             nbt.put("profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
             nbt.putLong("lastPumpTick", lastPumpTick);
             nbt.putInt("sourcesPumped", sourcesPumped);
+            return nbt;
         }
     }
 }

@@ -8,14 +8,14 @@ package buildcraft.lib.gui.slot;
 
 import java.util.function.IntFunction;
 
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.IInventory;
-import net.minecraft.world.inventory.InventoryBasic;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class SlotDisplay extends Slot {
-    private static IInventory emptyInventory = new InventoryBasic("[Null]", true, 0);
+    private static Container emptyInventory = new SimpleContainer(0);
     private final IntFunction<ItemStack> getter;
 
     public SlotDisplay(IntFunction<ItemStack> getter, int index, int xPosition, int yPosition) {

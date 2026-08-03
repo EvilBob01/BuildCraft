@@ -168,7 +168,7 @@ public abstract class TileEngineBase_BC8 extends TileBC_Neptune implements ITick
                     // makeTileCache();
                     sendNetworkUpdate(NET_RENDER_DATA);
                     redrawBlock();
-                    level.notifyNeighborsRespectDebug(getBlockPos(), getBlockType(), true);
+                    level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
                     return InteractionResult.SUCCESS;
                 }
                 return InteractionResult.FAIL;

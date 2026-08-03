@@ -307,7 +307,7 @@ public class GuiUtil {
         double endX = startX + position.getWidth();
         double endY;
 
-        if (fluid.getFluid().isGaseous(fluid)) {
+        if (fluid.getFluidType().isLighterThanAir()) {
             startY = position.getY() + height;
             endY = position.getY();
         } else {

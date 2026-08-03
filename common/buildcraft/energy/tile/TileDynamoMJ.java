@@ -173,7 +173,7 @@ public class TileDynamoMJ extends TileBC_Neptune implements ITickable, IEngineLi
                     // makeTileCache();
                     sendNetworkUpdate(NET_RENDER_DATA);
                     redrawBlock();
-                    level.notifyNeighborsRespectDebug(getBlockPos(), getBlockType(), true);
+                    level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
                     return InteractionResult.SUCCESS;
                 }
                 return InteractionResult.FAIL;

@@ -12,8 +12,8 @@ import java.util.Locale;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.core.Direction;
 
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.SubscribeEvent;
 
@@ -21,8 +21,6 @@ import buildcraft.lib.client.sprite.SpriteHolderRegistry;
 import buildcraft.lib.client.sprite.SpriteHolderRegistry.SpriteHolder;
 import buildcraft.lib.misc.ColourUtil;
 
-import buildcraft.transport.client.model.PipeModelCacheAll;
-import buildcraft.transport.client.model.PipeModelCacheBase;
 import buildcraft.transport.client.render.PipeFlowRendererItems;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourEmzuli.SlotIndex;
 
@@ -125,13 +123,13 @@ public class BCTransportSprites {
     }
 
     @SubscribeEvent
-    public static void onTextureStitchPre(TextureStitchEvent.Pre event) {
-        PipeModelCacheBase.generator.onTextureStitchPre(event.getMap());
+    public static void onTextureStitchPre(TextureAtlasStitchedEvent event) {
+        // TODO Phase 7: PipeModelCacheBase.generator.onTextureStitchPre needs porting off TextureMap
     }
 
     @SubscribeEvent
-    public static void onModelBake(ModelBakeEvent event) {
-        PipeModelCacheAll.clearModels();
+    public static void onModelBake(ModelEvent.BakingCompleted event) {
+        // TODO Phase 7: PipeModelCacheAll.clearModels() needs porting off the old model-bake pipeline
         PipeFlowRendererItems.onModelBake();
     }
 
