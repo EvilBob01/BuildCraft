@@ -33,7 +33,7 @@ public class ItemWaterGel extends ItemBC_Neptune {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> onItemRightClick(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Vec3 start = player.position().add(0, player.getEyeHeight(), 0);
         Vec3 look = player.getLookAngle();
