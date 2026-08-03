@@ -7,7 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.resources.ResourceLocation;
 
@@ -50,12 +51,12 @@ public class BuildCraftJsonGui extends BuildCraftGui {
         time = context.putVariableDouble("time");
     }
 
-    public BuildCraftJsonGui(GuiScreen gui, ResourceLocation jsonGuiDefinition) {
+    public BuildCraftJsonGui(Screen gui, ResourceLocation jsonGuiDefinition) {
         super(gui);
         this.jsonGuiDefinition = jsonGuiDefinition;
     }
 
-    public BuildCraftJsonGui(GuiScreen gui, IGuiArea rootElement, ResourceLocation jsonGuiDefinition) {
+    public BuildCraftJsonGui(Screen gui, IGuiArea rootElement, ResourceLocation jsonGuiDefinition) {
         super(gui, rootElement);
         this.jsonGuiDefinition = jsonGuiDefinition;
     }
@@ -111,9 +112,10 @@ public class BuildCraftJsonGui extends BuildCraftGui {
     }
 
     @Override
-    public void drawBackgroundLayer(float partialTicks, int mouseX, int mouseY, Runnable backgroundRenderer) {
+    public void drawBackgroundLayer(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY,
+        Runnable backgroundRenderer) {
         time.value = timeOpen + partialTicks;
         varData.refresh();
-        super.drawBackgroundLayer(partialTicks, mouseX, mouseY, backgroundRenderer);
+        super.drawBackgroundLayer(graphics, partialTicks, mouseX, mouseY, backgroundRenderer);
     }
 }

@@ -6,13 +6,12 @@
 
 package buildcraft.lib.gui;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.function.Function;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -28,31 +27,41 @@ import buildcraft.lib.gui.pos.IGuiArea;
 import buildcraft.lib.misc.GuiUtil;
 
 /** Future rename: "GuiContainerBuildCraft" */
-public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer {
+public abstract class GuiBC8<C extends ContainerBC_Neptune> extends AbstractContainerScreen<C> {
     public final BuildCraftGui mainGui;
     public final C container;
 
+    /** The {@link GuiGraphics} that is currently being used to render this screen. Only valid while inside one of the
+     * render callbacks (ie between {@link #render(GuiGraphics, int, int, float)} being called, and it returning). */
+    protected GuiGraphics graphics;
+
     public GuiBC8(C container) {
-        this(container, g -> new BuildCraftGui(g, BuildCraftGui.createWindowedArea(g)));
+        this(container, g -> new BuildCraftGui(g, createWindowedArea(g)));
+    }
+
+    /** Creates a new {@link IGuiArea} that takes its bounds from the given {@link GuiBC8}'s size. */
+    public static IGuiArea createWindowedArea(GuiBC8<?> gui) {
+        return IGuiArea.create(() -> (double) gui.leftPos, () -> (double) gui.topPos, () -> (double) gui.imageWidth,
+            () -> (double) gui.imageHeight);
     }
 
     public GuiBC8(C container, Function<GuiBC8<?>, BuildCraftGui> constructor) {
-        super(container);
+        super(container, container.player.getInventory(), Component.empty());
         this.container = container;
         this.mainGui = constructor.apply(this);
         standardLedgerInit();
     }
 
     public GuiBC8(C container, ResourceLocation jsonGuiDef) {
-        super(container);
+        super(container, container.player.getInventory(), Component.empty());
         this.container = container;
-        BuildCraftJsonGui jsonGui = new BuildCraftJsonGui(this, BuildCraftGui.createWindowedArea(this), jsonGuiDef);
+        BuildCraftJsonGui jsonGui = new BuildCraftJsonGui(this, createWindowedArea(this), jsonGuiDef);
         jsonGui.properties.put("player.getInventory()", new InventorySlotHolder(container, container.player.getInventory()));
         this.mainGui = jsonGui;
         standardLedgerInit();
         // Force subclasses to set this themselves after calling jsonGui.load
-        xSize = 10;
-        ySize = 10;
+        imageWidth = 10;
+        imageHeight = 10;
     }
 
     private final void standardLedgerInit() {
@@ -65,10 +74,11 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        this.graphics = graphics;
+        super.render(graphics, mouseX, mouseY, partialTicks);
         if (mainGui.currentMenu == null || !mainGui.currentMenu.shouldFullyOverride()) {
-            this.renderHoveredToolTip(mouseX, mouseY);
+            this.renderTooltip(graphics, mouseX, mouseY);
         }
     }
 
@@ -86,17 +96,10 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
         drawGradientRect(left, top, right, bottom, startColor, endColor);
     }
 
-    @Override
     public void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-        super.drawGradientRect(left, top, right, bottom, startColor, endColor);
-    }
-
-    public List<GuiButton> getButtonList() {
-        return buttonList;
-    }
-
-    public FontRenderer getFontRenderer() {
-        return fontRenderer;
+        if (graphics != null) {
+            graphics.fillGradient(left, top, right, bottom, startColor, endColor);
+        }
     }
 
     // Gui -- double -> int
@@ -109,15 +112,19 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
         int v = Mth.floor(textureY);
         int w = Mth.floor(width);
         int h = Mth.floor(height);
-        drawTexturedModalRect(x, y, u, v, w, h);
+        // TODO Phase 7: there is no direct "blit from the currently-bound texture" equivalent of the old
+        // Gui#drawTexturedModalRect using GuiGraphics -- callers need to be updated to use
+        // GuiGraphics#blit(ResourceLocation, ...) with an explicit texture location instead.
     }
 
-    public void drawString(FontRenderer fontRenderer, String text, double x, double y, int colour) {
+    public void drawString(Font fontRenderer, String text, double x, double y, int colour) {
         drawString(fontRenderer, text, x, y, colour, true);
     }
 
-    public void drawString(FontRenderer fontRenderer, String text, double x, double y, int colour, boolean shadow) {
-        fontRenderer.drawString(text, (float) x, (float) y, colour, shadow);
+    public void drawString(Font fontRenderer, String text, double x, double y, int colour, boolean shadow) {
+        if (graphics != null) {
+            graphics.drawString(fontRenderer, text, (int) x, (int) y, colour, shadow);
+        }
     }
 
     // Other
@@ -129,27 +136,27 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    protected void containerTick() {
+        super.containerTick();
         mainGui.tick();
     }
 
     @Override
-    protected final void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        mainGui.drawBackgroundLayer(partialTicks, mouseX, mouseY, this::drawDefaultBackground);
+    protected final void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+        mainGui.drawBackgroundLayer(graphics, partialTicks, mouseX, mouseY, () -> {});
         drawBackgroundLayer(partialTicks);
-        mainGui.drawElementBackgrounds();
+        mainGui.drawElementBackgrounds(graphics);
     }
 
     @Override
-    protected final void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        mainGui.preDrawForeground();
+    protected final void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        mainGui.preDrawForeground(graphics);
 
         drawForegroundLayer();
-        mainGui.drawElementForegrounds(this::drawDefaultBackground);
+        mainGui.drawElementForegrounds(graphics, () -> this.renderTransparentBackground(graphics));
         drawForegroundLayerAboveElements();
 
-        mainGui.postDrawForeground();
+        mainGui.postDrawForeground(graphics);
     }
 
     public void drawProgress(GuiRectangle rect, GuiIcon icon, double widthPercent, double heightPercent) {
@@ -162,32 +169,40 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends GuiContainer
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);
         mainGui.onMouseClicked(mouseX, mouseY, mouseButton);
+        return result;
     }
 
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-
-        mainGui.onMouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dragX, double dragY) {
+        boolean result = super.mouseDragged(mouseX, mouseY, clickedMouseButton, dragX, dragY);
+        mainGui.onMouseDragged(mouseX, mouseY, clickedMouseButton, dragX, dragY);
+        return result;
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
-
+    public boolean mouseReleased(double mouseX, double mouseY, int state) {
+        boolean result = super.mouseReleased(mouseX, mouseY, state);
         mainGui.onMouseReleased(mouseX, mouseY, state);
+        return result;
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-
-        if (!mainGui.onKeyTyped(typedChar, keyCode)) {
-            super.keyTyped(typedChar, keyCode);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (mainGui.onKeyTyped((char) 0, keyCode)) {
+            return true;
         }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (mainGui.onKeyTyped(codePoint, -1)) {
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
     }
 
     protected void drawBackgroundLayer(float partialTicks) {}

@@ -12,7 +12,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 
 import buildcraft.lib.client.guide.font.MinecraftFont;
 import buildcraft.lib.expression.node.value.NodeConstantDouble;
@@ -68,14 +68,14 @@ public class GuiElementText extends GuiElementSimple {
 
     @Override
     public double getWidth() {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        return fr.getStringWidth(text.get());
+        Font fr = Minecraft.getInstance().font;
+        return fr.width(text.get());
     }
 
     @Override
     public double getHeight() {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        return fr.FONT_HEIGHT;
+        Font fr = Minecraft.getInstance().font;
+        return fr.lineHeight;
     }
 
     @Override

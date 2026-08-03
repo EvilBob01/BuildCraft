@@ -6,12 +6,15 @@
 
 package buildcraft.lib.gui;
 
-import org.lwjgl.opengl.GL11;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.api.distmarker.Dist;
@@ -57,7 +60,7 @@ public class GuiIcon implements ISimpleDrawable {
     }
 
     public DynamicTexture createDynamicTexture(int scale) {
-        return new DynamicTexture(width * scale, height * scale);
+        return new DynamicTexture(width * scale, height * scale, true);
     }
 
     @Override
@@ -73,26 +76,17 @@ public class GuiIcon implements ISimpleDrawable {
         draw(sprite, x, y, x + drawnWidth, y + drawnHeight);
     }
 
+    // TODO Phase 7: The old fixed-function-pipeline "arbitrary quadrilateral" trick (perspective-correct
+    // texturing via a 4-component (s, t, r, q) texture coordinate, exploiting glBegin(GL_QUADS)'s
+    // perspective divide) has no equivalent in the modern (core-profile, shader based) rendering
+    // pipeline. This needs a dedicated shader to be reimplemented properly; for now it falls back to a
+    // simple (non-perspective-correct) straight blit using the bounding rectangle of the 4 points.
     public void drawCustomQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-        sprite.bindTexture();
-
-        double uMin = sprite.getInterpU(0);
-        double uMax = sprite.getInterpU(1);
-
-        double vMin = sprite.getInterpV(0);
-        double vMax = sprite.getInterpV(1);
-
-        // Unfortunately we cannot use the vertex buffer directly (as it doesn't allow for texture4f)
-        GL11.glBegin(GL11.GL_QUADS);
-
-        double[] q = calcQ(x1, y1, x2, y2, x3, y3, x4, y4);
-
-        vertDirect(x1, y1, uMin * q[0], vMax * q[0], 0, q[0]);
-        vertDirect(x2, y2, uMax * q[1], vMax * q[1], 0, q[1]);
-        vertDirect(x3, y3, uMax * q[2], vMin * q[2], 0, q[2]);
-        vertDirect(x4, y4, uMin * q[3], vMin * q[3], 0, q[3]);
-
-        GL11.glEnd();
+        double xMin = Math.min(Math.min(x1, x2), Math.min(x3, x4));
+        double xMax = Math.max(Math.max(x1, x2), Math.max(x3, x4));
+        double yMin = Math.min(Math.min(y1, y2), Math.min(y3, y4));
+        double yMax = Math.max(Math.max(y1, y2), Math.max(y3, y4));
+        draw(sprite, xMin, yMin, xMax, yMax);
     }
 
     private static double[] calcQ(double x1, double y1, double x2, double y2, double x3, double y3, double x4,
@@ -130,11 +124,6 @@ public class GuiIcon implements ISimpleDrawable {
         return new double[] { 1, 1, 1, 1 };
     }
 
-    private static void vertDirect(double x, double y, double s, double t, double r, double q) {
-        GL11.glTexCoord4d(s, t, r, q);
-        GL11.glVertex2d(x, y);
-    }
-
     public void drawCutInside(IGuiArea element) {
         drawCutInside(element.getX(), element.getY(), element.getWidth(), element.getHeight());
     }
@@ -157,16 +146,7 @@ public class GuiIcon implements ISimpleDrawable {
         double uMax = sprite.getInterpU(displayWidth / width);
         double vMax = sprite.getInterpV(displayHeight / height);
 
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder vb = tess.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-        vertex(vb, xMin, yMax, uMin, vMax);
-        vertex(vb, xMax, yMax, uMax, vMax);
-        vertex(vb, xMax, yMin, uMax, vMin);
-        vertex(vb, xMin, yMin, uMin, vMin);
-
-        tess.draw();
+        drawQuad(xMin, yMin, xMax, yMax, uMin, vMin, uMax, vMax);
     }
 
     public void drawCustomScaledAt(IGuiArea area, double texU0, double texV0, double texU1, double texV1) {
@@ -206,16 +186,7 @@ public class GuiIcon implements ISimpleDrawable {
         double uMax = sprite.getInterpU(texU1);
         double vMax = sprite.getInterpV(texV1);
 
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder vb = tess.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-        vertex(vb, xMin, yMax, uMin, vMax);
-        vertex(vb, xMax, yMax, uMax, vMax);
-        vertex(vb, xMax, yMin, uMax, vMin);
-        vertex(vb, xMin, yMin, uMin, vMin);
-
-        tess.draw();
+        drawQuad(xMin, yMin, xMax, yMax, uMin, vMin, uMax, vMax);
     }
 
     public static void drawAt(ISprite sprite, double x, double y, double size) {
@@ -235,21 +206,27 @@ public class GuiIcon implements ISimpleDrawable {
         double uMax = sprite.getInterpU(1);
         double vMax = sprite.getInterpV(1);
 
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder vb = tess.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        drawQuad(xMin, yMin, xMax, yMax, uMin, vMin, uMax, vMax);
+    }
+
+    /** Draws a simple axis-aligned textured quad using the modern (shader based) immediate-mode rendering path.
+     * <p>
+     * Note: {@link ISprite#bindTexture()} must have already been called by the caller before this is invoked. */
+    private static void drawQuad(double xMin, double yMin, double xMax, double yMax, double uMin, double vMin,
+        double uMax, double vMax) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        Tesselator tess = Tesselator.getInstance();
+        BufferBuilder vb = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         vertex(vb, xMin, yMax, uMin, vMax);
         vertex(vb, xMax, yMax, uMax, vMax);
         vertex(vb, xMax, yMin, uMax, vMin);
         vertex(vb, xMin, yMin, uMin, vMin);
 
-        tess.draw();
+        BufferUploader.drawWithShader(vb.buildOrThrow());
     }
 
     private static void vertex(BufferBuilder vb, double x, double y, double u, double v) {
-        vb.pos(x, y, 0);
-        vb.tex(u, v);
-        vb.endVertex();
+        vb.addVertex((float) x, (float) y, 0).setUv((float) u, (float) v);
     }
 }

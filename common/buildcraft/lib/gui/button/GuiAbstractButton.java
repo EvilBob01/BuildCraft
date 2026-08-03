@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 
 import buildcraft.lib.gui.BuildCraftGui;
 import buildcraft.lib.gui.GuiElementSimple;
@@ -41,9 +41,9 @@ public abstract class GuiAbstractButton extends GuiElementSimple
     }
 
     public GuiElementText createTextElement(Supplier<String> text) {
-        FontRenderer fr = gui.mc.fontRenderer;
-        DoubleSupplier x = () -> -fr.getStringWidth(text.get()) / 2;
-        DoubleSupplier y = () -> -fr.FONT_HEIGHT / 2;
+        Font fr = gui.mc.font;
+        DoubleSupplier x = () -> -fr.width(text.get()) / 2;
+        DoubleSupplier y = () -> -fr.lineHeight / 2;
         IGuiPosition pos = getCenter().offset(x, y);
         return new GuiElementText(gui, pos, text, this::getColourForText);
     }

@@ -1,9 +1,10 @@
 package buildcraft.lib.gui;
 
-import java.io.IOException;
 import java.util.function.Function;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.gui.json.BuildCraftJsonGui;
@@ -12,7 +13,7 @@ import buildcraft.lib.gui.pos.IGuiArea;
 import buildcraft.lib.misc.GuiUtil;
 
 /** Reference implementation for a gui that delegates to a {@link BuildCraftGui} for most of its functionality. */
-public class GuiScreenBuildCraft extends GuiScreen {
+public class GuiScreenBuildCraft extends Screen {
 
     public final BuildCraftGui mainGui;
 
@@ -29,12 +30,14 @@ public class GuiScreenBuildCraft extends GuiScreen {
     }
 
     public GuiScreenBuildCraft(Function<GuiScreenBuildCraft, BuildCraftGui> constructor) {
+        super(Component.empty());
         this.mainGui = constructor.apply(this);
         standardLedgerInit();
     }
 
     /** Creates a new gui that will load its elements from the given json resource. */
     public GuiScreenBuildCraft(ResourceLocation jsonGuiDef) {
+        super(Component.empty());
         BuildCraftJsonGui jsonGui = new BuildCraftJsonGui(this, jsonGuiDef);
         this.mainGui = jsonGui;
         standardLedgerInit();
@@ -43,6 +46,7 @@ public class GuiScreenBuildCraft extends GuiScreen {
     /** Creates a new gui that will load its elements from the given json resource. Like
      * {@link #GuiScreenBuildCraft(IGuiArea)} this will occupy only the given {@link IGuiArea} */
     public GuiScreenBuildCraft(ResourceLocation jsonGuiDef, IGuiArea area) {
+        super(Component.empty());
         BuildCraftJsonGui jsonGui = new BuildCraftJsonGui(this, area, jsonGuiDef);
         this.mainGui = jsonGui;
         standardLedgerInit();
@@ -59,45 +63,54 @@ public class GuiScreenBuildCraft extends GuiScreen {
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         mainGui.tick();
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        mainGui.drawBackgroundLayer(partialTicks, mouseX, mouseY, this::drawMenuBackground);
-        mainGui.drawElementBackgrounds();
-        mainGui.drawElementForegrounds(this::drawMenuBackground);
-    }
-
-    private void drawMenuBackground() {
-        this.drawBackground(0);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        mainGui.drawBackgroundLayer(graphics, partialTicks, mouseX, mouseY, () -> this.renderTransparentBackground(graphics));
+        mainGui.drawElementBackgrounds(graphics);
+        mainGui.drawElementForegrounds(graphics, () -> this.renderTransparentBackground(graphics));
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (!mainGui.onMouseClicked(mouseX, mouseY, mouseButton)) {
-            super.mouseClicked(mouseX, mouseY, mouseButton);
+            return super.mouseClicked(mouseX, mouseY, mouseButton);
         }
+        return true;
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
+    public boolean mouseReleased(double mouseX, double mouseY, int state) {
+        boolean result = super.mouseReleased(mouseX, mouseY, state);
         mainGui.onMouseReleased(mouseX, mouseY, state);
+        return result;
     }
 
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-        mainGui.onMouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dragX, double dragY) {
+        boolean result = super.mouseDragged(mouseX, mouseY, clickedMouseButton, dragX, dragY);
+        mainGui.onMouseDragged(mouseX, mouseY, clickedMouseButton, dragX, dragY);
+        return result;
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (!mainGui.onKeyTyped(typedChar, keyCode)) {
-            super.keyTyped(typedChar, keyCode);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!mainGui.onKeyTyped((char) 0, keyCode)) {
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
+        return true;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (!mainGui.onKeyTyped(codePoint, -1)) {
+            return super.charTyped(codePoint, modifiers);
+        }
+        return true;
     }
 }
