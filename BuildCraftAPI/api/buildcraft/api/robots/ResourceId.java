@@ -27,7 +27,7 @@ public abstract class ResourceId {
             }
 
             ResourceId id = (ResourceId) cls.newInstance();
-            id.loadAdditional(nbt);
+            id.readFromNBT(nbt);
 
             return id;
         } catch (Throwable e) {

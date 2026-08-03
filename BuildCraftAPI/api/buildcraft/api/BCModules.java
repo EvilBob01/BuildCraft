@@ -6,11 +6,10 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModListState;
 
 public enum BCModules implements IBuildCraftMod {
     LIB,
@@ -47,9 +46,6 @@ public enum BCModules implements IBuildCraftMod {
     private static synchronized void load0() {
         if (hasChecked) {
             return;
-        }
-        if (!Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
-            throw new RuntimeException("You can only use BCModules.isLoaded from pre-init onwards!");
         }
         List<BCModules> found = new ArrayList<>(), missing = new ArrayList<>();
         for (BCModules module : VALUES) {
@@ -104,10 +100,14 @@ public enum BCModules implements IBuildCraftMod {
     }
 
     public ModelResourceLocation createModelLocation(String path, String variant) {
-        return new ModelResourceLocation(getModId() + ":" + path + "#" + variant);
+        return new ModelResourceLocation(createLocation(path), variant);
     }
 
     public ModelResourceLocation createModelLocation(String pathAndVariant) {
-        return new ModelResourceLocation(getModId() + ":" + pathAndVariant);
+        int hash = pathAndVariant.indexOf('#');
+        if (hash < 0) {
+            return new ModelResourceLocation(createLocation(pathAndVariant), "");
+        }
+        return new ModelResourceLocation(createLocation(pathAndVariant.substring(0, hash)), pathAndVariant.substring(hash + 1));
     }
 }

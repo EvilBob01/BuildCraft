@@ -12,7 +12,7 @@ import net.minecraft.world.item.DyeColor;
 public enum EnumWireColour {
     // We disallow all variants of grey and black, as they don't make much sense relative to LED's.
     // In theory we could keep black OR dark gey LED's (as they are very distant) but it's simpler not to.
-    WHITE(DyeColor.WHITE, DyeColor.SILVER, DyeColor.GRAY, DyeColor.BLACK),
+    WHITE(DyeColor.WHITE, DyeColor.LIGHT_GRAY, DyeColor.GRAY, DyeColor.BLACK),
     ORANGE(DyeColor.ORANGE),
     // MAGENTA -> PINK
     LIGHT_BLUE(DyeColor.LIGHT_BLUE, DyeColor.CYAN),

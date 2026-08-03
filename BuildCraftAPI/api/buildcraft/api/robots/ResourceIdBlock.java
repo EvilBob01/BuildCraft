@@ -30,7 +30,7 @@ public class ResourceIdBlock extends ResourceId {
     }
 
     public ResourceIdBlock(BlockEntity tile) {
-        pos = tile.getPos();
+        pos = tile.getBlockPos();
     }
 
     @Override
@@ -52,20 +52,20 @@ public class ResourceIdBlock extends ResourceId {
 
     @Override
     public void writeToNBT(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+        super.writeToNBT(nbt);
 
         int[] arr = new int[] { pos.getX(), pos.getY(), pos.getZ() };
         nbt.putIntArray("pos", arr);
 
-        nbt.put("side", side.saveAdditional());
+        nbt.put("side", side.writeToNBT());
     }
 
     @Override
     protected void readFromNBT(CompoundTag nbt) {
-        super.loadAdditional(nbt);
+        super.readFromNBT(nbt);
         int[] arr = nbt.getIntArray("pos");
         pos = new BlockPos(arr[0], arr[1], arr[2]);
 
-        side = EnumPipePart.loadAdditional(nbt.get("side"));
+        side = EnumPipePart.readFromNBT(nbt.get("side"));
     }
 }

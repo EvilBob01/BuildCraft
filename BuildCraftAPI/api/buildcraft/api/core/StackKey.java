@@ -75,7 +75,7 @@ public final class StackKey {
             return false;
         }
         if (stack != null) {
-            if (!ItemStack.isSameItemSameTags(stack, k.stack)) {
+            if (!ItemStack.isSameItemSameComponents(stack, k.stack)) {
                 return false;
             }
         }

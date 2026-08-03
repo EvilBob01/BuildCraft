@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.entity.EntityList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BuildCraftAPI;
@@ -38,7 +38,7 @@ public class SchematicEntityFactoryRegistry {
         registerFactory(
             name,
             priority,
-            context -> entities.contains(EntityList.getKey(context.entity)),
+            context -> entities.contains(BuiltInRegistries.ENTITY_TYPE.getKey(context.entity.getType())),
             supplier
         );
     }

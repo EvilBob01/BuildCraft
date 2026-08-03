@@ -16,7 +16,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.ModContainer;
+import net.neoforged.fml.ModContainer;
+
+import buildcraft.lib.BCLib;
 
 public final class BuildCraftAPI {
     public static IFakePlayerProvider fakePlayerProvider;
@@ -28,9 +30,9 @@ public final class BuildCraftAPI {
     private BuildCraftAPI() {}
 
     public static String getVersion() {
-        ModContainer container = Loader.instance().getIndexedModList().get("buildcraftlib");
+        ModContainer container = ModList.get().getModContainerById("buildcraftlib").orElse(null);
         if (container != null) {
-            return container.getDisplayVersion();
+            return container.getModInfo().getVersion().toString();
         }
         return "UNKNOWN VERSION";
     }
@@ -56,6 +58,6 @@ public final class BuildCraftAPI {
         if (modContainer == null) {
             throw new IllegalStateException("Illegal recipe name " + name + ". Provide domain id to register it correctly.");
         }
-        return new ResourceLocation(modContainer.getModId(), name);
+        return ResourceLocation.fromNamespaceAndPath(modContainer.getModId(), name);
     }
 }

@@ -11,8 +11,9 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableList;
 
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.ChatFormatting;
 
@@ -48,21 +49,16 @@ public class StatementParameterItemStack implements IStatementParameter {
     }
 
     public StatementParameterItemStack(CompoundTag nbt) {
-        ItemStack read = new ItemStack(nbt.getCompoundTag("stack"));
-        if (read.isEmpty()) {
-            stack = EMPTY_STACK;
-        } else {
-            stack = read;
-        }
+        // TODO Phase 9: ItemStack no longer has a plain-CompoundTag constructor/save method in
+        // 1.21 -- both need a HolderLookup.Provider (registry access) threaded through
+        // IStatementParameter's (de)serialization API. Falls back to EMPTY until that's wired up.
+        stack = EMPTY_STACK;
     }
 
     @Override
     public void writeToNbt(CompoundTag compound) {
-        if (!stack.isEmpty()) {
-            CompoundTag tagCompound = new CompoundTag();
-            stack.saveAdditional(tagCompound);
-            compound.setTag("stack", tagCompound);
-        }
+        // TODO Phase 9: see constructor above -- needs a HolderLookup.Provider to call
+        // ItemStack.save(provider) properly.
     }
 
     @Override
@@ -94,8 +90,7 @@ public class StatementParameterItemStack implements IStatementParameter {
         if (object instanceof StatementParameterItemStack) {
             StatementParameterItemStack param = (StatementParameterItemStack) object;
 
-            return ItemStack.isSameItemSameTags(stack, param.stack)
-            && ItemStack.areItemStackTagsEqual(stack, param.stack);
+            return ItemStack.isSameItemSameComponents(stack, param.stack);
         } else {
             return false;
         }
@@ -118,9 +113,12 @@ public class StatementParameterItemStack implements IStatementParameter {
         if (stack.isEmpty()) {
             return ImmutableList.of();
         }
-        List<String> tooltip = stack.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL);
+        List<String> tooltip = new java.util.ArrayList<>();
+        for (net.minecraft.network.chat.Component line : stack.getTooltipLines(Item.TooltipContext.EMPTY, null, TooltipFlag.NORMAL)) {
+            tooltip.add(line.getString());
+        }
         if (!tooltip.isEmpty()) {
-            tooltip.set(0, stack.getRarity().rarityColor + tooltip.get(0));
+            tooltip.set(0, stack.getRarity().color() + tooltip.get(0));
             for (int i = 1; i < tooltip.size(); i++) {
                 tooltip.set(i, ChatFormatting.GRAY + tooltip.get(i));
             }

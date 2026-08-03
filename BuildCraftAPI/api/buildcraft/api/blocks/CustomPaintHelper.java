@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.DyeColor;
@@ -43,7 +44,7 @@ public enum CustomPaintHelper {
 
     /** Register's a paint handler for every class of a given block. */
     public void registerHandlerForAll(Class<? extends Block> blockClass, ICustomPaintHandler handler) {
-        for (Block block : Block.REGISTRY) {
+        for (Block block : BuiltInRegistries.BLOCK) {
             Class<? extends Block> foundClass = block.getClass();
             if (blockClass.isAssignableFrom(foundClass)) {
                 if (DEBUG) {
@@ -105,11 +106,9 @@ public enum CustomPaintHelper {
         if (paint == null) {
             return InteractionResult.FAIL;
         }
-        Block b = state.getBlock();
-        if (b.recolorBlock(world, pos, hitSide, paint)) {
-            return InteractionResult.SUCCESS;
-        } else {
-            return InteractionResult.FAIL;
-        }
+        // TODO Phase 9: Block.recolorBlock (1.12.2 beacon-glass-style global recolor) was removed
+        // in 1.21 with no direct replacement; default painting now relies solely on registered
+        // ICustomPaintHandlers / allHandlers above.
+        return InteractionResult.FAIL;
     }
 }

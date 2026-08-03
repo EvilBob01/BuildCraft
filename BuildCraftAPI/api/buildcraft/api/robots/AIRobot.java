@@ -165,7 +165,7 @@ public class AIRobot {
         if (delegateAI != null && delegateAI.canLoadFromNBT()) {
             CompoundTag sub = new CompoundTag();
 
-            delegateAI.saveAdditional(sub);
+            delegateAI.writeToNBT(sub);
             nbt.put("delegateAI", sub);
         }
     }
