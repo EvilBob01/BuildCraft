@@ -46,7 +46,7 @@ public enum BCTransportEventDist {
     // PipeWireRenderer.clearWireCache() should be called after atlas rebuild.
 
     @SubscribeEvent
-    public void onBlockPlace(BlockEvent.PlaceEvent event) {
+    public void onBlockPlace(BlockEvent.BlockPlaceEvent event) {
         // event.setCanceled(true);
     }
 
