@@ -22,8 +22,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import net.minecraft.client.renderer.block.model.ModelBlock;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.lib.client.model.ResourceLoaderContext;
@@ -79,7 +77,7 @@ public class JsonModel {
     }
 
     public JsonModel(JsonObject obj, ResourceLoaderContext ctx) throws JsonParseException, IOException {
-        ambientOcclusion = GsonHelper.getBoolean(obj, "ambientocclusion", false);
+        ambientOcclusion = GsonHelper.getBoolean(obj, "ambientocclusion");
         textures = JsonUtil.getSubAsImmutableMap(obj, "textures", new TypeToken<HashMap<String, String>>() {});
         if (obj.has("elements")) {
             cutoutElements = deserializePartArray(obj, "elements", false, ctx);
