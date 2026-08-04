@@ -6,14 +6,13 @@
 
 package buildcraft.transport.client.model.key;
 
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
 
 public final class KeyPlugBlocker extends PluggableModelKey {
     public KeyPlugBlocker(Direction side) {
-        super(BlockRenderLayer.CUTOUT, side);
+        super("cutout", side);
     }
 
     /** Factory for {@link #KeyPlugBlocker(Direction)} that avoids class verification errors. */
