@@ -36,7 +36,7 @@ public class BCTransportRecipes {
     private static final Block SILICON_TABLE_ASSEMBLY = null;
 
     @SubscribeEvent
-    public static void registerRecipes(RegisterEvent<Recipe> event) {
+    public static void registerRecipes(RegisterEvent event) {
         addPipeRecipe(BCTransportItems.pipeItemWood, "plankWood");
         addPipeRecipe(BCTransportItems.pipeItemCobble, "cobblestone");
         addPipeRecipe(BCTransportItems.pipeItemStone, "stone");
