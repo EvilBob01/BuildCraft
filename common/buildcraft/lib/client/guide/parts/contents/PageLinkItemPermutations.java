@@ -31,18 +31,19 @@ public final class PageLinkItemPermutations extends PageLink {
         return gui -> {
             List<GuidePart> parts = new ArrayList<>();
 
-            Profiler prof = new Profiler();
-            prof.profilingEnabled = true;
+            ProfilerFiller prof = Minecraft.getInstance().getProfiler();
+            prof.push("guide");
             for (ItemStack stack : permutations) {
                 parts.add(PageLinkItemStack.create(true, stack, prof).createGuidePart(gui));
             }
+            prof.pop();
 
             ItemStackValueFilter filter = new ItemStackValueFilter(new ItemStackKey(permutations.get(0)), false, false);
             return new GuidePage(gui, parts, new PageValue<>(PageEntryItemStack.INSTANCE, filter));
         };
     }
 
-    public static PageLinkItemPermutations create(boolean startVisible, NonNullList<ItemStack> stacks, Profiler prof) {
+    public static PageLinkItemPermutations create(boolean startVisible, NonNullList<ItemStack> stacks, ProfilerFiller prof) {
         PageLinkItemStack link = PageLinkItemStack.create(startVisible, stacks.get(0), prof);
         return new PageLinkItemPermutations(link.text, startVisible, stacks);
     }
