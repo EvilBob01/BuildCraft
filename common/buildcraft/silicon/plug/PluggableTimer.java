@@ -7,6 +7,7 @@
 package buildcraft.silicon.plug;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
@@ -64,8 +65,8 @@ public class PluggableTimer extends PipePluggable {
     }
 
     @Override
-    public PluggableModelKey getModelRenderKey(/*BlockRenderLayer layer*/) {
-        // TODO Phase 7: BlockRenderLayer no longer exists, need to find a replacement or redesign this method
+    public PluggableModelKey getModelRenderKey(BlockRenderLayer layer) {
+        if (layer == BlockRenderLayer.CUTOUT) return new KeyPlugTimer(side);
         return null;
     }
 
