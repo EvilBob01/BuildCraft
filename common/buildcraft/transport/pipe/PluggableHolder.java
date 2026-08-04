@@ -105,7 +105,7 @@ public final class PluggableHolder {
     }
 
     private void readCreateInternal(FriendlyByteBuf buffer) throws InvalidInputDataException {
-        ResourceLocation identifier = ResourceLocation.parse(buffer.readString(256));
+        ResourceLocation identifier = ResourceLocation.parse(buffer.readUtf(256));
         PluggableDefinition def = PipeApi.pluggableRegistry.getDefinition(identifier);
         if (def == null) {
             throw new InvalidInputDataException("Unknown remote pluggable \"" + identifier + "\"");
@@ -117,7 +117,7 @@ public final class PluggableHolder {
         holder.eventBus.registerHandler(pluggable);
     }
 
-    public void writePayload(PacketBufferBC buffer, Side netSide) {
+    public void writePayload(PacketBufferBC buffer, Dist netSide) {
         if (netSide == Dist.CLIENT) {
             buffer.writeByte(ID_UPDATE_PLUG);
             if (pluggable != null) {
@@ -133,7 +133,7 @@ public final class PluggableHolder {
         }
     }
 
-    public void readPayload(PacketBufferBC buffer, Side netSide, MessageContext ctx) throws IOException {
+    public void readPayload(PacketBufferBC buffer, Dist netSide, MessageContext ctx) throws IOException {
         int id = buffer.readUnsignedByte();
         if (netSide == Dist.DEDICATED_SERVER) {
             if (id == ID_UPDATE_PLUG) {
