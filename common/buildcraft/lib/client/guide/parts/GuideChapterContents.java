@@ -6,13 +6,13 @@
 
 package buildcraft.lib.client.guide.parts;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resources.language.I18n;
 
 import buildcraft.lib.client.guide.GuiGuide;
 
 public class GuideChapterContents extends GuideChapter {
     public GuideChapterContents(GuiGuide gui) {
-        super(gui, I18n.format("buildcraft.guide.chapter.contents"));
+        super(gui, I18n.get("buildcraft.guide.chapter.contents"));
     }
 
     @Override
