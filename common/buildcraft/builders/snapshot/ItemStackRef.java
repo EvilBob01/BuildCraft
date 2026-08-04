@@ -44,13 +44,13 @@ public class ItemStackRef {
                         item
                             .get(nbt)
                             .orElseThrow(NullPointerException::new)
-                            .getString()
+                            .toString()
                     )
                 )
             ),
             Optional.ofNullable(amount)
                 .flatMap(ref -> ref.get(nbt))
-                .map(IntTag::getInt)
+                .map(IntTag::getAsInt)
                 .orElse(1)
         );
         Optional.ofNullable(tagCompound)
