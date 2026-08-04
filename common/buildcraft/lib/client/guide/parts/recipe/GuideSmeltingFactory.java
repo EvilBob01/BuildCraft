@@ -54,7 +54,7 @@ public class GuideSmeltingFactory implements GuidePartFactory {
         if (obj.getClass() != getClass()) return false;
         GuideSmeltingFactory other = (GuideSmeltingFactory) obj;
         if (hash != other.hash) return false;
-        return ItemStack.isSameItemSameTags(input, other.input)
-            && ItemStack.isSameItemSameTags(output, other.output);
+        return ItemStack.isSameItem(input, other.input)
+            && ItemStack.isSameItem(output, other.output);
     }
 }
