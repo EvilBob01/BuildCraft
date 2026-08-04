@@ -1,7 +1,6 @@
 package buildcraft.silicon.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 
@@ -9,10 +8,9 @@ import buildcraft.silicon.item.ItemPluggableFacade;
 import buildcraft.silicon.plug.FacadeInstance;
 import buildcraft.silicon.plug.FacadePhasedState;
 
-public enum FacadeItemColours implements IItemColor {
+public enum FacadeItemColours {
     INSTANCE;
 
-    @Override
     public int colorMultiplier(ItemStack stack, int tintIndex) {
         FacadeInstance states = ItemPluggableFacade.getStates(stack);
         FacadePhasedState state = states.getCurrentStateForStack();
