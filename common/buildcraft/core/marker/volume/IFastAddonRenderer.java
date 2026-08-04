@@ -6,7 +6,7 @@
 
 package buildcraft.core.marker.volume;
 
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.world.entity.player.Player;
 
 public interface IFastAddonRenderer<T extends Addon> {
