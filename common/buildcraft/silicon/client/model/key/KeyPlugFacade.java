@@ -9,7 +9,6 @@ package buildcraft.silicon.client.model.key;
 import java.util.Objects;
 
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
@@ -19,11 +18,11 @@ public class KeyPlugFacade extends PluggableModelKey {
     public final boolean isHollow;
     private final int hash;
 
-    public KeyPlugFacade(BlockRenderLayer layer, Direction side, BlockState state, boolean isHollow) {
-        super(layer, side);
+    public KeyPlugFacade(Direction side, BlockState state, boolean isHollow) {
+        super(side);
         this.state = state;
         this.isHollow = isHollow;
-        this.hash = Objects.hash(layer, side, state, isHollow);
+        this.hash = Objects.hash(side, state, isHollow);
     }
 
     @Override
@@ -38,8 +37,7 @@ public class KeyPlugFacade extends PluggableModelKey {
         if (obj.getClass() != getClass()) return false;
         KeyPlugFacade other = (KeyPlugFacade) obj;
         return other.isHollow == isHollow//
-                && other.layer == layer//
-                && other.state == state//
-                && other.side == side;
+                && other.side == side//
+                && other.state == state;
     }
 }
