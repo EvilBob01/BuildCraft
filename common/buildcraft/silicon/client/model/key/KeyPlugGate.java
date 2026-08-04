@@ -8,7 +8,6 @@ package buildcraft.silicon.client.model.key;
 
 import java.util.Objects;
 
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
@@ -20,7 +19,7 @@ public class KeyPlugGate extends PluggableModelKey {
     public final int hash;
 
     public KeyPlugGate(Direction side, GateVariant variant) {
-        super(BlockRenderLayer.CUTOUT, side);
+        super(null, side); // TODO Phase 7: Replace null with appropriate rendering layer if needed
         this.variant = variant;
         this.hash = Objects.hash(variant, side);
     }
