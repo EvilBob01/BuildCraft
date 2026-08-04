@@ -65,7 +65,7 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
 
     @Override
     public boolean isInvalidTarget() {
-        return isInvalid();
+        return level.isRemoved();
     }
 
     @Override
@@ -134,7 +134,7 @@ public abstract class TileLaserTableBase extends TileBC_Neptune implements ILase
             for (int i = 0; i < inv.getSlots() && remaining > 0; i++) {
                 ItemStack slotStack = inv.getStackInSlot(i);
                 if (slotStack.isEmpty()) continue;
-                if (definition.ingredient.apply(slotStack)) {
+                if (definition.ingredient.test(slotStack)) {
                     int spend = Math.min(remaining, slotStack.getCount());
                     remaining -= spend;
                     if (!simulate) {
