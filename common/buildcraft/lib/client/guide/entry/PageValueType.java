@@ -49,11 +49,11 @@ public abstract class PageValueType<T> {
 
     public abstract List<String> getTooltip(T value);
 
-    public abstract void iterateAllDefault(IEntryLinkConsumer consumer, Profiler prof);
+    public abstract void iterateAllDefault(IEntryLinkConsumer consumer, ProfilerFiller prof);
 
     /** @param to Something that identifies what this should link to.
      * @return Either the {@link PageLink}, or the error for why the given "to" doesn't result in a valid link. */
-    public OptionallyDisabled<PageLink> createLink(String to, Profiler prof) {
+    public OptionallyDisabled<PageLink> createLink(String to, ProfilerFiller prof) {
         return new OptionallyDisabled<>(getClass().getSimpleName() + " doesn't support links");
     }
 
