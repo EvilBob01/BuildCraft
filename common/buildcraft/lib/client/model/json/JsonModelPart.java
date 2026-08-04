@@ -15,7 +15,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.client.renderer.block.model.BlockPart;
 import net.minecraft.core.Direction;
 import net.minecraft.util.GsonHelper;
 
@@ -71,7 +70,7 @@ public class JsonModelPart {
     private static JsonQuad[] readCuboid(JsonObject obj) {
         float[] from = readFloatPositionSmaller(obj, "from");
         float[] to = readFloatPositionSmaller(obj, "to");
-        boolean shade = GsonHelper.getBoolean(obj, "shade", false);
+        boolean shade = GsonHelper.getAsBoolean(obj, "shade", false);
 
         if (obj.has("faces")) {
             JsonElement faces = obj.get("faces");
