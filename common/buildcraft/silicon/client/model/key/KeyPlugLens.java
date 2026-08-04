@@ -9,7 +9,6 @@ package buildcraft.silicon.client.model.key;
 import java.util.Objects;
 
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.core.Direction;
 
 import buildcraft.api.transport.pluggable.PluggableModelKey;
@@ -19,11 +18,11 @@ public class KeyPlugLens extends PluggableModelKey {
     public final boolean isFilter;
     private final int hash;
 
-    public KeyPlugLens(BlockRenderLayer layer, Direction side, DyeColor colour, boolean isFilter) {
-        super(layer, side);
+    public KeyPlugLens(Direction side, DyeColor colour, boolean isFilter) {
+        super(side);
         this.colour = colour;
         this.isFilter = isFilter;
-        this.hash = Objects.hash(layer, side, colour, isFilter);
+        this.hash = Objects.hash(side, colour, isFilter);
     }
 
     @Override
@@ -38,7 +37,6 @@ public class KeyPlugLens extends PluggableModelKey {
         if (obj.getClass() != getClass()) return false;
         KeyPlugLens other = (KeyPlugLens) obj;
         return other.isFilter == isFilter//
-            && other.layer == layer//
             && other.colour == colour//
             && other.side == side;
     }
