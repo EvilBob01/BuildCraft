@@ -12,9 +12,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 public enum EnumGateMaterial {
-    CLAY_BRICK(Blocks.BRICK_BLOCK, 1, false),
+    CLAY_BRICK(Blocks.STONE_BRICKS, 1, false),
     IRON(Blocks.IRON_BLOCK, 2, true),
-    NETHER_BRICK(Blocks.NETHER_BRICK, 4, true),
+    NETHER_BRICK(Blocks.NETHER_BRICKS, 4, true),
     GOLD(Blocks.GOLD_BLOCK, 8, true);
 
     public static final EnumGateMaterial[] VALUES = values();
