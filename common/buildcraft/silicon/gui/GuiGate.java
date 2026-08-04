@@ -16,14 +16,17 @@ public class GuiGate extends GuiBC8<ContainerGate> {
 
     public static final ResourceLocation GUI_DEFINITION = ResourceLocation.parse("buildcraftsilicon:gui/gate.json");
 
+    private int xSize;
+    private int ySize;
+
     public GuiGate(ContainerGate container) {
         super(container, GUI_DEFINITION);
 
         BuildCraftJsonGui jsonGui = (BuildCraftJsonGui) mainGui;
         preLoad(jsonGui);
         jsonGui.load();
-        xSize = jsonGui.getSizeX();
-        ySize = jsonGui.getSizeY();
+        this.xSize = jsonGui.getSizeX();
+        this.ySize = jsonGui.getSizeY();
     }
 
     protected void preLoad(BuildCraftJsonGui json) {
