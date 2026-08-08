@@ -26,8 +26,8 @@ public class GuiFilteredBuffer extends GuiBC8<ContainerFilteredBuffer_BC8> {
 
     public GuiFilteredBuffer(ContainerFilteredBuffer_BC8 container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
@@ -67,10 +67,10 @@ public class GuiFilteredBuffer extends GuiBC8<ContainerFilteredBuffer_BC8> {
 
     @Override
     protected void drawForegroundLayer() {
-        int x = guiLeft;
-        int y = guiTop;
+        int x = leftPos;
+        int y = topPos;
         String title = I18n.format("tile.filteredBufferBlock.name");
-        int xPos = (xSize - fontRenderer.getStringWidth(title)) / 2;
-        fontRenderer.drawString(title, x + xPos, y + 10, 0x404040);
+        int xPos = (imageWidth - font.width(title)) / 2;
+        font.drawString(title, x + xPos, y + 10, 0x404040);
     }
 }

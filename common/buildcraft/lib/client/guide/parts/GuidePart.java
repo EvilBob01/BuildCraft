@@ -58,7 +58,7 @@ public abstract class GuidePart {
     }
 
     protected final GuiGuide gui;
-    private IFontRenderer fontRenderer;
+    private IFontRenderer font;
     protected boolean wasHovered = false;
     protected boolean wasIconHovered = false;
     protected boolean didRender = false;
@@ -68,11 +68,11 @@ public abstract class GuidePart {
     }
 
     public IFontRenderer getFontRenderer() {
-        return fontRenderer;
+        return font;
     }
 
-    public void setFontRenderer(IFontRenderer fontRenderer) {
-        this.fontRenderer = fontRenderer;
+    public void setFontRenderer(IFontRenderer font) {
+        this.font = font;
     }
 
     public boolean wasHovered() {
@@ -83,7 +83,7 @@ public abstract class GuidePart {
 
     /** Renders a raw line at the position, lowering it appropriately */
     protected void renderTextLine(String text, int x, int y, int colour) {
-        fontRenderer.drawString(text, x, y + 8 - (fontRenderer.getFontHeight(text) / 2), colour);
+        font.drawString(text, x, y + 8 - (font.getFontHeight(text) / 2), colour);
         GlStateManager.color(1, 1, 1);
     }
 
@@ -123,7 +123,7 @@ public abstract class GuidePart {
 
         FormatString next = FormatString.split(line.text);
 
-        int neededSpace = fontRenderer.getFontHeight(line.text);
+        int neededSpace = font.getFontHeight(line.text);
         if (icon != null) {
             neededSpace = Math.max(16, neededSpace);
         }
@@ -143,13 +143,13 @@ public abstract class GuidePart {
         didRender = false;
 
         while (next != null) {
-            FormatString[] strings = next.wrap(fontRenderer, allowedWidth);
+            FormatString[] strings = next.wrap(font, allowedWidth);
 
             String text = strings[0].getFormatted();
             boolean render = current.page == pageRenderIndex;
 
             int _y = y + current.pixel;
-            int _w = fontRenderer.getStringWidth(text);
+            int _w = font.width(text);
             GuiRectangle rect = new GuiRectangle(_x, _y - 2, _w, neededSpace + 3);
             wasHovered |= rect.contains(gui.mouse);
             if (render) {
@@ -160,14 +160,14 @@ public abstract class GuidePart {
                     }
                     renderTooltip();
                 }
-                fontRenderer.drawString(text, _x, _y, 0);
+                font.drawString(text, _x, _y, 0);
             }
 
             next = strings.length == 1 ? null : strings[1];
-            current = current.nextLine(fontRenderer.getFontHeight(text) + 3, height);
+            current = current.nextLine(font.getFontHeight(text) + 3, height);
         }
 
-        int additional = LINE_HEIGHT - fontRenderer.getFontHeight(toRender) - 3;
+        int additional = LINE_HEIGHT - font.getFontHeight(toRender) - 3;
         current = current.nextLine(additional, height);
         return current;
     }

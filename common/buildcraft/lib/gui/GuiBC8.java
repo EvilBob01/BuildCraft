@@ -117,13 +117,13 @@ public abstract class GuiBC8<C extends ContainerBC_Neptune> extends AbstractCont
         // GuiGraphics#blit(ResourceLocation, ...) with an explicit texture location instead.
     }
 
-    public void drawString(Font fontRenderer, String text, double x, double y, int colour) {
-        drawString(fontRenderer, text, x, y, colour, true);
+    public void drawString(Font font, String text, double x, double y, int colour) {
+        drawString(font, text, x, y, colour, true);
     }
 
-    public void drawString(Font fontRenderer, String text, double x, double y, int colour, boolean shadow) {
+    public void drawString(Font font, String text, double x, double y, int colour, boolean shadow) {
         if (graphics != null) {
-            graphics.drawString(fontRenderer, text, (int) x, (int) y, colour, shadow);
+            graphics.drawString(font, text, (int) x, (int) y, colour, shadow);
         }
     }
 

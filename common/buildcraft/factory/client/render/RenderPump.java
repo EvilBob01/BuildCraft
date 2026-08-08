@@ -107,8 +107,8 @@ public class RenderPump extends FastTESR<TilePump> {
 
     @Override
     public void renderTileEntityFast(@Nonnull TilePump tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
-        Minecraft.getInstance().mcProfiler.push("bc");
-        Minecraft.getInstance().mcProfiler.push("pump");
+        Minecraft.getInstance().getProfiler().push("bc");
+        Minecraft.getInstance().getProfiler().push("pump");
 
         buffer.setTranslation(x, y, z);
 
@@ -140,8 +140,8 @@ public class RenderPump extends FastTESR<TilePump> {
 
         tubeRenderer.renderTileEntityFast(tile, x, y, z, partialTicks, destroyStage, partial, buffer);
 
-        Minecraft.getInstance().mcProfiler.pop();
-        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     @Override

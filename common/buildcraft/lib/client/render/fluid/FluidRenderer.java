@@ -209,7 +209,7 @@ public class FluidRenderer {
         if (fluid == null || fluid.getFluid() == null || amount <= 0) {
             return;
         }
-        Profiler prof = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller prof = Minecraft.getInstance().getProfiler();
         prof.push("fluid");
         if (sideRender == null) {
             sideRender = DEFAULT_FACES;

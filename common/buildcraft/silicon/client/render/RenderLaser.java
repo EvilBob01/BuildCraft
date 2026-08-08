@@ -34,8 +34,8 @@ public class RenderLaser extends FastTESR<TileLaser> {
     public void renderTileEntityFast(@Nonnull TileLaser tile, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder buffer) {
 
         if (BCSiliconConfig.renderLaserBeams || isPlayerWearingGoggles()) {
-            Minecraft.getInstance().mcProfiler.push("bc");
-            Minecraft.getInstance().mcProfiler.push("laser");
+            Minecraft.getInstance().getProfiler().push("bc");
+            Minecraft.getInstance().getProfiler().push("laser");
 
             buffer.setTranslation(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
@@ -56,8 +56,8 @@ public class RenderLaser extends FastTESR<TileLaser> {
 
             buffer.setTranslation(0, 0, 0);
 
-            Minecraft.getInstance().mcProfiler.pop();
-            Minecraft.getInstance().mcProfiler.pop();
+            Minecraft.getInstance().getProfiler().pop();
+            Minecraft.getInstance().getProfiler().pop();
         }
     }
 

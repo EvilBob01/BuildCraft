@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
@@ -55,7 +56,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
     }
 
     @Override
-    public void iterateAllDefault(IEntryLinkConsumer consumer, Profiler prof) {
+    public void iterateAllDefault(IEntryLinkConsumer consumer, ProfilerFiller prof) {
 
         // For now, we can always re-enable this as a last resort fix.
         boolean limitDomains = BuiltInRegistries.ITEM.keySet().size() > BCLibConfig.guideItemSearchLimit;
@@ -100,7 +101,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
     }
 
     @Override
-    public OptionallyDisabled<PageLink> createLink(String to, Profiler prof) {
+    public OptionallyDisabled<PageLink> createLink(String to, ProfilerFiller prof) {
         OptionallyDisabled<ItemStack> stackq = MarkdownPageLoader.parseItemStack(to);
         if (stackq.isPresent()) {
             return new OptionallyDisabled<>(PageLinkItemStack.create(true, stackq.get(), prof));
@@ -205,6 +206,6 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
 
     @Override
     public void addPageEntries(ItemStackValueFilter value, GuiGuide gui, List<GuidePart> parts) {
-        XmlPageLoader.appendAllCrafting(value.stack.baseStack, parts, gui, new Profiler());
+        XmlPageLoader.appendAllCrafting(value.stack.baseStack, parts, gui, InactiveProfiler.INSTANCE);
     }
 }

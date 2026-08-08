@@ -3,7 +3,7 @@ package buildcraft.lib.client.render.font;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,7 @@ import buildcraft.api.core.BCLog;
 
 import buildcraft.lib.misc.ColourUtil;
 
-public class SpecialColourFontRenderer extends FontRenderer {
+public class SpecialColourFontRenderer extends Font {
     public static final SpecialColourFontRenderer INSTANCE = new SpecialColourFontRenderer();
 
     private SpecialColourFontRenderer() {
@@ -67,8 +67,8 @@ public class SpecialColourFontRenderer extends FontRenderer {
         return (int) x;
     }
 
-    private static FontRenderer getRealRenderer() {
-        return Minecraft.getInstance().fontRenderer;
+    private static Font getRealRenderer() {
+        return Minecraft.getInstance().font;
     }
 
     // Delegate methods (To ensure we have the exact same behaviour as the normal font renderer)
@@ -80,7 +80,7 @@ public class SpecialColourFontRenderer extends FontRenderer {
 
     @Override
     public int getStringWidth(String text) {
-        return getRealRenderer().getStringWidth(text);
+        return getRealRenderer().width(text);
     }
 
     @Override

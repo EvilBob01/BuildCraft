@@ -60,7 +60,7 @@ public class ElementHelpInfo {
         for (int i = 0; i < localeKeys.length; i++) {
             String key = localeKeys[i];
             if (key == null) {
-                y += Minecraft.getInstance().fontRenderer.FONT_HEIGHT + 5;
+                y += Minecraft.getInstance().font.lineHeight + 5;
                 continue;
             }
             String localized = isPreTranslated ? key : LocaleUtil.localize(key);

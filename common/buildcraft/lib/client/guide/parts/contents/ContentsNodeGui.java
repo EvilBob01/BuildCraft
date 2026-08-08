@@ -20,7 +20,7 @@ public class ContentsNodeGui {
     public final GuiGuide gui;
     public final ContentsNode node;
 
-    private IFontRenderer fontRenderer;
+    private IFontRenderer font;
     private List<GuideChapter> chapters;
     private GuidePart[] parts;
     private PageLink[] links;
@@ -42,11 +42,11 @@ public class ContentsNodeGui {
         return chapters;
     }
 
-    public void setFontRenderer(IFontRenderer fontRenderer) {
-        this.fontRenderer = fontRenderer;
+    public void setFontRenderer(IFontRenderer font) {
+        this.font = font;
         if (parts != null) {
             for (GuidePart part : parts) {
-                part.setFontRenderer(fontRenderer);
+                part.setFontRenderer(font);
             }
         }
     }
@@ -68,8 +68,8 @@ public class ContentsNodeGui {
             while (!queue.isEmpty()) {
                 IContentsNode next = queue.removeLast();
                 GuidePart part = next.createGuidePart(gui);
-                if (fontRenderer != null) {
-                    part.setFontRenderer(fontRenderer);
+                if (font != null) {
+                    part.setFontRenderer(font);
                 }
                 allText.add(part);
                 if (next instanceof PageLink) {

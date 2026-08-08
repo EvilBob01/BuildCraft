@@ -28,6 +28,7 @@ import com.google.common.base.Stopwatch;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -156,7 +157,7 @@ public class TilePump extends TileMiner {
             return;
         }
 
-        Profiler debugProf = new Profiler();
+        ProfilerFiller debugProf = InactiveProfiler.INSTANCE;
         debugProf.profilingEnabled = DEBUG_PUMP;
         ProfilerEntry prof = ProfilerUtil.createEntry(debugProf, level.getProfiler());
         Stopwatch watch = Stopwatch.createStarted();

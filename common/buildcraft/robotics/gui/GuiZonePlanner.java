@@ -69,8 +69,8 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
 
     public GuiZonePlanner(ContainerZonePlanner container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
         BlockPos tilePos = container.tile.getBlockPos();
         positionX = tilePos.getX();
         positionZ = tilePos.getZ();
@@ -274,11 +274,11 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                 camY = Math.max(camY, pos.getY() + 10);
             }
         }
-        int x = guiLeft;
-        int y = guiTop;
+        int x = leftPos;
+        int y = topPos;
         if (lastSelected != null) {
             String text = "X: " + lastSelected.getX() + " Y: " + lastSelected.getY() + " Z: " + lastSelected.getZ();
-            fontRenderer.drawString(text, x + 130, y + 130, 0x404040);
+            font.drawString(text, x + 130, y + 130, 0x404040);
         }
         int offsetX = 8;
         int offsetY = 9;

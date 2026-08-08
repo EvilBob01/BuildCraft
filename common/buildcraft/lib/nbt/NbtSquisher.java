@@ -28,6 +28,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.InactiveProfiler;
 
 import net.minecraft.nbt.Tag;
 
@@ -35,7 +36,7 @@ import buildcraft.api.core.InvalidInputDataException;
 import buildcraft.api.data.NbtSquishConstants;
 
 public class NbtSquisher {
-    public static final Profiler profiler = new Profiler();
+    public static final ProfilerFiller profiler = InactiveProfiler.INSTANCE;
     /** Used by testing classes to replace ByteBuf instances with PrintingByteBuf -- but we don't have that
      * class in main because it makes checkstyle complain. */
     public static Function<ByteBuf, FriendlyByteBuf> debugBuffer = null;

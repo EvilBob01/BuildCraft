@@ -11,20 +11,20 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GlStateManager;
 
-/** Implements a font that delegates to Minecraft's own {@link FontRenderer} */
+/** Implements a font that delegates to Minecraft's own {@link Font} */
 public enum MinecraftFont implements IFontRenderer {
     INSTANCE;
 
-    private static FontRenderer getFontRenderer() {
-        return Minecraft.getInstance().fontRenderer;
+    private static Font getFontRenderer() {
+        return Minecraft.getInstance().font;
     }
 
     @Override
     public int getStringWidth(String text) {
-        return getFontRenderer().getStringWidth(text);
+        return getFontRenderer().width(text);
     }
 
     @Override
@@ -34,7 +34,7 @@ public enum MinecraftFont implements IFontRenderer {
 
     @Override
     public int getMaxFontHeight() {
-        return getFontRenderer().FONT_HEIGHT;
+        return getFontRenderer().lineHeight;
     }
 
     @Override

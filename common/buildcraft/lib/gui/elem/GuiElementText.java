@@ -97,14 +97,14 @@ public class GuiElementText extends GuiElementSimple {
             centered, (float) scale.getAsDouble());
         // final double s = scale.getAsDouble();
         // final boolean needsScaling = s != 1;
-        // FontRenderer fr = Minecraft.getInstance().fontRenderer;
+        // Font fr = Minecraft.getInstance().font;
         // if (needsScaling) {
         // GuiUtil.drawScaledText(fr, text.get(), getX(), getY(), colour.getAsInt(), dropShadow, centered, s);
         // return;
         // }
         // if (centered) {
         // String str = text.get();
-        // int width = fr.getStringWidth(str);
+        // int width = fr.width(str);
         // double x = getX() - width / 2;
         // fr.drawString(str, (float) x, (float) getY(), colour.getAsInt(), dropShadow);
         // } else {

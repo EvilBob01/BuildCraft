@@ -70,7 +70,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
             return;
         }
 
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("bc");
         profiler.push("distiller");
 

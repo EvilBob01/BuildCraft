@@ -49,8 +49,8 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
 
     public GuiAdvancedCraftingTable(ContainerAdvancedCraftingTable container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
         GuiRecipeBookPhantom book;
         try {
             book = new GuiRecipeBookPhantom(this::sendRecipe);
@@ -110,9 +110,9 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
         if (recipeBook != null) {
             CraftingContainer invCraft = container.tile.getWorkbenchCrafting();
             recipeBook.func_194303_a(width, height, mc, widthTooNarrow, invCraft);
-            guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
+            leftPos = recipeBook.updateScreenPosition(widthTooNarrow, width, imageWidth);
             recipeButton =
-                new GuiButtonImage(10, guiLeft + 5, height / 2 - 90, 20, 18, 0, 168, 19, VANILLA_CRAFTING_TABLE);
+                new GuiButtonImage(10, leftPos + 5, height / 2 - 90, 20, 18, 0, 168, 19, VANILLA_CRAFTING_TABLE);
             buttonList.add(this.recipeButton);
         }
     }
@@ -139,10 +139,10 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
         } else {
             super.drawScreen(mouseX, mouseY, partialTicks);
             recipeBook.render(mouseX, mouseY, partialTicks);
-            recipeBook.renderGhostRecipe(this.guiLeft, this.guiTop, true, partialTicks);
+            recipeBook.renderGhostRecipe(this.leftPos, this.topPos, true, partialTicks);
         }
 
-        recipeBook.renderTooltip(this.guiLeft, this.guiTop, mouseX, mouseY);
+        recipeBook.renderTooltip(this.leftPos, this.topPos, mouseX, mouseY);
     }
 
 
@@ -167,7 +167,7 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
     @Override
     protected void drawForegroundLayer() {
         String title = I18n.format("tile." + TagManager.get("block.advanced_crafting_table", TagManager.EnumTagType.UNLOCALIZED_NAME) + ".name");
-        fontRenderer.drawString(title, guiLeft + (xSize - fontRenderer.getStringWidth(title)) / 2, guiTop + 5, 0x404040);
+        font.drawString(title, leftPos + (imageWidth - font.width(title)) / 2, topPos + 5, 0x404040);
     }
 
     @Override
@@ -175,8 +175,8 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
         if (button == recipeButton && recipeBook != null) {
             recipeBook.initVisuals(widthTooNarrow, container.tile.getWorkbenchCrafting());
             recipeBook.toggleVisibility();
-            guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
-            recipeButton.setPosition(this.guiLeft + 5, this.height / 2 - 90);
+            leftPos = recipeBook.updateScreenPosition(widthTooNarrow, width, imageWidth);
+            recipeButton.setPosition(this.leftPos + 5, this.height / 2 - 90);
         }
     }
 
@@ -227,8 +227,8 @@ public class GuiAdvancedCraftingTable extends GuiBC8<ContainerAdvancedCraftingTa
             return super.hasClickedOutside(mouseX, mouseY, _guiLeft, _guiTop);
         }
         boolean flag =
-            mouseX < _guiLeft || mouseY < _guiTop || mouseX >= _guiLeft + xSize || mouseY >= _guiTop + this.ySize;
-        return recipeBook.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, xSize, ySize) && flag;
+            mouseX < _guiLeft || mouseY < _guiTop || mouseX >= _guiLeft + imageWidth || mouseY >= _guiTop + this.imageHeight;
+        return recipeBook.hasClickedOutside(mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight) && flag;
     }
 
     @Override

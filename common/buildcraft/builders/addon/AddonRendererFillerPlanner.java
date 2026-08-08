@@ -30,9 +30,9 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
         if (addon.buildingInfo == null) {
             return;
         }
-        Minecraft.getInstance().mcProfiler.push("filler_planner");
+        Minecraft.getInstance().getProfiler().push("filler_planner");
 
-        Minecraft.getInstance().mcProfiler.push("iter");
+        Minecraft.getInstance().getProfiler().push("iter");
         List<BlockPos> list = StreamSupport.stream(
             BlockPos.getAllInBoxMutable(addon.buildingInfo.box.min(), addon.buildingInfo.box.max()).spliterator(),
             false
@@ -47,13 +47,13 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
             .filter(player.level()::isAirBlock)
             .map(BlockPos.MutableBlockPos::toImmutable)
             .collect(Collectors.toCollection(ArrayList::new));
-        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().mcProfiler.push("sort");
+        Minecraft.getInstance().getProfiler().push("sort");
         list.sort(Comparator.<BlockPos>comparingDouble(p -> player.position().squareDistanceTo(new Vec3(p.getX(), p.getY(), p.getZ()))).reversed());
-        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().mcProfiler.push("render");
+        Minecraft.getInstance().getProfiler().push("render");
         for (BlockPos p : list) {
             AABB bb = new AABB(p, p.offset(1, 1, 1)).inflate(-0.1);
             TextureAtlasSprite s = ModelLoader.White.INSTANCE;
@@ -88,8 +88,8 @@ public class AddonRendererFillerPlanner implements IFastAddonRenderer<AddonFille
             vb.pos(bb.maxX, bb.maxY, bb.maxZ).color(153, 153, 153, 127).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
             vb.pos(bb.maxX, bb.minY, bb.maxZ).color(153, 153, 153, 127).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
         }
-        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().mcProfiler.pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 }

@@ -68,8 +68,8 @@ public class GuiDistiller extends GuiBC8<ContainerDistiller> {
 
     public GuiDistiller(ContainerDistiller container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
 
         mainGui.shownElements.add(
             container.widgetInputTank.createGuiElement(
@@ -266,10 +266,10 @@ public class GuiDistiller extends GuiBC8<ContainerDistiller> {
         String str = LocaleUtil.localize("tile.distiller.name");
         double titleX = mainGui.rootElement.getX() + 6;
         double titleY = mainGui.rootElement.getY() + 6;
-        fontRenderer.drawString(str, (int) titleX, (int) titleY, 0x404040);
+        font.drawString(str, (int) titleX, (int) titleY, 0x404040);
 
         double invX = mainGui.rootElement.getX() + 8;
         double invY = mainGui.rootElement.getY() + SIZE_Y - 96;
-        fontRenderer.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
+        font.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
     }
 }

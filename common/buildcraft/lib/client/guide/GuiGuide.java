@@ -421,7 +421,7 @@ public class GuiGuide extends GuiScreen {
         String title = currentPage.getTitle();
         if (title != null) {
             final int x;
-            int titleWidth = currentFont.getStringWidth(title);
+            int titleWidth = currentFont.width(title);
             if (isHalfPageShown) {
                 x = (int) (minX + PAGE_LEFT_TEXT.x + (PAGE_LEFT_TEXT.width - titleWidth) / 2);
             } else {
@@ -464,7 +464,7 @@ public class GuiGuide extends GuiScreen {
                 int hoverOffset = isHovered ? -5 : 0;
                 int y = minY + hoverOffset;
 
-                int strWidth = currentFont.getStringWidth(str);
+                int strWidth = currentFont.width(str);
                 try (AutoGlScissor scissor = GuiUtil.scissor(secondPageX, 0, strWidth + 20, minY + 10)) {
                     CHAPTER_MARKER_9.draw(secondPageX, y, strWidth + 20, 100);
                     currentFont.drawString(str, secondPageX + 10, y + 3, 0);
@@ -500,7 +500,7 @@ public class GuiGuide extends GuiScreen {
             int y = (int) mouse.getY();
             for (List<String> tooltip : tooltips) {
                 drawHoveringText(tooltip, (int) mouse.getX(), y);
-                y += tooltip.size() * fontRenderer.FONT_HEIGHT + 10;
+                y += tooltip.size() * font.lineHeight + 10;
             }
         }
     }

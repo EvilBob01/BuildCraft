@@ -31,6 +31,7 @@ import net.minecraft.client.resources.Language;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCDebugging;
@@ -136,7 +137,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
     }
 
     private void reload0(IResourceManager resourceManager) {
-        Profiler prof = new Profiler();
+        ProfilerFiller prof = InactiveProfiler.INSTANCE;
         prof.profilingEnabled = DEBUG;
         prof.push("root");
         prof.push("reload");
@@ -222,7 +223,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         }
     }
 
-    private void loadLangInternal(IResourceManager resourceManager, String lang, Profiler prof) {
+    private void loadLangInternal(IResourceManager resourceManager, String lang, ProfilerFiller prof) {
         ProfilerBC p = new ProfilerBC(prof);
         main_iteration: for (Entry<ResourceLocation, PageEntry<?>> mapEntry : GuidePageRegistry.INSTANCE
             .getReloadableEntryMap().entrySet()) {
@@ -268,7 +269,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         }
     }
 
-    private void generateContentsPage(Profiler prof) {
+    private void generateContentsPage(ProfilerFiller prof) {
         prof.push("clear");
         objectsAdded.clear();
         contents.clear();

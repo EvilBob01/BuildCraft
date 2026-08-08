@@ -59,8 +59,8 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
 
     public GuiAutoCraftItems(ContainerAutoCraftItems container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
         GuiRecipeBookPhantom book;
         try {
             book = new GuiRecipeBookPhantom(this::sendRecipe);
@@ -120,9 +120,9 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
         if (recipeBook != null) {
             CraftingContainer invCraft = container.tile.getWorkbenchCrafting();
             recipeBook.func_194303_a(width, height, mc, widthTooNarrow, invCraft);
-            guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
+            leftPos = recipeBook.updateScreenPosition(widthTooNarrow, width, imageWidth);
             recipeButton =
-                new GuiButtonImage(10, guiLeft + 5, height / 2 - 66, 20, 18, 0, 168, 19, VANILLA_CRAFTING_TABLE);
+                new GuiButtonImage(10, leftPos + 5, height / 2 - 66, 20, 18, 0, 168, 19, VANILLA_CRAFTING_TABLE);
             buttonList.add(this.recipeButton);
         }
     }
@@ -149,10 +149,10 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
         } else {
             super.drawScreen(mouseX, mouseY, partialTicks);
             recipeBook.render(mouseX, mouseY, partialTicks);
-            recipeBook.renderGhostRecipe(this.guiLeft, this.guiTop, true, partialTicks);
+            recipeBook.renderGhostRecipe(this.leftPos, this.topPos, true, partialTicks);
         }
 
-        recipeBook.renderTooltip(this.guiLeft, this.guiTop, mouseX, mouseY);
+        recipeBook.renderTooltip(this.leftPos, this.topPos, mouseX, mouseY);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
                 int x = slot.xPos + (int) mainGui.rootElement.getX();
                 int y = slot.yPos + (int) mainGui.rootElement.getY();
                 itemRender.renderItemAndEffectIntoGUI(mc.player, filterStack, x, y);
-                itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, filterStack, x, y, null);
+                itemRender.renderItemOverlayIntoGUI(mc.font, filterStack, x, y, null);
             });
             RenderHelper.disableStandardItemLighting();
 
@@ -221,8 +221,8 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
         if (button == recipeButton && recipeBook != null) {
             recipeBook.initVisuals(widthTooNarrow, container.tile.getWorkbenchCrafting());
             recipeBook.toggleVisibility();
-            guiLeft = recipeBook.updateScreenPosition(widthTooNarrow, width, xSize);
-            recipeButton.setPosition(this.guiLeft + 5, this.height / 2 - 66);
+            leftPos = recipeBook.updateScreenPosition(widthTooNarrow, width, imageWidth);
+            recipeButton.setPosition(this.leftPos + 5, this.height / 2 - 66);
         }
     }
 
@@ -273,8 +273,8 @@ public class GuiAutoCraftItems extends GuiBC8<ContainerAutoCraftItems> implement
             return super.hasClickedOutside(mouseX, mouseY, _guiLeft, _guiTop);
         }
         boolean flag =
-            mouseX < _guiLeft || mouseY < _guiTop || mouseX >= _guiLeft + xSize || mouseY >= _guiTop + this.ySize;
-        return recipeBook.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, xSize, ySize) && flag;
+            mouseX < _guiLeft || mouseY < _guiTop || mouseX >= _guiLeft + imageWidth || mouseY >= _guiTop + this.imageHeight;
+        return recipeBook.hasClickedOutside(mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight) && flag;
     }
 
     @Override

@@ -45,8 +45,8 @@ public class GuiEngineRF extends GuiBC8<ContainerEngineRF> {
 
     public GuiEngineRF(ContainerEngineRF container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
         mainGui.shownElements.add(new LedgerEngine(mainGui, container.tile, true));
         mainGui.shownElements.add(
             new DummyHelpElement(
@@ -119,13 +119,13 @@ public class GuiEngineRF extends GuiBC8<ContainerEngineRF> {
     @Override
     protected void drawForegroundLayer() {
         String str = LocaleUtil.localize("tile.engineRf.name");
-        int strWidth = fontRenderer.getStringWidth(str);
+        int strWidth = font.width(str);
         double titleX = mainGui.rootElement.getCenterX() - strWidth / 2;
         double titleY = mainGui.rootElement.getY() + 6;
-        fontRenderer.drawString(str, (int) titleX, (int) titleY, 0x404040);
+        font.drawString(str, (int) titleX, (int) titleY, 0x404040);
 
         double invX = mainGui.rootElement.getX() + 8;
         double invY = mainGui.rootElement.getY() + SIZE_Y - 96;
-        fontRenderer.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
+        font.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
     }
 }

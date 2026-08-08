@@ -24,8 +24,8 @@ public class GuiEngineIron_BC8 extends GuiBC8<ContainerEngineIron_BC8> {
 
     public GuiEngineIron_BC8(ContainerEngineIron_BC8 container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
 
         mainGui.shownElements.add(new LedgerEngine(mainGui, container.tile, true));
         mainGui.shownElements.add(container.widgetTankFuel.createGuiElement(mainGui, new GuiRectangle(26, 18, 16, 60).offset(mainGui.rootElement), ICON_TANK_OVERLAY));
@@ -41,13 +41,13 @@ public class GuiEngineIron_BC8 extends GuiBC8<ContainerEngineIron_BC8> {
     @Override
     protected void drawForegroundLayer() {
         String str = LocaleUtil.localize("tile.engineIron.name");
-        int strWidth = fontRenderer.getStringWidth(str);
+        int strWidth = font.width(str);
         double titleX = mainGui.rootElement.getCenterX() - strWidth / 2;
         double titleY = mainGui.rootElement.getY() + 6;
-        fontRenderer.drawString(str, (int) titleX, (int) titleY, 0x404040);
+        font.drawString(str, (int) titleX, (int) titleY, 0x404040);
 
         double invX = mainGui.rootElement.getX() + 8;
         double invY = mainGui.rootElement.getY() + SIZE_Y - 96;
-        fontRenderer.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
+        font.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
     }
 }

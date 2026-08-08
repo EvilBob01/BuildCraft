@@ -50,10 +50,10 @@ public class GuidePartGroup extends GuidePart {
     }
 
     @Override
-    public void setFontRenderer(IFontRenderer fontRenderer) {
-        super.setFontRenderer(fontRenderer);
+    public void setFontRenderer(IFontRenderer font) {
+        super.setFontRenderer(font);
         for (GuideText text : texts) {
-            text.setFontRenderer(fontRenderer);
+            text.setFontRenderer(font);
         }
     }
 

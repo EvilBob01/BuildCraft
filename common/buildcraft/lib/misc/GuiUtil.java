@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -118,7 +118,7 @@ public class GuiUtil {
         Minecraft mc = Minecraft.getInstance();
         RenderItem itemRender = mc.getRenderItem();
         itemRender.renderItemAndEffectIntoGUI(mc.player, stack, x, y);
-        itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stack, x, y, null);
+        itemRender.renderItemOverlayIntoGUI(mc.font, stack, x, y, null);
         RenderHelper.disableStandardItemLighting();
     }
 
@@ -127,7 +127,7 @@ public class GuiUtil {
         double draw(D drawable, double x, double y);
     }
 
-    /** Straight copy of {@link GuiUtils#drawHoveringText(List, int, int, int, int, int, FontRenderer)}, except that we
+    /** Straight copy of {@link GuiUtils#drawHoveringText(List, int, int, int, int, int, Font)}, except that we
      * return the height of the box that was drawn. Draws a tooltip box on the screen with text in it. Automatically
      * positions the box relative to the mouse to match Mojang's implementation. Automatically wraps text when there is
      * not enough space on the screen to display the text without wrapping. Can have a maximum width set to avoid
@@ -142,7 +142,7 @@ public class GuiUtil {
      *            width.
      * @param font the font for drawing the text in the tooltip box */
     public static int drawHoveringText(List<String> textLines, final int mouseX, final int mouseY,
-        final int screenWidth, final int screenHeight, final int maxTextWidth, FontRenderer font) {
+        final int screenWidth, final int screenHeight, final int maxTextWidth, Font font) {
         if (!textLines.isEmpty()) {
             GlStateManager.disableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
@@ -151,7 +151,7 @@ public class GuiUtil {
             int tooltipTextWidth = 0;
 
             for (String textLine : textLines) {
-                int textLineWidth = font.getStringWidth(textLine);
+                int textLineWidth = font.width(textLine);
 
                 if (textLineWidth > tooltipTextWidth) {
                     tooltipTextWidth = textLineWidth;
@@ -191,7 +191,7 @@ public class GuiUtil {
                     }
 
                     for (String line : wrappedLine) {
-                        int lineWidth = font.getStringWidth(line);
+                        int lineWidth = font.width(line);
                         if (lineWidth > wrappedTooltipWidth) {
                             wrappedTooltipWidth = lineWidth;
                         }
@@ -447,11 +447,11 @@ public class GuiUtil {
         return adv ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
     }
 
-    public static WrappedTextData getWrappedTextData(String text, IFontRenderer fontRenderer, int maxWidth,
+    public static WrappedTextData getWrappedTextData(String text, IFontRenderer font, int maxWidth,
         boolean shadow, float scale) {
-        List<String> lines = fontRenderer.wrapString(text, maxWidth, shadow, scale);
-        return new WrappedTextData(fontRenderer, lines.toArray(new String[0]), shadow, scale, maxWidth,
-            (int) (lines.size() * fontRenderer.getFontHeight("Ly") * scale));
+        List<String> lines = font.wrapString(text, maxWidth, shadow, scale);
+        return new WrappedTextData(font, lines.toArray(new String[0]), shadow, scale, maxWidth,
+            (int) (lines.size() * font.getFontHeight("Ly") * scale));
     }
 
     public static class WrappedTextData {

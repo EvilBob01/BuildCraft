@@ -22,7 +22,7 @@ public abstract class RenderEngine_BC8<T extends TileEngineBase_BC8> extends Fas
 
     @Override
     public void renderTileEntityFast(@Nonnull T engine, double x, double y, double z, float partialTicks, int destroyStage, float partial, @Nonnull BufferBuilder vb) {
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("bc");
         profiler.push("engine");
 

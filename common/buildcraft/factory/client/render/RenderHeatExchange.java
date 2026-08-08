@@ -90,7 +90,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
             return;
         }
 
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("bc");
         profiler.push("heat_exchange");
 

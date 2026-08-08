@@ -34,8 +34,8 @@ public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
         super(new ContainerDiamondPipe(player, pipe));
         this.playerInventory = player.getInventory();
         this.filterInventory = pipe.filters;
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
@@ -43,10 +43,10 @@ public class GuiDiamondPipe extends GuiBC8<ContainerDiamondPipe> {
         String string = LocaleUtil.localize("gui.pipes.emerald.title");
         double titleX = mainGui.rootElement.getX() + 8;
         double titleY = mainGui.rootElement.getY() + 6;
-        fontRenderer.drawString(string, (int) titleX, (int) titleY, 0x404040);
+        font.drawString(string, (int) titleX, (int) titleY, 0x404040);
 
-        double invY = mainGui.rootElement.getY() + ySize - 97;
-        fontRenderer.drawString(LocaleUtil.localize("gui.inventory"), (int) titleX, (int) invY, 0x404040);
+        double invY = mainGui.rootElement.getY() + imageHeight - 97;
+        font.drawString(LocaleUtil.localize("gui.inventory"), (int) titleX, (int) invY, 0x404040);
     }
 
     @Override

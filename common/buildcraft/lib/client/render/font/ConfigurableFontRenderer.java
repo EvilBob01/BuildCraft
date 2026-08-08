@@ -1,12 +1,12 @@
 package buildcraft.lib.client.render.font;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 
 public class ConfigurableFontRenderer extends DelegateFontRenderer {
 
     private Boolean forceShadow = null;
 
-    public ConfigurableFontRenderer(FontRenderer delegate) {
+    public ConfigurableFontRenderer(Font delegate) {
         super(delegate);
     }
 

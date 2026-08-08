@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.util.profiling.InactiveProfiler;
 
 import buildcraft.lib.client.guide.GuiGuide;
 import buildcraft.lib.client.guide.entry.ItemStackValueFilter;
@@ -30,7 +31,7 @@ public class GuidePageStandInRecipes extends GuidePage {
 
     @Nonnull
     public static GuidePageFactory createFactory(@Nonnull ItemStack stack) {
-        List<GuidePartFactory> factories = XmlPageLoader.loadAllCrafting(stack, new Profiler(), 0);
+        List<GuidePartFactory> factories = XmlPageLoader.loadAllCrafting(stack, InactiveProfiler.INSTANCE, 0);
         if (factories.isEmpty()) {
             return (gui) -> {
                 return new GuidePageStandInRecipes(gui, ImmutableList.of(new GuideText(gui, "No recipes!")), stack);

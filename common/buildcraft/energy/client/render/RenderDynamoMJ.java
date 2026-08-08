@@ -19,7 +19,7 @@ public class RenderDynamoMJ extends FastTESR<TileDynamoMJ> {
         TileDynamoMJ engine, double x, double y, double z, float partialTicks, int destroyStage, float partial,
         BufferBuilder vb
     ) {
-        Profiler profiler = Minecraft.getInstance().mcProfiler;
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("bc");
         profiler.push("engine");
 

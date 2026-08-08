@@ -37,12 +37,12 @@ public class NodePageLine implements Comparable<NodePageLine> {
         return node;
     }
 
-    public void setFontRenderer(IFontRenderer fontRenderer) {
+    public void setFontRenderer(IFontRenderer font) {
         if (part != null) {
-            part.setFontRenderer(fontRenderer);
+            part.setFontRenderer(font);
         }
         for (NodePageLine node : children) {
-            node.setFontRenderer(fontRenderer);
+            node.setFontRenderer(font);
         }
     }
 

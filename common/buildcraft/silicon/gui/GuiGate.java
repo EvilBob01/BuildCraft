@@ -16,8 +16,8 @@ public class GuiGate extends GuiBC8<ContainerGate> {
 
     public static final ResourceLocation GUI_DEFINITION = ResourceLocation.parse("buildcraftsilicon:gui/gate.json");
 
-    private int xSize;
-    private int ySize;
+    private int imageWidth;
+    private int imageHeight;
 
     public GuiGate(ContainerGate container) {
         super(container, GUI_DEFINITION);
@@ -25,8 +25,8 @@ public class GuiGate extends GuiBC8<ContainerGate> {
         BuildCraftJsonGui jsonGui = (BuildCraftJsonGui) mainGui;
         preLoad(jsonGui);
         jsonGui.load();
-        this.xSize = jsonGui.getSizeX();
-        this.ySize = jsonGui.getSizeY();
+        this.imageWidth = jsonGui.getSizeX();
+        this.imageHeight = jsonGui.getSizeY();
     }
 
     protected void preLoad(BuildCraftJsonGui json) {

@@ -27,7 +27,7 @@ public class RecipeLookupHelper {
         handlerTypes.put("assembling", GuideAssemblyRecipes.INSTANCE);
     }
 
-    public static List<GuidePartFactory> getAllUsages(@Nonnull ItemStack stack, Profiler prof) {
+    public static List<GuidePartFactory> getAllUsages(@Nonnull ItemStack stack, ProfilerFiller prof) {
         List<GuidePartFactory> list = new ArrayList<>();
         for (IStackRecipes handler : handlerTypes.values()) {
             prof.push(handler.getClass().getName().replace('.', '/'));
@@ -40,7 +40,7 @@ public class RecipeLookupHelper {
         return list;
     }
 
-    public static List<GuidePartFactory> getAllRecipes(@Nonnull ItemStack stack, Profiler prof) {
+    public static List<GuidePartFactory> getAllRecipes(@Nonnull ItemStack stack, ProfilerFiller prof) {
         List<GuidePartFactory> list = new ArrayList<>();
         for (IStackRecipes handler : handlerTypes.values()) {
             prof.push(handler.getClass().getName().replace('.', '/'));

@@ -100,10 +100,10 @@ public class GuidePage extends GuidePageBase {
     }
 
     @Override
-    public void setFontRenderer(IFontRenderer fontRenderer) {
-        super.setFontRenderer(fontRenderer);
+    public void setFontRenderer(IFontRenderer font) {
+        super.setFontRenderer(font);
         for (GuidePart part : parts) {
-            part.setFontRenderer(fontRenderer);
+            part.setFontRenderer(font);
         }
     }
 

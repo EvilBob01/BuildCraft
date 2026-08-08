@@ -26,14 +26,14 @@ public class GuiArchitectTable extends GuiBC8<ContainerArchitectTable> {
 
     public GuiArchitectTable(ContainerArchitectTable container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        nameField = new GuiTextField(0, fontRenderer, guiLeft + 90, guiTop + 62, 156, 12);
+        nameField = new GuiTextField(0, font, leftPos + 90, topPos + 62, 156, 12);
         nameField.setText(container.tile.name);
         nameField.setFocused(true);
     }

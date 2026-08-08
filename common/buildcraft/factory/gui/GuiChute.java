@@ -18,8 +18,8 @@ public class GuiChute extends GuiBC8<ContainerChute> {
 
     public GuiChute(ContainerChute container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override

@@ -53,8 +53,8 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
 
     public GuiEmzuliPipe_BC8(Player player, PipeBehaviourEmzuli behaviour) {
         super(new ContainerEmzuliPipe_BC8(player, behaviour));
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
@@ -138,11 +138,11 @@ public class GuiEmzuliPipe_BC8 extends GuiBC8<ContainerEmzuliPipe_BC8> {
     @Override
     protected void drawForegroundLayer() {
         String title = LocaleUtil.localize("gui.pipes.emzuli.title");
-        double titleX = mainGui.rootElement.getX() + (xSize - fontRenderer.getStringWidth(title)) / 2;
-        fontRenderer.drawString(title, (int) titleX, (int) mainGui.rootElement.getY() + 6, 0x404040);
+        double titleX = mainGui.rootElement.getX() + (imageWidth - font.width(title)) / 2;
+        font.drawString(title, (int) titleX, (int) mainGui.rootElement.getY() + 6, 0x404040);
 
         int invX = (int) mainGui.rootElement.getX() + 8;
-        int invY = (int) mainGui.rootElement.getY() + ySize - 93;
-        fontRenderer.drawString(LocaleUtil.localize("gui.inventory"), invX, invY, 0x404040);
+        int invY = (int) mainGui.rootElement.getY() + imageHeight - 93;
+        font.drawString(LocaleUtil.localize("gui.inventory"), invX, invY, 0x404040);
     }
 }

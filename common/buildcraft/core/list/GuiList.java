@@ -54,8 +54,8 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
 
     public GuiList(Player iPlayer) {
         super(new ContainerList(iPlayer));
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
@@ -116,8 +116,8 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
 
         for (int sy = 0; sy < ListHandler.HEIGHT; sy++) {
             int bOff = sy * BUTTON_COUNT;
-            int bOffX = this.guiLeft + 8 + ListHandler.WIDTH * 18 - BUTTON_COUNT * 11;
-            int bOffY = this.guiTop + 32 + sy * 34 + 18;
+            int bOffX = this.leftPos + 8 + ListHandler.WIDTH * 18 - BUTTON_COUNT * 11;
+            int bOffY = this.topPos + 32 + sy * 34 + 18;
 
             GuiImageButton buttonPrecise =
                 new GuiImageButton(mainGui, bOff + 0, bOffX, bOffY, 11, TEXTURE_BASE, 176, 16, 176, 28);
@@ -152,7 +152,7 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
             }
         }
 
-        textField = new GuiTextField(6, this.fontRenderer, guiLeft + 10, guiTop + 10, 156, 12);
+        textField = new GuiTextField(6, this.font, leftPos + 10, topPos + 10, 156, 12);
         textField.setMaxStringLength(32);
         textField.setText(BCCoreItems.list.getName(container.getListItemStack()));
         textField.setFocused(false);
@@ -164,7 +164,7 @@ public class GuiList extends GuiBC8<ContainerList> implements IButtonClickEventL
 
         for (int i = 0; i < 2; i++) {
             if (container.lines[i].isOneStackMode()) {
-                ICON_ONE_STACK.drawAt(guiLeft + 6, guiTop + 30 + i * 34);
+                ICON_ONE_STACK.drawAt(leftPos + 6, topPos + 30 + i * 34);
             }
         }
     }

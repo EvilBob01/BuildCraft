@@ -38,7 +38,7 @@ public class PageEntryStatement extends PageValueType<IStatement> {
     }
 
     @Override
-    public void iterateAllDefault(IEntryLinkConsumer consumer, Profiler prof) {
+    public void iterateAllDefault(IEntryLinkConsumer consumer, ProfilerFiller prof) {
         for (IStatement statement : new TreeMap<>(StatementManager.statements).values()) {
             if (!GuideManager.INSTANCE.objectsAdded.add(statement)) {
                 continue;

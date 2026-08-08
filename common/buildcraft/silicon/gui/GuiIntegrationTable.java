@@ -22,8 +22,8 @@ public class GuiIntegrationTable extends GuiBC8<ContainerIntegrationTable> {
 
     public GuiIntegrationTable(ContainerIntegrationTable container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
@@ -47,6 +47,6 @@ public class GuiIntegrationTable extends GuiBC8<ContainerIntegrationTable> {
     @Override
     protected void drawForegroundLayer() {
         String title = I18n.format("tile.integrationTableBlock.name");
-        fontRenderer.drawString(title, guiLeft + (xSize - fontRenderer.getStringWidth(title)) / 2, guiTop + 10, 0x404040);
+        font.drawString(title, leftPos + (imageWidth - font.width(title)) / 2, topPos + 10, 0x404040);
     }
 }

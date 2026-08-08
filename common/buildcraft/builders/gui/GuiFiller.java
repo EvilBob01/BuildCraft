@@ -29,8 +29,8 @@ public class GuiFiller extends GuiBC8<ContainerFiller> {
         BuildCraftJsonGui jsonGui = (BuildCraftJsonGui) mainGui;
         preLoad(jsonGui);
         jsonGui.load();
-        xSize = jsonGui.getSizeX();
-        ySize = jsonGui.getSizeY();
+        imageWidth = jsonGui.getSizeX();
+        imageHeight = jsonGui.getSizeY();
     }
 
     protected void preLoad(BuildCraftJsonGui json) {

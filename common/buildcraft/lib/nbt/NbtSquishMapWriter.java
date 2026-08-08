@@ -38,7 +38,7 @@ class NbtSquishMapWriter {
     static boolean debug;
     static final boolean sort = true;
     static final Boolean packList = null;
-    static final Profiler profiler = NbtSquisher.getProfiler();
+    static final ProfilerFiller profiler = NbtSquisher.getProfiler();
     private final NbtSquishMap map;
 
     private static void log(String string) {

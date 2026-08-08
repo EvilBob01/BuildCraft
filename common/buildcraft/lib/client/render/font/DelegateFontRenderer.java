@@ -3,14 +3,14 @@ package buildcraft.lib.client.render.font;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.resources.ResourceLocation;
 
-public class DelegateFontRenderer extends FontRenderer {
-    public final FontRenderer delegate;
+public class DelegateFontRenderer extends Font {
+    public final Font delegate;
 
-    public DelegateFontRenderer(FontRenderer delegate) {
+    public DelegateFontRenderer(Font delegate) {
         super(Minecraft.getInstance().gameSettings, ResourceLocation.parse("textures/font/ascii.png"),
             Minecraft.getInstance().renderEngine, delegate.getUnicodeFlag());
         this.delegate = delegate;
@@ -53,7 +53,7 @@ public class DelegateFontRenderer extends FontRenderer {
 
     @Override
     public int getStringWidth(String text) {
-        return delegate.getStringWidth(text);
+        return delegate.width(text);
     }
 
     @Override

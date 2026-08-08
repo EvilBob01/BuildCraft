@@ -27,7 +27,7 @@ public class GuidePartCodeBlock extends GuidePart {
         List<String> wrappedLines = new ArrayList<>();
         TIntList lineNumbers = new TIntArrayList();
 
-        int lineNumberWidth = font.getStringWidth(Integer.toString(lines.size() - 1));
+        int lineNumberWidth = font.width(Integer.toString(lines.size() - 1));
         int widthForDecoration = 8 + lineNumberWidth;
         int innerMaxWidth = 0;
 
@@ -37,7 +37,7 @@ public class GuidePartCodeBlock extends GuidePart {
             wrappedLines.addAll(wrapped);
             for (int j = 0; j < wrapped.size(); j++) {
                 lineNumbers.add(j == 0 ? (i + 1) : -1);
-                innerMaxWidth = Math.max(innerMaxWidth, font.getStringWidth(wrapped.get(j)));
+                innerMaxWidth = Math.max(innerMaxWidth, font.width(wrapped.get(j)));
             }
         }
 
@@ -60,7 +60,7 @@ public class GuidePartCodeBlock extends GuidePart {
                     darken = !darken;
                     if (wrappedLines.size() > 1) {
                         String ns = Integer.toString(number);
-                        int addX = lineNumberWidth - font.getStringWidth(ns);
+                        int addX = lineNumberWidth - font.width(ns);
                         font.drawString(ns, x + 4 + addX, _y, 0);
                     }
                 }

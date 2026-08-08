@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.ChatFormatting;
 
@@ -50,8 +50,8 @@ public class GuidePageContents extends GuidePageBase {
     public GuidePageContents(GuiGuide gui) {
         super(gui);
         loadMainGui();
-        FontRenderer fr = new ConfigurableFontRenderer(gui.mc.fontRenderer).disableShadow();
-        searchText = new GuiTextField(0, fr, 0, 0, 80, fr.FONT_HEIGHT + 5);
+        Font fr = new ConfigurableFontRenderer(gui.mc.font).disableShadow();
+        searchText = new GuiTextField(0, fr, 0, 0, 80, fr.lineHeight + 5);
         searchText.setEnableBackgroundDrawing(false);
         searchText.setTextColor(0xFF_00_00_00);
         setupChapters();
@@ -74,9 +74,9 @@ public class GuidePageContents extends GuidePageBase {
     }
 
     @Override
-    public void setFontRenderer(IFontRenderer fontRenderer) {
-        super.setFontRenderer(fontRenderer);
-        contents.setFontRenderer(fontRenderer);
+    public void setFontRenderer(IFontRenderer font) {
+        super.setFontRenderer(font);
+        contents.setFontRenderer(font);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class GuidePageContents extends GuidePageBase {
 
     private void drawCenteredText(String text, int x, int y, int width) {
         IFontRenderer f = getFontRenderer();
-        int fWidth = f.getStringWidth(text);
+        int fWidth = f.width(text);
         f.drawString(text, (x + (width - fWidth) / 2), y, 0);
     }
 
@@ -257,7 +257,7 @@ public class GuidePageContents extends GuidePageBase {
             if (index == 0) {
                 IFontRenderer f = getFontRenderer();
                 String text = XmlPageLoader.SHOW_LORE ? "Show Lore [x]" : "Show Lore [ ]";
-                int fWidth = f.getStringWidth(text);
+                int fWidth = f.width(text);
                 GuiRectangle rect;
                 rect = new GuiRectangle(x + (width - fWidth) / 2, y + height - 52, fWidth, f.getFontHeight(text));
                 if (rect.contains(mouseX, mouseY)) {
@@ -265,7 +265,7 @@ public class GuidePageContents extends GuidePageBase {
                 }
 
                 text = XmlPageLoader.SHOW_HINTS ? "Show Hints [x]" : "Show Hints [ ]";
-                fWidth = f.getStringWidth(text);
+                fWidth = f.width(text);
                 rect = new GuiRectangle(x + (width - fWidth) / 2, y + height - 38, fWidth, f.getFontHeight(text));
                 if (rect.contains(mouseX, mouseY)) {
                     XmlPageLoader.SHOW_HINTS = !XmlPageLoader.SHOW_HINTS;

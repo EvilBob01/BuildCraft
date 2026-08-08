@@ -27,14 +27,14 @@ public class GuiReplacer extends GuiBC8<ContainerReplacer> {
 
     public GuiReplacer(ContainerReplacer container) {
         super(container);
-        xSize = SIZE_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        nameField = new GuiTextField(0, fontRenderer, guiLeft + 30, guiTop + 117, 138, 12);
+        nameField = new GuiTextField(0, font, leftPos + 30, topPos + 117, 138, 12);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class GuiReplacer extends GuiBC8<ContainerReplacer> {
         ICON_GUI.drawAt(mainGui.rootElement);
         ClientSnapshots.INSTANCE.renderSnapshot(
             BCBuildersItems.snapshot.getHeader(container.tile.invSnapshot.getStackInSlot(0)),
-            guiLeft + 8,
-            guiTop + 9,
+            leftPos + 8,
+            topPos + 9,
             160,
             100
         );

@@ -23,7 +23,7 @@ public final class PageLinkItemStack extends PageLink {
     public final List<String> tooltip;
     public final String searchText;
 
-    public static PageLinkItemStack create(boolean startVisible, ItemStack stack, Profiler prof) {
+    public static PageLinkItemStack create(boolean startVisible, ItemStack stack, ProfilerFiller prof) {
         prof.push("create_page_link");
         prof.push("get_tooltip");
         List<String> tooltip = getTooltip(stack);
@@ -82,7 +82,7 @@ public final class PageLinkItemStack extends PageLink {
         this.searchText = searchText;
     }
 
-    private PageLinkItemStack(boolean startVisible, ItemStack stack, Profiler prof) {
+    private PageLinkItemStack(boolean startVisible, ItemStack stack, ProfilerFiller prof) {
         super(createPageLine(stack, prof), startVisible);
         this.stack = stack;
         prof.push("get_tooltip");
@@ -92,7 +92,7 @@ public final class PageLinkItemStack extends PageLink {
         prof.pop();
     }
 
-    private static PageLine createPageLine(ItemStack stack, Profiler prof) {
+    private static PageLine createPageLine(ItemStack stack, ProfilerFiller prof) {
         prof.push("create_line");
         ISimpleDrawable icon = new GuiStack(stack);
         prof.push("get_display_name");

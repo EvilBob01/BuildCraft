@@ -33,8 +33,8 @@ public class GuiBuilder extends GuiBC8<ContainerBuilder> {
 
     public GuiBuilder(ContainerBuilder container) {
         super(container);
-        xSize = SIZE_BLUEPRINT_X;
-        ySize = SIZE_Y;
+        imageWidth = SIZE_BLUEPRINT_X;
+        imageHeight = SIZE_Y;
     }
 
     @Override
