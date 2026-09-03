@@ -47,10 +47,10 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
     public BlockMarkerBase(BlockBehaviour.Properties props, String id) {
         super(props, id);
 
-        BlockState defaultState = getDefaultState();
+        BlockState defaultState = this.defaultBlockState();
         defaultState = defaultState.setValue(BuildCraftProperties.BLOCK_FACING_6, Direction.UP);
         defaultState = defaultState.setValue(BuildCraftProperties.ACTIVE, false);
-        setDefaultState(defaultState);
+        this.stateDefinition = this.stateDefinition.any().setValue(BuildCraftProperties.BLOCK_FACING_6, Direction.UP).setValue(BuildCraftProperties.ACTIVE, false);
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class BlockMarkerBase extends BlockBCTile_Neptune implements ICu
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return getDefaultState().setValue(BuildCraftProperties.BLOCK_FACING_6, context.getClickedFace());
+        return this.defaultBlockState().setValue(BuildCraftProperties.BLOCK_FACING_6, context.getClickedFace());
     }
 
     @Override
