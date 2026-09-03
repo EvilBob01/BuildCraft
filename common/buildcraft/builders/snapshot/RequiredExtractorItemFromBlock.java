@@ -24,8 +24,7 @@ public class RequiredExtractorItemFromBlock extends RequiredExtractor {
         return Collections.singletonList(
             new ItemStack(
                 Item.byBlock(blockState.getBlock()),
-                1,
-                blockState.getBlock().getDestroySpeed(ItemStack.EMPTY, blockState)
+                1
             )
         );
     }
