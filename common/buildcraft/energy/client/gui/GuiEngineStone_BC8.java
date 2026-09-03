@@ -7,6 +7,11 @@
 package buildcraft.energy.client.gui;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import buildcraft.lib.gui.GuiBC8;
 import buildcraft.lib.gui.GuiIcon;
@@ -39,14 +44,14 @@ public class GuiEngineStone_BC8 extends GuiBC8<ContainerEngineStone_BC8> {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
         mainGui.shownElements.add(new DummyHelpElement(flameRect.expand(2), helpFlame));
         mainGui.shownElements.add(new DummyHelpElement(fuelSlotRect, helpFuel));
     }
 
     @Override
-    protected void drawBackgroundLayer(float partialTicks) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         ICON_GUI.drawAt(mainGui.rootElement);
 
         double amount = container.tile.deltaFuelLeft.getDynamic(partialTicks) / 100;
@@ -54,23 +59,20 @@ public class GuiEngineStone_BC8 extends GuiBC8<ContainerEngineStone_BC8> {
         if (amount > 0) {
             int flameHeight = (int) Math.ceil(amount * flameRect.getHeight());
 
-            drawTexturedModalRect(//
-                    (int) flameRect.getX(),//
-                    (int) (flameRect.getY() + flameRect.getHeight() - flameHeight),//
-                    176, 14 - flameHeight, 14, flameHeight + 2);
+            guiGraphics.blit(TEXTURE_BASE, (int) flameRect.getX(), (int) (flameRect.getY() + flameRect.getHeight() - flameHeight), 176, 14 - flameHeight, 14, flameHeight + 2);
         }
     }
 
     @Override
-    protected void drawForegroundLayer() {
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         String str = LocaleUtil.localize("tile.engineStone.name");
         int strWidth = font.width(str);
         double titleX = mainGui.rootElement.getCenterX() - strWidth / 2;
         double titleY = mainGui.rootElement.getY() + 6;
-        font.drawString(str, (int) titleX, (int) titleY, 0x404040);
-        
+        guiGraphics.drawString(font, str, (int) titleX, (int) titleY, 0x404040);
+
         double invX = mainGui.rootElement.getX() + 8;
         double invY = mainGui.rootElement.getY() + SIZE_Y - 96;
-        font.drawString(LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
+        guiGraphics.drawString(font, LocaleUtil.localize("gui.inventory"), (int) invX, (int) invY, 0x404040);
     }
 }
