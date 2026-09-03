@@ -2,7 +2,7 @@ package buildcraft.lib.misc.search;
 
 import java.util.List;
 
-import net.minecraft.util.SuffixArray;
+import net.minecraft.client.searchtree.SuffixArray;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 /** An implementation of {@link ISuffixArray} that delegates to a vanilla minecraft {@link SuffixArray}. */
