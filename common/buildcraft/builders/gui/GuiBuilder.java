@@ -7,6 +7,7 @@
 package buildcraft.builders.gui;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphics;
 
 import buildcraft.lib.gui.GuiBC8;
 import buildcraft.lib.gui.GuiIcon;
@@ -38,8 +39,8 @@ public class GuiBuilder extends GuiBC8<ContainerBuilder> {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         for (int i = 0; i < container.widgetTanks.size(); i++) {
             mainGui.shownElements.add(
@@ -67,7 +68,7 @@ public class GuiBuilder extends GuiBC8<ContainerBuilder> {
     }
 
     @Override
-    protected void drawBackgroundLayer(float partialTicks) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         ICON_GUI.drawAt(mainGui.rootElement);
         ICON_BLUEPRINT_GUI.drawAt(mainGui.rootElement.offset(SIZE_BLUEPRINT_X - BLUEPRINT_WIDTH, 0));
     }
