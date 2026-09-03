@@ -49,12 +49,12 @@ public class NeighbourTileCache implements ITileCache {
 
     private boolean canUseCache() {
         Level w = tile.getLevel();
-        if (tile.isInvalid() || w == null) {
+        if (!tile.isValidBlockState(tile.getBlockState()) || w == null) {
             return false;
         }
         BlockPos tPos = tile.getBlockPos();
         if (!tPos.equals(lastSeenTilePos)) {
-            lastSeenTilePos = tPos.toImmutable();
+            lastSeenTilePos = tPos;
             cachedTiles.clear();
         }
         if (!w.isLoaded(lastSeenTilePos)) {
@@ -76,7 +76,7 @@ public class NeighbourTileCache implements ITileCache {
         WeakReference<BlockEntity> ref = cachedTiles.get(offset);
         if (ref != null) {
             BlockEntity oTile = ref.get();
-            if (oTile == null || oTile.isInvalid()) {
+            if (oTile == null || !oTile.isValidBlockState(oTile.getBlockState())) {
                 cachedTiles.remove(offset);
             } else {
                 Level w = tile.getLevel();
@@ -97,7 +97,7 @@ public class NeighbourTileCache implements ITileCache {
             chunk = ChunkUtil.getChunk(tile.getLevel(), offsetPos, true);
         }
         BlockState state = chunk.getBlockState(offsetPos);
-        if (!state.getBlock().hasTileEntity(state)) {
+        if (!state.hasBlockEntity()) {
             // Optimisation: world.getTileEntity can be slow (as it potentially iterates through a long list)
             // so just check to make sure the target block might actually have a tile entity
             return new TileCacheRet(null);
