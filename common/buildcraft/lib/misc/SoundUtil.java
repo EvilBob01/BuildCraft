@@ -91,12 +91,12 @@ public class SoundUtil {
     }
 
     public static void playBucketEmpty(Level world, BlockPos pos, FluidStack moved) {
-        SoundEvent sound = moved.getFluid().getEmptySound(moved);
-        world.playSound(null, pos, sound, SoundSource.PLAYERS, 1, 1);
+        // TODO Phase 7: Implement sound for emptying a bucket
+        world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.PLAYERS, 1, 1);
     }
 
     public static void playBucketFill(Level world, BlockPos pos, FluidStack moved) {
-        SoundEvent sound = moved.getFluid().getFillSound(moved);
-        world.playSound(null, pos, sound, SoundSource.PLAYERS, 1, 1);
+        // TODO Phase 7: Implement sound for filling a bucket
+        world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 1, 1);
     }
 }
