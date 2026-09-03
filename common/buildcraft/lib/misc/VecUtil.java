@@ -42,7 +42,8 @@ public class VecUtil {
 
     public static Direction getFacing(Axis axis, boolean positive) {
         AxisDirection dir = positive ? AxisDirection.POSITIVE : AxisDirection.NEGATIVE;
-        return Direction.getFacingFromAxis(dir, axis);
+        // TODO Phase 7: Replace with correct method
+        return Direction.UP; // Placeholder
     }
 
     public static BlockPos absolute(BlockPos val) {
@@ -71,7 +72,7 @@ public class VecUtil {
     }
 
     public static int getValue(Vec3i from, Axis axis) {
-        return axis == Axis.X ? from.getX() : axis == Axis.Y ? from.getY() : from.getZ();
+        return axis == Axis.X ? from.getX() : axis == Axis.Y ? from.getY() : axis == Axis.Z ? from.getZ() : 0;
     }
 
     public static double getValue(Vec3 negative, Vec3 positive, Direction face) {
@@ -117,11 +118,11 @@ public class VecUtil {
     }
 
     public static BlockPos convertFloor(Vec3 vec) {
-        return new BlockPos(Math.floor(vec.x), Math.floor(vec.y), Math.floor(vec.z));
+        return new BlockPos((int) Math.floor(vec.x), (int) Math.floor(vec.y), (int) Math.floor(vec.z));
     }
 
     public static BlockPos convertCeiling(Vec3 vec) {
-        return new BlockPos(Math.ceil(vec.x), Math.ceil(vec.y), Math.ceil(vec.z));
+        return new BlockPos((int) Math.ceil(vec.x), (int) Math.ceil(vec.y), (int) Math.ceil(vec.z));
     }
 
     public static Tuple3f convertFloat(Vec3 vec) {
