@@ -6,7 +6,7 @@
 
 package buildcraft.lib.client.render;
 
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
@@ -40,6 +40,7 @@ public class CuboidRenderer {
 
         CuboidRenderContext ctx = new CuboidRenderContext();
         ctx.buffer = bb;
+        ctx.sprite = sprite;
 
         final double xs = min.x;
         final double ys = min.y;
@@ -181,7 +182,9 @@ public class CuboidRenderer {
             if (ctx.invertV) {
                 realv = 1 - realv;
             }
-            ctx.vertex.texf(ctx.sprite.getInterpolatedU(realu * 16), ctx.sprite.getInterpolatedV(realv * 16));
+            float u = ctx.sprite.getU((float) (realu * 16));
+            float v = ctx.sprite.getV((float) (realv * 16));
+            ctx.vertex.texf(u, v);
         }
     }
 }
