@@ -84,7 +84,7 @@ public abstract class GuidePart {
     /** Renders a raw line at the position, lowering it appropriately */
     protected void renderTextLine(String text, int x, int y, int colour) {
         font.drawString(text, x, y + 8 - (font.getFontHeight(text) / 2), colour);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager._colorMask(true, true, true, true);
     }
 
     /** @param current The current position to render from
