@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
@@ -43,14 +44,14 @@ public class StatementParameterDirection implements IStatementParameter {
     private Direction direction = null;
 
     @OnlyIn(Dist.CLIENT)
-    public void registerIcons(TextureAtlasSprite map) {
+    public void registerIcons(TextureMap map) {
         sprites = new TextureAtlasSprite[] {
-            map,
-            map,
-            map,
-            map,
-            map,
-            map
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_down")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_up")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_north")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_south")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_west")),
+            map.registerSprite(ResourceLocation.parse("buildcraftcore:triggers/trigger_dir_east"))
         };
     }
 
@@ -157,3 +158,4 @@ public class StatementParameterDirection implements IStatementParameter {
         return possible;
     }
 }
+
