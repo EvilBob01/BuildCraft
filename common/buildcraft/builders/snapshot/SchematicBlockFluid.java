@@ -97,7 +97,7 @@ public class SchematicBlockFluid implements ISchematicBlock {
                 Stream.of(BlockPos.ZERO)
             )
                 .map(blockPos::offset)
-                .forEach(updatePos -> world.onBlockStateChange(updatePos, blockState, blockState));
+                .forEach(updatePos -> world.notifyNeighborsOfStateChange(updatePos, blockState.getBlock()));
             return true;
         }
         return false;
@@ -116,7 +116,7 @@ public class SchematicBlockFluid implements ISchematicBlock {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        nbt.put("blockState", NbtUtils.writeBlockState(nbt, blockState));
+        nbt.put("blockState", NbtUtils.writeBlockState(new CompoundTag(), blockState));
         nbt.putBoolean("isFlowing", isFlowing);
         return nbt;
     }
