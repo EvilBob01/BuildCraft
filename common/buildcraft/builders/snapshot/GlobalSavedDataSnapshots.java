@@ -29,15 +29,15 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.world.level.Level;
 
-
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLPaths;
 
 import buildcraft.lib.misc.data.SingleCache;
 import buildcraft.lib.nbt.NbtSquisher;
 
 public class GlobalSavedDataSnapshots {
     private static final String SNAPSHOT_FILE_EXTENSION = ".bcnbt";
-    private static final Map<Side, GlobalSavedDataSnapshots> INSTANCES = new EnumMap<>(Side.class);
+    private static final Map<Dist, GlobalSavedDataSnapshots> INSTANCES = new EnumMap<>(Dist.class);
     private final LoadingCache<Snapshot.Key, Optional<Snapshot>> snapshotsCache = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .build(CacheLoader.from(key -> Optional.ofNullable(readSnapshot(key)).map(Pair::getLeft)));
@@ -50,7 +50,7 @@ public class GlobalSavedDataSnapshots {
 
     private GlobalSavedDataSnapshots(Dist side) {
         snapshotsFile = new File(
-            FMLCommonHandler.instance().getSavesDirectory().getParentFile(),
+            FMLPaths.GAMEDIR.get().toFile(),
             "snapshots-" + side.name().toLowerCase(Locale.ROOT)
         );
         if (!snapshotsFile.exists()) {
