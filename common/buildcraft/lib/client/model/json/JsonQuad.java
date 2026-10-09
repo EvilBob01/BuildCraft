@@ -31,9 +31,9 @@ public class JsonQuad {
 
     public JsonQuad(JsonObject obj, float[] from, float[] to, Direction face) {
         this.face = face;
-        tint = GsonHelper.getInt(obj, "tintindex", -1);
-        texture = GsonHelper.getString(obj, "texture");
-        int rotation = GsonHelper.getInt(obj, "rotation", 0);
+        tint = GsonHelper.getAsInt(obj, "tintindex", -1);
+        texture = GsonHelper.getAsString(obj, "texture");
+        int rotation = GsonHelper.getAsInt(obj, "rotation", 0);
         float[] uv = JsonUtil.getSubAsFloatArray(obj, "uv");
         if (uv.length != 4) {
             throw new JsonSyntaxException("Expected exactly 4 floats, but got " + Arrays.toString(uv));

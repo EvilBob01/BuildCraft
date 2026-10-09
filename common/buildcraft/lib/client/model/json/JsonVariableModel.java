@@ -98,11 +98,11 @@ public class JsonVariableModel extends JsonVariableObject {
 
         if (obj.has("values")) {
             fnCtx = new FunctionContext(fnCtx);
-            putVariables(GsonHelper.getJsonObject(obj, "values"), fnCtx);
+            putVariables(GsonHelper.getAsJsonObject(obj, "values"), fnCtx);
         }
 
         if (obj.has("parent")) {
-            String parentName = GsonHelper.getString(obj, "parent");
+            String parentName = GsonHelper.getAsString(obj, "parent");
             parentName += ".json";
             ResourceLocation from = ResourceLocation.parse(parentName);
             JsonVariableModel parent;
@@ -112,26 +112,26 @@ public class JsonVariableModel extends JsonVariableObject {
                 throw new JsonParseException("Didn't find the parent '" + parentName + "'!", e);
             }
             ambf = parent.ambientOcclusion;
-            if (!GsonHelper.getBoolean(obj, "textures_reset", false)) {
+            if (!GsonHelper.getAsBoolean(obj, "textures_reset", false)) {
                 textures.putAll(parent.textures);
             }
             variables.putAll(parent.variables);
-            if (!GsonHelper.getBoolean(obj, "cutout_replace", false)) {
+            if (!GsonHelper.getAsBoolean(obj, "cutout_replace", false)) {
                 Collections.addAll(cutout, parent.cutoutElements);
             }
-            if (!GsonHelper.getBoolean(obj, "translucent_replace", false)) {
+            if (!GsonHelper.getAsBoolean(obj, "translucent_replace", false)) {
                 Collections.addAll(translucent, parent.translucentElements);
             }
-            if (!GsonHelper.getBoolean(obj, "rules_replace", false)) {
+            if (!GsonHelper.getAsBoolean(obj, "rules_replace", false)) {
                 Collections.addAll(rulesP, parent.rules);
             }
         }
 
-        ambientOcclusion = GsonHelper.getBoolean(obj, "ambientocclusion", ambf);
+        ambientOcclusion = GsonHelper.getAsBoolean(obj, "ambientocclusion", ambf);
         deserializeTextures(obj.get("textures"));
         if (obj.has("variables")) {
             fnCtx = new FunctionContext(fnCtx);
-            putVariables(GsonHelper.getJsonObject(obj, "variables"), fnCtx);
+            putVariables(GsonHelper.getAsJsonObject(obj, "variables"), fnCtx);
         }
         finaliseVariables();
 

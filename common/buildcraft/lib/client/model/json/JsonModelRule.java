@@ -40,18 +40,18 @@ public abstract class JsonModelRule {
             throw new JsonSyntaxException("Expected an object, got " + json);
         }
         JsonObject obj = json.getAsJsonObject();
-        String when = GsonHelper.getString(obj, "when");
+        String when = GsonHelper.getAsString(obj, "when");
         INodeBoolean nodeWhen = JsonVariableModelPart.convertStringToBooleanNode(when, fnCtx);
 
-        String type = GsonHelper.getString(obj, "type");
+        String type = GsonHelper.getAsString(obj, "type");
         if (type.startsWith("builtin:")) {
             String builtin = type.substring("builtin:".length());
             if ("rotate_facing".equals(builtin)) {
                 fnCtx = new FunctionContext(fnCtx, ExpressionCompat.ENUM_FACING);
-                String from = GsonHelper.getString(obj, "from");
+                String from = GsonHelper.getAsString(obj, "from");
                 INodeObject<Direction> nodeFrom = JsonVariableModelPart.convertStringToObjectNode(from, fnCtx, Direction.class);
 
-                String to = GsonHelper.getString(obj, "to");
+                String to = GsonHelper.getAsString(obj, "to");
                 INodeObject<Direction> nodeTo = JsonVariableModelPart.convertStringToObjectNode(to, fnCtx, Direction.class);
 
                 INodeDouble[] origin;

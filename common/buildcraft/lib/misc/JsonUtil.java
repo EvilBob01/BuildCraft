@@ -87,14 +87,14 @@ public class JsonUtil {
             }
         } else if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
-            String id = GsonHelper.getString(obj, "id");
+            String id = GsonHelper.getAsString(obj, "id");
             Fluid fluid = FluidRegistry.getFluid(id);
             if (fluid == null) {
                 throw failAndListFluids(id);
             }
             int amount = 1;
             if (obj.has("amount")) {
-                amount = GsonHelper.getInt(obj, "amount");
+                amount = GsonHelper.getAsInt(obj, "amount");
             }
             // TODO: NBT
             return new FluidStack(fluid, amount);
@@ -124,7 +124,7 @@ public class JsonUtil {
             }
         } else if (json.isJsonObject()) {
             JsonObject obj = json.getAsJsonObject();
-            String id = GsonHelper.getString(obj, "id");
+            String id = GsonHelper.getAsString(obj, "id");
             ResourceLocation loc = ResourceLocation.parse(id);
             if (!BuiltInRegistries.ITEM.containsKey(loc)) {
                 throw new JsonSyntaxException("Unknown item '" + id + "'");
@@ -246,7 +246,7 @@ public class JsonUtil {
      * for a {@link TextComponentTranslation}, or the prefix plus "_raw" for a raw {@link TextComponentString}. */
     public static Component getTextComponent(JsonObject json, String subPrefix, String localePrefix) {
         if (json.has(subPrefix)) {
-            String str = GsonHelper.getString(json, subPrefix);
+            String str = GsonHelper.getAsString(json, subPrefix);
             Object[] args;
             if (json.has(subPrefix + "_args")) {
                 args = getSubAsStringArray(json, subPrefix + "_args");
@@ -255,7 +255,7 @@ public class JsonUtil {
             }
             return new TextComponentTranslation(localePrefix + str, args);
         } else if (json.has(subPrefix + "_raw")) {
-            return new TextComponentString(GsonHelper.getString(json, subPrefix + "_raw"));
+            return new TextComponentString(GsonHelper.getAsString(json, subPrefix + "_raw"));
         } else {
             throw new JsonSyntaxException(
                 "Expected to find either '" + subPrefix + "' or '" + subPrefix + "_raw', but got neither for " + json);
@@ -274,7 +274,7 @@ public class JsonUtil {
         if (!obj.has(sub)) {
             return _default;
         }
-        String str = GsonHelper.getString(obj, sub).toLowerCase(Locale.ROOT);
+        String str = GsonHelper.getAsString(obj, sub).toLowerCase(Locale.ROOT);
         int index = str.indexOf(':');
         if (index < 0) {
             throw new JsonSyntaxException("Expected 'domain:path', but didn't find a colon!");

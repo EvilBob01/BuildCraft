@@ -44,10 +44,10 @@ public class JsonVariableObject {
             if (value.isJsonObject()) {
                 JsonObject objValue = value.getAsJsonObject();
                 value = objValue.get("value");
-                type = GsonHelper.getString(objValue, "type");
-                getter = GsonHelper.getString(objValue, "getter");
+                type = GsonHelper.getAsString(objValue, "type");
+                getter = GsonHelper.getAsString(objValue, "getter");
                 if (objValue.has("rounder")) {
-                    rounder = GsonHelper.getString(objValue, "rounder");
+                    rounder = GsonHelper.getAsString(objValue, "rounder");
                 }
             }
 

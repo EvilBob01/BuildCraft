@@ -123,7 +123,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
         final ItemStack stack;
         final boolean matchMeta, matchNbt;
         if (jStack.isJsonPrimitive()) {
-            String str = GsonHelper.getString(jStack, "stack");
+            String str = GsonHelper.getAsString(jStack, "stack");
             if (str.startsWith("{") && str.endsWith("}")) {
                 stack = MarkdownPageLoader.loadComplexItemStack(str.substring(1, str.length() - 1));
                 stack.setCount(1);

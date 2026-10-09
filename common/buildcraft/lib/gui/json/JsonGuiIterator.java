@@ -29,13 +29,13 @@ public class JsonGuiIterator {
     public JsonGuiIterator(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject obj = element.getAsJsonObject();
-            name = GsonHelper.getString(obj, "name", "index");
-            start = GsonHelper.getString(obj, "start", "0");
-            step = GsonHelper.getString(obj, "step");
+            name = GsonHelper.getAsString(obj, "name", "index");
+            start = GsonHelper.getAsString(obj, "start", "0");
+            step = GsonHelper.getAsString(obj, "step");
             if (obj.has("while")) {
-                shouldContinue = GsonHelper.getString(obj, "while");
+                shouldContinue = GsonHelper.getAsString(obj, "while");
             } else {
-                String end = GsonHelper.getString(obj, "end");
+                String end = GsonHelper.getAsString(obj, "end");
                 shouldContinue = "step > 0 ? ($name <= $end) : ($name >= $end)"//
                     .replace("$end", end).replace("$name", name);
             }

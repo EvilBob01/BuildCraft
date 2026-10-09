@@ -24,7 +24,7 @@ public class DataMetadataSection implements IMetadataSection {
         new IMetadataSectionSerializer<DataMetadataSection>() {
             @Override
             public DataMetadataSection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
-                return new DataMetadataSection(GsonHelper.getJsonObject(json, SECTION_NAME));
+                return new DataMetadataSection(GsonHelper.getAsJsonObject(json, SECTION_NAME));
             }
 
             @Override

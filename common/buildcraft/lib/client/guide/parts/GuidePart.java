@@ -149,7 +149,7 @@ public abstract class GuidePart {
             boolean render = current.page == pageRenderIndex;
 
             int _y = y + current.pixel;
-            int _w = font.width(text);
+            int _w = font.getStringWidth(text);
             GuiRectangle rect = new GuiRectangle(_x, _y - 2, _w, neededSpace + 3);
             wasHovered |= rect.contains(gui.mouse);
             if (render) {

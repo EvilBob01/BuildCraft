@@ -22,8 +22,8 @@ public final class PageEntry<T> extends PageValue<T> {
     public PageEntry(PageValueType<T> type, ResourceLocation name, JsonObject json, T value) {
         super(type, value);
         this.book = JsonUtil.getIdentifier(json, "book");
-        String tagType = GsonHelper.getString(json, "tag_type");
-        String subType = GsonHelper.getString(json, "tag_subtype");
+        String tagType = GsonHelper.getAsString(json, "tag_type");
+        String subType = GsonHelper.getAsString(json, "tag_subtype");
         this.typeTags = new JsonTypeTags(name.getNamespace(), tagType, subType);
     }
 
