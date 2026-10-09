@@ -36,7 +36,7 @@ public class ItemVolumeBox extends ItemBC_Neptune {
 
         if (current == null) {
             volumeBoxes.addVolumeBox(offset);
-            volumeBoxes.setChanged();
+            volumeBoxes.setDirty();
             return InteractionResult.SUCCESS;
         }
 

@@ -128,10 +128,10 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                 if (player.isShiftKeyDown()) {
                     addonVolumeBox.addons.get(addonSlot).onRemoved();
                     addonVolumeBox.addons.remove(addonSlot);
-                    volumeBoxes.setChanged();
+                    volumeBoxes.setDirty();
                 } else {
                     addonVolumeBox.addons.get(addonSlot).onPlayerRightClick(player);
-                    volumeBoxes.setChanged();
+                    volumeBoxes.setDirty();
                 }
             }
         } else if (player.isShiftKeyDown()) {
@@ -142,7 +142,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                         if (volumeBox.getLockTargetsStream().noneMatch(Lock.Target.TargetResize.class::isInstance)) {
                             volumeBox.addons.values().forEach(Addon::onRemoved);
                             iterator.remove();
-                            volumeBoxes.setChanged();
+                            volumeBoxes.setDirty();
                             return InteractionResult.SUCCESS;
                         } else {
                             return InteractionResult.FAIL;
@@ -151,7 +151,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                 }
             } else {
                 currentEditing.cancelEditing();
-                volumeBoxes.setChanged();
+                volumeBoxes.setDirty();
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -203,12 +203,12 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                         bestVolumeBox.box.min(),
                         bestVolumeBox.box.max()
                     );
-                    volumeBoxes.setChanged();
+                    volumeBoxes.setDirty();
                     return InteractionResult.SUCCESS;
                 }
             } else {
                 currentEditing.confirmEditing();
-                volumeBoxes.setChanged();
+                volumeBoxes.setDirty();
                 return InteractionResult.SUCCESS;
             }
         }

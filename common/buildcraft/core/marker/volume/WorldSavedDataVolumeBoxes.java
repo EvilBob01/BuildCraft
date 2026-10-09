@@ -31,7 +31,7 @@ public class WorldSavedDataVolumeBoxes extends SavedData {
     public final List<VolumeBox> volumeBoxes = new ArrayList<>();
 
     public WorldSavedDataVolumeBoxes(Level world) {
-        this.level = world;
+        this.world = world;
     }
 
     public static SavedData.Factory<WorldSavedDataVolumeBoxes> factory(Level world) {

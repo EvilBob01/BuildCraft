@@ -147,7 +147,7 @@ public class TileArchitectTable extends TileBC_Neptune implements ITickable, IDe
                     )
                 )
             );
-            volumeBoxes.setChanged();
+            volumeBoxes.setDirty();
             sendNetworkUpdate(NET_BOX);
         } else if (tile instanceof IAreaProvider) {
             IAreaProvider provider = (IAreaProvider) tile;

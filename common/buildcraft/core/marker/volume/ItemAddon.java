@@ -45,7 +45,7 @@ public abstract class ItemAddon extends ItemBC_Neptune {
                     addon.volumeBox = volumeBox;
                     volumeBox.addons.put(slot, addon);
                     volumeBox.addons.get(slot).onAdded();
-                    volumeBoxes.setChanged();
+                    volumeBoxes.setDirty();
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
                 }
             }
