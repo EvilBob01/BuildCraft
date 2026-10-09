@@ -106,7 +106,7 @@ public class BCSiliconModels {
     }
 
     public static void fmlInit() {
-        Minecraft.getInstance().getRenderItem().getItemModelMesher().register(BCSiliconItems.plugGate,
+        Minecraft.getInstance().getItemRenderer().getItemModelMesher().register(BCSiliconItems.plugGate,
             GateMeshDefinition.INSTANCE);
         ClientRegistry.bindTileEntitySpecialRenderer(TileLaser.class, new RenderLaser());
         ClientRegistry.bindTileEntitySpecialRenderer(TileProgrammingTable_Neptune.class, new RenderProgrammingTable());

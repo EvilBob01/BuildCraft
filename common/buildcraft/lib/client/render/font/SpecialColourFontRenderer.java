@@ -17,7 +17,7 @@ public class SpecialColourFontRenderer extends Font {
     public static final SpecialColourFontRenderer INSTANCE = new SpecialColourFontRenderer();
 
     private SpecialColourFontRenderer() {
-        super(Minecraft.getInstance().gameSettings, ResourceLocation.parse("textures/font/ascii.png"),
+        super(Minecraft.getInstance().options, ResourceLocation.parse("textures/font/ascii.png"),
             Minecraft.getInstance().renderEngine, false);
     }
 

@@ -132,7 +132,7 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
         @Override
         public void drawForeground(float partialTicks) {
             RenderHelper.enableGUIStandardItemLighting();
-            gui.minecraft.getRenderItem().renderItemAndEffectIntoGUI(getStack(), (int) getX(), (int) getY());
+            gui.minecraft.getItemRenderer().renderItemAndEffectIntoGUI(getStack(), (int) getX(), (int) getY());
             RenderHelper.disableStandardItemLighting();
             if (contains(gui.mouse) && shouldDrawHighlight()) {
                 GuiUtil.drawRect(this, 0x70_FF_FF_FF);
@@ -154,7 +154,7 @@ public class WidgetPhantomSlot extends Widget_Neptune<ContainerBC_Neptune> {
                 byte flags = 0;
                 if (button == 1) flags |= CLICK_FLAG_SINGLE;
                 if (GuiScreen.isShiftKeyDown()) flags |= CLICK_FLAG_SHIFT;
-                if (gui.minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(button - 100)) {
+                if (gui.minecraft.options.keyBindPickBlock.isActiveAndMatches(button - 100)) {
                     flags |= CLICK_FLAG_CLONE;
                     BCLog.logger.info("clone");
                 }

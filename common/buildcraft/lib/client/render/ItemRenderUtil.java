@@ -57,7 +57,7 @@ public class ItemRenderUtil {
 
     private static final ItemEntity dummyEntityItem = new ItemEntity(null);
     private static final RenderEntityItem customItemRenderer =
-        new RenderEntityItem(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getRenderItem()) {
+        new RenderEntityItem(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getItemRenderer()) {
             @Override
             public boolean shouldSpreadItems() {
                 return false;
@@ -134,7 +134,7 @@ public class ItemRenderUtil {
         } catch (Throwable exception) {
             CrashReport report = CrashReport.makeCrashReport(exception, "Rendering Item Stack");
             CrashReportCategory category = report.makeCategory("Item being rendered");
-            category.addCrashSection("Stack Count", stackCount);
+            category.setDetail("Stack Count", stackCount);
             category.addDetail("Item Class", () -> "" + stack.getItem().getClass());
             category.addDetail("Item ID", () -> "" + BuiltInRegistries.ITEM.getKey(stack.getItem()));
             category.addDetail("Item Meta", () -> "" + stack.getId());
@@ -151,7 +151,7 @@ public class ItemRenderUtil {
         }
         dir = BCLibConfig.rotateTravelingItems.changeFacing(dir);
 
-        IBakedModel model = Minecraft.getInstance().getRenderItem().getItemModelMesher().getItemModel(stack);
+        IBakedModel model = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(stack);
         model = model.getOverrides().handleItemState(model, stack, null, null);
         boolean requireGl = stack.hasEffect() || model.isBuiltInRenderer();
 
@@ -213,7 +213,7 @@ public class ItemRenderUtil {
         }
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightc % (float) 0x1_00_00,
             lightc / (float) 0x1_00_00);
-        Minecraft.getInstance().getRenderItem().renderItem(stack, model);
+        Minecraft.getInstance().getItemRenderer().renderItem(stack, model);
     }
 
     private static void setupModelOffsetRandom(ItemStack stack) {

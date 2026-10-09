@@ -615,9 +615,9 @@ public class GuiGuide extends GuiScreen {
             }
             mc.getToastGui().add(new ToastInformation("buildcraft.guide_book.reloaded", icon));
         }
-        if (keyCode == mc.gameSettings.keyBindLeft.getKeyCode()) {
+        if (keyCode == mc.options.keyBindLeft.getKeyCode()) {
             currentPage.lastPage();
-        } else if (keyCode == mc.gameSettings.keyBindRight.getKeyCode()) {
+        } else if (keyCode == mc.options.keyBindRight.getKeyCode()) {
             currentPage.nextPage();
         }
     }

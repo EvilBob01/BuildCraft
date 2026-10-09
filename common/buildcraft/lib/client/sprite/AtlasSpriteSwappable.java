@@ -80,7 +80,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
                 this.width = other.getIconWidth();
                 this.height = other.getIconHeight();
             }
-            generateMipmaps(Minecraft.getInstance().gameSettings.mipmapLevels);
+            generateMipmaps(Minecraft.getInstance().options.mipmapLevels);
             needsSwapping = true;
             return true;
         }
@@ -113,7 +113,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
             try (Resource iresource = manager.getResource(location)) {
                 boolean flag = iresource.getMetadata("animation") != null;
                 sprite.loadSprite(pngsizeinfo, flag);
-                sprite.loadSpriteFrames(iresource, Minecraft.getInstance().gameSettings.mipmapLevels + 1);
+                sprite.loadSpriteFrames(iresource, Minecraft.getInstance().options.mipmapLevels + 1);
                 return sprite;
             }
         } catch (IOException io) {

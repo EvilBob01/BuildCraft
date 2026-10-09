@@ -236,7 +236,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(xResult + 0.5, tile.getBlockPos().getY(), zResult + 0.5);
                 GlStateManager.scale(3, 3, 3);
-                Minecraft.getInstance().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
+                Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
                 GlStateManager.popMatrix();
                 GlStateManager.popMatrix();
             }

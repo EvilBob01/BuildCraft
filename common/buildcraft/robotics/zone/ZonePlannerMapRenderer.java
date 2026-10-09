@@ -130,9 +130,9 @@ public enum ZonePlannerMapRenderer {
                     setColor(data.colour);
                     drawBlockCuboid(
                             builder,
-                            key.chunkPos.getXStart() + x,
+                            key.chunkPos.getMinBlockX() + x,
                             data.posY,
-                            key.chunkPos.getZStart() + z,
+                            key.chunkPos.getMinBlockZ() + z,
                             data.posY
                     );
                 }

@@ -383,7 +383,7 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
                 );
                 if (breakTask.power >= target) {
                     tile.getWorldBC().getProfiler().push("work");
-                    tile.getWorldBC().sendBlockBreakProgress(
+                    tile.getWorldBC().destroyBlockProgress(
                         breakTask.pos.hashCode(),
                         breakTask.pos,
                         -1
@@ -404,7 +404,7 @@ public abstract class SnapshotBuilder<T extends ITileForSnapshotBuilder> impleme
                     iterator.remove();
                 } else {
                     tile.getWorldBC().getProfiler().push("work");
-                    tile.getWorldBC().sendBlockBreakProgress(
+                    tile.getWorldBC().destroyBlockProgress(
                         breakTask.pos.hashCode(),
                         breakTask.pos,
                         (int) ((breakTask.power * 9) / target)

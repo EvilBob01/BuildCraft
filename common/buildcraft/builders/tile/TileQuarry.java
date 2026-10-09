@@ -987,7 +987,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
         protected boolean onReceivePower(long added, long target) {
             blockPercentSoFar += added / (double) target;
             if (!level.isEmptyBlock(breakPos)) {
-                level.sendBlockBreakProgress(breakPos.hashCode(), breakPos, (int) (power * 9 / getTarget()));
+                level.destroyBlockProgress(breakPos.hashCode(), breakPos, (int) (power * 9 / getTarget()));
                 return false;
             } else {
                 return true;
@@ -1000,7 +1000,7 @@ public class TileQuarry extends TileBC_Neptune implements IDebuggable, IChunkLoa
             if (!canMine(breakPos)) {
                 return true;
             }
-            level.sendBlockBreakProgress(breakPos.hashCode(), breakPos, -1);
+            level.destroyBlockProgress(breakPos.hashCode(), breakPos, -1);
             Optional<List<ItemStack>> stacks = BlockUtil.breakBlockAndGetDrops(
                 (ServerLevel) world, breakPos, new ItemStack(Items.DIAMOND_PICKAXE), getOwner(), true
             );

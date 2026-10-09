@@ -429,8 +429,8 @@ public class GuiZonePlanner extends GuiBC8<ContainerZonePlanner> {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                         ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
-                        for (int blockX = chunkPos.getXStart(); blockX <= chunkPos.getXEnd(); blockX++) {
-                            for (int blockZ = chunkPos.getZStart(); blockZ <= chunkPos.getZEnd(); blockZ++) {
+                        for (int blockX = chunkPos.getMinBlockX(); blockX <= chunkPos.getMaxBlockX(); blockX++) {
+                            for (int blockZ = chunkPos.getMinBlockZ(); blockZ <= chunkPos.getMaxBlockZ(); blockZ++) {
                                 if (!layer.get(
                                     blockX - container.tile.getBlockPos().getX(),
                                     blockZ - container.tile.getBlockPos().getZ()

@@ -87,7 +87,7 @@ public class ZonePlan implements IZone {
         }
         chunkMapping.forEach((chunkPos, zoneChunk) -> {
             List<Point2i> zoneChunkAll = zoneChunk.getAll();
-            zoneChunkAll.forEach(p -> p.add(new Point2i(chunkPos.getXStart(), chunkPos.getZStart())));
+            zoneChunkAll.forEach(p -> p.add(new Point2i(chunkPos.getMinBlockX(), chunkPos.getMinBlockZ())));
             builder.addAll(zoneChunkAll);
         });
         return builder.build();

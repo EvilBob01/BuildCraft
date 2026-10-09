@@ -48,9 +48,9 @@ public class AdvDebuggerQuarry implements DetachedRenderer.IDetachedRenderer {
             Comparator.comparingDouble(chunkPos ->
                 -player.getPositionEyes(partialTicks).distanceTo(
                     new Vec3(
-                        chunkPos.getXStart() + 0.5 + (chunkPos.getXEnd() - chunkPos.getXStart()) / 2,
+                        chunkPos.getMinBlockX() + 0.5 + (chunkPos.getMaxBlockX() - chunkPos.getMinBlockX()) / 2,
                         player.getPositionEyes(partialTicks).y,
-                        chunkPos.getZStart() + 0.5 + (chunkPos.getZEnd() - chunkPos.getZStart()) / 2
+                        chunkPos.getMinBlockZ() + 0.5 + (chunkPos.getMaxBlockZ() - chunkPos.getMinBlockZ()) / 2
                     )
                 )
             )
@@ -62,12 +62,12 @@ public class AdvDebuggerQuarry implements DetachedRenderer.IDetachedRenderer {
             DebugRenderHelper.renderAABB(
                 bb,
                 new AABB(
-                    chunkPos.getXStart() + 0.5D,
+                    chunkPos.getMinBlockX() + 0.5D,
                     tile.frameBox.min().getY() + 0.5D,
-                    chunkPos.getZStart() + 0.5D,
-                    chunkPos.getXEnd() + 0.5D,
+                    chunkPos.getMinBlockZ() + 0.5D,
+                    chunkPos.getMaxBlockX() + 0.5D,
                     tile.frameBox.max().getY() + 0.5D,
-                    chunkPos.getZEnd() + 0.5D
+                    chunkPos.getMaxBlockZ() + 0.5D
                 ),
                 COLOUR_CHUNK
             );

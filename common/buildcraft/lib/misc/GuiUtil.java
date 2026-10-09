@@ -116,7 +116,7 @@ public class GuiUtil {
     public static void drawItemStackAt(ItemStack stack, int x, int y) {
         RenderHelper.enableGUIStandardItemLighting();
         Minecraft mc = Minecraft.getInstance();
-        RenderItem itemRender = mc.getRenderItem();
+        RenderItem itemRender = mc.getItemRenderer();
         itemRender.renderItemAndEffectIntoGUI(mc.player, stack, x, y);
         itemRender.renderItemOverlayIntoGUI(mc.font, stack, x, y, null);
         RenderHelper.disableStandardItemLighting();

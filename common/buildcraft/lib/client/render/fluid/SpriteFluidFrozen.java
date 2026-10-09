@@ -62,7 +62,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
                             return true;
                         }
                         src.loadSprite(size, hasAnimation);
-                        src.loadSpriteFrames(resource, Minecraft.getInstance().gameSettings.mipmapLevels + 1);
+                        src.loadSpriteFrames(resource, Minecraft.getInstance().options.mipmapLevels + 1);
                     }
                 } catch (IOException io) {
                     io.printStackTrace();
@@ -78,7 +78,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
 
             int[][] srcData = src.getFrameTextureData(0);
 
-            data = new int[Minecraft.getInstance().gameSettings.mipmapLevels + 1][];
+            data = new int[Minecraft.getInstance().options.mipmapLevels + 1][];
             for (int m = 0; m < data.length; m++) {
                 data[m] = new int[width * height / (m + 1) / (m + 1)];
             }

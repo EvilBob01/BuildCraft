@@ -141,13 +141,13 @@ public class ItemHandlerSimple extends AbstractInvItemTransactor
                 CrashReport report = new CrashReport("Inserting an item (buildcraft:ItemHandlerSimple)",
                     new IllegalStateException("Conflicting Insertion!"));
                 CrashReportCategory cat = report.makeCategory("Inventory details");
-                cat.addCrashSection("Existing Item", current);
-                cat.addCrashSection("Inserting Item", stack);
-                cat.addCrashSection("To Set", result.toSet);
-                cat.addCrashSection("To Return", result.toReturn);
-                cat.addCrashSection("Slot", slot);
-                cat.addCrashSection("Checker", checker.getClass());
-                cat.addCrashSection("Inserter", inserter.getClass());
+                cat.setDetail("Existing Item", current);
+                cat.setDetail("Inserting Item", stack);
+                cat.setDetail("To Set", result.toSet);
+                cat.setDetail("To Return", result.toReturn);
+                cat.setDetail("Slot", slot);
+                cat.setDetail("Checker", checker.getClass());
+                cat.setDetail("Inserter", inserter.getClass());
                 throw new ReportedException(report);
             } else if (!simulate) {
                 setStackInternal(slot, result.toSet);

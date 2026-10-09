@@ -66,7 +66,7 @@ public class TileMiningWell extends TileMiner {
             progress += battery.extractPower(0, target - progress);
             if (progress >= target) {
                 progress = 0;
-                level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
+                level.destroyBlockProgress(currentPos.hashCode(), currentPos, -1);
                 BlockUtil.breakBlockAndGetDrops(
                     (ServerLevel) world,
                     currentPos,
@@ -78,7 +78,7 @@ public class TileMiningWell extends TileMiner {
                 nextPos();
             } else {
                 if (!level.isEmptyBlock(currentPos)) {
-                    level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, (int) ((progress * 9) / target));
+                    level.destroyBlockProgress(currentPos.hashCode(), currentPos, (int) ((progress * 9) / target));
                 }
             }
         } else if (shouldCheck || tracker.markTimeIfDelay(level)) {
@@ -133,7 +133,7 @@ public class TileMiningWell extends TileMiner {
         if (!level.isClientSide) {
             level.removeEventListener(worldEventListener);
             if (currentPos != null) {
-                level.sendBlockBreakProgress(currentPos.hashCode(), currentPos, -1);
+                level.destroyBlockProgress(currentPos.hashCode(), currentPos, -1);
             }
         }
     }
