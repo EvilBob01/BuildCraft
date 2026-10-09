@@ -434,8 +434,8 @@ public class FluidRenderer {
     }
 
     private static void guiVertex(double x, double y, double u, double v) {
-        float ru = sprite.getInterpolatedU(u);
-        float rv = sprite.getInterpolatedV(v);
+        float ru = sprite.getU((u) / 16f);
+        float rv = sprite.getV((v) / 16f);
         bb.pos(x, y, 0);
         bb.tex(ru, rv);
         bb.endVertex();
@@ -470,7 +470,7 @@ public class FluidRenderer {
             if (invertV) {
                 realv = 1 - realv;
             }
-            vertex.texf(sprite.getInterpolatedU(realu * 16), sprite.getInterpolatedV(realv * 16));
+            vertex.texf(sprite.getU((realu * 16) / 16f), sprite.getV((realv * 16) / 16f));
         }
     }
 

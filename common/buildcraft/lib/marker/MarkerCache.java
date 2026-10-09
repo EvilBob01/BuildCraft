@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModListState;
-import net.neoforged.fml.common.ModContainer;
+import net.neoforged.fml.ModContainer;
 
 import buildcraft.api.core.BCDebugging;
 import buildcraft.api.core.BCLog;

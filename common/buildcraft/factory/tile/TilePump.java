@@ -173,7 +173,7 @@ public class TilePump extends TileMiner {
     private void buildQueue0(
         ProfilerEntry prof, Fluid queueFluid, List<BlockPos> nextPosesToCheck, Set<BlockPos> checked
     ) {
-        prof.push("build");
+        prof.startSection("build");
         Direction[] directions = queueFluid.getFluidType().isLighterThanAir() ? SEARCH_GASEOUS : SEARCH_NORMAL;
         boolean isWater
             = !BCCoreConfig.pumpsConsumeWater && FluidUtilBC.areFluidsEqual(queueFluid, Fluids.WATER);
@@ -184,46 +184,46 @@ public class TilePump extends TileMiner {
             for (BlockPos posToCheck : nextPosesToCheckCopy) {
                 int count = 0;
                 for (Direction side : directions) {
-                    prof.push("check");
+                    prof.startSection("check");
                     BlockPos offsetPos = posToCheck.relative(side);
                     if (offsetPos.distSqr(targetPos) > maxLengthSquared) {
-                        prof.pop();
+                        prof.endSection();
                         continue;
                     }
                     boolean isNew = checked.add(offsetPos);
-                    prof.pop();
+                    prof.endSection();
                     if (isNew) {
-                        prof.push("push");
-                        prof.push("eq_get");
+                        prof.startSection("push");
+                        prof.startSection("eq_get");
                         Fluid fluidAt = BlockUtil.getFluidWithFlowing(level, offsetPos);
-                        prof.popPush("eq_cmp");
+                        prof.endStartSection("eq_cmp");
                         boolean eq = FluidUtilBC.areFluidsEqual(fluidAt, queueFluid);
-                        prof.pop();
+                        prof.endSection();
                         if (eq) {
-                            prof.push("prevPath");
+                            prof.startSection("prevPath");
                             FluidPath oldPath = paths.get(posToCheck);
-                            prof.popPush("new");
+                            prof.endStartSection("new");
                             FluidPath path = new FluidPath(offsetPos, oldPath);
-                            prof.popPush("putNew");
+                            prof.endStartSection("putNew");
                             paths.put(offsetPos, path);
-                            prof.popPush("getFluid");
+                            prof.endStartSection("getFluid");
                             if (BlockUtil.getFluid(level, offsetPos) != null) {
-                                prof.popPush("addToQueue");
+                                prof.endStartSection("addToQueue");
                                 queue.add(offsetPos);
                             }
-                            prof.popPush("next");
+                            prof.endStartSection("next");
                             nextPosesToCheck.add(offsetPos);
                             count++;
-                            prof.pop();
+                            prof.endSection();
                         }
-                        prof.pop();
+                        prof.endSection();
                     } else {
                         // We've already tested this block: it *must* be a valid water source
                         count++;
                     }
                 }
                 if (isWater) {
-                    prof.push("water_check");
+                    prof.startSection("water_check");
                     if (count >= 2) {
                         BlockState below = level.getBlockState(posToCheck.below());
                         // Same check as in BlockDynamicLiquid.updateTick:
@@ -234,15 +234,15 @@ public class TilePump extends TileMiner {
                             FluidUtilBC.areFluidsEqual(fluidBelow, Fluids.WATER) || below.getMaterial().isSolid()
                         ) {
                             isInfiniteWaterSource = true;
-                            prof.pop();
+                            prof.endSection();
                             break outer;
                         }
                     }
-                    prof.pop();
+                    prof.endSection();
                 }
             }
         }
-        prof.popPush("oil_spring_search");
+        prof.endStartSection("oil_spring_search");
         if (isOil(queueFluid)) {
             List<BlockPos> springPositions = new ArrayList<>();
             BlockPos center = VecUtil.replaceValue(getBlockPos(), Axis.Y, 0);
@@ -266,7 +266,7 @@ public class TilePump extends TileMiner {
             }
 
         }
-        prof.pop();
+        prof.endSection();
     }
 
     private static boolean isOil(Fluid queueFluid) {

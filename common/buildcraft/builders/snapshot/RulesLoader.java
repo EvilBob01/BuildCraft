@@ -35,7 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.ModContainer;
+import net.neoforged.fml.ModContainer;
 
 import buildcraft.lib.BCLib;
 import buildcraft.lib.misc.BlockUtil;

@@ -37,7 +37,7 @@ public class RenderPartCube {
     public void setWhiteTex() {
         TextureAtlasSprite sprite = ModelLoader.White.INSTANCE;
         // Reset the vertex so that edits don't spill out to other tiles.
-        center.texf(sprite.getInterpolatedU(8), sprite.getInterpolatedV(8));
+        center.texf(sprite.getU((8) / 16f), sprite.getV((8) / 16f));
     }
 
     /** Renders an element, without changing the vertex. However this does ignore the "normal" and "texture" components

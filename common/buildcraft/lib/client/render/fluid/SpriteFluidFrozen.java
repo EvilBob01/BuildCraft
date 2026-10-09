@@ -114,11 +114,11 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
 
     @Override
     public float getInterpolatedU(double u) {
-        return super.getInterpolatedU(u / 2 + 4);
+        return super.getU((u / 2 + 4) / 16f);
     }
 
     @Override
     public float getInterpolatedV(double v) {
-        return super.getInterpolatedV(v / 2 + 4);
+        return super.getV((v / 2 + 4) / 16f);
     }
 }
