@@ -4,6 +4,7 @@
  * distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 package buildcraft.core.item;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import javax.annotation.Nonnull;
 
 import gnu.trove.map.hash.TIntObjectHashMap;

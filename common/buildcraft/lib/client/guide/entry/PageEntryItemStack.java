@@ -1,5 +1,6 @@
 package buildcraft.lib.client.guide.entry;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -184,7 +185,7 @@ public class PageEntryItemStack extends PageValueType<ItemStackValueFilter> {
             }
             // matchMeta: metadata removed in 1.21; meta always matches
             if (entry.matchNbt) {
-                if (!ItemStack.isSameItemSameTags(base, test)) {
+                if (!ItemStack.isSameItemSameComponents(base, test)) {
                     return false;
                 }
             }

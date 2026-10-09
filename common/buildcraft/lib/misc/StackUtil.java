@@ -56,7 +56,7 @@ public class StackUtil {
      * todo with stack size, so if you pass in two stacks of 64 cobblestone this will return true. If you pass in null
      * (at all) then this will only return true if both are null. */
     public static boolean canMerge(@Nonnull ItemStack a, @Nonnull ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b);
+        return ItemStack.isSameItemSameComponents(a, b);
     }
 
     /** Attempts to get an item stack that might place down the given blockstate. Obviously this isn't perfect, and so
@@ -163,7 +163,7 @@ public class StackUtil {
             return list.matches(stack2, stack1);
         }
 
-        return ItemStack.isSameItemSameTags(stack1, stack2);
+        return ItemStack.isSameItemSameComponents(stack1, stack2);
     }
 
     /** This doesn't take into account stack sizes.

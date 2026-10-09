@@ -60,7 +60,7 @@ public class RenderPump extends FastTESR<TilePump> {
 
             if (facing.getAxis() == Axis.X) {
                 dX = 0;
-                dZ = facing.getAxisDirection().getOffset();
+                dZ = facing.getAxisDirection().getStep();
                 ledZ = 0.5;
                 if (facing == Direction.EAST) {
                     ledX = 15.6 / 16.0;
@@ -68,7 +68,7 @@ public class RenderPump extends FastTESR<TilePump> {
                     ledX = 0.4 / 16.0;
                 }
             } else {
-                dX = -facing.getAxisDirection().getOffset();
+                dX = -facing.getAxisDirection().getStep();
                 dZ = 0;
                 ledX = 0.5;
                 if (facing == Direction.SOUTH) {

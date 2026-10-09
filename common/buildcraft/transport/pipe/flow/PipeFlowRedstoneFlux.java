@@ -209,7 +209,7 @@ public class PipeFlowRedstoneFlux extends PipeFlow implements IFlowRedstoneFlux,
             for (Direction face : Direction.values()) {
                 Section s = sections.get(face);
                 s.clientDisplayFlowLast = s.clientDisplayFlow;
-                double diff = s.displayFlow.value * 2.4 * face.getAxisDirection().getOffset();
+                double diff = s.displayFlow.value * 2.4 * face.getAxisDirection().getStep();
                 s.clientDisplayFlow += 16 + diff;
                 s.clientDisplayFlow %= 16;
 

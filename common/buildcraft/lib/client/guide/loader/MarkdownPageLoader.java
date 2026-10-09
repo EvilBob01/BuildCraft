@@ -6,6 +6,7 @@
 
 package buildcraft.lib.client.guide.loader;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;

@@ -6,6 +6,7 @@
 
 package buildcraft.builders.item;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import java.util.List;
 import java.util.Locale;
 

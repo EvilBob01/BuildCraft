@@ -6,6 +6,7 @@
 
 package buildcraft.lib.net.cache;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import java.io.IOException;
 import java.util.Objects;
 

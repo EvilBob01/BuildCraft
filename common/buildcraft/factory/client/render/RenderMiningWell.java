@@ -87,7 +87,7 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
 
         if (facing.getAxis() == Axis.X) {
             dX = 0;
-            dZ = facing.getAxisDirection().getOffset();
+            dZ = facing.getAxisDirection().getStep();
             ledZ = 0.5;
             if (facing == Direction.EAST) {
                 ledX = 15.8 / 16.0;
@@ -95,7 +95,7 @@ public class RenderMiningWell extends FastTESR<TileMiningWell> {
                 ledX = 0.2 / 16.0;
             }
         } else {
-            dX = -facing.getAxisDirection().getOffset();
+            dX = -facing.getAxisDirection().getStep();
             dZ = 0;
             ledX = 0.5;
             if (facing == Direction.SOUTH) {

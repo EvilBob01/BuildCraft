@@ -315,7 +315,7 @@ public class TileAssemblyTable extends TileLaserTableBase {
         public boolean equals(Object obj) {
             if (!(obj instanceof AssemblyInstruction)) return false;
             AssemblyInstruction instruction = (AssemblyInstruction) obj;
-            return recipe.builtInRegistryHolder().key().location().equals(instruction.recipe.builtInRegistryHolder().key().location()) && ItemStack.isSameItemSameTags(output, instruction.output);
+            return recipe.builtInRegistryHolder().key().location().equals(instruction.recipe.builtInRegistryHolder().key().location()) && ItemStack.isSameItemSameComponents(output, instruction.output);
         }
     }
 }

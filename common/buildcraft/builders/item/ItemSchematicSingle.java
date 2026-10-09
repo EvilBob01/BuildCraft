@@ -70,7 +70,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
         if (world.isClientSide) {
             return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             CompoundTag itemData = NBTUtilBC.getItemData(stack);
             itemData.remove(NBT_KEY);
             if (itemData.isEmpty()) {
@@ -86,7 +86,7 @@ public class ItemSchematicSingle extends ItemBC_Neptune {
             return InteractionResult.PASS;
         }
         ItemStack stack = player.getItemInHand(hand);
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             CompoundTag itemData = NBTUtilBC.getItemData(StackUtil.asNonNull(stack));
             itemData.remove(NBT_KEY);
             if (itemData.isEmpty()) {

@@ -21,6 +21,6 @@ public class IngredientNBTBC extends Ingredient {
 
     @Override
     public boolean test(ItemStack input) {
-        return ItemStack.isSameItemSameTags(matchStack, input);
+        return ItemStack.isSameItemSameComponents(matchStack, input);
     }
 }

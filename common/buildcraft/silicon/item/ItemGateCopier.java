@@ -56,7 +56,7 @@ public class ItemGateCopier extends ItemBC_Neptune {
         if (world.isClientSide) {
             return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return clearData(StackUtil.asNonNull(stack));
         }
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);

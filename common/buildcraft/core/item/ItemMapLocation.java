@@ -140,7 +140,7 @@ public class ItemMapLocation extends ItemBC_Neptune implements IMapLocation {
         if (world.isClientSide) {
             return new InteractionResultHolder<>(InteractionResult.PASS, stack);
         }
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return clearMarkerData(StackUtil.asNonNull(stack));
         }
         return new InteractionResultHolder<>(InteractionResult.PASS, stack);

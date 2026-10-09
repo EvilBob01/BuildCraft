@@ -125,7 +125,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                 addonVolumeBox.getLockTargetsStream().noneMatch(target ->
                     target instanceof Lock.Target.TargetAddon && ((Lock.Target.TargetAddon) target).slot == addonSlot
                 )) {
-                if (player.isSneaking()) {
+                if (player.isShiftKeyDown()) {
                     addonVolumeBox.addons.get(addonSlot).onRemoved();
                     addonVolumeBox.addons.remove(addonSlot);
                     volumeBoxes.setChanged();
@@ -134,7 +134,7 @@ public class ItemMarkerConnector extends ItemBC_Neptune {
                     volumeBoxes.setChanged();
                 }
             }
-        } else if (player.isSneaking()) {
+        } else if (player.isShiftKeyDown()) {
             if (currentEditing == null) {
                 for (Iterator<VolumeBox> iterator = volumeBoxes.volumeBoxes.iterator(); iterator.hasNext();) {
                     VolumeBox volumeBox = iterator.next();

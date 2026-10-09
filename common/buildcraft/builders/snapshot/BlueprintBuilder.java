@@ -6,6 +6,7 @@
 
 package buildcraft.builders.snapshot;
 
+import buildcraft.lib.misc.NBTUtilBC;
 import java.io.IOException;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import java.util.ArrayList;

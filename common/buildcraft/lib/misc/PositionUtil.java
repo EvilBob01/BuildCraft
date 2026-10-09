@@ -212,9 +212,9 @@ public class PositionUtil {
         Direction newUp = PositionUtil.rotateFacing(Direction.UP, axis, rotation);
         Direction newSouth = PositionUtil.rotateFacing(Direction.SOUTH, axis, rotation);
 
-        rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getOffset());
-        rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getOffset());
-        rotated = VecUtil.replaceValue(rotated, newSouth.getAxis(), numSouth * newSouth.getAxisDirection().getOffset());
+        rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getStep());
+        rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getStep());
+        rotated = VecUtil.replaceValue(rotated, newSouth.getAxis(), numSouth * newSouth.getAxisDirection().getStep());
 
         return rotated;
     }
@@ -232,9 +232,9 @@ public class PositionUtil {
         Direction newUp = PositionUtil.rotateFacing(Direction.UP, axis, rotation);
         Direction newSouth = PositionUtil.rotateFacing(Direction.SOUTH, axis, rotation);
 
-        rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getOffset());
-        rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getOffset());
-        rotated = VecUtil.replaceValue(rotated, newSouth.getAxis(), numSouth * newSouth.getAxisDirection().getOffset());
+        rotated = VecUtil.replaceValue(rotated, newEast.getAxis(), numEast * newEast.getAxisDirection().getStep());
+        rotated = VecUtil.replaceValue(rotated, newUp.getAxis(), numUp * newUp.getAxisDirection().getStep());
+        rotated = VecUtil.replaceValue(rotated, newSouth.getAxis(), numSouth * newSouth.getAxisDirection().getStep());
 
         return rotated;
     }
