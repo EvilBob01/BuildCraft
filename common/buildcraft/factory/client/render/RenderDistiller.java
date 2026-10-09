@@ -98,7 +98,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
             tile.setClientModelVariables(partialTicks);
             tile.clientModelData.refresh();
             MutableQuad[] quads = BCFactoryModels.DISTILLER.getCutoutQuads();
-            profiler.endStartSection("render");
+            profiler.popPush("render");
 
             MutableQuad copy = new MutableQuad(0, null);
             int lightc = combinedLight;
@@ -112,7 +112,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
             }
 
             profiler.pop();
-            profiler.endStartSection("fluid");
+            profiler.popPush("fluid");
 
             renderTank(sizes.tankIn, tile.smoothedTankIn, combinedLight, partialTicks, bb);
             renderTank(sizes.tankOutGas, tile.smoothedTankGasOut, combinedLight, partialTicks, bb);
@@ -120,7 +120,7 @@ public class RenderDistiller extends TileEntitySpecialRenderer<TileDistiller_BC8
 
             // buffer finish
             bb.setTranslation(0, 0, 0);
-            profiler.endStartSection("draw");
+            profiler.popPush("draw");
             tess.tessellator.draw();
         }
 

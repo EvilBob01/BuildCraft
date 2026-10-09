@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class DelegateFontRenderer extends Font {
@@ -27,7 +27,7 @@ public class DelegateFontRenderer extends Font {
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         delegate.onResourceManagerReload(resourceManager);
     }
 

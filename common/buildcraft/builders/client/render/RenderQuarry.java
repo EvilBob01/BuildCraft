@@ -133,7 +133,7 @@ public class RenderQuarry extends TileEntitySpecialRenderer<TileQuarry> {
                 }
             }
 
-            profiler.endStartSection("frame");
+            profiler.popPush("frame");
             if (tile.clientDrillPos != null && tile.prevClientDrillPos != null) {
                 Vec3 interpolatedPos = tile.prevClientDrillPos.add(tile.clientDrillPos.subtract(tile.prevClientDrillPos).scale(partialTicks));
 

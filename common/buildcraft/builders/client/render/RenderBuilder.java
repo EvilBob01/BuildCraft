@@ -40,7 +40,7 @@ public class RenderBuilder extends FastTESR<TileBuilder> {
         Box box = tile.getBox();
         LaserBoxRenderer.renderLaserBoxDynamic(box, BuildCraftLaserManager.STRIPES_WRITE, buffer, true);
 
-        Minecraft.getInstance().getProfiler().endStartSection("path");
+        Minecraft.getInstance().getProfiler().popPush("path");
 
         List<BlockPos> path = tile.path;
         if (path != null) {

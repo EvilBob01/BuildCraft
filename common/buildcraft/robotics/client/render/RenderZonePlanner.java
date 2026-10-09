@@ -99,9 +99,9 @@ public class RenderZonePlanner extends TileEntitySpecialRenderer<TileZonePlanner
             Vec3 max;
 
             float minU = 0;
-            float maxU = texture.getMaxU();
+            float maxU = texture.getU1();
             float minV = 0;
-            float maxV = texture.getMaxV();
+            float maxV = texture.getV1();
 
             switch (side) {
                 case NORTH:

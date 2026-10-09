@@ -116,7 +116,7 @@ public class SpriteHolderRegistry {
                 String status = "  ";
                 if (stitched == null) {
                     status += "(Sprite was registered too late)";
-                } else if (missing.getMinU() == stitched.getMinU() && missing.getMinV() == stitched.getMinV()) {
+                } else if (missing.getU0() == stitched.getU0() && missing.getV0() == stitched.getV0()) {
                     status += "(Sprite did not exist in a resource pack)";
                 }
 
@@ -170,13 +170,13 @@ public class SpriteHolderRegistry {
         @Override
         public double getInterpU(double u) {
             TextureAtlasSprite s = getSpriteChecking();
-            return s == null ? u : s.getMinU() + u * (s.getMaxU() - s.getMinU());
+            return s == null ? u : s.getU0() + u * (s.getU1() - s.getU0());
         }
 
         @Override
         public double getInterpV(double v) {
             TextureAtlasSprite s = getSpriteChecking();
-            return s == null ? v : s.getMinV() + v * (s.getMaxV() - s.getMinV());
+            return s == null ? v : s.getV0() + v * (s.getV1() - s.getV0());
         }
 
         @Override

@@ -13,8 +13,8 @@ import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.PngSizeInfo;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
@@ -32,12 +32,12 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
     }
 
     @Override
-    public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
+    public boolean hasCustomLoader(ResourceManager manager, ResourceLocation location) {
         return true;
     }
 
     @Override
-    public boolean load(IResourceManager manager, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+    public boolean load(ResourceManager manager, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
         location = SpriteUtil.transformLocation(srcLocation);
         TextureAtlasSprite src = Minecraft.getInstance().getTextureMapBlocks().getTextureExtry(srcLocation.toString());
         if (src == null) {
@@ -51,7 +51,7 @@ public class SpriteFluidFrozen extends TextureAtlasSprite {
             } else {
                 try {
                     PngSizeInfo size = PngSizeInfo.makeFromResource(manager.getResource(location));
-                    try (IResource resource = manager.getResource(location)) {
+                    try (Resource resource = manager.getResource(location)) {
                         boolean hasAnimation = resource.getMetadata("animation") != null;
                         if (!hasAnimation && size.pngHeight != size.pngWidth) {
                             BCLog.logger.warn(

@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
@@ -74,7 +74,7 @@ public class SpecialColourFontRenderer extends Font {
     // Delegate methods (To ensure we have the exact same behaviour as the normal font renderer)
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         // NO-OP
     }
 

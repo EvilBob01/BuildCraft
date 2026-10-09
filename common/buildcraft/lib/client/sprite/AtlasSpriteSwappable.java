@@ -14,8 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.PngSizeInfo;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.resources.ResourceLocation;
 
@@ -88,9 +88,9 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
     }
 
     /** Actually loads the given location. Note that subclasses should override this, and possibly call
-     * {@link #loadSprite(IResourceManager, String, ResourceLocation, boolean)} to load all of the possible variants. */
+     * {@link #loadSprite(ResourceManager, String, ResourceLocation, boolean)} to load all of the possible variants. */
     @Override
-    public boolean load(IResourceManager manager, ResourceLocation location,
+    public boolean load(ResourceManager manager, ResourceLocation location,
         Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
         TextureAtlasSprite sprite = loadSprite(manager, super.getIconName(), location, true);
         if (sprite != null) {
@@ -103,14 +103,14 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
         return loadSprite(Minecraft.getInstance().getResourceManager(), name, location, careIfMissing);
     }
 
-    public static TextureAtlasSprite loadSprite(IResourceManager manager, String name, ResourceLocation location,
+    public static TextureAtlasSprite loadSprite(ResourceManager manager, String name, ResourceLocation location,
         boolean careIfMissing) {
         // Load the initial variant
         TextureAtlasSprite sprite = makeAtlasSprite(ResourceLocation.parse(name));
         try {
             // Copied almost directly from TextureMap.
             PngSizeInfo pngsizeinfo = PngSizeInfo.makeFromResource(manager.getResource(location));
-            try (IResource iresource = manager.getResource(location)) {
+            try (Resource iresource = manager.getResource(location)) {
                 boolean flag = iresource.getMetadata("animation") != null;
                 sprite.loadSprite(pngsizeinfo, flag);
                 sprite.loadSpriteFrames(iresource, Minecraft.getInstance().gameSettings.mipmapLevels + 1);
@@ -126,7 +126,7 @@ public abstract class AtlasSpriteSwappable extends TextureAtlasSprite {
     }
 
     @Override
-    public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
+    public boolean hasCustomLoader(ResourceManager manager, ResourceLocation location) {
         return true;
     }
 

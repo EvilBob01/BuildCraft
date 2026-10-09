@@ -31,34 +31,34 @@ public class AddonDefaultRenderer<T extends Addon> implements IFastAddonRenderer
     public void renderAddonFast(T addon, Player player, float partialTicks, BufferBuilder builder) {
         AABB bb = addon.getBoundingBox();
 
-        builder.pos(bb.minX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.minY, bb.minZ).color(204, 204, 204, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.minY, bb.minZ).color(204, 204, 204, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(204, 204, 204, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.minZ).color(204, 204, 204, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.minZ).color(204, 204, 204, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
 
-        builder.pos(bb.minX, bb.minY, bb.maxZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(204, 204, 204, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(204, 204, 204, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(204, 204, 204, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.maxZ).color(204, 204, 204, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(204, 204, 204, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(204, 204, 204, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(204, 204, 204, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
 
-        builder.pos(bb.minX, bb.minY, bb.minZ).color(127, 127, 127, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.minY, bb.minZ).color(127, 127, 127, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(127, 127, 127, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.minY, bb.maxZ).color(127, 127, 127, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.minZ).color(127, 127, 127, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.minZ).color(127, 127, 127, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(127, 127, 127, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.maxZ).color(127, 127, 127, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
 
-        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(255, 255, 255, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(255, 255, 255, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(255, 255, 255, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.maxY, bb.minZ).color(255, 255, 255, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(255, 255, 255, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(255, 255, 255, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(255, 255, 255, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.minZ).color(255, 255, 255, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
 
-        builder.pos(bb.minX, bb.minY, bb.maxZ).color(153, 153, 153, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(153, 153, 153, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.maxY, bb.minZ).color(153, 153, 153, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.minX, bb.minY, bb.minZ).color(153, 153, 153, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.maxZ).color(153, 153, 153, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.maxZ).color(153, 153, 153, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.maxY, bb.minZ).color(153, 153, 153, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.minX, bb.minY, bb.minZ).color(153, 153, 153, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
 
-        builder.pos(bb.maxX, bb.minY, bb.minZ).color(153, 153, 153, 255).tex(s.getMinU(), s.getMinV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(153, 153, 153, 255).tex(s.getMinU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(153, 153, 153, 255).tex(s.getMaxU(), s.getMaxV()).lightmap(240, 0).endVertex();
-        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(153, 153, 153, 255).tex(s.getMaxU(), s.getMinV()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.minZ).color(153, 153, 153, 255).tex(s.getU0(), s.getV0()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.minZ).color(153, 153, 153, 255).tex(s.getU0(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(153, 153, 153, 255).tex(s.getU1(), s.getV1()).lightmap(240, 0).endVertex();
+        builder.pos(bb.maxX, bb.minY, bb.maxZ).color(153, 153, 153, 255).tex(s.getU1(), s.getV0()).lightmap(240, 0).endVertex();
     }
 }

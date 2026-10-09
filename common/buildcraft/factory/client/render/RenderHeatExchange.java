@@ -126,7 +126,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
                 bb.setTranslation(x, y, z);
             }
 
-            profiler.endStartSection("flow");
+            profiler.popPush("flow");
 
             if (middles > 0 && sectionEnd != null) {
                 EnumProgressState progressState = section.getProgressState();
@@ -161,7 +161,7 @@ public class RenderHeatExchange extends TileEntitySpecialRenderer<TileHeatExchan
 
             // buffer finish
             bb.setTranslation(0, 0, 0);
-            profiler.endStartSection("draw");
+            profiler.popPush("draw");
             tess.tessellator.draw();
         }
 

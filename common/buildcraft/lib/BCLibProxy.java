@@ -138,7 +138,7 @@ public class BCLibProxy {
 
     @OnlyIn(Dist.CLIENT)
     private static InputStream getStreamForIdentifierClient(ResourceLocation identifier) throws IOException {
-        // TODO (Phase 6.5): IResourceManager#getResource's return type and open-stream API changed significantly
+        // TODO (Phase 6.5): ResourceManager#getResource's return type and open-stream API changed significantly
         // between 1.12.2 and 1.21.1. Stubbed out until the resource pack / resource manager API is re-ported.
         return null;
     }

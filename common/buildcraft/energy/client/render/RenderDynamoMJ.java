@@ -26,7 +26,7 @@ public class RenderDynamoMJ extends FastTESR<TileDynamoMJ> {
         profiler.push("compute");
         vb.setTranslation(x, y, z);
         MutableQuad[] quads = BCEnergyModels.getMjDynamoQuads(engine, partialTicks);
-        profiler.endStartSection("render");
+        profiler.popPush("render");
         MutableQuad copy = new MutableQuad(0, null);
         int lightc = engine.getLevel().getCombinedLight(engine.getBlockPos(), 0);
         int light_block = (lightc >> 4) & 15;

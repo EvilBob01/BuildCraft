@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.PngSizeInfo;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.IResource;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
@@ -42,7 +42,7 @@ public class GuideImageFactory implements GuidePartFactory {
             ISprite s;
             int sw, sh;
             ResourceLocation resLoc = ResourceLocation.parse(location);
-            try (IResource resource = Minecraft.getInstance().getResourceManager().getResource(resLoc)) {
+            try (Resource resource = Minecraft.getInstance().getResourceManager().getResource(resLoc)) {
                 PngSizeInfo size = PngSizeInfo.makeFromResource(resource);
                 s = new SpriteRaw(resLoc, 0, 0, 1, 1);
                 sw = size.pngWidth;

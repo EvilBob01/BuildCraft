@@ -29,7 +29,7 @@ public abstract class RenderEngine_BC8<T extends TileEngineBase_BC8> extends Fas
         profiler.push("compute");
         vb.setTranslation(x, y, z);
         MutableQuad[] quads = getEngineModel(engine, partialTicks);
-        profiler.endStartSection("render");
+        profiler.popPush("render");
         MutableQuad copy = new MutableQuad(0, null);
         int lightc = engine.getLevel().getCombinedLight(engine.getBlockPos(), 0);
         int light_block = (lightc >> 4) & 15;

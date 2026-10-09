@@ -76,7 +76,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
             boolean horizontal = false;
             boolean vertical = flow.pipe.isConnected(gas ? Direction.DOWN : Direction.UP);
 
-            prof.endStartSection("build");
+            prof.popPush("build");
             for (Direction face : Direction.values()) {
                 double size = ((Pipe) flow.pipe).getConnectedDist(face);
                 double amount = amounts[face.get3DDataValue()];
@@ -154,7 +154,7 @@ public enum PipeFlowRendererFluids implements IPipeFlowRenderer<PipeFlowFluids> 
             GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
             GlStateManager.enableCull();
 
-            prof.endStartSection("draw");
+            prof.popPush("draw");
             fluidBuffer.setTranslation(0, 0, 0);
             tess.tessellator.draw();
         }

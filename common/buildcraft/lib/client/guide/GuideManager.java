@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.Stopwatch;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.Language;
 import net.minecraft.world.item.Item;
@@ -116,7 +116,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         reload(resourceManager);
     }
 
@@ -124,7 +124,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         reload(Minecraft.getInstance().getResourceManager());
     }
 
-    private void reload(IResourceManager resourceManager) {
+    private void reload(ResourceManager resourceManager) {
         if (isInReload) {
             throw new IllegalStateException("Cannot reload while we are reloading!");
         }
@@ -136,7 +136,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         }
     }
 
-    private void reload0(IResourceManager resourceManager) {
+    private void reload0(ResourceManager resourceManager) {
         ProfilerFiller prof = InactiveProfiler.INSTANCE;
         prof.profilingEnabled = DEBUG;
         prof.push("root");
@@ -223,7 +223,7 @@ public enum GuideManager implements IResourceManagerReloadListener {
         }
     }
 
-    private void loadLangInternal(IResourceManager resourceManager, String lang, ProfilerFiller prof) {
+    private void loadLangInternal(ResourceManager resourceManager, String lang, ProfilerFiller prof) {
         ProfilerBC p = new ProfilerBC(prof);
         main_iteration: for (Entry<ResourceLocation, PageEntry<?>> mapEntry : GuidePageRegistry.INSTANCE
             .getReloadableEntryMap().entrySet()) {

@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
 
 import buildcraft.api.core.BCLog;
@@ -84,7 +84,7 @@ public class AtlasSpriteVariants extends AtlasSpriteSwappable implements IReload
     }
 
     @Override
-    public boolean load(IResourceManager manager, ResourceLocation location,
+    public boolean load(ResourceManager manager, ResourceLocation location,
         Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
         for (int i = 0; i < variantNames.size(); i++) {
             ResourceLocation loc = variantNames.get(i);

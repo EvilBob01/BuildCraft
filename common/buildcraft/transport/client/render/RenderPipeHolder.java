@@ -36,10 +36,10 @@ public class RenderPipeHolder extends FastTESR<TilePipeHolder> {
         Minecraft.getInstance().getProfiler().push("wire");
         PipeWireRenderer.renderWires(pipe, x, y, z, buffer);
 
-        Minecraft.getInstance().getProfiler().endStartSection("pluggable");
+        Minecraft.getInstance().getProfiler().popPush("pluggable");
         renderPluggables(pipe, x, y, z, partialTicks, buffer);
 
-        Minecraft.getInstance().getProfiler().endStartSection("contents");
+        Minecraft.getInstance().getProfiler().popPush("contents");
         renderContents(pipe, x, y, z, partialTicks, buffer);
 
         Minecraft.getInstance().getProfiler().pop();

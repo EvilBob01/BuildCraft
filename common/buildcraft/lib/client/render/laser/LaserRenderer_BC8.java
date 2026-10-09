@@ -151,7 +151,7 @@ public class LaserRenderer_BC8 {
         ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("compute");
         LaserCompiledList compiled = COMPILED_STATIC_LASERS.getUnchecked(data);
-        profiler.endStartSection("render");
+        profiler.popPush("render");
         SpriteUtil.bindBlockTextureMap();
         compiled.render();
         profiler.pop();
@@ -162,7 +162,7 @@ public class LaserRenderer_BC8 {
         ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
         profiler.push("compute");
         LaserCompiledBuffer compiled = COMPILED_DYNAMIC_LASERS.getUnchecked(data);
-        profiler.endStartSection("render");
+        profiler.popPush("render");
         compiled.render(buffer);
         profiler.pop();
     }

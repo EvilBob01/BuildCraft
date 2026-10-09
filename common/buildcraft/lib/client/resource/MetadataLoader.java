@@ -7,12 +7,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.resources.ResourceLocation;
 
-/** Alternate metadata loader for {@link IResource#getMetadata(String)} */
+/** Alternate metadata loader for {@link Resource#getMetadata(String)} */
 public class MetadataLoader {
 
     private static boolean hasRegistered = false;
@@ -28,18 +28,18 @@ public class MetadataLoader {
     /** @param samePack If true, then only the data in the same resource pack will be returned. */
     @Nullable
     public static DataMetadataSection getData(ResourceLocation location, boolean samePack) {
-        IResourceManager resManager = Minecraft.getInstance().getResourceManager();
+        ResourceManager resManager = Minecraft.getInstance().getResourceManager();
         register();
         try {
-            List<IResource> resources = resManager.getAllResources(location);
+            List<Resource> resources = resManager.getAllResources(location);
             DataMetadataSection section = null;
-            for (IResource resource : resources) {
+            for (Resource resource : resources) {
                 section = resource.getMetadata(DataMetadataSection.SECTION_NAME);
                 if (section != null || samePack) {
                     break;
                 }
             }
-            for (IResource res : resources) {
+            for (Resource res : resources) {
                 try {
                     res.close();
                 } catch (IOException io) {
