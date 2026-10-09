@@ -50,7 +50,7 @@ public class GuidePageContents extends GuidePageBase {
     public GuidePageContents(GuiGuide gui) {
         super(gui);
         loadMainGui();
-        Font fr = new ConfigurableFontRenderer(gui.mc.font).disableShadow();
+        Font fr = new ConfigurableFontRenderer(gui.minecraft.font).disableShadow();
         searchText = new GuiTextField(0, fr, 0, 0, 80, fr.lineHeight + 5);
         searchText.setEnableBackgroundDrawing(false);
         searchText.setTextColor(0xFF_00_00_00);

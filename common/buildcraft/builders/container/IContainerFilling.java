@@ -44,14 +44,14 @@ public interface IContainerFilling {
     void valuesChanged();
 
     default void init() {
-        if (!getPlayer().world.isClientSide) {
+        if (!getPlayer().level().isClientSide) {
             MessageUtil.doDelayedServer(this::sendData);
         }
     }
 
     default void sendData() {
         sendMessage(ContainerBC_Neptune.NET_DATA, buffer -> {
-            (getPlayer().world.isClientSide
+            (getPlayer().level().isClientSide
                 ? getPatternStatementClient()
                 : getPatternStatement()).writeToBuffer(buffer);
             buffer.writeBoolean(isInverted());

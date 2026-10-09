@@ -31,8 +31,8 @@ public abstract class GuidePartItem extends GuidePart {
         if (stack != null && !stack.isEmpty()) {
             GlStateManager._color4f(1, 1, 1, 1);
             Font fr = Minecraft.getInstance().font;
-            gui.mc.getItemRenderer().renderGuiItem(stack, x, y);
-            gui.mc.getItemRenderer().renderGuiItemDecorations(fr, stack, x, y);
+            gui.minecraft.getItemRenderer().renderGuiItem(stack, x, y);
+            gui.minecraft.getItemRenderer().renderGuiItemDecorations(fr, stack, x, y);
             if (STACK_RECT.offset(x, y).contains(gui.mouse)) {
                 gui.tooltipStack = stack;
             }

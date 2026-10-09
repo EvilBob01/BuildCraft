@@ -41,7 +41,7 @@ public abstract class GuiAbstractButton extends GuiElementSimple
     }
 
     public GuiElementText createTextElement(Supplier<String> text) {
-        Font fr = gui.mc.font;
+        Font fr = gui.minecraft.font;
         DoubleSupplier x = () -> -fr.width(text.get()) / 2;
         DoubleSupplier y = () -> -fr.lineHeight / 2;
         IGuiPosition pos = getCenter().offset(x, y);

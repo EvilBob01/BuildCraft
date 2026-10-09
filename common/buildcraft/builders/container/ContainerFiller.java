@@ -79,7 +79,7 @@ public class ContainerFiller extends ContainerBCTile<TileFiller> implements ICon
         if (tile.addon != null) {
             tile.addon.updateBuildingInfo();
             if (!player.level().isClientSide) {
-                WorldSavedDataVolumeBoxes.get(getPlayer().world).setDirty();
+                WorldSavedDataVolumeBoxes.get(getPlayer().level()).setDirty();
             }
         }
         if (!player.level().isClientSide) {

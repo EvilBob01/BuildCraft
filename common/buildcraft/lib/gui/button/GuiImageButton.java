@@ -42,7 +42,7 @@ public class GuiImageButton extends GuiAbstractButton {
             return;
         }
 
-        gui.mc.renderEngine.bindTexture(texture);
+        gui.minecraft.renderEngine.bindTexture(texture);
 
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.enableAlpha();
